@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Search, ToggleLeft, ToggleRight, Check, X, Bot } from "lucide-react";
 import { Question } from "@/types/QuestionInterface";
@@ -68,7 +69,19 @@ const PracticeDisplay = ({
 
   const localCheckAnswer = (answer: string) => {
     if (!currentQuestion) return;
-    const correct = answer === currentQuestion.correctAnswer;
+    
+    // Get the index of the selected choice key (A=0, B=1, C=2, D=3)
+    const choiceIndex = answer.charCodeAt(0) - 65;
+    const selectedChoiceText = currentQuestion.choices?.[choiceIndex];
+    
+    console.log('Answer comparison:', {
+      userChoiceKey: answer,
+      userChoiceText: selectedChoiceText,
+      correctAnswer: currentQuestion.correctAnswer,
+      match: selectedChoiceText === currentQuestion.correctAnswer
+    });
+    
+    const correct = selectedChoiceText === currentQuestion.correctAnswer;
     setLocalSelectedAnswer(answer);
     setLocalIsCorrect(correct);
   };
@@ -316,7 +329,7 @@ Keep the evaluation constructive and educational.`;
                     {currentQuestion.choices?.map((choice, index) => {
                       const choiceKey = String.fromCharCode(65 + index);
                       const isSelected = selectedAnswer === choiceKey;
-                      const isCorrectChoice = currentQuestion.correctAnswer === choiceKey;
+                      const isCorrectChoice = currentQuestion.correctAnswer === choice;
                       
                       let buttonStyle = '';
                       let animationClass = '';
@@ -352,20 +365,25 @@ Keep the evaluation constructive and educational.`;
                             color: isDarkMode ? '#ffffff' : undefined
                           }}
                         >
-                          <div className="flex items-center justify-center w-full gap-2">
-                            <div className="flex flex-col items-center text-center">
+                          <div className="flex items-center justify-between w-full">
+                            <div className="flex flex-col items-center text-center flex-1">
                               <span className={`text-xs mb-0.5 ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>Option {choiceKey}</span>
                               <span 
                                 className="text-xs leading-tight"
                                 dangerouslySetInnerHTML={{ __html: choice }}
                               />
                             </div>
-                            {selectedAnswer && isSelected && (
-                              isCorrect ? <Check className="h-4 w-4 ml-2 flex-shrink-0" /> : <X className="h-4 w-4 ml-2 flex-shrink-0" />
-                            )}
-                            {selectedAnswer && !isSelected && isCorrectChoice && (
-                              <Check className="h-4 w-4 ml-2 flex-shrink-0" />
-                            )}
+                            <div className="flex items-center gap-2">
+                              {selectedAnswer && isSelected && !isCorrect && (
+                                <span className="text-xs font-bold text-red-900">Incorrect</span>
+                              )}
+                              {selectedAnswer && isSelected && (
+                                isCorrect ? <Check className="h-4 w-4 flex-shrink-0" /> : <X className="h-4 w-4 flex-shrink-0" />
+                              )}
+                              {selectedAnswer && !isSelected && isCorrectChoice && (
+                                <Check className="h-4 w-4 flex-shrink-0" />
+                              )}
+                            </div>
                           </div>
                         </Button>
                       );
@@ -400,51 +418,6 @@ Keep the evaluation constructive and educational.`;
                   </div>
                 )}
 
-                {/* Answer Feedback */}
-                {selectedAnswer && (
-                  <motion.div 
-                    initial={{ opacity: 0, scale: 0.9, y: 10 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    transition={{ duration: 0.3, ease: "easeOut" }}
-                    className={`p-4 rounded-xl transition-all duration-300 max-w-md shadow-lg ${
-                      isCorrect 
-                        ? isDarkMode 
-                          ? 'bg-gradient-to-r from-green-900/80 to-emerald-900/80 border border-green-400/40 text-green-200 shadow-green-500/20' 
-                          : 'bg-gradient-to-r from-green-50 to-emerald-50 border border-green-300 text-green-800 shadow-green-200/50'
-                        : isDarkMode 
-                          ? 'bg-gradient-to-r from-red-900/80 to-rose-900/80 border border-red-400/40 text-red-200 shadow-red-500/20' 
-                          : 'bg-gradient-to-r from-red-50 to-rose-50 border border-red-300 text-red-800 shadow-red-200/50'
-                    }`}>
-                    <div className="flex items-center gap-3 mb-2">
-                      <motion.div
-                        initial={{ scale: 0, rotate: -180 }}
-                        animate={{ scale: 1, rotate: 0 }}
-                        transition={{ delay: 0.1, duration: 0.4, ease: "easeOut" }}
-                        className={`p-1 rounded-full ${isCorrect ? 'bg-green-500/20' : 'bg-red-500/20'}`}
-                      >
-                        {isCorrect ? <Check className="h-6 w-6" /> : <X className="h-6 w-6" />}
-                      </motion.div>
-                      <motion.span 
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: 0.2, duration: 0.3 }}
-                        className="font-bold text-lg"
-                      >
-                        {isCorrect ? '🎉 Excellent!' : '❌ Not quite right'}
-                      </motion.span>
-                    </div>
-                    {!isCorrect && (
-                      <motion.p 
-                        initial={{ opacity: 0, y: 5 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.3, duration: 0.3 }}
-                        className="text-sm font-medium"
-                      >
-                        The correct answer is: <strong className="text-base">{currentQuestion.correctAnswer}</strong>
-                      </motion.p>
-                    )}
-                  </motion.div>
-                )}
               </div>
             )}
           </div>
@@ -632,7 +605,7 @@ Keep the evaluation constructive and educational.`;
                         {currentQuestion.choices?.map((choice, index) => {
                           const choiceKey = String.fromCharCode(65 + index);
                           const isSelected = selectedAnswer === choiceKey;
-                          const isCorrectChoice = currentQuestion.correctAnswer === choiceKey;
+                          const isCorrectChoice = currentQuestion.correctAnswer === choice;
                           
                           let buttonStyle = '';
                           let animationClass = '';
@@ -668,20 +641,25 @@ Keep the evaluation constructive and educational.`;
                                 color: isDarkMode ? '#ffffff' : undefined
                               }}
                             >
-                              <div className="flex items-center justify-center w-full gap-2">
-                                <div className="flex flex-col items-center text-center">
+                              <div className="flex items-center justify-between w-full">
+                                <div className="flex flex-col items-center text-center flex-1">
                                   <span className={`text-xs mb-0.5 ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>Option {choiceKey}</span>
                                   <span 
                                     className="text-xs leading-tight"
                                     dangerouslySetInnerHTML={{ __html: choice }}
                                   />
                                 </div>
-                                {selectedAnswer && isSelected && (
-                                  isCorrect ? <Check className="h-4 w-4 ml-2 flex-shrink-0" /> : <X className="h-4 w-4 ml-2 flex-shrink-0" />
-                                )}
-                                {selectedAnswer && !isSelected && isCorrectChoice && (
-                                  <Check className="h-4 w-4 ml-2 flex-shrink-0" />
-                                )}
+                                <div className="flex items-center gap-2">
+                                  {selectedAnswer && isSelected && !isCorrect && (
+                                    <span className="text-xs font-bold text-red-900">Incorrect</span>
+                                  )}
+                                  {selectedAnswer && isSelected && (
+                                    isCorrect ? <Check className="h-4 w-4 flex-shrink-0" /> : <X className="h-4 w-4 flex-shrink-0" />
+                                  )}
+                                  {selectedAnswer && !isSelected && isCorrectChoice && (
+                                    <Check className="h-4 w-4 flex-shrink-0" />
+                                  )}
+                                </div>
                               </div>
                             </Button>
                           );
@@ -715,29 +693,6 @@ Keep the evaluation constructive and educational.`;
                       </div>
                     )}
 
-                    {selectedAnswer && (
-                      <div className={`p-3 rounded-lg transition-colors max-w-md ${
-                        isCorrect 
-                          ? isDarkMode 
-                            ? 'bg-green-900/50 border border-green-500/30 text-green-300' 
-                            : 'bg-green-50 border border-green-200 text-green-700'
-                          : isDarkMode 
-                            ? 'bg-red-900/50 border border-red-500/30 text-red-300' 
-                            : 'bg-red-50 border border-red-200 text-red-700'
-                      }`}>
-                        <div className="flex items-center gap-2 mb-2">
-                          {isCorrect ? <Check className="h-5 w-5" /> : <X className="h-5 w-5" />}
-                          <span className="font-semibold">
-                            {isCorrect ? 'Correct!' : 'Incorrect'}
-                          </span>
-                        </div>
-                        {!isCorrect && (
-                          <p className="text-sm">
-                            The correct answer is: <strong>{currentQuestion.correctAnswer}</strong>
-                          </p>
-                        )}
-                      </div>
-                    )}
                   </div>
                 )}
               </div>
@@ -941,7 +896,7 @@ Keep the evaluation constructive and educational.`;
                       {currentQuestion.choices?.map((choice, index) => {
                         const choiceKey = String.fromCharCode(65 + index);
                         const isSelected = selectedAnswer === choiceKey;
-                        const isCorrectChoice = currentQuestion.correctAnswer === choiceKey;
+                        const isCorrectChoice = currentQuestion.correctAnswer === choice;
                         
                         let buttonStyle = '';
                         let animationClass = '';
@@ -977,20 +932,25 @@ Keep the evaluation constructive and educational.`;
                               color: isDarkMode ? '#ffffff' : undefined
                             }}
                           >
-                            <div className="flex items-center justify-center w-full gap-2">
-                              <div className="flex flex-col items-center text-center">
+                            <div className="flex items-center justify-between w-full">
+                              <div className="flex flex-col items-center text-center flex-1">
                                 <span className={`text-xs mb-1 ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>Option {choiceKey}</span>
                                 <span 
                                   className="text-sm leading-tight"
                                   dangerouslySetInnerHTML={{ __html: choice }}
                                 />
                               </div>
-                              {selectedAnswer && isSelected && (
-                                isCorrect ? <Check className="h-5 w-5 ml-2 flex-shrink-0" /> : <X className="h-5 w-5 ml-2 flex-shrink-0" />
-                              )}
-                              {selectedAnswer && !isSelected && isCorrectChoice && (
-                                <Check className="h-5 w-5 ml-2 flex-shrink-0" />
-                              )}
+                              <div className="flex items-center gap-2">
+                                {selectedAnswer && isSelected && !isCorrect && (
+                                  <span className="text-xs font-bold text-red-900">Incorrect</span>
+                                )}
+                                {selectedAnswer && isSelected && (
+                                  isCorrect ? <Check className="h-5 w-5 flex-shrink-0" /> : <X className="h-5 w-5 flex-shrink-0" />
+                                )}
+                                {selectedAnswer && !isSelected && isCorrectChoice && (
+                                  <Check className="h-5 w-5 flex-shrink-0" />
+                                )}
+                              </div>
                             </div>
                           </Button>
                         );
@@ -1024,50 +984,6 @@ Keep the evaluation constructive and educational.`;
                     </div>
                   )}
 
-                  {selectedAnswer && (
-                    <motion.div 
-                      initial={{ opacity: 0, scale: 0.9, y: 10 }}
-                      animate={{ opacity: 1, scale: 1, y: 0 }}
-                      transition={{ duration: 0.3, ease: "easeOut" }}
-                      className={`p-4 rounded-xl transition-all duration-300 shadow-lg ${
-                        isCorrect 
-                          ? isDarkMode 
-                            ? 'bg-gradient-to-r from-green-900/80 to-emerald-900/80 border border-green-400/40 text-green-200 shadow-green-500/20' 
-                            : 'bg-gradient-to-r from-green-50 to-emerald-50 border border-green-300 text-green-800 shadow-green-200/50'
-                          : isDarkMode 
-                            ? 'bg-gradient-to-r from-red-900/80 to-rose-900/80 border border-red-400/40 text-red-200 shadow-red-500/20' 
-                            : 'bg-gradient-to-r from-red-50 to-rose-50 border border-red-300 text-red-800 shadow-red-200/50'
-                      }`}>
-                      <div className="flex items-center gap-3 mb-2">
-                        <motion.div
-                          initial={{ scale: 0, rotate: -180 }}
-                          animate={{ scale: 1, rotate: 0 }}
-                          transition={{ delay: 0.1, duration: 0.4, ease: "easeOut" }}
-                          className={`p-1 rounded-full ${isCorrect ? 'bg-green-500/20' : 'bg-red-500/20'}`}
-                        >
-                          {isCorrect ? <Check className="h-6 w-6" /> : <X className="h-6 w-6" />}
-                        </motion.div>
-                        <motion.span 
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 0.2, duration: 0.3 }}
-                          className="font-bold text-lg"
-                        >
-                          {isCorrect ? '🎉 Excellent!' : '❌ Not quite right'}
-                        </motion.span>
-                      </div>
-                      {!isCorrect && (
-                        <motion.p 
-                          initial={{ opacity: 0, y: 5 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.3, duration: 0.3 }}
-                          className="text-sm font-medium"
-                        >
-                          The correct answer is: <strong className="text-base">{currentQuestion.correctAnswer}</strong>
-                        </motion.p>
-                      )}
-                    </motion.div>
-                  )}
                 </div>
               )}
             </div>

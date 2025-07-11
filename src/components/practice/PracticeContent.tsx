@@ -4,7 +4,6 @@ import { useQuestions } from "@/contexts/QuestionsContext";
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
 import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
 import { filterQuestionsByChapter, getUniqueChapters, filterQuestionsByModule } from "@/utils/mapQuestion";
 import { saveObjective, loadObjective } from "@/services/objectivePersistence";
 import { useTheme } from "@/contexts/ThemeContext";
@@ -59,7 +58,6 @@ export default function PracticeContent({
   settings: propSettings,
   onSettingsChange
 }: PracticeContentProps) {
-  const { toast } = useToast();
   const { isDarkMode } = useTheme();
   
   const questionsContext = useQuestions();
@@ -288,38 +286,10 @@ export default function PracticeContent({
       setSelectedAnswer(null);
       setIsCorrect(null);
       
-      // Show feedback to user
-      if (filters.exam !== undefined && filters.exam !== null) {
-        toast({
-          title: "Exam Filter Applied",
-          description: `Showing ${newFilteredQuestions.length} questions from Exam ${filters.exam}`,
-        });
-      } else if (filters.exam === null) {
-        toast({
-          title: "Exam Filter Cleared",
-          description: `Showing all ${newFilteredQuestions.length} available questions`,
-        });
-      } else if (filters.chapter !== undefined) {
-        toast({
-          title: "Chapter Filter Applied",
-          description: `Showing ${newFilteredQuestions.length} questions from Chapter ${filters.chapter}`,
-        });
-      } else if (filters.module !== undefined) {
-        toast({
-          title: "Module Filter Applied", 
-          description: `Showing ${newFilteredQuestions.length} questions from ${filters.module}`,
-        });
-      } else {
-        const activeFilterCount = Object.keys(newFilters).length;
-        toast({
-          title: "Filters Applied",
-          description: `${activeFilterCount} filter(s) active, showing ${newFilteredQuestions.length} questions`,
-        });
-      }
       
       return newFilters;
     });
-  }, [allQuestions, applyFilters, toast]);
+  }, [allQuestions, applyFilters]);
 
   // Update filtered questions when base questions change
   useEffect(() => {
@@ -422,27 +392,25 @@ export default function PracticeContent({
 
   const checkAnswer = (answer: string) => {
     if (!currentQuestion) return;
-    const correct = answer === currentQuestion.correctAnswer;
+    
+    // Get the index of the selected choice key (A=0, B=1, C=2, D=3)
+    const choiceIndex = answer.charCodeAt(0) - 65;
+    const selectedChoiceText = currentQuestion.choices?.[choiceIndex];
+    
+    console.log('PracticeContent Answer comparison:', {
+      userChoiceKey: answer,
+      userChoiceText: selectedChoiceText,
+      correctAnswer: currentQuestion.correctAnswer,
+      match: selectedChoiceText === currentQuestion.correctAnswer
+    });
+    
+    const correct = selectedChoiceText === currentQuestion.correctAnswer;
     setSelectedAnswer(answer);
     setIsCorrect(correct);
     if (correct) {
       setCorrectAnswers(prev => prev + 1);
-      toast({
-        title: "🎉 Excellent!",
-        description: "You got it right! Keep up the great work!",
-        variant: "default",
-        duration: 3000,
-        className: "bg-gradient-to-r from-green-500 to-emerald-500 text-white border-none"
-      });
     } else {
       setIncorrectAnswers(prev => prev + 1);
-      toast({
-        title: "❌ Not quite right",
-        description: `The correct answer was: ${currentQuestion.correctAnswer}`,
-        variant: "destructive",
-        duration: 4000,
-        className: "bg-gradient-to-r from-red-500 to-rose-500 text-white border-none"
-      });
     }
     if (correct && currentQuestionIndex < filteredQuestions.length - 1) {
       setTimeout(nextQuestion, 1500);
