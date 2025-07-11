@@ -172,8 +172,6 @@ Keep the evaluation constructive and educational.`;
 
   // Helper function to format quote content
   const formatQuote = (quote: string | {text: string, source?: string} | undefined) => {
-    console.log('formatQuote called with:', quote, 'type:', typeof quote);
-    
     if (!quote) return 'No key idea available for this question.';
     
     if (typeof quote === 'string') {
@@ -251,9 +249,6 @@ Keep the evaluation constructive and educational.`;
     );
   }
 
-  // Debug current question
-  console.log('Current question in PracticeDisplay:', currentQuestion);
-  console.log('Current question quote:', currentQuestion.quote);
 
   const graphUrl = getGraphUrl(currentQuestion);
   const hasGraph = !!graphUrl;

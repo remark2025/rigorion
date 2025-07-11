@@ -397,12 +397,6 @@ export default function PracticeContent({
     const choiceIndex = answer.charCodeAt(0) - 65;
     const selectedChoiceText = currentQuestion.choices?.[choiceIndex];
     
-    console.log('PracticeContent Answer comparison:', {
-      userChoiceKey: answer,
-      userChoiceText: selectedChoiceText,
-      correctAnswer: currentQuestion.correctAnswer,
-      match: selectedChoiceText === currentQuestion.correctAnswer
-    });
     
     const correct = selectedChoiceText === currentQuestion.correctAnswer;
     setSelectedAnswer(answer);
