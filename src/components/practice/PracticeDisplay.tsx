@@ -170,6 +170,57 @@ Keep the evaluation constructive and educational.`;
     return null;
   };
 
+  // Helper function to format quote content
+  const formatQuote = (quote: string | {text: string, source?: string} | undefined) => {
+    console.log('formatQuote called with:', quote, 'type:', typeof quote);
+    
+    if (!quote) return 'No key idea available for this question.';
+    
+    if (typeof quote === 'string') {
+      return quote;
+    }
+    
+    if (typeof quote === 'object' && quote.text) {
+      return (
+        <div>
+          <div className="mb-2 text-lg italic">{quote.text}</div>
+          {quote.source && (
+            <div className="text-sm opacity-75">— {quote.source}</div>
+          )}
+        </div>
+      );
+    }
+    
+    return 'No key idea available for this question.';
+  };
+
+  // Helper function to format solution content
+  const formatSolution = (currentQuestion: any) => {
+    // If there are solutionSteps, format them nicely
+    if (currentQuestion.solutionSteps && Array.isArray(currentQuestion.solutionSteps)) {
+      return (
+        <div>
+          {currentQuestion.solution && (
+            <div className="mb-3">{currentQuestion.solution}</div>
+          )}
+          <div className="space-y-2">
+            {currentQuestion.solutionSteps.map((step: string, index: number) => (
+              <div key={index} className="flex items-start">
+                <span className="font-medium text-blue-600 dark:text-blue-400 mr-2 flex-shrink-0">
+                  Step {index + 1}:
+                </span>
+                <span>{step}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+    
+    // Otherwise just show the solution string
+    return currentQuestion.solution || 'No solution available for this question.';
+  };
+
   // Font mapping for consistent styling
   const getFontFamily = () => {
     switch (displaySettings.fontFamily) {
@@ -199,6 +250,10 @@ Keep the evaluation constructive and educational.`;
       <div className={`w-full p-8 text-center ${isDarkMode ? 'text-white' : 'text-gray-700'}`}>No question selected</div>
     );
   }
+
+  // Debug current question
+  console.log('Current question in PracticeDisplay:', currentQuestion);
+  console.log('Current question quote:', currentQuestion.quote);
 
   const graphUrl = getGraphUrl(currentQuestion);
   const hasGraph = !!graphUrl;
@@ -469,8 +524,9 @@ Keep the evaluation constructive and educational.`;
                     color: isDarkMode ? '#ffffff' : contentTextStyle.color
                   }}
                   className="whitespace-pre-wrap text-sm leading-relaxed"
-                  dangerouslySetInnerHTML={{ __html: currentQuestion.solution || 'No solution available for this question.' }}
-                />
+                >
+                  {formatSolution(currentQuestion)}
+                </div>
               </>
             )}
 
@@ -489,8 +545,9 @@ Keep the evaluation constructive and educational.`;
                     color: isDarkMode ? '#ffffff' : contentTextStyle.color
                   }}
                   className="whitespace-pre-wrap text-sm leading-relaxed"
-                  dangerouslySetInnerHTML={{ __html: currentQuestion.quote || 'No key idea available for this question.' }}
-                />
+                >
+                  {formatQuote(currentQuestion.quote)}
+                </div>
               </>
             )}
           </div>
@@ -741,8 +798,9 @@ Keep the evaluation constructive and educational.`;
                       color: isDarkMode ? '#ffffff' : contentTextStyle.color
                     }}
                     className="whitespace-pre-wrap text-sm leading-relaxed"
-                    dangerouslySetInnerHTML={{ __html: currentQuestion.solution || 'No solution available for this question.' }}
-                  />
+                  >
+                    {formatSolution(currentQuestion)}
+                  </div>
                 </>
               )}
               {activeTab === 'quote' && (
@@ -759,8 +817,9 @@ Keep the evaluation constructive and educational.`;
                       color: isDarkMode ? '#ffffff' : contentTextStyle.color
                     }}
                     className="whitespace-pre-wrap text-sm leading-relaxed"
-                    dangerouslySetInnerHTML={{ __html: currentQuestion.quote || 'No key idea available for this question.' }}
-                  />
+                >
+                  {formatQuote(currentQuestion.quote)}
+                </div>
                 </>
               )}
             </div>
@@ -1008,8 +1067,9 @@ Keep the evaluation constructive and educational.`;
                       color: isDarkMode ? '#ffffff' : contentTextStyle.color
                     }}
                     className="whitespace-pre-wrap text-sm leading-relaxed"
-                    dangerouslySetInnerHTML={{ __html: currentQuestion.solution || 'No solution available for this question.' }}
-                  />
+                  >
+                    {formatSolution(currentQuestion)}
+                  </div>
                 </>
               )}
               {activeTab === 'quote' && (
@@ -1026,8 +1086,9 @@ Keep the evaluation constructive and educational.`;
                       color: isDarkMode ? '#ffffff' : contentTextStyle.color
                     }}
                     className="whitespace-pre-wrap text-sm leading-relaxed"
-                    dangerouslySetInnerHTML={{ __html: currentQuestion.quote || 'No key idea available for this question.' }}
-                  />
+                >
+                  {formatQuote(currentQuestion.quote)}
+                </div>
                 </>
               )}
             </div>

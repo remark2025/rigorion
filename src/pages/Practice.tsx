@@ -33,7 +33,8 @@ const convertToApiFormat = (questions: Question[]) => {
     module: q.module,
     examNumber: q.examNumber,
     hint: q.hint || q.explanation,
-    graph: q.graph?.url || q.graph
+    graph: q.graph?.url || q.graph,
+    quote: q.quote  // Include the quote field!
   }));
 };
 

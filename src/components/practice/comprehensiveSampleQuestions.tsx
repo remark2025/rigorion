@@ -20,7 +20,11 @@ export const comprehensiveSampleQuestions: Question[] = [
       "Start with: 3x + 5 = 17",
       "Subtract 5 from both sides: 3x = 12", 
       "Divide both sides by 3: x = 4"
-    ]
+    ],
+    quote: {
+      text: "The only way to learn mathematics is to do mathematics.",
+      source: "Paul Halmos"
+    }
   },
   {
     id: "MATH-002", 
@@ -39,7 +43,11 @@ export const comprehensiveSampleQuestions: Question[] = [
       "Identify points: (2, 3) and (6, 11)",
       "Apply slope formula: m = (y₂ - y₁)/(x₂ - x₁)",
       "Substitute: m = (11 - 3)/(6 - 2) = 8/4 = 2"
-    ]
+    ],
+    quote: {
+      text: "Success is the result of preparation, hard work, and learning from failure.",
+      source: "Colin Powell"
+    }
   },
 
   // Math Questions - Chapter 2: Problem Solving and Data Analysis  
@@ -59,7 +67,11 @@ export const comprehensiveSampleQuestions: Question[] = [
     solutionSteps: [
       "Convert 60% to decimal: 0.6",
       "Multiply by total: 0.6 × 250 = 150"
-    ]
+    ],
+    quote: {
+      text: "The expert in anything was once a beginner.",
+      source: "Helen Hayes"
+    }
   },
   {
     id: "MATH-004",
@@ -79,7 +91,11 @@ export const comprehensiveSampleQuestions: Question[] = [
       "Therefore Sum = 60",
       "Sum of known numbers: 8 + 10 + 14 + 16 = 48", 
       "Fifth number = 60 - 48 = 12"
-    ]
+    ],
+    quote: {
+      text: "Genius is one percent inspiration, ninety-nine percent perspiration.",
+      source: "Thomas Edison"
+    }
   },
 
   // Math Questions - Chapter 3: Passport to Advanced Math
@@ -100,7 +116,11 @@ export const comprehensiveSampleQuestions: Question[] = [
       "Given: f(x) = x² + 3x - 2",
       "Substitute x = -1: f(-1) = (-1)² + 3(-1) - 2",
       "Calculate: f(-1) = 1 - 3 - 2 = -4"
-    ]
+    ],
+    quote: {
+      text: "Mathematics is not about numbers, equations, computations, or algorithms: it is about understanding.",
+      source: "William Paul Thurston"
+    }
   },
   {
     id: "MATH-006",
@@ -119,7 +139,11 @@ export const comprehensiveSampleQuestions: Question[] = [
       "Start with the area formula: A = πr²",
       "Substitute the radius: r = 5cm", 
       "Calculate: A = π(5)² = 25π cm²"
-    ]
+    ],
+    quote: {
+      text: "Study hard what interests you the most in the most undisciplined, irreverent and original manner possible.",
+      source: "Richard Feynman"
+    }
   },
 
   // Reading Questions - Chapter 4: Reading Comprehension
@@ -145,7 +169,11 @@ export const comprehensiveSampleQuestions: Question[] = [
       "Identify the passage's main theme",
       "Look for the author's intent signals",
       "Determine if the purpose is to inform, persuade, or entertain"
-    ]
+    ],
+    quote: {
+      text: "Reading is to the mind what exercise is to the body.",
+      source: "Joseph Addison"
+    }
   },
   {
     id: "READ-002", 
@@ -169,7 +197,11 @@ export const comprehensiveSampleQuestions: Question[] = [
       "Identify the main argument in each passage",
       "Compare the authors' positions",
       "Determine the relationship between their viewpoints"
-    ]
+    ],
+    quote: {
+      text: "The more that you read, the more things you will know. The more that you learn, the more places you'll go.",
+      source: "Dr. Seuss"
+    }
   },
 
   // Writing Questions - Chapter 5: Writing and Language
@@ -427,7 +459,11 @@ export const comprehensiveSampleQuestions: Question[] = [
       "Identify redundant or unnecessary words",
       "Choose the most concise option",
       "Ensure the meaning remains clear"
-    ]
+    ],
+    quote: {
+      text: "The secret to getting ahead is getting started.",
+      source: "Mark Twain"
+    }
   },
   {
     id: "WRITE-005",
@@ -451,7 +487,11 @@ export const comprehensiveSampleQuestions: Question[] = [
       "Identify the paragraph's main purpose",
       "Determine if the sentence supports that purpose",
       "Consider whether it adds value or creates distraction"
-    ]
+    ],
+    quote: {
+      text: "Excellence is never an accident. It is always the result of high intention, sincere effort, and intelligent execution.",
+      source: "Aristotle"
+    }
   },
   {
     id: "WRITE-006",

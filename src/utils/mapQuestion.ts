@@ -212,10 +212,7 @@ export function mapQuestion(raw: any, index?: number): Question {
     quote: questionData.quote ? {
       text: questionData.quote.text || questionData.quote,
       source: questionData.quote.source || "Unknown"
-    } : {
-      text: "Practice makes perfect",
-      source: "Common saying"
-    }
+    } : undefined
   };
 
   console.log('[MAPPER] Mapped question with examNumber:', mappedQuestion.examNumber);
