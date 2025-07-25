@@ -66,10 +66,10 @@ export const FormattingToolbar = ({ settings, onSettingsChange }: FormattingTool
   };
 
   return (
-    <div className={`flex items-center gap-1 px-2 py-1 rounded-lg transition-colors ${
+    <div className={`flex items-center gap-1 px-2 py-1 rounded-full transition-colors ${
       isDarkMode 
-        ? 'bg-gray-800/50 border border-gray-700/50' 
-        : 'bg-gray-50 border border-gray-200/50'
+        ? 'bg-white' 
+        : 'bg-white'
     }`}>
       
       {/* Font Family Dropdown */}
@@ -78,27 +78,23 @@ export const FormattingToolbar = ({ settings, onSettingsChange }: FormattingTool
           <Button 
             variant="ghost" 
             size="sm" 
-            className={`h-6 px-2 text-xs font-medium ${
-              isDarkMode ? 'hover:bg-gray-700 text-gray-300' : 'hover:bg-gray-100 text-gray-700'
-            }`}
+            className={`h-6 px-2 text-xs font-medium hover:bg-gray-100 text-gray-700`}
           >
             <Type className="h-3 w-3 mr-1" />
             <span className="text-xs">{getCurrentFontName().slice(0, 4)}</span>
             <ChevronDown className="h-2 w-2 ml-1" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className={`w-48 ${
-          isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
-        }`}>
+        <DropdownMenuContent className={`w-48 bg-white border-gray-200`}>
           {FONT_OPTIONS.map((font) => (
             <DropdownMenuItem
               key={font.value}
               onClick={() => onSettingsChange("fontFamily", font.value)}
               className={`cursor-pointer ${
                 settings.fontFamily === font.value 
-                  ? (isDarkMode ? 'bg-gray-700' : 'bg-gray-100') 
+                  ? 'bg-gray-100' 
                   : ''
-              } ${isDarkMode ? 'hover:bg-gray-700 text-gray-300' : 'hover:bg-gray-50 text-gray-700'}`}
+              } hover:bg-gray-50 text-gray-700`}
             >
               <span style={{ fontFamily: font.value === 'inter' ? 'Inter' : font.value }}>
                 {font.label}
@@ -112,14 +108,12 @@ export const FormattingToolbar = ({ settings, onSettingsChange }: FormattingTool
       </DropdownMenu>
 
       {/* Font Size Controls */}
-      <div className="flex items-center border rounded">
+      <div className="flex items-center border rounded-full">
         <Button
           variant="ghost"
           size="sm"
           onClick={() => handleFontSizeChange(false)}
-          className={`h-6 w-6 p-0 border-r ${
-            isDarkMode ? 'hover:bg-gray-700 border-gray-600' : 'hover:bg-gray-100 border-gray-200'
-          }`}
+          className={`h-6 w-6 p-0 border-r hover:bg-gray-100 border-gray-200`}
           disabled={settings.fontSize <= 10}
         >
           <Minus className="h-2 w-2" />
@@ -130,25 +124,21 @@ export const FormattingToolbar = ({ settings, onSettingsChange }: FormattingTool
             <Button 
               variant="ghost" 
               size="sm" 
-              className={`h-6 px-2 text-xs font-medium border-r min-w-8 ${
-                isDarkMode ? 'hover:bg-gray-700 border-gray-600 text-gray-300' : 'hover:bg-gray-100 border-gray-200 text-gray-700'
-              }`}
+              className={`h-6 px-2 text-xs font-medium border-r min-w-8 hover:bg-gray-100 border-gray-200 text-gray-700`}
             >
               {settings.fontSize}
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className={`${
-            isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
-          }`}>
+          <DropdownMenuContent className={`bg-white border-gray-200`}>
             {FONT_SIZES.map((size) => (
               <DropdownMenuItem
                 key={size}
                 onClick={() => onSettingsChange("fontSize", size)}
                 className={`cursor-pointer text-center ${
                   settings.fontSize === size 
-                    ? (isDarkMode ? 'bg-gray-700' : 'bg-gray-100') 
+                    ? 'bg-gray-100' 
                     : ''
-                } ${isDarkMode ? 'hover:bg-gray-700 text-gray-300' : 'hover:bg-gray-50 text-gray-700'}`}
+                } hover:bg-gray-50 text-gray-700`}
               >
                 {size}px
                 {settings.fontSize === size && (
@@ -163,9 +153,7 @@ export const FormattingToolbar = ({ settings, onSettingsChange }: FormattingTool
           variant="ghost"
           size="sm"
           onClick={() => handleFontSizeChange(true)}
-          className={`h-6 w-6 p-0 ${
-            isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'
-          }`}
+          className={`h-6 w-6 p-0 hover:bg-gray-100`}
           disabled={settings.fontSize >= 24}
         >
           <Plus className="h-2 w-2" />
@@ -178,9 +166,7 @@ export const FormattingToolbar = ({ settings, onSettingsChange }: FormattingTool
           <Button 
             variant="ghost" 
             size="sm" 
-            className={`h-6 w-6 p-0 relative ${
-              isDarkMode ? 'hover:bg-gray-700' : 'hover:bg-gray-100'
-            }`}
+            className={`h-6 w-6 p-0 relative hover:bg-gray-100`}
           >
             <Type className="h-3 w-3" style={{ color: settings.textColor }} />
             <div 
@@ -190,16 +176,12 @@ export const FormattingToolbar = ({ settings, onSettingsChange }: FormattingTool
           </Button>
         </PopoverTrigger>
         <PopoverContent 
-          className={`w-64 p-3 ${
-            isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white border-gray-200'
-          }`}
+          className={`w-64 p-3 bg-white border-gray-200`}
           side="bottom"
           align="end"
         >
           <div className="space-y-3">
-            <div className={`text-sm font-medium ${
-              isDarkMode ? 'text-gray-300' : 'text-gray-700'
-            }`}>
+            <div className={`text-sm font-medium text-gray-700`}>
               Text Color
             </div>
             
@@ -215,7 +197,7 @@ export const FormattingToolbar = ({ settings, onSettingsChange }: FormattingTool
                   className={`w-8 h-8 rounded-full border-2 transition-all ${
                     settings.textColor === color 
                       ? 'border-blue-500 scale-110' 
-                      : (isDarkMode ? 'border-gray-600 hover:border-gray-500' : 'border-gray-300 hover:border-gray-400')
+                      : 'border-gray-300 hover:border-gray-400'
                   }`}
                   style={{ backgroundColor: color }}
                   title={color}
@@ -236,11 +218,7 @@ export const FormattingToolbar = ({ settings, onSettingsChange }: FormattingTool
                   type="text"
                   value={settings.textColor}
                   onChange={(e) => onSettingsChange("textColor", e.target.value)}
-                  className={`w-full px-2 py-1 text-xs border rounded ${
-                    isDarkMode 
-                      ? 'bg-gray-700 border-gray-600 text-gray-300' 
-                      : 'bg-white border-gray-300 text-gray-700'
-                  }`}
+                  className={`w-full px-2 py-1 text-xs border rounded bg-white border-gray-300 text-gray-700`}
                   placeholder="#000000"
                 />
               </div>

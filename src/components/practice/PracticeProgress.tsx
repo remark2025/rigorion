@@ -102,7 +102,7 @@ const PracticeProgress = ({
   };
 
   return (
-    <div className={`sticky top-[56px] z-40 px-4 py-3 border-b transition-colors duration-300 ${
+    <div className={`fixed top-[56px] left-0 right-0 z-40 px-4 py-4 border-b transition-colors duration-300 ${
       isDarkMode ? 'bg-gray-900 border-green-500/30' : 'bg-white border-gray-200'
     }`}>
       {/* Main layout with balanced widths for true centering */}
@@ -122,7 +122,7 @@ const PracticeProgress = ({
         </div>
 
         {/* Right side: Progress bar and related details - larger fixed width */}
-        <div className="flex flex-col items-end gap-2 w-[720px]">
+        <div className="flex items-center justify-end w-[720px]">
           {/* Progress bar with target and timer inline */}
           <div className="flex items-center gap-3 w-full">
             {/* Progress bar - 2x longer and thinner */}
