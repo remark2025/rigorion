@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Search, ToggleLeft, ToggleRight, Check, X, Bot } from "lucide-react";
+import { Search, Check, X, Bot, Lightbulb, Flag } from "lucide-react";
 import { Question } from "@/types/QuestionInterface";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useTheme } from "@/contexts/ThemeContext";
 import { analyzeWithAIML } from "@/services/aimlApi";
+import HintDialog from "./HintDialog";
 
 interface PracticeDisplayProps {
   currentQuestion: Question | null;
@@ -54,8 +55,6 @@ const PracticeDisplay = ({
   const [showGoToInput, setShowGoToInput] = useState(false);
   const [targetQuestion, setTargetQuestion] = useState('');
   const [inputError, setInputError] = useState('');
-  const [isMultipleChoice, setIsMultipleChoice] = useState(true);
-  const [fillInAnswer, setFillInAnswer] = useState('');
   const [writingAnswer, setWritingAnswer] = useState('');
   const [aiEvaluation, setAiEvaluation] = useState('');
   const [isEvaluating, setIsEvaluating] = useState(false);
@@ -108,10 +107,6 @@ const PracticeDisplay = ({
     if (onJumpTo) onJumpTo(questionNumber - 1);
   };
 
-  const handleSubmitFillIn = () => {
-    checkAnswer(fillInAnswer);
-    setFillInAnswer('');
-  };
 
   const handleAIEvaluation = async () => {
     if (!writingAnswer.trim()) return;
@@ -144,14 +139,6 @@ Keep the evaluation constructive and educational.`;
     }
   };
 
-  const toggleQuestionType = () => {
-    if (!isSATWriting) {
-      setIsMultipleChoice(!isMultipleChoice);
-      setFillInAnswer('');
-      setLocalSelectedAnswer(null);
-      setLocalIsCorrect(null);
-    }
-  };
 
   // Helper function to get graph URL from the graph field
   const getGraphUrl = (question: Question) => {
@@ -271,12 +258,21 @@ Keep the evaluation constructive and educational.`;
           }`} style={{ backgroundColor: isDarkMode ? undefined : boardColor }}>
           
           {/* Question Number Header */}
-          <div className="mb-4">
+          <div className="mb-4 flex items-center" style={{ gap: '160px' }}>
             <h2 className={`text-xl font-semibold ${
               isDarkMode ? 'text-green-400' : 'text-blue-600'
             }`}>
               Question {currentQuestion.number}
             </h2>
+            <div className="flex items-center gap-1">
+              <HintDialog hint={currentQuestion.hint} currentQuestionIndex={currentQuestionIndex} />
+              <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full">
+                <Flag className="h-3 w-3 text-green-500" />
+              </Button>
+              <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full">
+                <Flag className="h-3 w-3 text-red-500" />
+              </Button>
+            </div>
           </div>
           
           {/* Question Content */}
@@ -356,26 +352,8 @@ Keep the evaluation constructive and educational.`;
             ) : (
               /* Regular Question Mode */
               <div className="space-y-4">
-                {/* Question Type Toggle */}
-                <div className="flex items-center gap-3">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={toggleQuestionType}
-                    className={`flex items-center gap-2 transition-colors ${
-                      isDarkMode 
-                        ? 'border-green-500/30 text-green-400 hover:bg-gray-800' 
-                        : 'border-gray-300 text-gray-700 hover:bg-gray-50'
-                    }`}
-                  >
-                    {isMultipleChoice ? <ToggleLeft className="h-4 w-4" /> : <ToggleRight className="h-4 w-4" />}
-                    {isMultipleChoice ? 'Multiple Choice' : 'Fill in the Blank'}
-                  </Button>
-                </div>
-
                 {/* Multiple Choice - Responsive Grid */}
-                {isMultipleChoice ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mt-8 max-w-2xl">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mt-8 max-w-2xl">
                     {currentQuestion.choices?.map((choice, index) => {
                       const choiceKey = String.fromCharCode(65 + index);
                       const isSelected = selectedAnswer === choiceKey;
@@ -412,7 +390,7 @@ Keep the evaluation constructive and educational.`;
                             fontFamily: getFontFamily(),
                             fontSize: '12px',
                             fontWeight: '500',
-                            color: isDarkMode ? '#ffffff' : undefined
+                            color: !selectedAnswer ? (isDarkMode ? '#ffffff' : colorSettings.content) : undefined
                           }}
                         >
                           <div className="flex items-center justify-between w-full">
@@ -439,34 +417,6 @@ Keep the evaluation constructive and educational.`;
                       );
                     })}
                   </div>
-                ) : (
-                  /* Fill in the Blank */
-                  <div className="flex gap-3">
-                    <Input
-                      value={fillInAnswer}
-                      onChange={(e) => setFillInAnswer(e.target.value)}
-                      placeholder="Enter your answer..."
-                      className={`flex-1 transition-colors ${
-                        isDarkMode 
-                          ? 'bg-gray-800 border-green-500/30 text-green-400 placeholder-green-600' 
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
-                      }`}
-                      style={contentTextStyle}
-                      onKeyPress={(e) => e.key === 'Enter' && handleSubmitFillIn()}
-                    />
-                    <Button 
-                      onClick={handleSubmitFillIn}
-                      disabled={!fillInAnswer.trim()}
-                      className={`transition-colors ${
-                        isDarkMode 
-                          ? 'bg-green-600 hover:bg-green-700 text-white border-green-500/30' 
-                          : 'bg-blue-600 hover:bg-blue-700 text-white'
-                      }`}
-                    >
-                      Submit
-                    </Button>
-                  </div>
-                )}
 
               </div>
             )}
@@ -561,12 +511,21 @@ Keep the evaluation constructive and educational.`;
               isDarkMode ? 'bg-gray-900' : 'bg-white'
             }`} style={{ backgroundColor: isDarkMode ? undefined : boardColor }}>
               
-              <div className="mb-4">
+              <div className="mb-4 flex items-center" style={{ gap: '160px' }}>
                 <h2 className={`text-xl font-semibold ${
                   isDarkMode ? 'text-green-400' : 'text-blue-600'
                 }`}>
                   Question {currentQuestion.number}
                 </h2>
+                <div className="flex items-center gap-1">
+                  <HintDialog hint={currentQuestion.hint} currentQuestionIndex={currentQuestionIndex} />
+                  <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full">
+                    <Flag className="h-3 w-3 text-green-500" />
+                  </Button>
+                  <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full">
+                    <Flag className="h-3 w-3 text-red-500" />
+                  </Button>
+                </div>
               </div>
               
               <div className="space-y-4 mb-6">
@@ -636,24 +595,7 @@ Keep the evaluation constructive and educational.`;
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    <div className="flex items-center gap-3">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={toggleQuestionType}
-                        className={`flex items-center gap-2 transition-colors ${
-                          isDarkMode 
-                            ? 'border-green-500/30 text-green-400 hover:bg-gray-800' 
-                            : 'border-gray-300 text-gray-700 hover:bg-gray-50'
-                        }`}
-                      >
-                        {isMultipleChoice ? <ToggleLeft className="h-4 w-4" /> : <ToggleRight className="h-4 w-4" />}
-                        {isMultipleChoice ? 'Multiple Choice' : 'Fill in the Blank'}
-                      </Button>
-                    </div>
-
-                    {isMultipleChoice ? (
-                      <div className="grid grid-cols-2 gap-4 mt-6">
+                    <div className="grid grid-cols-2 gap-4 mt-6">
                         {currentQuestion.choices?.map((choice, index) => {
                           const choiceKey = String.fromCharCode(65 + index);
                           const isSelected = selectedAnswer === choiceKey;
@@ -690,7 +632,7 @@ Keep the evaluation constructive and educational.`;
                                 fontFamily: getFontFamily(),
                                 fontSize: '12px',
                                 fontWeight: '500',
-                                color: isDarkMode ? '#ffffff' : undefined
+                                color: !selectedAnswer ? (isDarkMode ? '#ffffff' : colorSettings.content) : undefined
                               }}
                             >
                               <div className="flex items-center justify-between w-full">
@@ -717,33 +659,6 @@ Keep the evaluation constructive and educational.`;
                           );
                         })}
                       </div>
-                    ) : (
-                      <div className="flex gap-3">
-                        <Input
-                          value={fillInAnswer}
-                          onChange={(e) => setFillInAnswer(e.target.value)}
-                          placeholder="Enter your answer..."
-                          className={`flex-1 transition-colors ${
-                            isDarkMode 
-                              ? 'bg-gray-800 border-green-500/30 text-green-400 placeholder-green-600' 
-                              : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
-                          }`}
-                          style={contentTextStyle}
-                          onKeyPress={(e) => e.key === 'Enter' && handleSubmitFillIn()}
-                        />
-                        <Button 
-                          onClick={handleSubmitFillIn}
-                          disabled={!fillInAnswer.trim()}
-                          className={`transition-colors ${
-                            isDarkMode 
-                              ? 'bg-green-600 hover:bg-green-700 text-white border-green-500/30' 
-                              : 'bg-blue-600 hover:bg-blue-700 text-white'
-                          }`}
-                        >
-                          Submit
-                        </Button>
-                      </div>
-                    )}
 
                   </div>
                 )}
@@ -822,17 +737,26 @@ Keep the evaluation constructive and educational.`;
         </div>
 
         {/* Small Screens: Vertical Stack with Graph Between Question and Choices */}
-        <div className="block md:hidden space-y-4">
+        <div className="block md:hidden space-y-3">
           {/* Question Section */}
-          <div className={`rounded-xl p-6 transition-colors ${
+          <div className={`rounded-lg p-4 transition-colors ${
             isDarkMode ? 'bg-gray-900' : 'bg-white'
           }`} style={{ backgroundColor: isDarkMode ? undefined : boardColor }}>
-            <div className="mb-4">
+            <div className="mb-4 flex items-center" style={{ gap: '160px' }}>
               <h2 className={`text-xl font-semibold ${
                 isDarkMode ? 'text-green-400' : 'text-blue-600'
               }`}>
                 Question {currentQuestion.number}
               </h2>
+              <div className="flex items-center gap-1">
+                <HintDialog hint={currentQuestion.hint} currentQuestionIndex={currentQuestionIndex} />
+                <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full">
+                  <Flag className="h-3 w-3 text-green-500" />
+                </Button>
+                <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full">
+                  <Flag className="h-3 w-3 text-red-500" />
+                </Button>
+              </div>
             </div>
             
             <div className="space-y-4">
@@ -928,25 +852,8 @@ Keep the evaluation constructive and educational.`;
                 </div>
               ) : (
                 <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={toggleQuestionType}
-                      className={`flex items-center gap-2 transition-colors ${
-                        isDarkMode 
-                          ? 'border-green-500/30 text-green-400 hover:bg-gray-800' 
-                          : 'border-gray-300 text-gray-700 hover:bg-gray-50'
-                      }`}
-                    >
-                      {isMultipleChoice ? <ToggleLeft className="h-4 w-4" /> : <ToggleRight className="h-4 w-4" />}
-                      {isMultipleChoice ? 'Multiple Choice' : 'Fill in the Blank'}
-                    </Button>
-                  </div>
-
                   {/* Single Column Multiple Choice for Mobile */}
-                  {isMultipleChoice ? (
-                    <div className="grid grid-cols-1 gap-3 mt-6">
+                  <div className="grid grid-cols-1 gap-3 mt-6">
                       {currentQuestion.choices?.map((choice, index) => {
                         const choiceKey = String.fromCharCode(65 + index);
                         const isSelected = selectedAnswer === choiceKey;
@@ -983,7 +890,7 @@ Keep the evaluation constructive and educational.`;
                               fontFamily: getFontFamily(),
                               fontSize: '13px',
                               fontWeight: '500',
-                              color: isDarkMode ? '#ffffff' : undefined
+                              color: !selectedAnswer ? (isDarkMode ? '#ffffff' : colorSettings.content) : undefined
                             }}
                           >
                             <div className="flex items-center justify-between w-full">
@@ -1010,33 +917,6 @@ Keep the evaluation constructive and educational.`;
                         );
                       })}
                     </div>
-                  ) : (
-                    <div className="flex gap-3">
-                      <Input
-                        value={fillInAnswer}
-                        onChange={(e) => setFillInAnswer(e.target.value)}
-                        placeholder="Enter your answer..."
-                        className={`flex-1 transition-colors ${
-                          isDarkMode 
-                            ? 'bg-gray-800 border-green-500/30 text-green-400 placeholder-green-600' 
-                            : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
-                        }`}
-                        style={contentTextStyle}
-                        onKeyPress={(e) => e.key === 'Enter' && handleSubmitFillIn()}
-                      />
-                      <Button 
-                        onClick={handleSubmitFillIn}
-                        disabled={!fillInAnswer.trim()}
-                        className={`transition-colors ${
-                          isDarkMode 
-                            ? 'bg-green-600 hover:bg-green-700 text-white border-green-500/30' 
-                            : 'bg-blue-600 hover:bg-blue-700 text-white'
-                        }`}
-                      >
-                        Submit
-                      </Button>
-                    </div>
-                  )}
 
                 </div>
               )}

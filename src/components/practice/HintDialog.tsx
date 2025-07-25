@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Lamp } from "lucide-react";
+import { Lightbulb } from "lucide-react";
 
 interface HintDialogProps {
   hint?: string;
@@ -31,7 +31,7 @@ const HintDialog = ({ hint = "Try breaking down the problem into smaller parts."
           size="sm"
           className="p-1 h-6 rounded-full"
         >
-          <Lamp className={`h-4 w-4 ${isHintUsed ? 'text-amber-500' : 'text-[#1EAEDB]'}`} />
+          <Lightbulb className="h-4 w-4 text-orange-500" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="sm:max-w-[425px] bg-white animate-in fade-in slide-in-from-top-1 duration-300">

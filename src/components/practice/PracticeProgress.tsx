@@ -1,10 +1,9 @@
-import { Clock, Flag, Settings, Lightbulb } from "lucide-react";
+import { Clock, Settings, Lightbulb } from "lucide-react";
 import CountdownTimer from "./CountDownTimer";
-import HintDialog from "./HintDialog";
 import { Button } from "@/components/ui/button";
 import PracticeTabSelector from "./PracticeTabSelector";
 import { useState } from "react";
-import SettingsDialog from "./SettingsDialog";
+import FormattingToolbar from "./FormattingToolbar";
 import { useTheme } from "@/contexts/ThemeContext";
 
 interface PracticeProgressProps {
@@ -20,7 +19,6 @@ interface PracticeProgressProps {
   activeTab: "problem" | "solution" | "quote";
   setActiveTab: (tab: "problem" | "solution" | "quote") => void;
   currentQuestionIndex: number;
-  currentQuestionHint?: string;
   objective?: {
     type: "questions" | "time";
     value: number;
@@ -50,7 +48,6 @@ const PracticeProgress = ({
   activeTab,
   setActiveTab,
   currentQuestionIndex,
-  currentQuestionHint = "Try breaking down the problem into smaller parts.",
   objective = null,
   progress = 0,
   onAutoNext,
@@ -64,7 +61,6 @@ const PracticeProgress = ({
   onSettingsChange
 }: PracticeProgressProps) => {
   const { isDarkMode } = useTheme();
-  const [showSettings, setShowSettings] = useState(false);
 
   // Updated: Progress calculation is now relative to the objective (if set), or totalQuestions.
   const calculateProgress = () => {
@@ -112,26 +108,12 @@ const PracticeProgress = ({
       {/* Main layout with balanced widths for true centering */}
       <div className="flex items-start w-full">
         {/* Left corner: Silver icons - fixed width */}
-        <div className="flex items-center gap-2 w-24">
-          {/* Hint button */}
-          <HintDialog hint={currentQuestionHint} currentQuestionIndex={currentQuestionIndex} />
-          
-          {/* Settings button */}
-          <SettingsDialog 
-            open={showSettings} 
-            onOpenChange={setShowSettings} 
-            settings={settings} 
-            onApply={handleSettingsChange}
-          >
-            <Button variant="ghost" size="sm" className="p-1 h-6 rounded-full border-none">
-              <Settings className="h-4 w-4 text-gray-400" />
-            </Button>
-          </SettingsDialog>
-          
-          {/* Flag button */}
-          <Button variant="ghost" size="sm" className="p-1 h-6 rounded-full">
-            <Flag className="h-4 w-4 text-gray-400" />
-          </Button>
+        <div className="flex items-center gap-1">
+          {/* Compact Formatting Toolbar */}
+          <FormattingToolbar 
+            settings={settings}
+            onSettingsChange={onSettingsChange}
+          />
         </div>
 
         {/* Center: Tab menu truly centered */}
@@ -206,25 +188,9 @@ const PracticeProgress = ({
             </div>
           </div>
           
-          {/* Legends below progress bar */}
-          <div className="flex items-center gap-3">
-            <div className="flex gap-2 text-xs">
-              <div className="flex items-center gap-1">
-                <div className="w-2 h-2 bg-green-500 rounded-full" />
-                <span className={`font-thin ${isDarkMode ? 'text-green-400' : 'text-gray-700'}`}>Correct</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <div className="w-2 h-2 bg-red-500 rounded-full" />
-                <span className={`font-thin ${isDarkMode ? 'text-green-400' : 'text-gray-700'}`}>Incorrect</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <div className={`w-2 h-2 rounded-full ${isDarkMode ? 'bg-gray-700' : 'bg-gray-300'}`} />
-                <span className={`font-thin ${isDarkMode ? 'text-green-400' : 'text-gray-700'}`}>Unattempted</span>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
+
 
       {/* Shining animation for progress bar */}
       <style>

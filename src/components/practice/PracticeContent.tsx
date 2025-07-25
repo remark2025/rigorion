@@ -564,7 +564,6 @@ export default function PracticeContent({
         activeTab={activeTab} 
         setActiveTab={setActiveTab} 
         currentQuestionIndex={currentQuestionIndex} 
-        currentQuestionHint={currentQuestion?.hint} 
         objective={objective} 
         progress={progress} 
         onAutoNext={nextQuestion}
@@ -573,13 +572,10 @@ export default function PracticeContent({
         onSettingsChange={onSettingsChange}
       />
 
-      <Collapsible open={sidebarOpen}>
-        <CollapsibleContent className="absolute left-0 top-[56px] z-50 transform transition-all duration-300 ease-in-out">
-          {sidebarOpen && <Sidebar onClose={() => setSidebarOpen(false)} />}
-        </CollapsibleContent>
-      </Collapsible>
+      {/* Sidebar - Mobile and Desktop */}
+      {sidebarOpen && <Sidebar onClose={() => setSidebarOpen(false)} />}
 
-      <div className="flex max-w-full mx-auto w-full flex-grow py-2 sm:py-3 px-2 sm:px-0 pb-24">
+      <div className="flex max-w-full mx-auto w-full flex-grow py-1 sm:py-2 md:py-3 px-1 sm:px-2 md:px-4 lg:px-0 pb-20 sm:pb-24 pt-2 sm:pt-4">
         {currentQuestion ? (
           <PracticeDisplay 
             currentQuestion={currentQuestion} 
