@@ -102,11 +102,11 @@ const PracticeProgress = ({
   };
 
   return (
-    <div className={`fixed top-[56px] left-0 right-0 z-40 px-4 py-4 border-b transition-colors duration-300 ${
+    <div className={`fixed top-[56px] left-0 right-0 z-40 px-2 sm:px-4 py-2 sm:py-4 border-b transition-colors duration-300 ${
       isDarkMode ? 'bg-gray-900 border-green-500/30' : 'bg-white border-gray-200'
     }`}>
       {/* Main layout with balanced widths for true centering */}
-      <div className="flex items-start w-full">
+      <div className="flex items-center w-full">
         {/* Left corner: Silver icons - fixed width */}
         <div className="flex items-center gap-1">
           {/* Compact Formatting Toolbar */}
@@ -116,18 +116,18 @@ const PracticeProgress = ({
           />
         </div>
 
-        {/* Center: Tab menu truly centered */}
+        {/* Center: Tab menu truly centered - always visible */}
         <div className="flex-1 flex items-center justify-center">
           <PracticeTabSelector activeTab={activeTab} setActiveTab={setActiveTab} className="h-8 min-h-0" />
         </div>
 
-        {/* Right side: Progress bar and related details - larger fixed width */}
-        <div className="flex items-center justify-end w-[720px]">
+        {/* Right side: Progress bar and related details - responsive width */}
+        <div className="flex items-center justify-end w-full sm:w-[520px] lg:w-[720px]">
           {/* Progress bar with target and timer inline */}
-          <div className="flex items-center gap-3 w-full">
+          <div className="flex items-center gap-1 sm:gap-2 lg:gap-3 w-full">
             {/* Progress bar - 2x longer and thinner */}
             <div className="flex-1">
-              <div className={`relative h-2 rounded-full overflow-hidden progress-bar ${
+              <div className={`relative h-1.5 sm:h-2 rounded-full overflow-hidden progress-bar ${
                 isDarkMode ? 'bg-gray-800 border border-green-500/20' : 'bg-gray-100'
               }`}>
               {/* Correct answers - green */}
@@ -161,7 +161,7 @@ const PracticeProgress = ({
             </div>
 
             {/* Target Progress on the right */}
-            <div className="flex items-center gap-1">
+            <div className="hidden sm:flex items-center gap-1">
               <span className={`font-thin text-xs ${
                 isDarkMode ? 'text-green-400' : 'text-blue-600'
               }`}>
@@ -171,7 +171,7 @@ const PracticeProgress = ({
             
             {/* Timer on the right */}
             <div className="flex items-center gap-1">
-              <Clock className={`h-4 w-4 ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`} />
+              <Clock className={`h-3 w-3 sm:h-4 sm:w-4 ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`} />
               {timerDuration > 0 ? (
                 <CountdownTimer
                   durationInSeconds={timerDuration}

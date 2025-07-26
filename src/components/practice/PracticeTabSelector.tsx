@@ -20,7 +20,7 @@ const PracticeTabSelector = ({ activeTab, setActiveTab, className = "" }: Practi
         <Button
           variant="ghost"
           size="sm"
-          className={`px-3 py-1 rounded-full transition-all h-7 ${activeTab === "problem" 
+          className={`px-4 py-1 rounded-full transition-all h-7 min-w-[80px] ${activeTab === "problem" 
             ? isDarkMode 
               ? "text-green-400 bg-gray-800" 
               : "text-blue-600 bg-blue-50"
@@ -37,7 +37,7 @@ const PracticeTabSelector = ({ activeTab, setActiveTab, className = "" }: Practi
         <Button
           variant="ghost"
           size="sm"
-          className={`px-3 py-1 rounded-full transition-all h-7 ${activeTab === "solution" 
+          className={`px-4 py-1 rounded-full transition-all h-7 min-w-[80px] ${activeTab === "solution" 
             ? isDarkMode 
               ? "text-green-400 bg-gray-800" 
               : "text-blue-600 bg-blue-50"
@@ -54,7 +54,7 @@ const PracticeTabSelector = ({ activeTab, setActiveTab, className = "" }: Practi
         <Button
           variant="ghost"
           size="sm"
-          className={`px-3 py-1 rounded-full transition-all h-7 ${activeTab === "quote" 
+          className={`px-4 py-1 rounded-full transition-all h-7 min-w-[80px] ${activeTab === "quote" 
             ? isDarkMode 
               ? "text-green-400 bg-gray-800" 
               : "text-blue-600 bg-blue-50"

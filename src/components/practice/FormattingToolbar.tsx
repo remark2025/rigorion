@@ -4,7 +4,8 @@ import {
   Type, 
   Minus, 
   Plus, 
-  ChevronDown
+  ChevronDown,
+  Palette
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -51,6 +52,7 @@ interface FormattingToolbarProps {
 export const FormattingToolbar = ({ settings, onSettingsChange }: FormattingToolbarProps) => {
   const { isDarkMode } = useTheme();
   const [colorPickerOpen, setColorPickerOpen] = useState(false);
+  const [toolbarOpen, setToolbarOpen] = useState(false);
 
   const handleFontSizeChange = (increment: boolean) => {
     const currentSize = settings.fontSize;
@@ -66,134 +68,132 @@ export const FormattingToolbar = ({ settings, onSettingsChange }: FormattingTool
   };
 
   return (
-    <div className={`flex items-center gap-1 px-2 py-1 rounded-full transition-colors ${
-      isDarkMode 
-        ? 'bg-white' 
-        : 'bg-white'
-    }`}>
-      
-      {/* Font Family Dropdown */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className={`h-6 px-2 text-xs font-medium hover:bg-gray-100 text-gray-700`}
-          >
-            <Type className="h-3 w-3 mr-1" />
-            <span className="text-xs">{getCurrentFontName().slice(0, 4)}</span>
-            <ChevronDown className="h-2 w-2 ml-1" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className={`w-48 bg-white border-gray-200`}>
-          {FONT_OPTIONS.map((font) => (
-            <DropdownMenuItem
-              key={font.value}
-              onClick={() => onSettingsChange("fontFamily", font.value)}
-              className={`cursor-pointer ${
-                settings.fontFamily === font.value 
-                  ? 'bg-gray-100' 
-                  : ''
-              } hover:bg-gray-50 text-gray-700`}
-            >
-              <span style={{ fontFamily: font.value === 'inter' ? 'Inter' : font.value }}>
-                {font.label}
-              </span>
-              {settings.fontFamily === font.value && (
-                <span className="ml-auto text-xs">✓</span>
-              )}
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
-
-      {/* Font Size Controls */}
-      <div className="flex items-center border rounded-full">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => handleFontSizeChange(false)}
-          className={`h-6 w-6 p-0 border-r hover:bg-gray-100 border-gray-200`}
-          disabled={settings.fontSize <= 10}
+    <Popover open={toolbarOpen} onOpenChange={setToolbarOpen}>
+      <PopoverTrigger asChild>
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="h-8 w-8 p-0 bg-white rounded-full hover:bg-gray-100"
         >
-          <Minus className="h-2 w-2" />
+          <Palette className="h-4 w-4 text-purple-500" />
         </Button>
-        
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className={`h-6 px-2 text-xs font-medium border-r min-w-8 hover:bg-gray-100 border-gray-200 text-gray-700`}
-            >
-              {settings.fontSize}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className={`bg-white border-gray-200`}>
-            {FONT_SIZES.map((size) => (
-              <DropdownMenuItem
-                key={size}
-                onClick={() => onSettingsChange("fontSize", size)}
-                className={`cursor-pointer text-center ${
-                  settings.fontSize === size 
-                    ? 'bg-gray-100' 
-                    : ''
-                } hover:bg-gray-50 text-gray-700`}
+      </PopoverTrigger>
+      <PopoverContent 
+        className="w-80 p-4 bg-white border-gray-200"
+        side="bottom"
+        align="start"
+      >
+        <div className="space-y-4">
+          <div className="text-sm font-medium text-gray-700 mb-3">
+            Text Formatting
+          </div>
+          
+          {/* Font Family Section */}
+          <div className="space-y-2">
+            <label className="text-xs text-gray-600">Font Family</label>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="w-full justify-between h-8 text-xs"
+                >
+                  <div className="flex items-center gap-2">
+                    <Type className="h-3 w-3" />
+                    {getCurrentFontName()}
+                  </div>
+                  <ChevronDown className="h-3 w-3" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-48 bg-white border-gray-200">
+                {FONT_OPTIONS.map((font) => (
+                  <DropdownMenuItem
+                    key={font.value}
+                    onClick={() => onSettingsChange("fontFamily", font.value)}
+                    className={`cursor-pointer ${
+                      settings.fontFamily === font.value 
+                        ? 'bg-gray-100' 
+                        : ''
+                    } hover:bg-gray-50 text-gray-700`}
+                  >
+                    <span style={{ fontFamily: font.value === 'inter' ? 'Inter' : font.value }}>
+                      {font.label}
+                    </span>
+                    {settings.fontFamily === font.value && (
+                      <span className="ml-auto text-xs">✓</span>
+                    )}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+
+          {/* Font Size Section */}
+          <div className="space-y-2">
+            <label className="text-xs text-gray-600">Font Size</label>
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleFontSizeChange(false)}
+                className="h-8 w-8 p-0"
+                disabled={settings.fontSize <= 10}
               >
-                {size}px
-                {settings.fontSize === size && (
-                  <span className="ml-auto text-xs">✓</span>
-                )}
-              </DropdownMenuItem>
-            ))}
-          </DropdownMenuContent>
-        </DropdownMenu>
+                <Minus className="h-3 w-3" />
+              </Button>
+              
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="flex-1 h-8 text-xs"
+                  >
+                    {settings.fontSize}px
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent className="bg-white border-gray-200">
+                  {FONT_SIZES.map((size) => (
+                    <DropdownMenuItem
+                      key={size}
+                      onClick={() => onSettingsChange("fontSize", size)}
+                      className={`cursor-pointer text-center ${
+                        settings.fontSize === size 
+                          ? 'bg-gray-100' 
+                          : ''
+                      } hover:bg-gray-50 text-gray-700`}
+                    >
+                      {size}px
+                      {settings.fontSize === size && (
+                        <span className="ml-auto text-xs">✓</span>
+                      )}
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
 
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => handleFontSizeChange(true)}
-          className={`h-6 w-6 p-0 hover:bg-gray-100`}
-          disabled={settings.fontSize >= 24}
-        >
-          <Plus className="h-2 w-2" />
-        </Button>
-      </div>
-
-      {/* Color Picker */}
-      <Popover open={colorPickerOpen} onOpenChange={setColorPickerOpen}>
-        <PopoverTrigger asChild>
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className={`h-6 w-6 p-0 relative hover:bg-gray-100`}
-          >
-            <Type className="h-3 w-3" style={{ color: settings.textColor }} />
-            <div 
-              className="absolute bottom-0.5 left-0.5 right-0.5 h-0.5 rounded"
-              style={{ backgroundColor: settings.textColor }}
-            />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent 
-          className={`w-64 p-3 bg-white border-gray-200`}
-          side="bottom"
-          align="end"
-        >
-          <div className="space-y-3">
-            <div className={`text-sm font-medium text-gray-700`}>
-              Text Color
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleFontSizeChange(true)}
+                className="h-8 w-8 p-0"
+                disabled={settings.fontSize >= 24}
+              >
+                <Plus className="h-3 w-3" />
+              </Button>
             </div>
+          </div>
+
+          {/* Text Color Section */}
+          <div className="space-y-2">
+            <label className="text-xs text-gray-600">Text Color</label>
             
             {/* Color Presets */}
             <div className="grid grid-cols-6 gap-2">
               {COLOR_PRESETS.map((color) => (
                 <button
                   key={color}
-                  onClick={() => {
-                    onSettingsChange("textColor", color);
-                    setColorPickerOpen(false);
-                  }}
+                  onClick={() => onSettingsChange("textColor", color)}
                   className={`w-8 h-8 rounded-full border-2 transition-all ${
                     settings.textColor === color 
                       ? 'border-blue-500 scale-110' 
@@ -218,16 +218,15 @@ export const FormattingToolbar = ({ settings, onSettingsChange }: FormattingTool
                   type="text"
                   value={settings.textColor}
                   onChange={(e) => onSettingsChange("textColor", e.target.value)}
-                  className={`w-full px-2 py-1 text-xs border rounded bg-white border-gray-300 text-gray-700`}
+                  className="w-full px-2 py-1 text-xs border rounded bg-white border-gray-300 text-gray-700"
                   placeholder="#000000"
                 />
               </div>
             </div>
           </div>
-        </PopoverContent>
-      </Popover>
-
-    </div>
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 };
 
