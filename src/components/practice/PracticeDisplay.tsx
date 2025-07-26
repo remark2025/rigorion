@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Search, Check, X, Bot, Lightbulb, Flag } from "lucide-react";
+import { Search, Check, X, Bot, Lightbulb, Flag, Calculator, CalculatorOff } from "lucide-react";
 import { Question } from "@/types/QuestionInterface";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -272,6 +272,14 @@ Keep the evaluation constructive and educational.`;
               <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full">
                 <Flag className="h-3 w-3 text-red-500" />
               </Button>
+              {/* Calculator Icon */}
+              <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full">
+                {currentQuestion.calculatorAllowed ? (
+                  <Calculator className="h-3 w-3 text-blue-500" />
+                ) : (
+                  <CalculatorOff className="h-3 w-3 text-gray-400" />
+                )}
+              </Button>
             </div>
           </div>
           
@@ -525,6 +533,14 @@ Keep the evaluation constructive and educational.`;
                   <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full">
                     <Flag className="h-3 w-3 text-red-500" />
                   </Button>
+                  {/* Calculator Icon */}
+                  <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full">
+                    {currentQuestion.calculatorAllowed ? (
+                      <Calculator className="h-3 w-3 text-blue-500" />
+                    ) : (
+                      <CalculatorOff className="h-3 w-3 text-gray-400" />
+                    )}
+                  </Button>
                 </div>
               </div>
               
@@ -755,6 +771,14 @@ Keep the evaluation constructive and educational.`;
                 </Button>
                 <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full">
                   <Flag className="h-3 w-3 text-red-500" />
+                </Button>
+                {/* Calculator Icon */}
+                <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full">
+                  {currentQuestion.calculatorAllowed ? (
+                    <Calculator className="h-3 w-3 text-blue-500" />
+                  ) : (
+                    <CalculatorOff className="h-3 w-3 text-gray-400" />
+                  )}
                 </Button>
               </div>
             </div>

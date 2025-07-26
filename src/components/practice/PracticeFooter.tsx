@@ -138,14 +138,14 @@ const PracticeFooter = ({
           <div className="flex items-center gap-3">
             {/* Previous Button */}
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={onPrevious}
               disabled={currentQuestionIndex === 0}
-              className={`flex items-center gap-2 transition-colors ${
+              className={`flex items-center gap-2 transition-colors rounded-full ${
                 isDarkMode 
-                  ? 'border-green-500/30 bg-gray-900 text-green-400 hover:bg-gray-800 disabled:bg-gray-900 disabled:text-green-600/50' 
-                  : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-400'
+                  ? 'bg-gray-900 text-green-400 hover:bg-gray-800 disabled:bg-gray-900 disabled:text-green-600/50' 
+                  : 'bg-white text-gray-700 hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-400'
               }`}
             >
               <ChevronLeft className="h-4 w-4" />
@@ -177,14 +177,14 @@ const PracticeFooter = ({
 
             {/* Next Button */}
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={onNext}
               disabled={currentQuestionIndex === totalQuestions - 1}
-              className={`flex items-center gap-2 transition-colors ${
+              className={`flex items-center gap-2 transition-colors rounded-full ${
                 isDarkMode 
-                  ? 'border-green-500/30 bg-gray-900 text-green-400 hover:bg-gray-800 disabled:bg-gray-900 disabled:text-green-600/50' 
-                  : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-400'
+                  ? 'bg-gray-900 text-green-400 hover:bg-gray-800 disabled:bg-gray-900 disabled:text-green-600/50' 
+                  : 'bg-white text-gray-700 hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-400'
               }`}
             >
               Next

@@ -25,6 +25,7 @@ export interface Question {
         source?: string;
     };
     hint?: string;
+    calculatorAllowed?: boolean;
 }
 
 export default interface QuestionInterface {} // Or remove if unnecessary
