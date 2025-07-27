@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Search, Check, X, Bot, Lightbulb, Flag, Calculator, CalculatorOff } from "lucide-react";
+import { Search, Check, X, Bot, Lightbulb, Flag, Calculator, FileText } from "lucide-react";
 import { Question } from "@/types/QuestionInterface";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -32,6 +32,8 @@ interface PracticeDisplayProps {
     formula: string;
   };
   activeTab: "problem" | "solution" | "quote";
+  mode?: "timer" | "level" | "manual" | "pomodoro" | "exam";
+  timerValue?: string; // Current timer display value
 }
 
 const PracticeDisplay = ({
@@ -48,6 +50,8 @@ const PracticeDisplay = ({
   boardColor,
   colorSettings,
   activeTab,
+  mode = "manual",
+  timerValue,
 }: PracticeDisplayProps) => {
   const { isDarkMode } = useTheme();
   const [localSelectedAnswer, setLocalSelectedAnswer] = useState<string | null>(null);
@@ -58,6 +62,17 @@ const PracticeDisplay = ({
   const [writingAnswer, setWritingAnswer] = useState('');
   const [aiEvaluation, setAiEvaluation] = useState('');
   const [isEvaluating, setIsEvaluating] = useState(false);
+  
+  // Interaction tracking
+  const [questionStartTime, setQuestionStartTime] = useState<number>(Date.now());
+  const [interactions, setInteractions] = useState<any[]>([]);
+  const [showInteractionLog, setShowInteractionLog] = useState(false);
+  const [sessionId] = useState<string>(`session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
+
+  // Reset timer when question changes
+  useEffect(() => {
+    setQuestionStartTime(Date.now());
+  }, [currentQuestionIndex]);
 
   const selectedAnswer = propSelectedAnswer !== undefined ? propSelectedAnswer : localSelectedAnswer;
   const isCorrect = propIsCorrect !== undefined ? propIsCorrect : localIsCorrect;
@@ -65,6 +80,41 @@ const PracticeDisplay = ({
   // Check if this is a SAT Writing module
   const isSATWriting = currentQuestion?.chapter?.toLowerCase().includes('writing') || 
                       currentQuestion?.module?.toLowerCase().includes('writing');
+
+  // Create interaction record (only for answered questions)
+  const createInteraction = (answer: string, isCorrectAnswer: boolean) => {
+    let timeSpent: number;
+    
+    // Use timer value in timer mode, per-question timing in other modes
+    if (mode === "timer" && timerValue) {
+      // Parse timer value (format: "MM:SS" or "HH:MM:SS")
+      const timeParts = timerValue.split(':').map(Number);
+      if (timeParts.length === 2) {
+        timeSpent = timeParts[0] * 60 + timeParts[1]; // MM:SS
+      } else if (timeParts.length === 3) {
+        timeSpent = timeParts[0] * 3600 + timeParts[1] * 60 + timeParts[2]; // HH:MM:SS
+      } else {
+        timeSpent = Math.round((Date.now() - questionStartTime) / 1000); // fallback
+      }
+    } else {
+      timeSpent = Math.round((Date.now() - questionStartTime) / 1000); // per-question timing
+    }
+    
+    const interaction = {
+      questionId: currentQuestion?.id,
+      questionNumber: currentQuestion?.number,
+      userAnswer: answer,
+      correctAnswer: currentQuestion?.correctAnswer,
+      isCorrect: isCorrectAnswer,
+      timeSpentSeconds: timeSpent,
+      timestamp: new Date().toISOString(),
+      sessionId: sessionId,
+      userId: "user_123", // This should come from auth context
+      practiceMode: mode,
+    };
+
+    return interaction;
+  };
 
   const localCheckAnswer = (answer: string) => {
     if (!currentQuestion) return;
@@ -85,7 +135,67 @@ const PracticeDisplay = ({
     setLocalIsCorrect(correct);
   };
 
-  const checkAnswer = propCheckAnswer || localCheckAnswer;
+  // Function to send interactions to edge function (placeholder for now)
+  const sendInteractionsToEdgeFunction = async () => {
+    if (interactions.length === 0) return;
+    
+    const payload = {
+      interactions: interactions,
+      sessionSummary: {
+        totalAnsweredQuestions: interactions.length,
+        sessionStartTime: interactions[0]?.timestamp,
+        sessionEndTime: new Date().toISOString(),
+        totalTimeSpent: interactions.reduce((sum, int) => sum + int.timeSpentSeconds, 0),
+        correctAnswers: interactions.filter(int => int.isCorrect).length,
+        incorrectAnswers: interactions.filter(int => !int.isCorrect).length,
+        accuracy: Math.round((interactions.filter(int => int.isCorrect).length / interactions.length) * 100),
+        averageTimePerQuestion: Math.round(interactions.reduce((sum, int) => sum + int.timeSpentSeconds, 0) / interactions.length),
+        sessionId: interactions[0]?.sessionId,
+        userId: interactions[0]?.userId
+      }
+    };
+    
+    console.log('📤 Payload to send to edge function:', JSON.stringify(payload, null, 2));
+    
+    // TODO: Implement actual edge function call
+    // try {
+    //   const response = await fetch('/api/edge-function-endpoint', {
+    //     method: 'POST',
+    //     headers: { 'Content-Type': 'application/json' },
+    //     body: JSON.stringify(payload)
+    //   });
+    //   console.log('✅ Successfully sent interactions to edge function');
+    // } catch (error) {
+    //   console.error('❌ Failed to send interactions:', error);
+    // }
+  };
+
+  // Wrapped checkAnswer to ensure interaction tracking
+  const checkAnswer = (answer: string) => {
+    // Always track the interaction locally
+    if (currentQuestion) {
+      const choiceIndex = answer.charCodeAt(0) - 65;
+      const selectedChoiceText = currentQuestion.choices?.[choiceIndex];
+      const correct = selectedChoiceText === currentQuestion.correctAnswer;
+      
+      // Create and store interaction
+      const interaction = createInteraction(answer, correct);
+      setInteractions(prev => {
+        const newInteractions = [...prev, interaction];
+        console.log('📊 Total interactions now:', newInteractions.length);
+        return newInteractions;
+      });
+      
+      console.log('✅ New Interaction Recorded:', JSON.stringify(interaction, null, 2));
+    }
+    
+    // Call the appropriate checkAnswer function
+    if (propCheckAnswer) {
+      propCheckAnswer(answer);
+    } else {
+      localCheckAnswer(answer);
+    }
+  };
 
   const nextQuestion = () => {
     if (onNext) onNext();
@@ -277,8 +387,20 @@ Keep the evaluation constructive and educational.`;
                 {currentQuestion.calculatorAllowed ? (
                   <Calculator className="h-3 w-3 text-blue-500" />
                 ) : (
-                  <CalculatorOff className="h-3 w-3 text-gray-400" />
+                  <div className="relative">
+                    <Calculator className="h-3 w-3 text-gray-400" />
+                    <X className="h-2 w-2 text-red-500 absolute -top-0.5 -right-0.5" />
+                  </div>
                 )}
+              </Button>
+              {/* Interactions Log Button */}
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="p-1 h-6 w-6 rounded-full"
+                onClick={() => setShowInteractionLog(!showInteractionLog)}
+              >
+                <FileText className="h-3 w-3 text-purple-500" />
               </Button>
             </div>
           </div>
@@ -538,8 +660,20 @@ Keep the evaluation constructive and educational.`;
                     {currentQuestion.calculatorAllowed ? (
                       <Calculator className="h-3 w-3 text-blue-500" />
                     ) : (
-                      <CalculatorOff className="h-3 w-3 text-gray-400" />
+                      <div className="relative">
+                        <Calculator className="h-3 w-3 text-gray-400" />
+                        <X className="h-2 w-2 text-red-500 absolute -top-0.5 -right-0.5" />
+                      </div>
                     )}
+                  </Button>
+                  {/* Interactions Log Button */}
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="p-1 h-6 w-6 rounded-full"
+                    onClick={() => setShowInteractionLog(!showInteractionLog)}
+                  >
+                    <FileText className="h-3 w-3 text-purple-500" />
                   </Button>
                 </div>
               </div>
@@ -777,8 +911,20 @@ Keep the evaluation constructive and educational.`;
                   {currentQuestion.calculatorAllowed ? (
                     <Calculator className="h-3 w-3 text-blue-500" />
                   ) : (
-                    <CalculatorOff className="h-3 w-3 text-gray-400" />
+                    <div className="relative">
+                      <Calculator className="h-3 w-3 text-gray-400" />
+                      <X className="h-2 w-2 text-red-500 absolute -top-0.5 -right-0.5" />
+                    </div>
                   )}
+                </Button>
+                {/* Interactions Log Button */}
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="p-1 h-6 w-6 rounded-full"
+                  onClick={() => setShowInteractionLog(!showInteractionLog)}
+                >
+                  <FileText className="h-3 w-3 text-purple-500" />
                 </Button>
               </div>
             </div>
@@ -995,6 +1141,85 @@ Keep the evaluation constructive and educational.`;
         </div>
 
       </div>
+
+      {/* Interactions Log Display */}
+      {showInteractionLog && (
+        <div className={`fixed top-20 right-4 w-96 max-h-96 overflow-y-auto z-50 p-4 rounded-lg shadow-lg border ${
+          isDarkMode ? 'bg-gray-800 border-gray-600' : 'bg-white border-gray-200'
+        }`}>
+          <div className="flex justify-between items-center mb-3">
+            <h3 className={`font-semibold ${isDarkMode ? 'text-green-400' : 'text-gray-800'}`}>
+              Interaction Log ({interactions.length})
+            </h3>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => setShowInteractionLog(false)}
+              className="p-1 h-6 w-6"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+          
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={sendInteractionsToEdgeFunction}
+            className="mb-3 w-full"
+          >
+            Send to Edge Function
+          </Button>
+
+          <div className="space-y-2">
+            {interactions.map((interaction, index) => (
+              <div key={index} className={`p-2 rounded text-xs ${
+                isDarkMode ? 'bg-gray-700' : 'bg-gray-50'
+              }`}>
+                <div className="flex justify-between">
+                  <span className="font-medium">Q{interaction.questionNumber}</span>
+                  <span className={interaction.isCorrect ? 'text-green-500' : 'text-red-500'}>
+                    {interaction.isCorrect ? '✓' : '✗'}
+                  </span>
+                </div>
+                <div className="text-gray-500">
+                  Answer: {interaction.userAnswer} | Time: {interaction.timeSpentSeconds}s
+                </div>
+                <div className="text-gray-400">
+                  {new Date(interaction.timestamp).toLocaleTimeString()}
+                </div>
+              </div>
+            ))}
+            
+            {interactions.length === 0 && (
+              <div className={`text-center py-4 text-sm ${
+                isDarkMode ? 'text-gray-400' : 'text-gray-500'
+              }`}>
+                No interactions recorded yet
+              </div>
+            )}
+          </div>
+
+          <div className={`mt-3 pt-3 border-t text-xs ${
+            isDarkMode ? 'border-gray-600 text-gray-400' : 'border-gray-200 text-gray-500'
+          }`}>
+            <strong>Simplified JSON Structure:</strong>
+            <pre className="mt-1 p-2 bg-gray-100 dark:bg-gray-900 rounded text-xs overflow-x-auto">
+{`{
+  "questionId": "q_123",
+  "questionNumber": 1,
+  "userAnswer": "B",
+  "correctAnswer": "A", 
+  "isCorrect": false,
+  "timeSpentSeconds": 45,
+  "timestamp": "2024-01-15T10:30:00Z",
+  "sessionId": "session_1234567890",
+  "userId": "user_123",
+  "practiceMode": "timer"
+}`}
+            </pre>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
