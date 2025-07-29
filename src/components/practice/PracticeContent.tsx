@@ -17,6 +17,7 @@ import ContentSection from "@/components/practice/ContentSection";
 import ModeDialog from "@/components/practice/ModeDialog";
 import ObjectiveDialog from "@/components/practice/ObjectiveDialogue";
 import { Sidebar } from "@/components/practice/Sidebar";
+import StudyCompanion from "@/components/practice/StudyCompanion";
 
 interface TextSettings {
   fontFamily: string;
@@ -127,6 +128,78 @@ export default function PracticeContent({
     keyPhrase: '#2563eb',
     formula: '#dc2626'
   });
+
+  // Theme and companion state
+  const [selectedTheme, setSelectedTheme] = useState("classic");
+  const [selectedCompanion, setSelectedCompanion] = useState("cat");
+
+  // Theme definitions with real place-based background images
+  const THEMES = {
+    classic: { 
+      bg: 'bg-amber-50', 
+      accent: 'text-amber-800', 
+      border: 'border-amber-200',
+      backgroundImage: 'url("https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=1920&h=1080&fit=crop&crop=center")', // Classic library
+      overlay: 'bg-amber-50/80'
+    },
+    modern: { 
+      bg: 'bg-slate-50', 
+      accent: 'text-slate-800', 
+      border: 'border-slate-200',
+      backgroundImage: 'url("https://images.unsplash.com/photo-1497366216548-37526070297c?w=1920&h=1080&fit=crop&crop=center")', // Modern office/lab
+      overlay: 'bg-white/85'
+    },
+    cozy: { 
+      bg: 'bg-orange-50', 
+      accent: 'text-orange-800', 
+      border: 'border-orange-200',
+      backgroundImage: 'url("https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=1920&h=1080&fit=crop&crop=center")', // Cozy cabin/fireplace
+      overlay: 'bg-orange-50/75'
+    },
+    forest: { 
+      bg: 'bg-green-50', 
+      accent: 'text-green-800', 
+      border: 'border-green-300',
+      backgroundImage: 'url("https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1920&h=1080&fit=crop&crop=center")', // Forest path
+      overlay: 'bg-green-50/70'
+    },
+    ocean: { 
+      bg: 'bg-blue-50', 
+      accent: 'text-blue-800', 
+      border: 'border-blue-200',
+      backgroundImage: 'url("https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=1920&h=1080&fit=crop&crop=center")', // Underwater ocean
+      overlay: 'bg-blue-50/75'
+    },
+    space: { 
+      bg: 'bg-purple-900', 
+      accent: 'text-purple-100', 
+      border: 'border-purple-400',
+      backgroundImage: 'url("https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=1920&h=1080&fit=crop&crop=center")', // Space/galaxy
+      overlay: 'bg-purple-900/70'
+    },
+    zen: { 
+      bg: 'bg-stone-50', 
+      accent: 'text-stone-800', 
+      border: 'border-stone-200',
+      backgroundImage: 'url("https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&h=1080&fit=crop&crop=center")', // Japanese zen garden
+      overlay: 'bg-stone-50/80'
+    }
+  };
+
+  // Companion definitions
+  const COMPANIONS = {
+    cat: "🐱", owl: "🦉", fox: "🦊", 
+    dolphin: "🐬", robot: "🤖", dragon: "🐉"
+  };
+
+  // Handler functions
+  const handleThemeChange = (themeId: string) => {
+    setSelectedTheme(themeId);
+  };
+
+  const handleCompanionChange = (companionId: string) => {
+    setSelectedCompanion(companionId);
+  };
 
   useEffect(() => {
     const savedObjective = loadObjective();
@@ -538,8 +611,26 @@ export default function PracticeContent({
     );
   }
 
+  // Get current theme styles
+  const currentTheme = THEMES[selectedTheme as keyof typeof THEMES] || THEMES.classic;
+  
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'bg-gray-900' : 'bg-white'}`}>
+    <div 
+      className={`min-h-screen transition-all duration-500 ${
+        isDarkMode ? 'bg-gray-900' : currentTheme.bg
+      }`}
+      style={!isDarkMode ? {
+        backgroundImage: currentTheme.backgroundImage,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundAttachment: 'fixed'
+      } : {}}
+    >
+      {/* Background overlay for readability */}
+      {!isDarkMode && (
+        <div className={`fixed inset-0 ${currentTheme.overlay} transition-all duration-500 pointer-events-none z-0`} />
+      )}
       {/* Header */}
       <PracticeHeader 
         onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} 
@@ -552,30 +643,42 @@ export default function PracticeContent({
       />
 
       <PracticeProgress 
-        correctAnswers={correctAnswers} 
-        incorrectAnswers={incorrectAnswers} 
-        totalQuestions={filteredQuestions.length} 
-        timerDuration={timerDuration} 
-        isTimerActive={isTimerActive} 
-        handleTimerComplete={handleTimerComplete} 
-        mode={mode} 
-        timeRemaining={timeRemaining} 
-        setTimeRemaining={setTimeRemaining} 
-        activeTab={activeTab} 
-        setActiveTab={setActiveTab} 
-        currentQuestionIndex={currentQuestionIndex} 
-        objective={objective} 
-        progress={progress} 
-        onAutoNext={nextQuestion}
-        onPomodoroBreak={handlePomodoroBreak}
-        settings={displaySettings}
-        onSettingsChange={onSettingsChange}
-      />
+          correctAnswers={correctAnswers} 
+          incorrectAnswers={incorrectAnswers} 
+          totalQuestions={filteredQuestions.length} 
+          timerDuration={timerDuration} 
+          isTimerActive={isTimerActive} 
+          handleTimerComplete={handleTimerComplete} 
+          mode={mode} 
+          timeRemaining={timeRemaining} 
+          setTimeRemaining={setTimeRemaining} 
+          activeTab={activeTab} 
+          setActiveTab={setActiveTab} 
+          currentQuestionIndex={currentQuestionIndex} 
+          objective={objective} 
+          progress={progress} 
+          onAutoNext={nextQuestion}
+          onPomodoroBreak={handlePomodoroBreak}
+          settings={displaySettings}
+          onSettingsChange={onSettingsChange}
+          onThemeChange={handleThemeChange}
+          onCompanionChange={handleCompanionChange}
+        />
 
       {/* Sidebar - Mobile and Desktop */}
       {sidebarOpen && <Sidebar onClose={() => setSidebarOpen(false)} />}
 
-      <div className="flex max-w-full mx-auto w-full flex-grow py-1 sm:py-2 md:py-3 px-1 sm:px-2 md:px-4 lg:px-0 pb-20 sm:pb-24 pt-28 sm:pt-32 md:pt-36">
+      {/* Animated Study Companion */}
+      <StudyCompanion 
+        companionType={selectedCompanion}
+        correctAnswers={correctAnswers}
+        incorrectAnswers={incorrectAnswers}
+        currentTheme={currentTheme}
+        isCorrect={isCorrect}
+        selectedAnswer={selectedAnswer}
+      />
+
+      <div className="relative z-10 flex max-w-full mx-auto w-full flex-grow py-1 sm:py-2 md:py-3 px-1 sm:px-2 md:px-4 lg:px-0 pb-20 sm:pb-24 pt-28 sm:pt-32 md:pt-36">
         {currentQuestion ? (
           <PracticeDisplay 
             currentQuestion={currentQuestion} 

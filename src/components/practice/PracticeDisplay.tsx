@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Search, Check, X, Bot, Lightbulb, Flag, Calculator, FileText } from "lucide-react";
+import { Search, Check, X, Bot, Lightbulb, Flag, Calculator, FileText, Trash2 } from "lucide-react";
 import { Question } from "@/types/QuestionInterface";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -34,6 +34,13 @@ interface PracticeDisplayProps {
   activeTab: "problem" | "solution" | "quote";
   mode?: "timer" | "level" | "manual" | "pomodoro" | "exam";
   timerValue?: string; // Current timer display value
+  objective?: {
+    type: "questions" | "time";
+    value: number;
+  } | null;
+  progress?: number;
+  correctAnswers?: number;
+  incorrectAnswers?: number;
 }
 
 const PracticeDisplay = ({
@@ -52,6 +59,10 @@ const PracticeDisplay = ({
   activeTab,
   mode = "manual",
   timerValue,
+  objective = null,
+  progress = 0,
+  correctAnswers = 0,
+  incorrectAnswers = 0,
 }: PracticeDisplayProps) => {
   const { isDarkMode } = useTheme();
   const [localSelectedAnswer, setLocalSelectedAnswer] = useState<string | null>(null);
@@ -81,6 +92,40 @@ const PracticeDisplay = ({
   const isSATWriting = currentQuestion?.chapter?.toLowerCase().includes('writing') || 
                       currentQuestion?.module?.toLowerCase().includes('writing');
 
+  // Calculate objective progress percentile
+  const calculateObjectiveProgress = () => {
+    const targetTotal = (objective?.type === "questions" && objective?.value)
+      ? objective.value
+      : totalQuestions;
+
+    const totalAnswered = Math.min(correctAnswers + incorrectAnswers, targetTotal);
+    const currentProgress = Math.round((totalAnswered / targetTotal) * 100);
+    
+    const targetProgressPercentage = (objective?.type === "questions" && typeof progress === "number")
+      ? Math.round(progress)
+      : currentProgress;
+
+    // Debug logging
+    console.log('🔍 Objective Progress Debug:', {
+      objective,
+      correctAnswers,
+      incorrectAnswers,
+      totalQuestions,
+      progress,
+      targetTotal,
+      totalAnswered,
+      currentProgress,
+      targetProgressPercentage
+    });
+
+    return {
+      currentProgress,
+      targetProgress: targetProgressPercentage,
+      objectiveType: objective?.type || null,
+      objectiveValue: objective?.value || null
+    };
+  };
+
   // Create interaction record (only for answered questions)
   const createInteraction = (answer: string, isCorrectAnswer: boolean) => {
     let timeSpent: number;
@@ -100,6 +145,8 @@ const PracticeDisplay = ({
       timeSpent = Math.round((Date.now() - questionStartTime) / 1000); // per-question timing
     }
     
+    const objectiveProgress = calculateObjectiveProgress();
+    
     const interaction = {
       questionId: currentQuestion?.id,
       questionNumber: currentQuestion?.number,
@@ -111,6 +158,12 @@ const PracticeDisplay = ({
       sessionId: sessionId,
       userId: "user_123", // This should come from auth context
       practiceMode: mode,
+      objectiveProgress: {
+        currentProgressPercentile: objectiveProgress.currentProgress,
+        targetProgressPercentile: objectiveProgress.targetProgress,
+        objectiveType: objectiveProgress.objectiveType,
+        objectiveValue: objectiveProgress.objectiveValue
+      }
     };
 
     return interaction;
@@ -1161,14 +1214,25 @@ Keep the evaluation constructive and educational.`;
             </Button>
           </div>
           
-          <Button 
-            variant="outline" 
-            size="sm" 
-            onClick={sendInteractionsToEdgeFunction}
-            className="mb-3 w-full"
-          >
-            Send to Edge Function
-          </Button>
+          <div className="flex gap-2 mb-3">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={sendInteractionsToEdgeFunction}
+              className="flex-1"
+            >
+              Send to Edge Function
+            </Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setInteractions([])}
+              className="flex items-center gap-1"
+            >
+              <Trash2 className="h-3 w-3" />
+              Clear
+            </Button>
+          </div>
 
           <div className="space-y-2">
             {interactions.map((interaction, index) => (
@@ -1185,7 +1249,7 @@ Keep the evaluation constructive and educational.`;
                   Answer: {interaction.userAnswer} | Time: {interaction.timeSpentSeconds}s
                 </div>
                 <div className="text-gray-400">
-                  {new Date(interaction.timestamp).toLocaleTimeString()}
+                  Progress: {interaction.objectiveProgress?.currentProgressPercentile}% | {new Date(interaction.timestamp).toLocaleTimeString()}
                 </div>
               </div>
             ))}
@@ -1202,7 +1266,7 @@ Keep the evaluation constructive and educational.`;
           <div className={`mt-3 pt-3 border-t text-xs ${
             isDarkMode ? 'border-gray-600 text-gray-400' : 'border-gray-200 text-gray-500'
           }`}>
-            <strong>Simplified JSON Structure:</strong>
+            <strong>Enhanced JSON Structure with Objective Progress:</strong>
             <pre className="mt-1 p-2 bg-gray-100 dark:bg-gray-900 rounded text-xs overflow-x-auto">
 {`{
   "questionId": "q_123",
@@ -1214,7 +1278,13 @@ Keep the evaluation constructive and educational.`;
   "timestamp": "2024-01-15T10:30:00Z",
   "sessionId": "session_1234567890",
   "userId": "user_123",
-  "practiceMode": "timer"
+  "practiceMode": "timer",
+  "objectiveProgress": {
+    "currentProgressPercentile": 75,
+    "targetProgressPercentile": 80,
+    "objectiveType": "questions",
+    "objectiveValue": 20
+  }
 }`}
             </pre>
           </div>
