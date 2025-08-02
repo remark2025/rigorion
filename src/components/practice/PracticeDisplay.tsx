@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useTheme } from "@/contexts/ThemeContext";
 import { analyzeWithAIML } from "@/services/aimlApi";
 import HintDialog from "./HintDialog";
+import TypingAnimation from "@/components/ui/TypingAnimation";
 
 interface PracticeDisplayProps {
   currentQuestion: Question | null;
@@ -645,16 +646,17 @@ Keep the evaluation constructive and educational.`;
                 }`}>
                   💡 Solution & Explanation
                 </h3>
-                <div 
+                <TypingAnimation
+                  text={formatSolution(currentQuestion)}
+                  speed={15}
+                  isHTML={true}
+                  className="whitespace-pre-wrap text-sm leading-relaxed"
                   style={{
                     ...contentTextStyle,
                     fontSize: `${displaySettings.fontSize - 1}px`,
                     color: isDarkMode ? '#ffffff' : contentTextStyle.color
                   }}
-                  className="whitespace-pre-wrap text-sm leading-relaxed"
-                >
-                  {formatSolution(currentQuestion)}
-                </div>
+                />
               </>
             )}
 
@@ -904,16 +906,17 @@ Keep the evaluation constructive and educational.`;
                   }`}>
                     💡 Solution & Explanation
                   </h3>
-                  <div 
+                  <TypingAnimation
+                    text={formatSolution(currentQuestion)}
+                    speed={15}
+                    isHTML={true}
+                    className="whitespace-pre-wrap text-sm leading-relaxed"
                     style={{
                       ...contentTextStyle,
                       fontSize: `${displaySettings.fontSize - 1}px`,
                       color: isDarkMode ? '#ffffff' : contentTextStyle.color
                     }}
-                    className="whitespace-pre-wrap text-sm leading-relaxed"
-                  >
-                    {formatSolution(currentQuestion)}
-                  </div>
+                  />
                 </>
               )}
               {activeTab === 'quote' && (
@@ -1158,16 +1161,17 @@ Keep the evaluation constructive and educational.`;
                   }`}>
                     💡 Solution & Explanation
                   </h3>
-                  <div 
+                  <TypingAnimation
+                    text={formatSolution(currentQuestion)}
+                    speed={15}
+                    isHTML={true}
+                    className="whitespace-pre-wrap text-sm leading-relaxed"
                     style={{
                       ...contentTextStyle,
                       fontSize: `${displaySettings.fontSize - 1}px`,
                       color: isDarkMode ? '#ffffff' : contentTextStyle.color
                     }}
-                    className="whitespace-pre-wrap text-sm leading-relaxed"
-                  >
-                    {formatSolution(currentQuestion)}
-                  </div>
+                  />
                 </>
               )}
               {activeTab === 'quote' && (

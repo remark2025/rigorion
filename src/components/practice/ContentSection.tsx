@@ -3,6 +3,7 @@ import { Question } from "@/types/QuestionInterface";
 import { CheckCircle, XCircle } from "lucide-react";
 import React from "react";
 import { useTheme } from "@/contexts/ThemeContext";
+import TypingAnimation from "@/components/ui/TypingAnimation";
 
 interface TextSettings {
   fontFamily: string;
@@ -137,10 +138,12 @@ const ContentSection = ({
                       }`}>
                         {index + 1}
                       </div>
-                      <div 
+                      <TypingAnimation
+                        text={stepObj.step}
+                        speed={15}
+                        isHTML={true}
                         className="flex-1"
                         style={{...contentStyle, color: isDarkMode ? '#a3e635' : contentStyle.color}}
-                        dangerouslySetInnerHTML={{ __html: stepObj.step }}
                       />
                     </div>
                   ))}
@@ -149,8 +152,10 @@ const ContentSection = ({
             } else {
               // Fall back to original solution rendering
               return (
-                <div 
-                  dangerouslySetInnerHTML={{ __html: question.solution || "Solution not available" }} 
+                <TypingAnimation
+                  text={question.solution || "Solution not available"}
+                  speed={15}
+                  isHTML={true}
                   style={contentStyle}
                 />
               );
