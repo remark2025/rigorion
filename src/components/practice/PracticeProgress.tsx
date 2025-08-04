@@ -33,8 +33,6 @@ interface PracticeProgressProps {
     textColor: string;
   };
   onSettingsChange?: (key: string, value: string | number) => void;
-  onThemeChange?: (themeId: string) => void;
-  onCompanionChange?: (companionId: string) => void;
 }
 
 const PracticeProgress = ({
@@ -60,9 +58,7 @@ const PracticeProgress = ({
     colorStyle: 'plain',
     textColor: '#374151'
   },
-  onSettingsChange,
-  onThemeChange,
-  onCompanionChange
+  onSettingsChange
 }: PracticeProgressProps) => {
   const { isDarkMode } = useTheme();
 
@@ -117,8 +113,6 @@ const PracticeProgress = ({
           <FormattingToolbar 
             settings={settings}
             onSettingsChange={onSettingsChange}
-            onThemeChange={onThemeChange}
-            onCompanionChange={onCompanionChange}
           />
         </div>
 

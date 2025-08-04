@@ -5,10 +5,7 @@ import {
   Minus, 
   Plus, 
   ChevronDown,
-  Palette,
-  Paintbrush,
-  Heart,
-  Sparkles
+  Palette
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -50,36 +47,12 @@ interface FormattingToolbarProps {
     textColor: string;
   };
   onSettingsChange: (key: string, value: string | number) => void;
-  onThemeChange?: (themeId: string) => void;
-  onCompanionChange?: (companionId: string) => void;
 }
 
-const THEMES = [
-  { id: "classic", name: "Classic Library", color: "#8B4513" },
-  { id: "modern", name: "Modern Lab", color: "#6366F1" },
-  { id: "cozy", name: "Cozy Study", color: "#10B981" },
-  { id: "forest", name: "Forest Retreat", color: "#059669" },
-  { id: "ocean", name: "Ocean Depths", color: "#0891B2" },
-  { id: "space", name: "Space Station", color: "#7C3AED" },
-  { id: "zen", name: "Zen Garden", color: "#84CC16" },
-];
-
-const COMPANIONS = [
-  { id: "cat", name: "Study Cat", emoji: "🐱" },
-  { id: "owl", name: "Wise Owl", emoji: "🦉" },
-  { id: "fox", name: "Clever Fox", emoji: "🦊" },
-  { id: "dolphin", name: "Smart Dolphin", emoji: "🐬" },
-  { id: "robot", name: "Study Bot", emoji: "🤖" },
-  { id: "dragon", name: "Knowledge Dragon", emoji: "🐉" },
-];
-
-export const FormattingToolbar = ({ settings, onSettingsChange, onThemeChange, onCompanionChange }: FormattingToolbarProps) => {
+export const FormattingToolbar = ({ settings, onSettingsChange }: FormattingToolbarProps) => {
   const { isDarkMode } = useTheme();
   const [colorPickerOpen, setColorPickerOpen] = useState(false);
   const [toolbarOpen, setToolbarOpen] = useState(false);
-  const [personalizationOpen, setPersonalizationOpen] = useState(false);
-  const [selectedTheme, setSelectedTheme] = useState("classic");
-  const [selectedCompanion, setSelectedCompanion] = useState("cat");
 
   const handleFontSizeChange = (increment: boolean) => {
     const currentSize = settings.fontSize;
@@ -95,27 +68,25 @@ export const FormattingToolbar = ({ settings, onSettingsChange, onThemeChange, o
   };
 
   return (
-    <div className="flex items-center gap-1">
-      {/* Text Personalization Icon */}
-      <Popover open={toolbarOpen} onOpenChange={setToolbarOpen}>
-        <PopoverTrigger asChild>
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="h-8 w-8 p-0 bg-white rounded-full hover:bg-gray-100"
-          >
-            <Palette className="h-4 w-4 text-purple-500" />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent 
-          className="w-80 p-4 bg-white border-gray-200"
-          side="bottom"
-          align="start"
+    <Popover open={toolbarOpen} onOpenChange={setToolbarOpen}>
+      <PopoverTrigger asChild>
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="h-8 w-8 p-0 bg-white rounded-full hover:bg-gray-100"
         >
-          <div className="space-y-4">
-            <div className="text-sm font-medium text-gray-700 mb-3">
-              Text Personalization
-            </div>
+          <Palette className="h-4 w-4 text-purple-500" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent 
+        className="w-80 p-4 bg-white border-gray-200"
+        side="bottom"
+        align="start"
+      >
+        <div className="space-y-4">
+          <div className="text-sm font-medium text-gray-700 mb-3">
+            Text Personalization
+          </div>
           
           {/* Font Family Section */}
           <div className="space-y-2">
@@ -254,95 +225,9 @@ export const FormattingToolbar = ({ settings, onSettingsChange, onThemeChange, o
             </div>
           </div>
 
-          </div>
-        </PopoverContent>
-      </Popover>
-
-      {/* Themes & Companions Icon */}
-      <Popover open={personalizationOpen} onOpenChange={setPersonalizationOpen}>
-        <PopoverTrigger asChild>
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            className="h-8 w-8 p-0 bg-white rounded-full hover:bg-gray-100"
-          >
-            <Sparkles className="h-4 w-4 text-pink-500" />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent 
-          className="w-80 p-4 bg-white border-gray-200"
-          side="bottom"
-          align="start"
-        >
-          <div className="space-y-4">
-            <div className="text-sm font-medium text-gray-700 mb-3">
-              Study Experience
-            </div>
-
-            {/* Theme Selection */}
-            <div className="space-y-2">
-              <label className="text-xs text-gray-600 flex items-center gap-1">
-                <Paintbrush className="h-3 w-3" />
-                Study Theme
-              </label>
-              <div className="grid grid-cols-4 gap-2">
-                {THEMES.map((theme) => (
-                  <button
-                    key={theme.id}
-                    onClick={() => {
-                      setSelectedTheme(theme.id);
-                      onThemeChange?.(theme.id);
-                    }}
-                    className={`p-2 rounded-lg border transition-all text-xs ${
-                      selectedTheme === theme.id 
-                        ? 'border-blue-500 bg-blue-50 scale-105' 
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                    title={theme.name}
-                  >
-                    <div 
-                      className="w-6 h-6 rounded mx-auto mb-1"
-                      style={{ backgroundColor: theme.color }}
-                    />
-                    <div className="text-gray-700 leading-tight">{theme.name.split(' ')[0]}</div>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Companion Selection */}
-            <div className="space-y-2">
-              <label className="text-xs text-gray-600 flex items-center gap-1">
-                <Heart className="h-3 w-3" />
-                Study Companion
-              </label>
-              <div className="grid grid-cols-6 gap-2">
-                {COMPANIONS.map((companion) => (
-                  <button
-                    key={companion.id}
-                    onClick={() => {
-                      setSelectedCompanion(companion.id);
-                      onCompanionChange?.(companion.id);
-                    }}
-                    className={`p-2 rounded-lg border transition-all ${
-                      selectedCompanion === companion.id 
-                        ? 'border-pink-500 bg-pink-50 scale-110' 
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                    title={companion.name}
-                  >
-                    <div className="text-xl">{companion.emoji}</div>
-                  </button>
-                ))}
-              </div>
-              <div className="text-xs text-gray-500 text-center">
-                {COMPANIONS.find(c => c.id === selectedCompanion)?.name || "Study Cat"}
-              </div>
-            </div>
-          </div>
-        </PopoverContent>
-      </Popover>
-    </div>
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 };
 
