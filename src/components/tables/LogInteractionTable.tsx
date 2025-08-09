@@ -8,37 +8,12 @@ import { useLogInteraction } from "@/services/edgeFunctionService";
 export default function LogInteractionTable() {
   const [customPayload, setCustomPayload] = useState({
     questionId: "q_math_789",
-    questionNumber: 23,
-    userAnswer: "C",
-    correctAnswer: "The slope-intercept form is y = mx + b",
     isCorrect: false,
     timeSpentSeconds: 89,
     timestamp: new Date().toISOString(),
     sessionId: "session_" + Date.now(),
     userId: "user_456",
-    practiceMode: "level",
-    questionMetadata: {
-      difficulty: "medium",
-      chapter: "Linear Functions",
-      module: "Graphing Lines",
-      examNumber: 2
-    },
-    targetProgress: {
-      currentProgressPercentile: 45,
-      targetProgressPercentile: 70,
-      objectiveType: "questions",
-      objectiveValue: 40,
-      questionsRemaining: 22,
-      accuracyRate: 67,
-      progressGapToTarget: 25,
-      isOnTrackToTarget: false,
-      sessionStats: {
-        totalCorrect: 12,
-        totalIncorrect: 6,
-        totalAnswered: 18,
-        sessionStartTime: "session_" + (Date.now() - 1800000)
-      }
-    }
+    displayedTargetProgressPercentile: 70 // This matches "Target Progress: 70%" in UI
   });
 
   // State to manage demo request results

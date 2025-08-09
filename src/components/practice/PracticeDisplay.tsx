@@ -123,7 +123,8 @@ const PracticeDisplay = ({
       questionsRemaining,
       accuracyRate,
       progressToTarget,
-      isOnTrack
+      isOnTrack,
+      displayedTargetProgress: targetProgressPercentage // This matches what's shown in UI
     });
 
     return {
@@ -164,37 +165,12 @@ const PracticeDisplay = ({
     
     const interaction = {
       questionId: currentQuestion?.id,
-      questionNumber: currentQuestion?.number,
-      userAnswer: answer,
-      correctAnswer: currentQuestion?.correctAnswer,
       isCorrect: isCorrectAnswer,
       timeSpentSeconds: timeSpent,
       timestamp: new Date().toISOString(),
       sessionId: sessionId,
       userId: "user_123", // This should come from auth context
-      practiceMode: mode,
-      questionMetadata: {
-        difficulty: currentQuestion?.difficulty,
-        chapter: currentQuestion?.chapter,
-        module: currentQuestion?.module,
-        examNumber: currentQuestion?.examNumber
-      },
-      targetProgress: {
-        currentProgressPercentile: objectiveProgress.currentProgress,
-        targetProgressPercentile: objectiveProgress.targetProgress,
-        objectiveType: objectiveProgress.objectiveType,
-        objectiveValue: objectiveProgress.objectiveValue,
-        questionsRemaining: objectiveProgress.questionsRemaining,
-        accuracyRate: objectiveProgress.accuracyRate,
-        progressGapToTarget: objectiveProgress.progressToTarget,
-        isOnTrackToTarget: objectiveProgress.isOnTrack,
-        sessionStats: {
-          totalCorrect: objectiveProgress.totalCorrect,
-          totalIncorrect: objectiveProgress.totalIncorrect,
-          totalAnswered: objectiveProgress.totalAnswered,
-          sessionStartTime: sessionId // Using sessionId as session start reference
-        }
-      }
+      displayedTargetProgressPercentile: objectiveProgress.targetProgress // This is what shows in "Target Progress: X%" in UI
     };
 
     return interaction;
@@ -1304,25 +1280,16 @@ Keep the evaluation constructive and educational.`;
           <div className={`mt-3 pt-3 border-t text-xs ${
             isDarkMode ? 'border-gray-600 text-gray-400' : 'border-gray-200 text-gray-500'
           }`}>
-            <strong>Enhanced JSON Structure with Objective Progress:</strong>
+            <strong>Simplified Interaction Structure:</strong>
             <pre className="mt-1 p-2 bg-gray-100 dark:bg-gray-900 rounded text-xs overflow-x-auto">
 {`{
   "questionId": "q_123",
-  "questionNumber": 1,
-  "userAnswer": "B",
-  "correctAnswer": "A", 
   "isCorrect": false,
   "timeSpentSeconds": 45,
   "timestamp": "2024-01-15T10:30:00Z",
   "sessionId": "session_1234567890",
   "userId": "user_123",
-  "practiceMode": "timer",
-  "objectiveProgress": {
-    "currentProgressPercentile": 75,
-    "targetProgressPercentile": 80,
-    "objectiveType": "questions",
-    "objectiveValue": 20
-  }
+  "displayedTargetProgressPercentile": 80
 }`}
             </pre>
           </div>

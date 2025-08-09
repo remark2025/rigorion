@@ -125,14 +125,14 @@ const PracticeProgress = ({
         <div className="flex items-center justify-end w-full sm:w-[520px] lg:w-[720px]">
           {/* Progress bar with target and timer inline */}
           <div className="flex items-center gap-1 sm:gap-2 lg:gap-3 w-full">
-            {/* Progress bar - 2x longer and thinner */}
+            {/* Progress bar - rectangular, 15% thinner */}
             <div className="flex-1">
-              <div className={`relative h-1.5 sm:h-2 rounded-full overflow-hidden progress-bar ${
+              <div className={`relative h-[5px] sm:h-[6px] overflow-hidden progress-bar ${
                 isDarkMode ? 'bg-gray-800 border border-green-500/20' : 'bg-gray-100'
               }`}>
               {/* Correct answers - green */}
               <div
-                className="absolute left-0 top-0 h-full bg-green-500 rounded-l-full transition-all duration-500 ease-out shine-animation"
+                className="absolute left-0 top-0 h-full bg-green-500 transition-all duration-500 ease-out shine-animation"
                 style={{ width: correctWidth, zIndex: 3 }}
               />
               {/* Incorrect answers - red */}
@@ -146,7 +146,7 @@ const PracticeProgress = ({
               />
               {/* Unattempted - grey */}
               <div
-                className={`absolute top-0 right-0 h-full rounded-r-full transition-all duration-500 ease-out ${
+                className={`absolute top-0 right-0 h-full transition-all duration-500 ease-out ${
                   isDarkMode ? 'bg-gray-700' : 'bg-gray-300'
                 }`}
                 style={{ width: unattemptedWidth, zIndex: 1 }}

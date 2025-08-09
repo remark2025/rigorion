@@ -9,37 +9,12 @@ const LogInteraction = () => {
   const [error, setError] = useState(null);
   const [payload, setPayload] = useState(JSON.stringify({
     questionId: "q_math_456",
-    questionNumber: 15,
-    userAnswer: "B",
-    correctAnswer: "Quadratic formula: x = (-b ± √(b²-4ac))/2a",
     isCorrect: true,
     timeSpentSeconds: 127,
     timestamp: new Date().toISOString(),
     sessionId: "session_" + Date.now(),
     userId: "user_123",
-    practiceMode: "timer",
-    questionMetadata: {
-      difficulty: "hard",
-      chapter: "Algebra",
-      module: "Quadratic Functions",
-      examNumber: 3
-    },
-    targetProgress: {
-      currentProgressPercentile: 68,
-      targetProgressPercentile: 80,
-      objectiveType: "questions",
-      objectiveValue: 50,
-      questionsRemaining: 16,
-      accuracyRate: 74,
-      progressGapToTarget: 12,
-      isOnTrackToTarget: true,
-      sessionStats: {
-        totalCorrect: 25,
-        totalIncorrect: 9,
-        totalAnswered: 34,
-        sessionStartTime: "session_" + (Date.now() - 3600000)
-      }
-    }
+    displayedTargetProgressPercentile: 80 // This matches "Target Progress: 80%" in UI
   }, null, 2));
 
   const postData = async () => {
