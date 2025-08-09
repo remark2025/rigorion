@@ -9,6 +9,7 @@ import { useTheme } from "@/contexts/ThemeContext";
 import { analyzeWithAIML } from "@/services/aimlApi";
 import HintDialog from "./HintDialog";
 import TypingAnimation from "@/components/ui/TypingAnimation";
+import AttemptHistory from "./AttemptHistory";
 
 interface PracticeDisplayProps {
   currentQuestion: Question | null;
@@ -457,6 +458,9 @@ Keep the evaluation constructive and educational.`;
                   </div>
                 )}
               </Button>
+              {/* Attempt History */}
+              <AttemptHistory interactions={interactions} />
+              
               {/* Interactions Log Button */}
               <Button 
                 variant="ghost" 
@@ -731,6 +735,9 @@ Keep the evaluation constructive and educational.`;
                       </div>
                     )}
                   </Button>
+                  {/* Attempt History */}
+                  <AttemptHistory interactions={interactions} />
+                  
                   {/* Interactions Log Button */}
                   <Button 
                     variant="ghost" 
@@ -983,6 +990,9 @@ Keep the evaluation constructive and educational.`;
                     </div>
                   )}
                 </Button>
+                {/* Attempt History */}
+                <AttemptHistory interactions={interactions} />
+                
                 {/* Interactions Log Button */}
                 <Button 
                   variant="ghost" 
@@ -1254,16 +1264,16 @@ Keep the evaluation constructive and educational.`;
                 isDarkMode ? 'bg-gray-700' : 'bg-gray-50'
               }`}>
                 <div className="flex justify-between">
-                  <span className="font-medium">Q{interaction.questionNumber}</span>
+                  <span className="font-medium">{interaction.questionId}</span>
                   <span className={interaction.isCorrect ? 'text-green-500' : 'text-red-500'}>
                     {interaction.isCorrect ? '✓' : '✗'}
                   </span>
                 </div>
                 <div className="text-gray-500">
-                  Answer: {interaction.userAnswer} | Time: {interaction.timeSpentSeconds}s
+                  Time: {interaction.timeSpentSeconds}s
                 </div>
                 <div className="text-gray-400">
-                  Progress: {interaction.objectiveProgress?.currentProgressPercentile}% | {new Date(interaction.timestamp).toLocaleTimeString()}
+                  Progress: {interaction.displayedTargetProgressPercentile}% | {new Date(interaction.timestamp).toLocaleTimeString()}
                 </div>
               </div>
             ))}
