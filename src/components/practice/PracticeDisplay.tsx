@@ -92,7 +92,7 @@ const PracticeDisplay = ({
   const isSATWriting = currentQuestion?.chapter?.toLowerCase().includes('writing') || 
                       currentQuestion?.module?.toLowerCase().includes('writing');
 
-  // Calculate objective progress percentile
+  // Calculate comprehensive target progress metrics
   const calculateObjectiveProgress = () => {
     const targetTotal = (objective?.type === "questions" && objective?.value)
       ? objective.value
@@ -100,13 +100,17 @@ const PracticeDisplay = ({
 
     const totalAnswered = Math.min(correctAnswers + incorrectAnswers, targetTotal);
     const currentProgress = Math.round((totalAnswered / targetTotal) * 100);
-    
     const targetProgressPercentage = (objective?.type === "questions" && typeof progress === "number")
       ? Math.round(progress)
       : currentProgress;
 
-    // Debug logging
-    console.log('🔍 Objective Progress Debug:', {
+    // Enhanced target metrics
+    const questionsRemaining = targetTotal - totalAnswered;
+    const accuracyRate = totalAnswered > 0 ? Math.round((correctAnswers / totalAnswered) * 100) : 0;
+    const progressToTarget = targetProgressPercentage - currentProgress;
+    const isOnTrack = progressToTarget <= 5; // Within 5% of target
+    
+    console.log('🎯 Enhanced Progress Tracking:', {
       objective,
       correctAnswers,
       incorrectAnswers,
@@ -115,14 +119,25 @@ const PracticeDisplay = ({
       targetTotal,
       totalAnswered,
       currentProgress,
-      targetProgressPercentage
+      targetProgressPercentage,
+      questionsRemaining,
+      accuracyRate,
+      progressToTarget,
+      isOnTrack
     });
 
     return {
       currentProgress,
       targetProgress: targetProgressPercentage,
       objectiveType: objective?.type || null,
-      objectiveValue: objective?.value || null
+      objectiveValue: objective?.value || null,
+      questionsRemaining,
+      accuracyRate,
+      progressToTarget,
+      isOnTrack,
+      totalCorrect: correctAnswers,
+      totalIncorrect: incorrectAnswers,
+      totalAnswered
     };
   };
 
@@ -158,11 +173,27 @@ const PracticeDisplay = ({
       sessionId: sessionId,
       userId: "user_123", // This should come from auth context
       practiceMode: mode,
-      objectiveProgress: {
+      questionMetadata: {
+        difficulty: currentQuestion?.difficulty,
+        chapter: currentQuestion?.chapter,
+        module: currentQuestion?.module,
+        examNumber: currentQuestion?.examNumber
+      },
+      targetProgress: {
         currentProgressPercentile: objectiveProgress.currentProgress,
         targetProgressPercentile: objectiveProgress.targetProgress,
         objectiveType: objectiveProgress.objectiveType,
-        objectiveValue: objectiveProgress.objectiveValue
+        objectiveValue: objectiveProgress.objectiveValue,
+        questionsRemaining: objectiveProgress.questionsRemaining,
+        accuracyRate: objectiveProgress.accuracyRate,
+        progressGapToTarget: objectiveProgress.progressToTarget,
+        isOnTrackToTarget: objectiveProgress.isOnTrack,
+        sessionStats: {
+          totalCorrect: objectiveProgress.totalCorrect,
+          totalIncorrect: objectiveProgress.totalIncorrect,
+          totalAnswered: objectiveProgress.totalAnswered,
+          sessionStartTime: sessionId // Using sessionId as session start reference
+        }
       }
     };
 
