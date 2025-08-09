@@ -48,7 +48,12 @@ const Practice = () => {
     fontFamily: "inter",
     fontSize: 14,
     colorStyle: "plain" as const,
-    textColor: "#374151"
+    emphasis: {
+      bold: false,
+      italic: false,
+      underline: false,
+      highlight: false
+    }
   });
 
   const handleSettingsChange = (key: any, value: any) => {
