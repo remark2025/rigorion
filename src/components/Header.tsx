@@ -28,19 +28,19 @@ export const Header = () => {
           >
             <Navigation className="h-5 w-5 text-blue-500" />
           </button>
-          <Link to="/" className="font-serif text-xl md:text-2xl text-[#8A0303] tracking-wide" style={{fontFamily: 'Georgia, serif', textShadow: '0 1px 2px rgba(0,0,0,0.1)', letterSpacing: '0.5px'}}>Academic Arc</Link>
+          <Link to="/" className="font-serif text-xl md:text-2xl text-blue-600 tracking-wide" style={{fontFamily: 'Georgia, serif', textShadow: '0 1px 2px rgba(0,0,0,0.1)', letterSpacing: '0.5px'}}>SAT Premium</Link>
         </div>
         
         <div className="flex items-center">
           <nav className="hidden md:flex space-x-6 mr-6">
-            <Link to="/" className="text-gray-600 hover:text-[#8A0303] transition-colors">Home</Link>
-            <Link to="/about" className="text-gray-600 hover:text-[#8A0303] transition-colors">About us</Link>
-            <Link to="/practice" className="text-gray-600 hover:text-[#8A0303] transition-colors">Practice</Link>
-            <Link to="/analytics" className="text-gray-600 hover:text-[#8A0303] transition-colors">Analytics</Link>
+            <Link to="/" className="text-gray-600 hover:text-blue-600 transition-colors">Home</Link>
+            <Link to="/about" className="text-gray-600 hover:text-blue-600 transition-colors">About us</Link>
+            <Link to="/practice" className="text-gray-600 hover:text-blue-600 transition-colors">Practice</Link>
+            <Link to="/analytics" className="text-gray-600 hover:text-blue-600 transition-colors">Analytics</Link>
           </nav>
           <Button 
             onClick={() => setIsAuthModalOpen(true)}
-            className="bg-white hover:bg-gray-50 text-[#8A0303] border border-[#8A0303] hover:border-[#6b0202] px-3 py-1.5 rounded-full text-sm"
+            className="bg-white hover:bg-gray-50 text-blue-600 border border-blue-600 hover:border-blue-700 px-3 py-1.5 rounded-full text-sm"
           >
             <LogIn className="mr-1.5 h-3.5 w-3.5" />
             Login
@@ -53,10 +53,10 @@ export const Header = () => {
         <div className="md:hidden absolute top-full left-0 w-full bg-white border-b shadow-md py-2">
           <div className="container mx-auto px-4">
             <div className="flex flex-col space-y-2">
-              <Link to="/" className="text-gray-600 hover:text-[#8A0303] py-2 transition-colors" onClick={() => setIsNavOpen(false)}>Home</Link>
-              <Link to="/about" className="text-gray-600 hover:text-[#8A0303] py-2 transition-colors" onClick={() => setIsNavOpen(false)}>About us</Link>
-              <Link to="/practice" className="text-gray-600 hover:text-[#8A0303] py-2 transition-colors" onClick={() => setIsNavOpen(false)}>Practice</Link>
-              <Link to="/analytics" className="text-gray-600 hover:text-[#8A0303] py-2 transition-colors" onClick={() => setIsNavOpen(false)}>Analytics</Link>
+              <Link to="/" className="text-gray-600 hover:text-blue-600 py-2 transition-colors" onClick={() => setIsNavOpen(false)}>Home</Link>
+              <Link to="/about" className="text-gray-600 hover:text-blue-600 py-2 transition-colors" onClick={() => setIsNavOpen(false)}>About us</Link>
+              <Link to="/practice" className="text-gray-600 hover:text-blue-600 py-2 transition-colors" onClick={() => setIsNavOpen(false)}>Practice</Link>
+              <Link to="/analytics" className="text-gray-600 hover:text-blue-600 py-2 transition-colors" onClick={() => setIsNavOpen(false)}>Analytics</Link>
             </div>
           </div>
         </div>
