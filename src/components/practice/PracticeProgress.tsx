@@ -102,9 +102,7 @@ const PracticeProgress = ({
   };
 
   return (
-    <div className={`fixed top-[56px] left-0 right-0 z-40 px-2 sm:px-4 py-2 sm:py-4 border-b transition-colors duration-300 ${
-      isDarkMode ? 'bg-gray-900 border-green-500/30' : 'bg-white border-gray-200'
-    }`}>
+    <div className="fixed top-[56px] left-0 right-0 z-40 px-2 sm:px-4 py-2 sm:py-4 border-b bg-white border-gray-200">
       {/* Main layout with balanced widths for true centering */}
       <div className="flex items-center w-full">
         {/* Left corner: Silver icons - fixed width */}
@@ -125,53 +123,45 @@ const PracticeProgress = ({
         <div className="flex items-center justify-end w-full sm:w-[520px] lg:w-[720px]">
           {/* Progress bar with target and timer inline */}
           <div className="flex items-center gap-1 sm:gap-2 lg:gap-3 w-full">
-            {/* Progress bar - rectangular, 15% thinner */}
+            {/* SAT Progress bar - clean design */}
             <div className="flex-1">
-              <div className={`relative h-[5px] sm:h-[6px] overflow-hidden progress-bar ${
-                isDarkMode ? 'bg-gray-800 border border-green-500/20' : 'bg-gray-100'
-              }`}>
-              {/* Correct answers - green */}
+              <div className="relative h-[5px] sm:h-[6px] overflow-hidden bg-gray-200 rounded-sm">
+              {/* Correct answers - SAT green */}
               <div
-                className="absolute left-0 top-0 h-full bg-green-500 transition-all duration-500 ease-out shine-animation"
+                className="absolute left-0 top-0 h-full bg-green-600 transition-all duration-500 ease-out"
                 style={{ width: correctWidth, zIndex: 3 }}
               />
-              {/* Incorrect answers - red */}
+              {/* Incorrect answers - SAT red */}
               <div
-                className="absolute top-0 h-full bg-red-500 transition-all duration-500 ease-out"
+                className="absolute top-0 h-full bg-red-600 transition-all duration-500 ease-out"
                 style={{
                   left: incorrectLeft,
                   width: incorrectWidth,
                   zIndex: 2
                 }}
               />
-              {/* Unattempted - grey */}
+              {/* Unattempted - SAT grey */}
               <div
-                className={`absolute top-0 right-0 h-full transition-all duration-500 ease-out ${
-                  isDarkMode ? 'bg-gray-700' : 'bg-gray-300'
-                }`}
+                className="absolute top-0 right-0 h-full bg-gray-300 transition-all duration-500 ease-out"
                 style={{ width: unattemptedWidth, zIndex: 1 }}
               />
               {/* Progress percentage */}
-              <div className={`absolute right-0 top-0 -translate-y-1/2 translate-x-full mt-1 ml-2 text-xs font-thin ${
-                isDarkMode ? 'text-green-400' : 'text-blue-600'
-              }`}>
+              <div className="absolute right-0 top-0 -translate-y-1/2 translate-x-full mt-1 ml-2 text-xs font-medium text-gray-700">
                 {totalPercentage}%
               </div>
               </div>
             </div>
 
-            {/* Target Progress on the right */}
+            {/* Target Progress - SAT styling */}
             <div className="hidden sm:flex items-center gap-1">
-              <span className={`font-thin text-xs ${
-                isDarkMode ? 'text-green-400' : 'text-blue-600'
-              }`}>
-                Target Progress: {targetProgressPercentage}%
+              <span className="font-medium text-xs text-gray-700">
+                Target: {targetProgressPercentage}%
               </span>
             </div>
             
-            {/* Timer on the right */}
+            {/* Timer - SAT styling */}
             <div className="flex items-center gap-1">
-              <Clock className={`h-3 w-3 sm:h-4 sm:w-4 ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`} />
+              <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-gray-600" />
               {timerDuration > 0 ? (
                 <CountdownTimer
                   durationInSeconds={timerDuration}
@@ -183,7 +173,7 @@ const PracticeProgress = ({
                   onPomodoroBreak={onPomodoroBreak}
                 />
               ) : (
-                <span className={`font-thin text-xs ${isDarkMode ? 'text-green-400' : 'text-gray-700'}`}>{timeRemaining}</span>
+                <span className="font-medium text-xs text-gray-700">{timeRemaining}</span>
               )}
             </div>
           </div>

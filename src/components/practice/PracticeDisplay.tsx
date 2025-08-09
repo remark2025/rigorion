@@ -393,21 +393,21 @@ Keep the evaluation constructive and educational.`;
     }
   };
 
-  // Main content styling - applies to question content, choices, and solutions
+  // SAT Main content styling - clean, professional typography
   const contentTextStyle = {
-    fontFamily: getFontFamily(),
-    fontSize: `${displaySettings.fontSize}px`,
-    fontWeight: displaySettings.emphasis.bold ? 'bold' : 'normal',
+    fontFamily: 'system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
+    fontSize: `16px`, // Standard SAT font size
+    fontWeight: displaySettings.emphasis.bold ? '600' : '400',
     fontStyle: displaySettings.emphasis.italic ? 'italic' : 'normal',
     textDecoration: displaySettings.emphasis.underline ? 'underline' : 'none',
-    backgroundColor: displaySettings.emphasis.highlight ? '#fef3c7' : 'transparent',
-    color: isDarkMode ? '#ffffff' : '#374151',
-    lineHeight: '1.6'
+    backgroundColor: displaySettings.emphasis.highlight ? '#fff3cd' : 'transparent',
+    color: '#212529', // SAT standard text color
+    lineHeight: '1.5'
   };
 
   if (!currentQuestion) {
     return (
-      <div className={`w-full p-8 text-center ${isDarkMode ? 'text-white' : 'text-gray-700'}`}>No question selected</div>
+      <div className="w-full p-8 text-center text-gray-700 bg-white">No question selected</div>
     );
   }
 
@@ -416,36 +416,29 @@ Keep the evaluation constructive and educational.`;
   const hasGraph = !!graphUrl;
 
   return (
-    <div className="min-h-[calc(100vh-300px)] w-full px-2 sm:px-[28px]">
-      {/* Responsive Layout Container */}
+    <div className="min-h-[calc(100vh-300px)] w-full px-2 sm:px-[28px] bg-white">
+      {/* SAT Practice Layout Container */}
       <div className="flex flex-col space-y-4">
         
-        {/* Desktop: Three Column Layout */}
-        <div className="hidden lg:flex gap-2">
+        {/* Desktop: Clean SAT Layout */}
+        <div className="hidden lg:flex gap-4">
           
           {/* Column 1: Question + Answer Choices */}
           <div className={`${
             hasGraph 
               ? 'w-2/5' 
               : activeTab === 'problem' ? 'w-full' : 'w-3/5'
-          } rounded-xl p-6 transition-colors ${
-            isDarkMode ? 'bg-gray-900' : 'bg-white'
-          }`} style={{ backgroundColor: isDarkMode ? undefined : boardColor }}>
+          } bg-white border border-gray-200 p-8 shadow-sm`}>
           
-          {/* Question Number Header */}
-          <div className="mb-4 flex items-center" style={{ gap: '160px' }}>
-            <h2 className={`text-xl font-semibold ${
-              isDarkMode ? 'text-green-400' : 'text-blue-600'
-            }`}>
+          {/* SAT Question Header */}
+          <div className="mb-6 flex items-center justify-between">
+            <h2 className="text-lg font-semibold text-gray-800">
               Question {currentQuestion.number}
             </h2>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-2">
               <HintDialog hint={currentQuestion.hint} currentQuestionIndex={currentQuestionIndex} />
-              <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full">
-                <Flag className="h-3 w-3 text-green-500" />
-              </Button>
-              <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full">
-                <Flag className="h-3 w-3 text-blue-500" />
+              <Button variant="ghost" size="sm" className="p-1 h-8 w-8 rounded hover:bg-gray-100">
+                <Flag className="h-4 w-4 text-gray-600" />
               </Button>
               {/* Calculator Icon */}
               <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full">
@@ -817,63 +810,50 @@ Keep the evaluation constructive and educational.`;
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4 mt-6">
+                    {/* SAT Answer Choices - Clean Layout */}
+                    <div className="space-y-2 mt-6">
                         {currentQuestion.choices?.map((choice, index) => {
                           const choiceKey = String.fromCharCode(65 + index);
                           const isSelected = selectedAnswer === choiceKey;
                           const isCorrectChoice = currentQuestion.correctAnswer === choice;
                           
                           let buttonStyle = '';
-                          let animationClass = '';
                           
                           if (selectedAnswer && isSelected) {
                             if (isCorrect) {
-                              buttonStyle = 'bg-green-100 border-green-400 text-green-800 shadow-md';
-                              animationClass = 'transition-all duration-300 scale-105';
+                              buttonStyle = 'bg-green-50 border-green-300 text-green-900';
                             } else {
-                              buttonStyle = 'bg-red-100 border-red-400 text-red-800 shadow-md';
-                              animationClass = 'transition-all duration-300 scale-105';
+                              buttonStyle = 'bg-red-50 border-red-300 text-red-900';
                             }
                           } else if (selectedAnswer && isCorrectChoice) {
-                            buttonStyle = 'bg-green-100 border-green-400 text-green-800 shadow-md';
-                            animationClass = 'transition-all duration-300 scale-105';
+                            buttonStyle = 'bg-green-50 border-green-300 text-green-900';
                           } else {
-                            buttonStyle = isDarkMode 
-                              ? 'bg-gray-800 border-green-500 text-white hover:bg-gray-700 shadow-sm hover:shadow-md'
-                              : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50 shadow-sm hover:shadow-md';
+                            buttonStyle = 'bg-white border-gray-300 text-gray-900 hover:bg-gray-50';
                           }
 
                           return (
                             <Button
                               key={index}
                               variant="outline"
-                              className={`w-full h-auto min-h-[30px] rounded-full px-2 py-1.5 text-center justify-center transition-all duration-200 ${buttonStyle} ${animationClass}`}
+                              className={`w-full h-auto min-h-[48px] rounded-md p-4 text-left justify-start transition-colors ${buttonStyle}`}
                               onClick={() => checkAnswer(choiceKey)}
                               disabled={!!selectedAnswer}
-                              style={{ 
-                                fontFamily: getFontFamily(),
-                                fontSize: '12px',
-                                fontWeight: '500',
-                                color: isDarkMode ? '#ffffff' : '#374151'
-                              }}
+                              style={contentTextStyle}
                             >
-                              <div className="flex items-center justify-between w-full">
-                                <div className="flex flex-col items-center text-center flex-1">
-                                  <span className={`text-xs mb-0.5 ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>Option {choiceKey}</span>
+                              <div className="flex items-start justify-between w-full">
+                                <div className="flex items-start gap-3 flex-1">
+                                  <span className="font-semibold text-gray-700 mt-0.5">{choiceKey}.</span>
                                   <span 
-                                    className="text-xs leading-tight"
+                                    className="flex-1 text-left"
                                     dangerouslySetInnerHTML={{ __html: choice }}
                                   />
                                 </div>
-                                <div className="flex items-center gap-2">
-                                  {selectedAnswer && isSelected && !isCorrect && (
-                                    <span className="text-xs font-bold text-red-900">Incorrect</span>
-                                  )}
+                                <div className="flex items-center gap-2 ml-4">
                                   {selectedAnswer && isSelected && (
-                                    isCorrect ? <Check className="h-4 w-4 flex-shrink-0" /> : <X className="h-4 w-4 flex-shrink-0" />
+                                    isCorrect ? <Check className="h-4 w-4 text-green-600" /> : <X className="h-4 w-4 text-red-600" />
                                   )}
                                   {selectedAnswer && !isSelected && isCorrectChoice && (
-                                    <Check className="h-4 w-4 flex-shrink-0" />
+                                    <Check className="h-4 w-4 text-green-600" />
                                   )}
                                 </div>
                               </div>
@@ -1098,64 +1078,50 @@ Keep the evaluation constructive and educational.`;
                 </div>
               ) : (
                 <div className="space-y-4">
-                  {/* Single Column Multiple Choice for Mobile */}
-                  <div className="grid grid-cols-1 gap-3 mt-6">
+                  {/* SAT Mobile Answer Choices */}
+                  <div className="space-y-2 mt-6">
                       {currentQuestion.choices?.map((choice, index) => {
                         const choiceKey = String.fromCharCode(65 + index);
                         const isSelected = selectedAnswer === choiceKey;
                         const isCorrectChoice = currentQuestion.correctAnswer === choice;
                         
                         let buttonStyle = '';
-                        let animationClass = '';
                         
                         if (selectedAnswer && isSelected) {
                           if (isCorrect) {
-                            buttonStyle = 'bg-green-100 border-green-400 text-green-800 shadow-md';
-                            animationClass = 'transition-all duration-300 scale-105';
+                            buttonStyle = 'bg-green-50 border-green-300 text-green-900';
                           } else {
-                            buttonStyle = 'bg-red-100 border-red-400 text-red-800 shadow-md';
-                            animationClass = 'transition-all duration-300 scale-105';
+                            buttonStyle = 'bg-red-50 border-red-300 text-red-900';
                           }
                         } else if (selectedAnswer && isCorrectChoice) {
-                          buttonStyle = 'bg-green-100 border-green-400 text-green-800 shadow-md';
-                          animationClass = 'transition-all duration-300 scale-105';
+                          buttonStyle = 'bg-green-50 border-green-300 text-green-900';
                         } else {
-                          buttonStyle = isDarkMode 
-                            ? 'bg-gray-800 border-green-500 text-white hover:bg-gray-700 shadow-sm hover:shadow-md'
-                            : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50 shadow-sm hover:shadow-md';
+                          buttonStyle = 'bg-white border-gray-300 text-gray-900 hover:bg-gray-50';
                         }
 
                         return (
                           <Button
                             key={index}
                             variant="outline"
-                            className={`w-full h-auto min-h-[40px] rounded-full px-3 py-2 text-center justify-center transition-all duration-200 ${buttonStyle} ${animationClass}`}
+                            className={`w-full h-auto min-h-[48px] rounded-md p-4 text-left justify-start transition-colors ${buttonStyle}`}
                             onClick={() => checkAnswer(choiceKey)}
                             disabled={!!selectedAnswer}
-                            style={{ 
-                              fontFamily: getFontFamily(),
-                              fontSize: '13px',
-                              fontWeight: '500',
-                              color: isDarkMode ? '#ffffff' : '#374151'
-                            }}
+                            style={contentTextStyle}
                           >
-                            <div className="flex items-center justify-between w-full">
-                              <div className="flex flex-col items-center text-center flex-1">
-                                <span className={`text-xs mb-1 ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>Option {choiceKey}</span>
+                            <div className="flex items-start justify-between w-full">
+                              <div className="flex items-start gap-3 flex-1">
+                                <span className="font-semibold text-gray-700 mt-0.5">{choiceKey}.</span>
                                 <span 
-                                  className="text-sm leading-tight"
+                                  className="flex-1 text-left"
                                   dangerouslySetInnerHTML={{ __html: choice }}
                                 />
                               </div>
-                              <div className="flex items-center gap-2">
-                                {selectedAnswer && isSelected && !isCorrect && (
-                                  <span className="text-xs font-bold text-red-900">Incorrect</span>
-                                )}
+                              <div className="flex items-center gap-2 ml-4">
                                 {selectedAnswer && isSelected && (
-                                  isCorrect ? <Check className="h-5 w-5 flex-shrink-0" /> : <X className="h-5 w-5 flex-shrink-0" />
+                                  isCorrect ? <Check className="h-4 w-4 text-green-600" /> : <X className="h-4 w-4 text-red-600" />
                                 )}
                                 {selectedAnswer && !isSelected && isCorrectChoice && (
-                                  <Check className="h-5 w-5 flex-shrink-0" />
+                                  <Check className="h-4 w-4 text-green-600" />
                                 )}
                               </div>
                             </div>

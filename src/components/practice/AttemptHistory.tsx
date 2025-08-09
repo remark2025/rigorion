@@ -44,17 +44,9 @@ const AttemptHistory: React.FC<AttemptHistoryProps> = ({
 
   const getDotStyle = (isCorrect: boolean) => {
     if (isCorrect) {
-      return `w-3 h-3 rounded-full bg-green-500 shadow-lg transition-all duration-200 ${
-        isDarkMode 
-          ? 'shadow-green-500/50 ring-1 ring-green-400/30' 
-          : 'shadow-green-500/40'
-      }`;
+      return 'w-3 h-3 rounded-full bg-green-600 shadow-sm transition-all duration-200';
     } else {
-      return `w-3 h-3 rounded-full bg-red-500 shadow-lg transition-all duration-200 ${
-        isDarkMode 
-          ? 'shadow-red-500/50 ring-1 ring-red-400/30' 
-          : 'shadow-red-500/40'
-      }`;
+      return 'w-3 h-3 rounded-full bg-red-600 shadow-sm transition-all duration-200';
     }
   };
 
@@ -66,9 +58,7 @@ const AttemptHistory: React.FC<AttemptHistoryProps> = ({
         disabled={!canGoPrev}
         className={`p-1 rounded-full transition-all duration-200 ${
           canGoPrev 
-            ? (isDarkMode 
-                ? 'hover:bg-gray-700 text-green-400 hover:text-green-300' 
-                : 'hover:bg-gray-100 text-gray-600 hover:text-gray-800')
+            ? 'hover:bg-gray-100 text-gray-600 hover:text-gray-800'
             : 'text-gray-400 cursor-not-allowed opacity-50'
         }`}
       >
@@ -92,9 +82,7 @@ const AttemptHistory: React.FC<AttemptHistoryProps> = ({
         disabled={!canGoNext}
         className={`p-1 rounded-full transition-all duration-200 ${
           canGoNext 
-            ? (isDarkMode 
-                ? 'hover:bg-gray-700 text-green-400 hover:text-green-300' 
-                : 'hover:bg-gray-100 text-gray-600 hover:text-gray-800')
+            ? 'hover:bg-gray-100 text-gray-600 hover:text-gray-800'
             : 'text-gray-400 cursor-not-allowed opacity-50'
         }`}
       >
@@ -102,9 +90,7 @@ const AttemptHistory: React.FC<AttemptHistoryProps> = ({
       </button>
 
       {/* Separator */}
-      <div className={`w-px h-4 ${
-        isDarkMode ? 'bg-gray-600' : 'bg-gray-300'
-      }`} />
+      <div className="w-px h-4 bg-gray-300" />
     </div>
   );
 };

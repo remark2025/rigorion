@@ -250,14 +250,15 @@ const Practice = () => {
 
   return (
     <ThemeProvider>
-      <Card className="min-h-screen bg-white dark:bg-gray-900 relative transition-colors duration-300 dark:border-green-500/30">
+      {/* SAT Practice - Clean White Interface */}
+      <div className="min-h-screen bg-white relative">
         
         {/* Content area */}
-        <CardContent className="p-0">
+        <div className="p-0">
           {loading ? (
-            <div className="flex justify-center items-center h-64">
-              <Loader2 className="h-8 w-8 animate-spin text-blue-500 dark:text-green-400" />
-              <span className="ml-2 dark:text-green-400">Loading and mapping secure questions...</span>
+            <div className="flex justify-center items-center h-64 bg-white">
+              <Loader2 className="h-8 w-8 animate-spin text-gray-600" />
+              <span className="ml-2 text-gray-600">Loading practice questions...</span>
             </div>
           ) : questions && questions.length > 0 ? (
             <>
@@ -268,21 +269,20 @@ const Practice = () => {
                 settings={settings} 
                 onSettingsChange={handleSettingsChange}
               />
-              {/* Removed AIAnalyzer and CommentSection since they're now in the footer */}
             </>
           ) : (
-            <div className="flex justify-center items-center h-64">
-              <Loader2 className="h-8 w-8 animate-spin text-blue-500 dark:text-green-400" />
-              <span className="ml-2 dark:text-green-400">Loading questions...</span>
+            <div className="flex justify-center items-center h-64 bg-white">
+              <Loader2 className="h-8 w-8 animate-spin text-gray-600" />
+              <span className="ml-2 text-gray-600">Loading questions...</span>
             </div>
           )}
           {lastFetched && (
-            <div className="text-xs text-gray-500 dark:text-green-500 p-2 border-t dark:border-green-500/30">
+            <div className="text-xs text-gray-500 p-2 border-t border-gray-200 bg-white">
               Last updated: {lastFetched.toLocaleTimeString()}
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </ThemeProvider>
   );
 };
