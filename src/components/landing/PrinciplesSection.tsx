@@ -134,7 +134,7 @@ export const PrinciplesSection = () => {
                 key={`row1-${feature.id}-${index}`}
                 className={`flex-shrink-0 w-72 bg-white rounded-xl p-5 transition-all duration-500 cursor-pointer ${
                   hoveredCard === feature.id 
-                    ? 'shadow-2xl scale-105 bg-gradient-to-br from-white to-red-50 border-2 border-[#8A0303]/20' 
+                    ? 'shadow-2xl scale-105 bg-gradient-to-br from-white to-blue-50 border-2 border-[#3B82F6]/20' 
                     : 'shadow-lg hover:shadow-xl'
                 }`}
                 onMouseEnter={() => {
@@ -162,15 +162,15 @@ export const PrinciplesSection = () => {
                   {/* Icon */}
                   <div className={`inline-flex items-center justify-center w-12 h-12 rounded-lg mb-3 transition-all duration-300 ${
                     hoveredCard === feature.id 
-                      ? 'bg-[#8A0303] text-white shadow-lg' 
-                      : 'bg-gray-50 text-[#8A0303]'
+                      ? 'bg-[#3B82F6] text-white shadow-lg' 
+                      : 'bg-gray-50 text-[#3B82F6]'
                   }`}>
                     {feature.icon}
                   </div>
                   
                   {/* Title */}
                   <h3 className={`text-lg font-semibold mb-2 transition-colors duration-300 ${
-                    hoveredCard === feature.id ? 'text-[#8A0303]' : 'text-gray-800'
+                    hoveredCard === feature.id ? 'text-[#3B82F6]' : 'text-gray-800'
                   }`}>
                     {feature.title}
                   </h3>
@@ -197,7 +197,7 @@ export const PrinciplesSection = () => {
                 key={`row2-${feature.id}-${index}`}
                 className={`flex-shrink-0 w-72 bg-white rounded-xl p-5 transition-all duration-500 cursor-pointer ${
                   hoveredCard === feature.id 
-                    ? 'shadow-2xl scale-105 bg-gradient-to-br from-white to-red-50 border-2 border-[#8A0303]/20' 
+                    ? 'shadow-2xl scale-105 bg-gradient-to-br from-white to-blue-50 border-2 border-[#3B82F6]/20' 
                     : 'shadow-lg hover:shadow-xl'
                 }`}
                 onMouseEnter={() => {
@@ -225,15 +225,15 @@ export const PrinciplesSection = () => {
                   {/* Icon */}
                   <div className={`inline-flex items-center justify-center w-12 h-12 rounded-lg mb-3 transition-all duration-300 ${
                     hoveredCard === feature.id 
-                      ? 'bg-[#8A0303] text-white shadow-lg' 
-                      : 'bg-gray-50 text-[#8A0303]'
+                      ? 'bg-[#3B82F6] text-white shadow-lg' 
+                      : 'bg-gray-50 text-[#3B82F6]'
                   }`}>
                     {feature.icon}
                   </div>
                   
                   {/* Title */}
                   <h3 className={`text-lg font-semibold mb-2 transition-colors duration-300 ${
-                    hoveredCard === feature.id ? 'text-[#8A0303]' : 'text-gray-800'
+                    hoveredCard === feature.id ? 'text-[#3B82F6]' : 'text-gray-800'
                   }`}>
                     {feature.title}
                   </h3>
@@ -255,7 +255,7 @@ export const PrinciplesSection = () => {
           </p>
           <button 
             onClick={() => setShowPaymentModal(true)}
-            className="bg-white hover:bg-gray-50 text-[#8A0303] border border-[#8A0303] hover:border-[#6b0202] font-medium px-8 py-3 rounded-full transition-all duration-300 hover:scale-105"
+            className="bg-white hover:bg-gray-50 text-[#3B82F6] border border-[#3B82F6] hover:border-[#1D4ED8] font-medium px-8 py-3 rounded-full transition-all duration-300 hover:scale-105"
           >
             Start Your Free Trial
           </button>

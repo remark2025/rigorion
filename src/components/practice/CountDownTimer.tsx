@@ -102,7 +102,7 @@ const CountdownTimer = ({
     switch (mode) {
       case "pomodoro":
         return {
-          text: isCritical ? "text-red-600" : "text-red-500",
+          text: isCritical ? "text-blue-600" : "text-blue-500",
           glow: "0 0 8px rgba(220,38,38,0.5)",
           border: ""
         };

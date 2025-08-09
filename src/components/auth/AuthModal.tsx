@@ -36,7 +36,7 @@ export const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="sm:max-w-[400px] bg-white border-0 shadow-xl rounded-xl p-6">
         <DialogHeader className="space-y-2">
-          <DialogTitle className="text-2xl font-light text-center text-[#8A0303]">
+          <DialogTitle className="text-2xl font-light text-center text-[#3B82F6]">
             {showForgotPassword 
               ? "Reset Password" 
               : activeTab === "signin" 

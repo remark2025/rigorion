@@ -22,7 +22,12 @@ interface TextSettings {
   fontFamily: string;
   fontSize: number;
   colorStyle: 'plain';
-  textColor: string;
+  emphasis: {
+    bold: boolean;
+    italic: boolean;
+    underline: boolean;
+    highlight: boolean;
+  };
 }
 
 interface FilterState {
@@ -100,7 +105,12 @@ export default function PracticeContent({
       fontFamily: 'inter',
       fontSize: 14,
       colorStyle: 'plain' as const,
-      textColor: '#374151'
+      emphasis: {
+        bold: false,
+        italic: false,
+        underline: false,
+        highlight: false
+      }
     }
   );
 
@@ -122,11 +132,6 @@ export default function PracticeContent({
   const [showCommunityStats, setShowCommunityStats] = useState(false);
   
   const [boardColor, setBoardColor] = useState('white');
-  const [colorSettings, setColorSettings] = useState({
-    content: '#374151',
-    keyPhrase: '#2563eb',
-    formula: '#dc2626'
-  });
 
 
   useEffect(() => {
@@ -374,15 +379,6 @@ export default function PracticeContent({
     }
   }, [propSettings]);
 
-  useEffect(() => {
-    if (displaySettings.textColor) {
-      setContentColor(displaySettings.textColor);
-      setColorSettings(prev => ({
-        ...prev,
-        content: displaySettings.textColor
-      }));
-    }
-  }, [displaySettings.textColor]);
 
   const handlePomodoroBreak = () => {
     setIsTimerActive(false);
@@ -505,7 +501,7 @@ export default function PracticeContent({
   if (error) {
     return (
       <div className={`flex flex-col items-center justify-center min-h-screen px-4 ${isDarkMode ? 'bg-gray-900' : 'bg-white'}`}>
-        <div className={`border px-4 py-3 rounded relative ${isDarkMode ? 'bg-red-900 border-red-600 text-red-200' : 'bg-red-100 border-red-400 text-red-700'}`} role="alert">
+        <div className={`border px-4 py-3 rounded relative ${isDarkMode ? 'bg-blue-900 border-blue-600 text-blue-200' : 'bg-blue-100 border-blue-400 text-blue-700'}`} role="alert">
           <strong className="font-bold">Error!</strong>
           <span className="block sm:inline"> {error.message}</span>
         </div>
@@ -593,8 +589,7 @@ export default function PracticeContent({
             currentQuestionIndex={currentQuestionIndex} 
             totalQuestions={filteredQuestions.length} 
             displaySettings={displaySettings}
-            boardColor={boardColor} 
-            colorSettings={colorSettings}
+            boardColor={boardColor}
             activeTab={activeTab} 
           />
         ) : (

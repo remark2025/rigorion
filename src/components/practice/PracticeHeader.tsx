@@ -299,7 +299,7 @@ export const PracticeHeader = ({
             >
               <Bell className={`h-4 w-4 ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`} />
               {hasNotifications && (
-                <span className="absolute top-1 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
+                <span className="absolute top-1 right-1.5 w-2 h-2 bg-blue-500 rounded-full"></span>
               )}
             </Button>
           </DropdownMenuTrigger>
@@ -413,7 +413,7 @@ export const PracticeHeader = ({
             {hasActiveFilters() && (
               <DropdownMenuItem 
                 className={`cursor-pointer py-2 px-3 rounded-md transition-colors text-center ${
-                  isDarkMode ? 'hover:bg-gray-800 text-red-400' : 'hover:bg-gray-50 text-red-600'
+                  isDarkMode ? 'hover:bg-gray-800 text-blue-400' : 'hover:bg-gray-50 text-blue-600'
                 }`}
                 onClick={handleClearAllFilters}
               >
@@ -639,7 +639,7 @@ export const PracticeHeader = ({
               isDarkMode ? 'bg-gray-900 border-green-500/30' : 'bg-white border-gray-200'
             }`}>
               <DropdownMenuItem 
-                className={`cursor-pointer py-2 rounded-sm transition-colors flex items-center text-red-500 ${
+                className={`cursor-pointer py-2 rounded-sm transition-colors flex items-center text-blue-500 ${
                   isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
                 }`}
                 onClick={handleLogout}

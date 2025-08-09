@@ -5,7 +5,10 @@ import {
   Minus, 
   Plus, 
   ChevronDown,
-  Palette
+  Bold,
+  Italic,
+  Underline,
+  Highlighter
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -34,19 +37,25 @@ const FONT_OPTIONS = [
 
 const FONT_SIZES = [10, 11, 12, 14, 16, 18, 20, 22, 24];
 
-const COLOR_PRESETS = [
-  "#000000", "#374151", "#6B7280", "#9CA3AF",
-  "#EF4444", "#F97316", "#EAB308", "#22C55E", 
-  "#3B82F6", "#8B5CF6", "#EC4899", "#F43F5E"
+const TEXT_EMPHASIS = [
+  { key: 'bold', label: 'Bold', icon: Bold },
+  { key: 'italic', label: 'Italic', icon: Italic },
+  { key: 'underline', label: 'Underline', icon: Underline },
+  { key: 'highlight', label: 'Highlight', icon: Highlighter }
 ];
 
 interface FormattingToolbarProps {
   settings: {
     fontFamily: string;
     fontSize: number;
-    textColor: string;
+    emphasis: {
+      bold: boolean;
+      italic: boolean;
+      underline: boolean;
+      highlight: boolean;
+    };
   };
-  onSettingsChange: (key: string, value: string | number) => void;
+  onSettingsChange: (key: string, value: string | number | object) => void;
 }
 
 export const FormattingToolbar = ({ settings, onSettingsChange }: FormattingToolbarProps) => {
@@ -75,7 +84,7 @@ export const FormattingToolbar = ({ settings, onSettingsChange }: FormattingTool
           size="sm" 
           className="h-8 w-8 p-0 bg-white rounded-full hover:bg-gray-100"
         >
-          <Palette className="h-4 w-4 text-purple-500" />
+          <Type className="h-4 w-4 text-blue-600" />
         </Button>
       </PopoverTrigger>
       <PopoverContent 
@@ -85,7 +94,7 @@ export const FormattingToolbar = ({ settings, onSettingsChange }: FormattingTool
       >
         <div className="space-y-4">
           <div className="text-sm font-medium text-gray-700 mb-3">
-            Text Personalization
+            Text Formatting
           </div>
           
           {/* Font Family Section */}
@@ -184,45 +193,44 @@ export const FormattingToolbar = ({ settings, onSettingsChange }: FormattingTool
             </div>
           </div>
 
-          {/* Text Color Section */}
+          {/* Text Emphasis Section */}
           <div className="space-y-2">
-            <label className="text-xs text-gray-600">Text Color</label>
+            <label className="text-xs text-gray-600">Key Concepts & Formulas</label>
             
-            {/* Color Presets */}
-            <div className="grid grid-cols-6 gap-2">
-              {COLOR_PRESETS.map((color) => (
-                <button
-                  key={color}
-                  onClick={() => onSettingsChange("textColor", color)}
-                  className={`w-8 h-8 rounded-full border-2 transition-all ${
-                    settings.textColor === color 
-                      ? 'border-blue-500 scale-110' 
-                      : 'border-gray-300 hover:border-gray-400'
-                  }`}
-                  style={{ backgroundColor: color }}
-                  title={color}
-                />
-              ))}
+            {/* Formatting Options */}
+            <div className="flex items-center gap-1">
+              {TEXT_EMPHASIS.map((option) => {
+                const IconComponent = option.icon;
+                const isActive = settings.emphasis[option.key as keyof typeof settings.emphasis];
+                
+                return (
+                  <Button
+                    key={option.key}
+                    variant={isActive ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => {
+                      const newEmphasis = {
+                        ...settings.emphasis,
+                        [option.key]: !isActive
+                      };
+                      onSettingsChange("emphasis", newEmphasis);
+                    }}
+                    className={`h-8 w-8 p-0 ${
+                      isActive 
+                        ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                        : 'border-gray-300 hover:bg-gray-50 text-gray-600'
+                    }`}
+                    title={option.label}
+                  >
+                    <IconComponent className="h-3 w-3" />
+                  </Button>
+                );
+              })}
             </div>
-
-            {/* Custom Color Picker */}
-            <div className="flex items-center gap-2 pt-2 border-t">
-              <input
-                type="color"
-                value={settings.textColor}
-                onChange={(e) => onSettingsChange("textColor", e.target.value)}
-                className="w-8 h-8 rounded border cursor-pointer"
-              />
-              <div className="flex-1">
-                <input
-                  type="text"
-                  value={settings.textColor}
-                  onChange={(e) => onSettingsChange("textColor", e.target.value)}
-                  className="w-full px-2 py-1 text-xs border rounded bg-white border-gray-300 text-gray-700"
-                  placeholder="#000000"
-                />
-              </div>
-            </div>
+            
+            <p className="text-xs text-gray-500 mt-2">
+              Use these to emphasize important formulas, key terms, and concepts
+            </p>
           </div>
 
         </div>

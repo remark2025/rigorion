@@ -9,7 +9,12 @@ interface TextSettings {
   fontFamily: string;
   fontSize: number;
   colorStyle: 'plain';
-  textColor?: string;
+  emphasis: {
+    bold: boolean;
+    italic: boolean;
+    underline: boolean;
+    highlight: boolean;
+  };
 }
 
 interface ContentSectionProps {
@@ -45,7 +50,11 @@ const ContentSection = ({
                 settings.fontFamily === 'dancing-script' ? 'Dancing Script, cursive' :
                 settings.fontFamily === 'ubuntu' ? 'Ubuntu, sans-serif' : 'Inter, sans-serif',
     fontSize: `${settings.fontSize}px`,
-    color: settings.textColor || "#374151",
+    fontWeight: settings.emphasis.bold ? 'bold' : 'normal',
+    fontStyle: settings.emphasis.italic ? 'italic' : 'normal',
+    textDecoration: settings.emphasis.underline ? 'underline' : 'none',
+    backgroundColor: settings.emphasis.highlight ? '#fef3c7' : 'transparent',
+    color: isDarkMode ? '#ffffff' : '#374151',
     transition: "all 0.2s"
   };
 
@@ -54,7 +63,7 @@ const ContentSection = ({
       return `${fontFamilyClass} border-2 border-gray-200 rounded-full p-4 hover:bg-gray-50 transition-all text-left flex justify-between items-center`;
     if (answer === question.correctAnswer)
       return `${fontFamilyClass} border-2 border-emerald-500 bg-emerald-50 rounded-full p-4 transition-all text-left flex justify-between items-center animate-pulse`;
-    return `${fontFamilyClass} border-2 border-red-500 bg-red-50 rounded-full p-4 transition-all text-left flex justify-between items-center animate-pulse`;
+    return `${fontFamilyClass} border-2 border-blue-500 bg-blue-50 rounded-full p-4 transition-all text-left flex justify-between items-center animate-pulse`;
   };
 
   // Create choices array if it doesn't exist
@@ -91,7 +100,7 @@ const ContentSection = ({
               {selectedAnswer === answer && isCorrect !== null && (
                 isCorrect
                   ? <CheckCircle className="h-5 w-5 text-green-500" />
-                  : <XCircle className="h-5 w-5 text-red-500" />
+                  : <XCircle className="h-5 w-5 text-blue-500" />
               )}
             </button>
           ))}

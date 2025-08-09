@@ -139,7 +139,7 @@ const FEATURES: FeatureType[] = [
 ];
 
 const COMPETITORS = [
-  { id: "academicarc", name: "Academic Arc", color: "#8A0303" },
+  { id: "academicarc", name: "Academic Arc", color: "#3B82F6" },
   { id: "scoresmart", name: "ScoreSmart", color: "#38B04A" },
   { id: "magoosh", name: "Magoosh", color: "#046C76" },
   { id: "edisonos", name: "Edisonos", color: "#D93232" },

@@ -24,14 +24,14 @@ interface PracticeDisplayProps {
     fontFamily: string;
     fontSize: number;
     colorStyle: string;
-    textColor: string;
+    emphasis: {
+      bold: boolean;
+      italic: boolean;
+      underline: boolean;
+      highlight: boolean;
+    };
   };
   boardColor: string;
-  colorSettings: {
-    content: string;
-    keyPhrase: string;
-    formula: string;
-  };
   activeTab: "problem" | "solution" | "quote";
   mode?: "timer" | "level" | "manual" | "pomodoro" | "exam";
   timerValue?: string; // Current timer display value
@@ -56,7 +56,6 @@ const PracticeDisplay = ({
   onJumpTo,
   displaySettings,
   boardColor,
-  colorSettings,
   activeTab,
   mode = "manual",
   timerValue,
@@ -390,7 +389,11 @@ Keep the evaluation constructive and educational.`;
   const contentTextStyle = {
     fontFamily: getFontFamily(),
     fontSize: `${displaySettings.fontSize}px`,
-    color: isDarkMode ? '#ffffff' : displaySettings.textColor,
+    fontWeight: displaySettings.emphasis.bold ? 'bold' : 'normal',
+    fontStyle: displaySettings.emphasis.italic ? 'italic' : 'normal',
+    textDecoration: displaySettings.emphasis.underline ? 'underline' : 'none',
+    backgroundColor: displaySettings.emphasis.highlight ? '#fef3c7' : 'transparent',
+    color: isDarkMode ? '#ffffff' : '#374151',
     lineHeight: '1.6'
   };
 
@@ -434,7 +437,7 @@ Keep the evaluation constructive and educational.`;
                 <Flag className="h-3 w-3 text-green-500" />
               </Button>
               <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full">
-                <Flag className="h-3 w-3 text-red-500" />
+                <Flag className="h-3 w-3 text-blue-500" />
               </Button>
               {/* Calculator Icon */}
               <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full">
@@ -574,7 +577,7 @@ Keep the evaluation constructive and educational.`;
                             fontFamily: getFontFamily(),
                             fontSize: '12px',
                             fontWeight: '500',
-                            color: !selectedAnswer ? (isDarkMode ? '#ffffff' : colorSettings.content) : undefined
+                            color: isDarkMode ? '#ffffff' : '#374151'
                           }}
                         >
                           <div className="flex items-center justify-between w-full">
@@ -708,7 +711,7 @@ Keep the evaluation constructive and educational.`;
                     <Flag className="h-3 w-3 text-green-500" />
                   </Button>
                   <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full">
-                    <Flag className="h-3 w-3 text-red-500" />
+                    <Flag className="h-3 w-3 text-blue-500" />
                   </Button>
                   {/* Calculator Icon */}
                   <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full">
@@ -837,7 +840,7 @@ Keep the evaluation constructive and educational.`;
                                 fontFamily: getFontFamily(),
                                 fontSize: '12px',
                                 fontWeight: '500',
-                                color: !selectedAnswer ? (isDarkMode ? '#ffffff' : colorSettings.content) : undefined
+                                color: isDarkMode ? '#ffffff' : '#374151'
                               }}
                             >
                               <div className="flex items-center justify-between w-full">
@@ -960,7 +963,7 @@ Keep the evaluation constructive and educational.`;
                   <Flag className="h-3 w-3 text-green-500" />
                 </Button>
                 <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full">
-                  <Flag className="h-3 w-3 text-red-500" />
+                  <Flag className="h-3 w-3 text-blue-500" />
                 </Button>
                 {/* Calculator Icon */}
                 <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full">
@@ -1116,7 +1119,7 @@ Keep the evaluation constructive and educational.`;
                               fontFamily: getFontFamily(),
                               fontSize: '13px',
                               fontWeight: '500',
-                              color: !selectedAnswer ? (isDarkMode ? '#ffffff' : colorSettings.content) : undefined
+                              color: isDarkMode ? '#ffffff' : '#374151'
                             }}
                           >
                             <div className="flex items-center justify-between w-full">

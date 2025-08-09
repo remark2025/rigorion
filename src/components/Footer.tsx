@@ -68,7 +68,7 @@ export const Footer = () => {
               className={`font-medium mb-4 text-sm uppercase tracking-wider transition-colors ${
                 isDarkMode 
                   ? 'text-black hover:text-gray-700' 
-                  : 'text-gray-600 hover:text-[#8A0303]'
+                  : 'text-gray-600 hover:text-[#3B82F6]'
               }`}
             >
               {link.title}

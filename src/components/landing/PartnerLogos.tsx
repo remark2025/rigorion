@@ -108,7 +108,7 @@ export const PartnerLogos = () => {
       <div className="w-full px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className={`text-center mb-10 max-w-3xl mx-auto transition-all duration-1000 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
           <h2 className="text-3xl font-bold mb-3">
-            <span className="italic font-script text-[#8A0303]" style={{ fontFamily: 'Dancing Script, cursive' }}>
+            <span className="italic font-script text-[#3B82F6]" style={{ fontFamily: 'Dancing Script, cursive' }}>
               Academic Arc transforms SAT uncertainty into inevitability.
             </span>
           </h2>
@@ -116,7 +116,7 @@ export const PartnerLogos = () => {
             Strategic preparation with personalized analytics and proven results.
           </p>
           {isMobile && <div className="flex items-center justify-center mt-4 animate-pulse-slow">
-              <div className="flex items-center text-[#8A0303]">
+              <div className="flex items-center text-[#3B82F6]">
                 <ChevronLeft size={16} />
                 <p className="text-sm mx-1">Swipe to navigate</p>
                 <ChevronRight size={16} />
@@ -133,7 +133,7 @@ export const PartnerLogos = () => {
                 <div className="flex flex-col space-y-2 mb-6">
                   {PROMOTIONAL_ITEMS[activeProject].tags.map((tag, idx) => <span key={idx} className="text-sm text-gray-600">• {tag}</span>)}
                 </div>
-                <Link to={PROMOTIONAL_ITEMS[activeProject].link} className="text-[#8A0303] inline-flex items-center font-medium hover:underline group">
+                <Link to={PROMOTIONAL_ITEMS[activeProject].link} className="text-[#3B82F6] inline-flex items-center font-medium hover:underline group">
                   <span>Explore {PROMOTIONAL_ITEMS[activeProject].title}</span>
                   <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
                 </Link>
@@ -177,14 +177,14 @@ export const PartnerLogos = () => {
                             </span>)}
                         </div>
                         
-                        <Link to={item.link} className="text-[#8A0303] flex items-center hover:underline relative overflow-hidden group" onClick={() => {
+                        <Link to={item.link} className="text-[#3B82F6] flex items-center hover:underline relative overflow-hidden group" onClick={() => {
                       if (item.link.startsWith('/')) {
                         window.scrollTo(0, 0);
                       }
                     }}>
                           <span className="relative z-10">Learn more</span>
                           <ArrowRight className="ml-2 w-4 h-4 relative z-10 transition-transform group-hover:translate-x-1" />
-                          <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-[#8A0303] transition-all duration-300 group-hover:w-full"></span>
+                          <span className="absolute left-0 bottom-0 w-0 h-0.5 bg-[#3B82F6] transition-all duration-300 group-hover:w-full"></span>
                         </Link>
                       </div>
                     </CardContent>
@@ -203,7 +203,7 @@ export const PartnerLogos = () => {
               </>}
             
             <div className="absolute bottom-6 left-0 right-0 flex justify-center items-center space-x-3 z-30">
-              {PROMOTIONAL_ITEMS.map((_, idx) => <button key={idx} className={`w-2 h-2 rounded-full transition-all duration-300 ${activeProject === idx ? 'bg-[#8A0303] w-6' : 'bg-gray-200 hover:bg-gray-300'}`} onClick={() => setActiveProject(idx)} aria-label={`Go to product ${idx + 1}`} />)}
+              {PROMOTIONAL_ITEMS.map((_, idx) => <button key={idx} className={`w-2 h-2 rounded-full transition-all duration-300 ${activeProject === idx ? 'bg-[#3B82F6] w-6' : 'bg-gray-200 hover:bg-gray-300'}`} onClick={() => setActiveProject(idx)} aria-label={`Go to product ${idx + 1}`} />)}
             </div>
           </div>
         </div>

@@ -288,7 +288,7 @@ export const SoundsModal = ({ open, onOpenChange }: SoundsModalProps) => {
                       size="sm"
                       onClick={() => handleDelete(sound.id)}
                       className={`p-2 ${
-                        isDarkMode ? 'text-red-400 hover:bg-gray-700' : 'text-red-600 hover:bg-gray-100'
+                        isDarkMode ? 'text-blue-400 hover:bg-gray-700' : 'text-blue-600 hover:bg-gray-100'
                       }`}
                     >
                       <Trash2 className="h-3 w-3" />

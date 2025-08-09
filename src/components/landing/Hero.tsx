@@ -51,10 +51,7 @@ export const Hero = () => {
         <div className="flex flex-col items-center justify-center text-center">
           {/* Welcome Message */}
           <div className="mb-12 max-w-3xl w-full">
-            <h1 className="text-6xl font-bold text-gray-900 mb-6">
-              SAT Premium
-            </h1>
-            <p className="text-xl text-gray-700 leading-relaxed mb-8">
+            <p className="text-xl text-gray-700 leading-relaxed mb-8 font-light">
               Master the SAT with our comprehensive preparation platform. 
               Achieve your target score with personalized practice and expert guidance.
             </p>

@@ -74,11 +74,11 @@ export const SecureQuestionProvider: React.FC<SecureQuestionProviderProps> = ({
   // Error state
   if (error) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-md p-4 flex flex-col items-start">
-        <h3 className="text-red-800 font-medium mb-2">Error loading questions</h3>
-        <p className="text-red-600 mb-3">{error.message}</p>
+      <div className="bg-blue-50 border border-blue-200 rounded-md p-4 flex flex-col items-start">
+        <h3 className="text-blue-800 font-medium mb-2">Error loading questions</h3>
+        <p className="text-blue-600 mb-3">{error.message}</p>
         <button
-          className="bg-red-100 hover:bg-red-200 text-red-800 font-medium py-1 px-3 rounded"
+          className="bg-blue-100 hover:bg-blue-200 text-blue-800 font-medium py-1 px-3 rounded"
           onClick={() => refreshQuestions()}
         >
           Retry

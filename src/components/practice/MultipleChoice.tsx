@@ -40,8 +40,8 @@ export const MultipleChoice = ({
             animationClass = 'shadow-lg scale-105';
           } else {
             buttonStyle = isDarkMode 
-              ? 'bg-gradient-to-r from-red-600 to-rose-700 text-white border-red-400 shadow-red-500/30' 
-              : 'bg-gradient-to-r from-red-500 to-rose-600 text-white border-red-400 shadow-red-200/50';
+              ? 'bg-gradient-to-r from-blue-600 to-indigo-700 text-white border-blue-400 shadow-blue-500/30' 
+              : 'bg-gradient-to-r from-blue-500 to-indigo-600 text-white border-blue-400 shadow-blue-200/50';
             animationClass = 'shadow-lg scale-105';
           }
         } else if (selectedValue && isCorrectChoice) {

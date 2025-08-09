@@ -142,18 +142,18 @@ const AISearchBar: React.FC<AISearchBarProps> = ({
         
         {/* AI Mode Header */}
         <div className="flex items-center justify-center gap-2 mb-1">
-          <h3 className="font-semibold bg-gradient-to-r from-[#8A0303] to-red-600 bg-clip-text text-transparent text-sm">
+          <h3 className="font-semibold bg-gradient-to-r from-[#3B82F6] to-blue-600 bg-clip-text text-transparent text-sm">
             Your AI Guide
           </h3>
-          <Sparkles className="h-4 w-4 text-red-500 animate-pulse" />
+          <Sparkles className="h-4 w-4 text-blue-500 animate-pulse" />
         </div>
 
         {/* Integrated Input and Submit Row */}
         <form onSubmit={handleSubmit} className="w-full">
           <div className={cn(
             'relative flex items-center h-12 rounded-full border bg-transparent transition-all duration-300',
-            'border-gray-300 focus-within:border-[#8A0303]',
-            isFocused ? 'border-[#8A0303]' : 'border-gray-300'
+            'border-gray-300 focus-within:border-[#3B82F6]',
+            isFocused ? 'border-[#3B82F6]' : 'border-gray-300'
           )}>
             <Input
               type="text"
@@ -183,7 +183,7 @@ const AISearchBar: React.FC<AISearchBarProps> = ({
                 'rounded-full h-8 w-8 mr-2 p-0 transition-all duration-300 ease-out',
                 'hover:scale-110 transform-gpu disabled:scale-100 disabled:opacity-50',
                 'flex items-center justify-center shrink-0',
-                'bg-white hover:bg-gray-50 text-[#8A0303] border border-[#8A0303] hover:border-[#6b0202]'
+                'bg-white hover:bg-gray-50 text-[#3B82F6] border border-[#3B82F6] hover:border-[#1D4ED8]'
               )}
             >
               <Send className="h-3 w-3" />

@@ -52,7 +52,7 @@ export const SignUpForm = ({ onSuccess }: SignUpFormProps) => {
             <FormItem>
               <FormLabel className="font-light text-gray-600">Name</FormLabel>
               <FormControl>
-                <Input {...field} className="rounded-full border-gray-300 focus:border-[#8A0303] focus:ring-0 focus:outline-none focus-visible:ring-0 focus-visible:outline-none" />
+                <Input {...field} className="rounded-full border-gray-300 focus:border-[#3B82F6] focus:ring-0 focus:outline-none focus-visible:ring-0 focus-visible:outline-none" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -65,7 +65,7 @@ export const SignUpForm = ({ onSuccess }: SignUpFormProps) => {
             <FormItem>
               <FormLabel className="font-light text-gray-600">Email</FormLabel>
               <FormControl>
-                <Input {...field} type="email" className="rounded-full border-gray-300 focus:border-[#8A0303] focus:ring-0 focus:outline-none focus-visible:ring-0 focus-visible:outline-none" />
+                <Input {...field} type="email" className="rounded-full border-gray-300 focus:border-[#3B82F6] focus:ring-0 focus:outline-none focus-visible:ring-0 focus-visible:outline-none" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -78,7 +78,7 @@ export const SignUpForm = ({ onSuccess }: SignUpFormProps) => {
             <FormItem>
               <FormLabel className="font-light text-gray-600">Password</FormLabel>
               <FormControl>
-                <Input {...field} type="password" className="rounded-full border-gray-300 focus:border-[#8A0303] focus:ring-0 focus:outline-none focus-visible:ring-0 focus-visible:outline-none" />
+                <Input {...field} type="password" className="rounded-full border-gray-300 focus:border-[#3B82F6] focus:ring-0 focus:outline-none focus-visible:ring-0 focus-visible:outline-none" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -87,7 +87,7 @@ export const SignUpForm = ({ onSuccess }: SignUpFormProps) => {
         <div className="flex justify-center">
           <Button 
             type="submit" 
-            className="px-8 py-2 bg-white hover:bg-gray-50 text-[#8A0303] border border-[#8A0303] hover:border-[#6b0202] rounded-full shadow-lg hover:shadow-[0_0_20px_rgba(138,3,3,0.3)] transition-all duration-300 ease-out"
+            className="px-8 py-2 bg-white hover:bg-gray-50 text-[#3B82F6] border border-[#3B82F6] hover:border-[#1D4ED8] rounded-full shadow-lg hover:shadow-[0_0_20px_rgba(59,130,246,0.3)] transition-all duration-300 ease-out"
             disabled={isLoading}
           >
             {isLoading ? "Signing Up..." : "Sign Up"}

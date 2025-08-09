@@ -341,7 +341,7 @@ const PracticeFooter = ({
               />
             </div>
             {inputError && (
-              <div className="text-sm text-red-500">{inputError}</div>
+              <div className="text-sm text-blue-500">{inputError}</div>
             )}
             <Button 
               variant="default" 

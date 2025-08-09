@@ -74,8 +74,8 @@ const UnencryptedMathQuestions = ({ onQuestionsLoaded }: UnencryptedMathQuestion
 
   if (error) {
     return (
-      <div className="p-4 bg-red-50 border border-red-200 rounded-md">
-        <p className="text-red-600">Failed to load questions: {(error as Error).message}</p>
+      <div className="p-4 bg-blue-50 border border-blue-200 rounded-md">
+        <p className="text-blue-600">Failed to load questions: {(error as Error).message}</p>
         <div className="mt-4">
           <Button onClick={handleManualTest} variant="outline" className="mt-2">
             Test Custom Function

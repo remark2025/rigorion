@@ -207,14 +207,14 @@ const ObjectiveDialog = ({ open, onOpenChange, onSetObjective, maxQuestions = 30
                   onBlur={handleQuestionCountBlur}
                   className={`w-full rounded-xl transition-colors ${
                     questionError 
-                      ? 'border-red-500 focus:border-red-500' 
+                      ? 'border-blue-500 focus:border-blue-500' 
                       : isDarkMode 
                         ? 'bg-gray-800 border-green-500/30 text-green-400 placeholder-green-600' 
                         : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
                   }`}
                 />
                 {questionError && (
-                  <p className="text-red-500 text-xs mt-1">{questionError}</p>
+                  <p className="text-blue-500 text-xs mt-1">{questionError}</p>
                 )}
               </div>
             </TabsContent>
@@ -229,14 +229,14 @@ const ObjectiveDialog = ({ open, onOpenChange, onSetObjective, maxQuestions = 30
                   onBlur={handleTimeBlur}
                   className={`w-full rounded-xl transition-colors ${
                     timeError 
-                      ? 'border-red-500 focus:border-red-500' 
+                      ? 'border-blue-500 focus:border-blue-500' 
                       : isDarkMode 
                         ? 'bg-gray-800 border-green-500/30 text-green-400 placeholder-green-600' 
                         : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
                   }`}
                 />
                 {timeError && (
-                  <p className="text-red-500 text-xs mt-1">{timeError}</p>
+                  <p className="text-blue-500 text-xs mt-1">{timeError}</p>
                 )}
               </div>
             </TabsContent>

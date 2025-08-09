@@ -28,7 +28,7 @@ export const Header = () => {
           >
             <Navigation className="h-5 w-5 text-blue-500" />
           </button>
-          <Link to="/" className="font-serif text-xl md:text-2xl text-blue-600 tracking-wide" style={{fontFamily: 'Georgia, serif', textShadow: '0 1px 2px rgba(0,0,0,0.1)', letterSpacing: '0.5px'}}>SAT Premium</Link>
+          <Link to="/" className="font-semibold text-xl md:text-2xl text-blue-600 tracking-wide" style={{fontFamily: 'Inter, system-ui, -apple-system, sans-serif', letterSpacing: '0.025em'}}>SAT Premium<sup className="text-xs font-normal">®</sup></Link>
         </div>
         
         <div className="flex items-center">
