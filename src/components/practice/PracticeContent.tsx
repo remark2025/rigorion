@@ -323,11 +323,16 @@ export default function PracticeContent({
       : null);
 
   useEffect(() => {
+    const totalAnswered = correctAnswers + incorrectAnswers;
     if (objective?.type === "questions" && objective.value > 0) {
-      const totalAnswered = correctAnswers + incorrectAnswers;
-      setProgress(Math.round(totalAnswered / objective.value * 100));
+      // Calculate progress based on objective
+      setProgress(Math.round((totalAnswered / objective.value) * 100));
+    } else {
+      // Calculate progress based on total questions available
+      const totalQuestions = filteredQuestions.length || 1;
+      setProgress(Math.round((totalAnswered / totalQuestions) * 100));
     }
-  }, [correctAnswers, incorrectAnswers, objective]);
+  }, [correctAnswers, incorrectAnswers, objective, filteredQuestions.length]);
 
   useEffect(() => {
     if (propCurrentIndex !== undefined) {
@@ -590,7 +595,13 @@ export default function PracticeContent({
             totalQuestions={filteredQuestions.length} 
             displaySettings={displaySettings}
             boardColor={boardColor}
-            activeTab={activeTab} 
+            activeTab={activeTab}
+            mode={mode}
+            timerValue={timeRemaining}
+            objective={objective}
+            progress={progress}
+            correctAnswers={correctAnswers}
+            incorrectAnswers={incorrectAnswers}
           />
         ) : (
           <div className={`w-full p-8 text-center ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>No question selected</div>
