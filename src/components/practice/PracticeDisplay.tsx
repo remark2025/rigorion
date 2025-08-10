@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Search, Check, X, Bot, Lightbulb, Flag, Calculator, FileText, Trash2 } from "lucide-react";
+import { Search, Check, X, Bot, Lightbulb, Flag, Calculator, FileText, Trash2, Bookmark } from "lucide-react";
 import { Question } from "@/types/QuestionInterface";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -427,7 +427,7 @@ Keep the evaluation constructive and educational.`;
           {/* Column 1: Question + Answer Choices */}
           <div className={`${
             activeTab === 'problem' ? 'w-full' : 'w-3/5'
-          } bg-white border border-gray-200 p-8 shadow-sm`}>
+          } bg-white p-8`}>
           
           {/* SAT Question Header - Authentic Style */}
           <QuestionHeader questionNumber={currentQuestion.number} />
@@ -436,7 +436,10 @@ Keep the evaluation constructive and educational.`;
           <div className="mb-6 flex items-center justify-end gap-2">
             <HintDialog hint={currentQuestion.hint} currentQuestionIndex={currentQuestionIndex} />
             <Button variant="ghost" size="sm" className="p-1 h-8 w-8 rounded hover:bg-gray-100">
-              <Flag className="h-4 w-4 text-gray-600" />
+              <Flag className="h-4 w-4 text-blue-600" />
+            </Button>
+            <Button variant="ghost" size="sm" className="p-1 h-8 w-8 rounded hover:bg-gray-100">
+              <Bookmark className="h-4 w-4 text-blue-600" />
             </Button>
             {/* Calculator Icon */}
             <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full">
@@ -449,6 +452,10 @@ Keep the evaluation constructive and educational.`;
                 </div>
               )}
             </Button>
+            
+            {/* Separator */}
+            <div className="w-px h-6 bg-gray-300 mx-1"></div>
+            
             {/* Attempt History */}
             <AttemptHistory interactions={interactions} />
             
@@ -489,7 +496,7 @@ Keep the evaluation constructive and educational.`;
           {/* Answer Section */}
           <div className="space-y-3">
             {/* SAT Writing Mode */}
-            {isSATWriting ? (
+            {isSATWriting && (
               <div className="space-y-4">
                 <Textarea
                   value={writingAnswer}
@@ -551,9 +558,12 @@ Keep the evaluation constructive and educational.`;
                   </div>
                 )}
               </div>
-            ) : (
-              {/* Regular Question Mode */}
-              <div className="space-y-4">
+            )}
+
+            {!isSATWriting && (
+              <>
+                {/* Regular Question Mode */}
+                <div className="space-y-4">
                 {/* Multiple Choice - Responsive Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mt-8 max-w-2xl">
                     {currentQuestion.choices?.map((choice, index) => {
@@ -621,6 +631,7 @@ Keep the evaluation constructive and educational.`;
                   </div>
 
               </div>
+              </>
             )}
           </div>
         </div>
@@ -653,8 +664,13 @@ Keep the evaluation constructive and educational.`;
           <div className={`${
             hasGraph ? 'w-2/5' : 'w-2/5'
           } rounded-xl p-4 transition-colors ${
-            isDarkMode ? 'bg-gray-800 border border-green-500/30' : 'bg-gray-50 border border-gray-200'
+            isDarkMode ? 'bg-gray-800 border border-green-500/30' : 'bg-white border border-gray-200'
           }`}>
+            
+            {/* Broken Line Spacer */}
+            <div className="mb-4 flex justify-center">
+              <div className="w-full border-t border-dashed border-gray-300"></div>
+            </div>
             
             {/* Solution Section */}
             {activeTab === 'solution' && (
@@ -721,10 +737,10 @@ Keep the evaluation constructive and educational.`;
               <div className="mb-4 flex items-center justify-end gap-1">
                 <HintDialog hint={currentQuestion.hint} currentQuestionIndex={currentQuestionIndex} />
                   <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full">
-                    <Flag className="h-3 w-3 text-green-500" />
+                    <Flag className="h-3 w-3 text-blue-600" />
                   </Button>
                   <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full">
-                    <Flag className="h-3 w-3 text-blue-500" />
+                    <Bookmark className="h-3 w-3 text-blue-600" />
                   </Button>
                   {/* Calculator Icon */}
                   <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full">
@@ -737,6 +753,10 @@ Keep the evaluation constructive and educational.`;
                       </div>
                     )}
                   </Button>
+                  
+                  {/* Separator */}
+                  <div className="w-px h-4 bg-gray-300 mx-1"></div>
+                  
                   {/* Attempt History */}
                   <AttemptHistory interactions={interactions} />
                   
@@ -750,7 +770,6 @@ Keep the evaluation constructive and educational.`;
                     <FileText className="h-3 w-3 text-purple-500" />
                   </Button>
                 </div>
-              </div>
               
               <div className="space-y-4 mb-6">
                 <div 
@@ -818,8 +837,9 @@ Keep the evaluation constructive and educational.`;
                     )}
                   </div>
                 ) : (
-                  <div className="space-y-4">
+                  <>
                     {/* SAT Answer Choices - Clean Layout */}
+                    <div className="space-y-4">
                     <div className="space-y-2 mt-6">
                         {currentQuestion.choices?.map((choice, index) => {
                           const choiceKey = String.fromCharCode(65 + index);
@@ -881,6 +901,7 @@ Keep the evaluation constructive and educational.`;
                     )}
 
                   </div>
+                  </>
                 )}
               </div>
             </div>
@@ -890,8 +911,13 @@ Keep the evaluation constructive and educational.`;
           {/* Solution Below */}
           {activeTab !== 'problem' && (
             <div className={`rounded-xl p-4 transition-colors ${
-              isDarkMode ? 'bg-gray-800 border border-green-500/30' : 'bg-gray-50 border border-gray-200'
+              isDarkMode ? 'bg-gray-800 border border-green-500/30' : 'bg-white border border-gray-200'
             }`}>
+              {/* Broken Line Spacer */}
+              <div className="mb-4 flex justify-center">
+                <div className="w-full border-t border-dashed border-gray-300"></div>
+              </div>
+              
               {activeTab === 'solution' && (
                 <>
                   <h3 className={`text-sm font-semibold mb-3 ${
@@ -948,10 +974,10 @@ Keep the evaluation constructive and educational.`;
             <div className="mb-4 flex items-center justify-end gap-1">
               <HintDialog hint={currentQuestion.hint} currentQuestionIndex={currentQuestionIndex} />
                 <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full">
-                  <Flag className="h-3 w-3 text-green-500" />
+                  <Flag className="h-3 w-3 text-blue-600" />
                 </Button>
                 <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full">
-                  <Flag className="h-3 w-3 text-blue-500" />
+                  <Bookmark className="h-3 w-3 text-blue-600" />
                 </Button>
                 {/* Calculator Icon */}
                 <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full">
@@ -964,6 +990,10 @@ Keep the evaluation constructive and educational.`;
                     </div>
                   )}
                 </Button>
+                
+                {/* Separator */}
+                <div className="w-px h-4 bg-gray-300 mx-1"></div>
+                
                 {/* Attempt History */}
                 <AttemptHistory interactions={interactions} />
                 
@@ -977,7 +1007,6 @@ Keep the evaluation constructive and educational.`;
                   <FileText className="h-3 w-3 text-purple-500" />
                 </Button>
               </div>
-            </div>
             
             {/* Graph Section - Above Question Content (Alternative Layout) */}
             {graphUrl && (
@@ -1064,8 +1093,9 @@ Keep the evaluation constructive and educational.`;
                   )}
                 </div>
               ) : (
-                <div className="space-y-4">
+                <>
                   {/* SAT Mobile Answer Choices */}
+                  <div className="space-y-4">
                   <div className="space-y-2 mt-6">
                       {currentQuestion.choices?.map((choice, index) => {
                         const choiceKey = String.fromCharCode(65 + index);
@@ -1127,6 +1157,7 @@ Keep the evaluation constructive and educational.`;
                     )}
 
                 </div>
+                </>
               )}
             </div>
           </div>
@@ -1134,8 +1165,13 @@ Keep the evaluation constructive and educational.`;
           {/* Solution Below for Mobile */}
           {activeTab !== 'problem' && (
             <div className={`rounded-xl p-4 transition-colors ${
-              isDarkMode ? 'bg-gray-800 border border-green-500/30' : 'bg-gray-50 border border-gray-200'
+              isDarkMode ? 'bg-gray-800 border border-green-500/30' : 'bg-white border border-gray-200'
             }`}>
+              {/* Broken Line Spacer */}
+              <div className="mb-4 flex justify-center">
+                <div className="w-full border-t border-dashed border-gray-300"></div>
+              </div>
+              
               {activeTab === 'solution' && (
                 <>
                   <h3 className={`text-sm font-semibold mb-3 ${

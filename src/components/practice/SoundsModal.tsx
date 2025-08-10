@@ -3,12 +3,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Play, Pause, Upload, Trash2, Volume2, VolumeX } from "lucide-react";
+import { Play, Pause, Volume2, VolumeX } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import { useAudio } from "@/contexts/AudioContext";
-import { Sound, uploadSound, getUserSounds, deleteSound, getAllAvailableSounds } from "@/services/soundService";
+import { Sound, getAllAvailableSounds } from "@/services/soundService";
 
 interface SoundsModalProps {
   open: boolean;
@@ -34,8 +34,6 @@ export const SoundsModal = ({ open, onOpenChange }: SoundsModalProps) => {
   
   const [sounds, setSounds] = useState<Sound[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (open) {
@@ -63,37 +61,6 @@ export const SoundsModal = ({ open, onOpenChange }: SoundsModalProps) => {
     }
   };
 
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (!file || !user?.id) return;
-
-    console.log('Starting upload for file:', file.name, 'size:', file.size, 'type:', file.type);
-    console.log('User ID:', user.id);
-
-    setUploading(true);
-    try {
-      const newSound = await uploadSound(file, user.id);
-      console.log('Upload successful:', newSound);
-      setSounds(prev => [...prev, newSound]);
-      toast({
-        title: "Success",
-        description: "Sound uploaded successfully!",
-        variant: "default"
-      });
-    } catch (error: any) {
-      console.error('Upload failed:', error);
-      toast({
-        title: "Upload Failed",
-        description: error.message,
-        variant: "destructive"
-      });
-    } finally {
-      setUploading(false);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
-    }
-  };
 
   const handlePlay = (sound: Sound) => {
     if (currentSound?.id === sound.id && isPlaying) {
@@ -108,31 +75,6 @@ export const SoundsModal = ({ open, onOpenChange }: SoundsModalProps) => {
     }
   };
 
-  const handleDelete = async (soundId: string) => {
-    if (!user?.id) return;
-    
-    try {
-      await deleteSound(soundId, user.id);
-      setSounds(prev => prev.filter(s => s.id !== soundId));
-      
-      // Stop playing if this sound was playing
-      if (currentSound?.id === soundId) {
-        stopSound();
-      }
-      
-      toast({
-        title: "Success",
-        description: "Sound deleted successfully",
-        variant: "default"
-      });
-    } catch (error: any) {
-      toast({
-        title: "Delete Failed",
-        description: error.message,
-        variant: "destructive"
-      });
-    }
-  };
 
   const handleVolumeChange = (newVolume: number) => {
     setVolume(newVolume);
@@ -143,8 +85,6 @@ export const SoundsModal = ({ open, onOpenChange }: SoundsModalProps) => {
   };
 
   // Note: Audio continues playing when modal closes (this is the desired behavior)
-
-  const userSounds = sounds.filter(s => s.isUserUploaded);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -188,52 +128,6 @@ export const SoundsModal = ({ open, onOpenChange }: SoundsModalProps) => {
           </span>
         </div>
 
-        {/* Upload Section - Only show if user is authenticated */}
-        {user?.id && (
-          <div className={`border rounded-lg p-4 mb-4 ${
-            isDarkMode ? 'border-green-500/30 bg-gray-800/50' : 'border-gray-200 bg-gray-50'
-          }`}>
-            <div className="flex items-center justify-between mb-2">
-              <h3 className={`text-sm font-medium ${isDarkMode ? 'text-green-400' : 'text-gray-900'}`}>
-                Your Sounds ({userSounds.length}/3)
-              </h3>
-              <Button
-                onClick={() => fileInputRef.current?.click()}
-                disabled={uploading || userSounds.length >= 3}
-                size="sm"
-                className={`flex items-center gap-1 ${
-                  isDarkMode 
-                    ? 'bg-green-600 hover:bg-green-700 text-white disabled:bg-gray-700' 
-                    : 'bg-blue-600 hover:bg-blue-700 text-white disabled:bg-gray-400'
-                }`}
-              >
-                <Upload className="h-3 w-3" />
-                {uploading ? "Uploading..." : "Upload"}
-              </Button>
-            </div>
-            <p className={`text-xs ${isDarkMode ? 'text-green-500' : 'text-gray-500'}`}>
-              MP3 files only, max 10MB each
-            </p>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="audio/mp3,audio/mpeg"
-              onChange={handleFileUpload}
-              className="hidden"
-            />
-          </div>
-        )}
-
-        {/* Login prompt for non-authenticated users */}
-        {!user?.id && (
-          <div className={`border rounded-lg p-4 mb-4 text-center ${
-            isDarkMode ? 'border-green-500/30 bg-gray-800/50' : 'border-gray-200 bg-gray-50'
-          }`}>
-            <p className={`text-sm ${isDarkMode ? 'text-green-400' : 'text-gray-700'}`}>
-              Sign in to upload your own sounds (up to 3 files, 10MB each)
-            </p>
-          </div>
-        )}
 
         {/* Sounds List */}
         <ScrollArea className="h-80">
@@ -244,7 +138,7 @@ export const SoundsModal = ({ open, onOpenChange }: SoundsModalProps) => {
               </div>
             ) : sounds.length === 0 ? (
               <div className={`text-center py-8 ${isDarkMode ? 'text-green-500' : 'text-gray-500'}`}>
-                No sounds available. Upload your first sound!
+                No sounds available.
               </div>
             ) : (
               sounds.map((sound) => (
@@ -276,24 +170,11 @@ export const SoundsModal = ({ open, onOpenChange }: SoundsModalProps) => {
                         {sound.name}
                       </p>
                       <p className={`text-xs ${isDarkMode ? 'text-green-500' : 'text-gray-500'}`}>
-                        {sound.isUserUploaded ? 'Your upload' : 'Sample sound'}
+                        Sample sound
                         {sound.duration && ` • ${Math.floor(sound.duration / 60)}:${(sound.duration % 60).toString().padStart(2, '0')}`}
                       </p>
                     </div>
                   </div>
-                  
-                  {sound.isUserUploaded && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => handleDelete(sound.id)}
-                      className={`p-2 ${
-                        isDarkMode ? 'text-blue-400 hover:bg-gray-700' : 'text-blue-600 hover:bg-gray-100'
-                      }`}
-                    >
-                      <Trash2 className="h-3 w-3" />
-                    </Button>
-                  )}
                 </div>
               ))
             )}

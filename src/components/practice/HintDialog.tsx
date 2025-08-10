@@ -31,7 +31,7 @@ const HintDialog = ({ hint = "Try breaking down the problem into smaller parts."
           size="sm"
           className="p-1 h-6 rounded-full"
         >
-          <Lightbulb className="h-4 w-4 text-orange-500" />
+          <Lightbulb className="h-4 w-4 text-blue-600" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="sm:max-w-[425px] bg-white animate-in fade-in slide-in-from-top-1 duration-300">
