@@ -10,6 +10,7 @@ import { analyzeWithAIML } from "@/services/aimlApi";
 import HintDialog from "./HintDialog";
 import TypingAnimation from "@/components/ui/TypingAnimation";
 import AttemptHistory from "./AttemptHistory";
+import QuestionHeader from "./QuestionHeader";
 
 interface PracticeDisplayProps {
   currentQuestion: Question | null;
@@ -90,8 +91,9 @@ const PracticeDisplay = ({
   const isCorrect = propIsCorrect !== undefined ? propIsCorrect : localIsCorrect;
 
   // Check if this is a SAT Writing module
-  const isSATWriting = currentQuestion?.chapter?.toLowerCase().includes('writing') || 
-                      currentQuestion?.module?.toLowerCase().includes('writing');
+  const isSATWriting =
+    (currentQuestion?.chapter?.toLowerCase()?.includes('writing') ?? false) ||
+    (currentQuestion?.module?.toLowerCase()?.includes('writing') ?? false);
 
   // Calculate comprehensive target progress metrics
   const calculateObjectiveProgress = () => {
@@ -411,12 +413,11 @@ Keep the evaluation constructive and educational.`;
     );
   }
 
-
   const graphUrl = getGraphUrl(currentQuestion);
   const hasGraph = !!graphUrl;
 
   return (
-    <div className="min-h-[calc(100vh-300px)] w-full px-2 sm:px-[28px] bg-white">
+    <div className="min-h-screen w-full px-2 sm:px-8 bg-white">
       {/* SAT Practice Layout Container */}
       <div className="flex flex-col space-y-4">
         
@@ -425,46 +426,56 @@ Keep the evaluation constructive and educational.`;
           
           {/* Column 1: Question + Answer Choices */}
           <div className={`${
-            hasGraph 
-              ? 'w-2/5' 
-              : activeTab === 'problem' ? 'w-full' : 'w-3/5'
+            activeTab === 'problem' ? 'w-full' : 'w-3/5'
           } bg-white border border-gray-200 p-8 shadow-sm`}>
           
-          {/* SAT Question Header */}
-          <div className="mb-6 flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-800">
-              Question {currentQuestion.number}
-            </h2>
-            <div className="flex items-center gap-2">
-              <HintDialog hint={currentQuestion.hint} currentQuestionIndex={currentQuestionIndex} />
-              <Button variant="ghost" size="sm" className="p-1 h-8 w-8 rounded hover:bg-gray-100">
-                <Flag className="h-4 w-4 text-gray-600" />
-              </Button>
-              {/* Calculator Icon */}
-              <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full">
-                {currentQuestion.calculatorAllowed ? (
-                  <Calculator className="h-3 w-3 text-blue-500" />
-                ) : (
-                  <div className="relative">
-                    <Calculator className="h-3 w-3 text-gray-400" />
-                    <X className="h-2 w-2 text-red-500 absolute -top-0.5 -right-0.5" />
-                  </div>
-                )}
-              </Button>
-              {/* Attempt History */}
-              <AttemptHistory interactions={interactions} />
-              
-              {/* Interactions Log Button */}
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="p-1 h-6 w-6 rounded-full"
-                onClick={() => setShowInteractionLog(!showInteractionLog)}
-              >
-                <FileText className="h-3 w-3 text-purple-500" />
-              </Button>
-            </div>
+          {/* SAT Question Header - Authentic Style */}
+          <QuestionHeader questionNumber={currentQuestion.number} />
+          
+          {/* Action Icons Row */}
+          <div className="mb-6 flex items-center justify-end gap-2">
+            <HintDialog hint={currentQuestion.hint} currentQuestionIndex={currentQuestionIndex} />
+            <Button variant="ghost" size="sm" className="p-1 h-8 w-8 rounded hover:bg-gray-100">
+              <Flag className="h-4 w-4 text-gray-600" />
+            </Button>
+            {/* Calculator Icon */}
+            <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full">
+              {currentQuestion.calculatorAllowed ? (
+                <Calculator className="h-3 w-3 text-blue-500" />
+              ) : (
+                <div className="relative">
+                  <Calculator className="h-3 w-3 text-gray-400" />
+                  <X className="h-2 w-2 text-red-500 absolute -top-0.5 -right-0.5" />
+                </div>
+              )}
+            </Button>
+            {/* Attempt History */}
+            <AttemptHistory interactions={interactions} />
+            
+            {/* Interactions Log Button */}
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="p-1 h-6 w-6 rounded-full"
+              onClick={() => setShowInteractionLog(!showInteractionLog)}
+            >
+              <FileText className="h-3 w-3 text-purple-500" />
+            </Button>
           </div>
+          
+          {/* Graph Section - Above Question Content */}
+          {graphUrl && (
+            <div className="mb-6 bg-gray-50 border border-gray-200 rounded-lg p-4">
+              <div className="flex justify-center">
+                <img 
+                  src={graphUrl} 
+                  alt="Question Graph" 
+                  className="max-w-full h-auto max-h-80 border border-gray-300 rounded shadow-sm"
+                  style={{ backgroundColor: 'white' }}
+                />
+              </div>
+            </div>
+          )}
           
           {/* Question Content */}
           <div className="space-y-4 mb-6">
@@ -541,7 +552,7 @@ Keep the evaluation constructive and educational.`;
                 )}
               </div>
             ) : (
-              /* Regular Question Mode */
+              {/* Regular Question Mode */}
               <div className="space-y-4">
                 {/* Multiple Choice - Responsive Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6 mt-8 max-w-2xl">
@@ -703,14 +714,12 @@ Keep the evaluation constructive and educational.`;
               isDarkMode ? 'bg-gray-900' : 'bg-white'
             }`} style={{ backgroundColor: isDarkMode ? undefined : boardColor }}>
               
-              <div className="mb-4 flex items-center" style={{ gap: '160px' }}>
-                <h2 className={`text-xl font-semibold ${
-                  isDarkMode ? 'text-green-400' : 'text-blue-600'
-                }`}>
-                  Question {currentQuestion.number}
-                </h2>
-                <div className="flex items-center gap-1">
-                  <HintDialog hint={currentQuestion.hint} currentQuestionIndex={currentQuestionIndex} />
+              {/* SAT Question Header - Authentic Style */}
+              <QuestionHeader questionNumber={currentQuestion.number} />
+              
+              {/* Action Icons Row */}
+              <div className="mb-4 flex items-center justify-end gap-1">
+                <HintDialog hint={currentQuestion.hint} currentQuestionIndex={currentQuestionIndex} />
                   <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full">
                     <Flag className="h-3 w-3 text-green-500" />
                   </Button>
@@ -862,33 +871,20 @@ Keep the evaluation constructive and educational.`;
                         })}
                       </div>
 
+                    {/* SAT-style separator - shows after answer is selected */}
+                    {selectedAnswer && (
+                      <div className="mt-6 pt-4 border-t border-gray-300" style={{ borderWidth: '0.5px' }}>
+                        <div className="text-center text-xs text-gray-500 font-medium tracking-wide">
+                          • • •
+                        </div>
+                      </div>
+                    )}
+
                   </div>
                 )}
               </div>
             </div>
 
-            {/* Graph Column */}
-            {hasGraph && (
-              <div className={`w-2/5 rounded-xl p-4 transition-colors ${
-                isDarkMode ? 'bg-gray-900' : 'bg-white'
-              }`} style={{ backgroundColor: isDarkMode ? undefined : boardColor }}>
-                <div className="h-full flex flex-col justify-center">
-                  <h3 className={`text-sm font-semibold mb-3 ${
-                    isDarkMode ? 'text-green-400' : 'text-blue-600'
-                  }`}>
-                    📊 Graph
-                  </h3>
-                  <div className="flex justify-center items-center">
-                    <img 
-                      src={graphUrl} 
-                      alt="Question Graph" 
-                      className="max-w-full h-auto rounded-lg shadow-md"
-                      style={{ maxHeight: '300px' }}
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Solution Below */}
@@ -945,14 +941,12 @@ Keep the evaluation constructive and educational.`;
           <div className={`rounded-lg p-4 transition-colors ${
             isDarkMode ? 'bg-gray-900' : 'bg-white'
           }`} style={{ backgroundColor: isDarkMode ? undefined : boardColor }}>
-            <div className="mb-4 flex items-center" style={{ gap: '160px' }}>
-              <h2 className={`text-xl font-semibold ${
-                isDarkMode ? 'text-green-400' : 'text-blue-600'
-              }`}>
-                Question {currentQuestion.number}
-              </h2>
-              <div className="flex items-center gap-1">
-                <HintDialog hint={currentQuestion.hint} currentQuestionIndex={currentQuestionIndex} />
+            {/* SAT Question Header - Authentic Style */}
+            <QuestionHeader questionNumber={currentQuestion.number} />
+            
+            {/* Action Icons Row */}
+            <div className="mb-4 flex items-center justify-end gap-1">
+              <HintDialog hint={currentQuestion.hint} currentQuestionIndex={currentQuestionIndex} />
                 <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full">
                   <Flag className="h-3 w-3 text-green-500" />
                 </Button>
@@ -985,6 +979,20 @@ Keep the evaluation constructive and educational.`;
               </div>
             </div>
             
+            {/* Graph Section - Above Question Content (Alternative Layout) */}
+            {graphUrl && (
+              <div className="mb-6 bg-gray-50 border border-gray-200 rounded-lg p-4">
+                <div className="flex justify-center">
+                  <img 
+                    src={graphUrl} 
+                    alt="Question Graph" 
+                    className="max-w-full h-auto max-h-80 border border-gray-300 rounded shadow-sm"
+                    style={{ backgroundColor: 'white' }}
+                  />
+                </div>
+              </div>
+            )}
+            
             <div className="space-y-4">
               <div 
                 style={contentTextStyle}
@@ -993,27 +1001,6 @@ Keep the evaluation constructive and educational.`;
               />
             </div>
           </div>
-
-          {/* Graph Section (between question and choices) */}
-          {hasGraph && (
-            <div className={`rounded-xl p-4 transition-colors ${
-              isDarkMode ? 'bg-gray-900' : 'bg-white'
-            }`} style={{ backgroundColor: isDarkMode ? undefined : boardColor }}>
-              <h3 className={`text-sm font-semibold mb-3 ${
-                isDarkMode ? 'text-green-400' : 'text-blue-600'
-              }`}>
-                📊 Graph
-              </h3>
-              <div className="flex justify-center items-center">
-                <img 
-                  src={graphUrl} 
-                  alt="Question Graph" 
-                  className="max-w-full h-auto rounded-lg shadow-md"
-                  style={{ maxHeight: '250px' }}
-                />
-              </div>
-            </div>
-          )}
 
           {/* Answer Choices Section */}
           <div className={`rounded-xl p-6 transition-colors ${
@@ -1129,6 +1116,15 @@ Keep the evaluation constructive and educational.`;
                         );
                       })}
                     </div>
+
+                    {/* SAT-style separator - shows after answer is selected (Mobile) */}
+                    {selectedAnswer && (
+                      <div className="mt-6 pt-4 border-t border-gray-300" style={{ borderWidth: '0.5px' }}>
+                        <div className="text-center text-xs text-gray-500 font-medium tracking-wide">
+                          • • •
+                        </div>
+                      </div>
+                    )}
 
                 </div>
               )}
@@ -1258,7 +1254,7 @@ Keep the evaluation constructive and educational.`;
           }`}>
             <strong>Simplified Interaction Structure:</strong>
             <pre className="mt-1 p-2 bg-gray-100 dark:bg-gray-900 rounded text-xs overflow-x-auto">
-{`{
+              {`{
   "questionId": "q_123",
   "isCorrect": false,
   "timeSpentSeconds": 45,

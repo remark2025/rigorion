@@ -564,6 +564,35 @@ export const comprehensiveSampleQuestions: Question[] = [
       "Evaluate the precision of each word choice",
       "Select the most appropriate and precise option"
     ]
+  },
+
+  // Math Question with Graph Example
+  {
+    id: "MATH-GRAPH-001",
+    number: 24,
+    content: "The graph shows the relationship between the number of hours studied and test scores. Based on the graph, what is the approximate test score for a student who studied for 6 hours?",
+    solution: "Looking at the graph, at x = 6 hours, the corresponding y-value (test score) is approximately 85.",
+    difficulty: "medium",
+    chapter: "Chapter 2", 
+    module: "All SAT Math",
+    bookmarked: false,
+    examNumber: 3,
+    choices: ["75", "80", "85", "90"],
+    correctAnswer: "85",
+    explanation: "Read the y-value from the graph at x = 6 hours",
+    graph: {
+      url: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDQwMCAzMDAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPCEtLSBCYWNrZ3JvdW5kIC0tPgogIDxyZWN0IHdpZHRoPSI0MDAiIGhlaWdodD0iMzAwIiBmaWxsPSJ3aGl0ZSIgc3Ryb2tlPSIjZGRkIiBzdHJva2Utd2lkdGg9IjEiLz4KICAKICA8IS0tIEdyaWQgTGluZXMgLS0+CiAgPGRlZnM+CiAgICA8cGF0dGVybiBpZD0iZ3JpZCIgd2lkdGg9IjQwIiBoZWlnaHQ9IjMwIiBwYXR0ZXJuVW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHBhdGggZD0iTSA0MCAwIEwgMCAwIDAgMzAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iI2YwZjBmMCIgc3Ryb2tlLXdpZHRoPSIxIi8+CiAgICA8L3BhdHRlcm4+CiAgPC9kZWZzPgogIDxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz4KICAKICA8IS0tIEF4ZXMgLS0+CiAgPGxpbmUgeDE9IjQwIiB5MT0iMjUwIiB4Mj0iMzYwIiB5Mj0iMjUwIiBzdHJva2U9IiMzMzMiIHN0cm9rZS13aWR0aD0iMiIvPgogIDxsaW5lIHgxPSI0MCIgeTE9IjI1MCIgeDI9IjQwIiB5Mj0iNTAiIHN0cm9rZT0iIzMzMyIgc3Ryb2tlLXdpZHRoPSIyIi8+CiAgCiAgPCEtLSBBcnJvd3MgLS0+CiAgPHBvbHlnb24gcG9pbnRzPSIzNjAsMjUwIDM1NSwyNDUgMzU1LDI1NSIgZmlsbD0iIzMzMyIvPgogIDxwb2x5Z29uIHBvaW50cz0iNDAsNTAgNDUsNTUgMzUsNTUiIGZpbGw9IiMzMzMiLz4KICAKICA8IS0tIFgtYXhpcyBsYWJlbHMgLS0+CiAgPHRleHQgeD0iNDAiIHk9IjI3MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxMiIgZm9udC1mYW1pbHk9IkFyaWFsIj4wPC90ZXh0PgogIDx0ZXh0IHg9IjEyMCIgeT0iMjcwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjEyIiBmb250LWZhbWlseT0iQXJpYWwiPjI8L3RleHQ+CiAgPHRleHQgeD0iMjAwIiB5PSIyNzAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMTIiIGZvbnQtZmFtaWx5PSJBcmlhbCI+NDwvdGV4dD4KICA8dGV4dCB4PSIyODAiIHk9IjI3MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxMiIgZm9udC1mYW1pbHk9IkFyaWFsIj42PC90ZXh0PgogIDx0ZXh0IHg9IjM2MCIgeT0iMjcwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjEyIiBmb250LWZhbWlseT0iQXJpYWwiPjg8L3RleHQ+CiAgCiAgPCEtLSBZLWF4aXMgbGFiZWxzIC0tPgogIDx0ZXh0IHg9IjI1IiB5PSIyNTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMTIiIGZvbnQtZmFtaWx5PSJBcmlhbCI+NDA8L3RleHQ+CiAgPHRleHQgeD0iMjUiIHk9IjIwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxMiIgZm9udC1mYW1pbHk9IkFyaWFsIj41MDwvdGV4dD4KICA8dGV4dCB4PSIyNSIgeT0iMTUwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjEyIiBmb250LWZhbWlseT0iQXJpYWwiPjYwPC90ZXh0PgogIDx0ZXh0IHg9IjI1IiB5PSIxMDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMTIiIGZvbnQtZmFtaWx5PSJBcmlhbCI+NzA8L3RleHQ+CiAgPHRleHQgeD0iMjUiIHk9IjcwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjEyIiBmb250LWZhbWlseT0iQXJpYWwiPjgwPC90ZXh0PgogIDx0ZXh0IHg9IjI1IiB5PSI1MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxMiIgZm9udC1mYW1pbHk9IkFyaWFsIj45MDwvdGV4dD4KICAKICA8IS0tIERhdGEgcG9pbnRzIC0tPgogIDxjaXJjbGUgY3g9IjQwIiBjeT0iMjMwIiByPSI0IiBmaWxsPSIjMDA3Y2JhIi8+CiAgPGNpcmNsZSBjeD0iMTIwIiBjeT0iMjAwIiByPSI0IiBmaWxsPSIjMDA3Y2JhIi8+CiAgPGNpcmNsZSBjeD0iMjAwIiBjeT0iMTYwIiByPSI0IiBmaWxsPSIjMDA3Y2JhIi8+CiAgPGNpcmNsZSBjeD0iMjgwIiBjeT0iMTEwIiByPSI0IiBmaWxsPSIjMDA3Y2JhIi8+CiAgPGNpcmNsZSBjeD0iMzYwIiBjeT0iODAiIHI9IjQiIGZpbGw9IiMwMDdjYmEiLz4KICAKICA8IS0tIExpbmUgY29ubmVjdGluZyBwb2ludHMgLS0+CiAgPHBhdGggZD0iTSA0MCAyMzAgTCAxMjAgMjAwIEwgMjAwIDE2MCBMIDI4MCAxMTAgTCAzNjAgODAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzAwN2NiYSIgc3Ryb2tlLXdpZHRoPSIyIi8+CiAgCiAgPCEtLSBBeGlzIGxhYmVscyAtLT4KICA8dGV4dCB4PSIyMDAiIHk9IjI5NSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxNCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXdlaWdodD0iYm9sZCI+SG91cnMgU3R1ZGllZDwvdGV4dD4KICA8dGV4dCB4PSIxNSIgeT0iMTUwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjE0IiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtd2VpZ2h0PSJib2xkIiB0cmFuc2Zvcm09InJvdGF0ZSgtOTAgMTUgMTUwKSI+VGVzdCBTY29yZTwvdGV4dD4KPC9zdmc+"
+    },
+    solutionSteps: [
+      "Locate x = 6 on the horizontal axis (Hours Studied)",
+      "Follow the vertical line up to the data point",
+      "Read the corresponding y-value (Test Score) from the vertical axis",
+      "The test score at 6 hours is approximately 85"
+    ],
+    quote: {
+      text: "A graph is worth a thousand words.",
+      source: "Mathematical Wisdom"
+    }
   }
 ];
 
