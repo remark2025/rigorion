@@ -26,6 +26,11 @@ export interface Question {
     };
     hint?: string;
     calculatorAllowed?: boolean;
+    passage?: {
+        title?: string;
+        content: string;
+        source?: string;
+    };
 }
 
 export default interface QuestionInterface {} // Or remove if unnecessary

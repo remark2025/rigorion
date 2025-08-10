@@ -95,6 +95,12 @@ const PracticeDisplay = ({
     (currentQuestion?.chapter?.toLowerCase()?.includes('writing') ?? false) ||
     (currentQuestion?.module?.toLowerCase()?.includes('writing') ?? false);
 
+  // Check if this is a reading question with passage
+  const hasPassage = !!currentQuestion?.passage;
+  const isReadingQuestion = 
+    (currentQuestion?.module?.toLowerCase()?.includes('reading') ?? false) ||
+    hasPassage;
+
   // Calculate comprehensive target progress metrics
   const calculateObjectiveProgress = () => {
     const targetTotal = (objective?.type === "questions" && objective?.value)
@@ -472,12 +478,12 @@ Keep the evaluation constructive and educational.`;
           
           {/* Graph Section - Above Question Content */}
           {graphUrl && (
-            <div className="mb-6 bg-gray-50 border border-gray-200 rounded-lg p-4">
+            <div className="mb-6 bg-white p-4">
               <div className="flex justify-center">
                 <img 
                   src={graphUrl} 
                   alt="Question Graph" 
-                  className="max-w-full h-auto max-h-80 border border-gray-300 rounded shadow-sm"
+                  className="max-w-full h-auto max-h-80"
                   style={{ backgroundColor: 'white' }}
                 />
               </div>
@@ -494,7 +500,7 @@ Keep the evaluation constructive and educational.`;
           </div>
 
           {/* Answer Section */}
-          <div className="space-y-3">
+          <div className="space-y-3 pb-4" style={{ borderBottom: '2px solid #CFCFCF' }}>
             {/* SAT Writing Mode */}
             {isSATWriting && (
               <div className="space-y-4">
@@ -634,47 +640,29 @@ Keep the evaluation constructive and educational.`;
               </>
             )}
           </div>
-        </div>
-
-        {/* Column 2: Graph (when available) */}
-        {hasGraph && (
-          <div className={`w-1/5 rounded-xl p-2 transition-colors ${
-            isDarkMode ? 'bg-gray-900' : 'bg-white'
-          }`} style={{ backgroundColor: isDarkMode ? undefined : boardColor }}>
-            <div className="h-full flex flex-col justify-center">
-              <h3 className={`text-sm font-semibold mb-2 ${
-                isDarkMode ? 'text-green-400' : 'text-blue-600'
-              }`}>
-                📊 Graph
-              </h3>
-              <div className="flex justify-center items-center">
-                <img 
-                  src={graphUrl} 
-                  alt="Question Graph" 
-                  className="max-w-full h-auto rounded-lg shadow-md"
-                  style={{ maxHeight: '375px', maxWidth: '100%' }}
+          
+          {/* Solution Below for Reading Questions when solution tab is active */}
+          {hasPassage && activeTab === 'solution' && (
+            <div className="bg-white p-8 mt-4">
+              {/* Broken Line Spacer */}
+              <div className="mb-4 flex justify-center">
+                <div className="w-full border-t border-dashed border-gray-300"></div>
+              </div>
+              
+              {/* Solution Header - Grey Rule Bar Only */}
+              <div className="mb-6" style={{ marginTop: '16px', marginBottom: '10px' }}>
+                <div 
+                  className="w-full mr-3"
+                  style={{
+                    backgroundColor: '#CFCFCF',
+                    height: '24px',
+                    borderRadius: '2px'
+                  }}
+                  aria-hidden="true"
                 />
               </div>
-            </div>
-          </div>
-        )}
-
-        {/* Column 3: Solution/Key Idea (hidden when activeTab is 'problem') */}
-        {activeTab !== 'problem' && (
-          <div className={`${
-            hasGraph ? 'w-2/5' : 'w-2/5'
-          } rounded-xl p-4 transition-colors ${
-            isDarkMode ? 'bg-gray-800 border border-green-500/30' : 'bg-white border border-gray-200'
-          }`}>
-            
-            {/* Broken Line Spacer */}
-            <div className="mb-4 flex justify-center">
-              <div className="w-full border-t border-dashed border-gray-300"></div>
-            </div>
-            
-            {/* Solution Section */}
-            {activeTab === 'solution' && (
-              <>
+              
+              <div className="pb-4" style={{ borderBottom: '2px solid #CFCFCF' }}>
                 <h3 className={`text-sm font-semibold mb-3 ${
                   isDarkMode ? 'text-green-400' : 'text-gray-800'
                 }`}>
@@ -691,29 +679,115 @@ Keep the evaluation constructive and educational.`;
                     color: isDarkMode ? '#ffffff' : contentTextStyle.color
                   }}
                 />
-              </>
-            )}
+              </div>
+            </div>
+          )}
+        </div>
 
-            {/* Key Idea Section */}
-            {activeTab === 'quote' && (
-              <>
-                <h3 className={`text-sm font-semibold mb-3 ${
-                  isDarkMode ? 'text-green-400' : 'text-gray-800'
-                }`}>
-                  🎯 Key Idea
-                </h3>
-                <div 
-                  style={{
-                    ...contentTextStyle,
-                    fontSize: `${displaySettings.fontSize - 1}px`,
-                    color: isDarkMode ? '#ffffff' : contentTextStyle.color
-                  }}
-                  className="whitespace-pre-wrap text-sm leading-relaxed"
-                >
-                  {formatQuote(currentQuestion.quote)}
-                </div>
-              </>
-            )}
+
+        {/* Column 3: Passage for Reading Questions OR Solution/Key Idea */}
+        {(hasPassage || activeTab !== 'problem') && (
+          <div className={`${
+            hasGraph ? 'w-2/5' : 'w-2/5'
+          } bg-white p-8 relative`}>
+            
+            {/* Vertical Spacer for side-by-side layout */}
+            <div className="absolute left-0 top-4 bottom-4 flex items-center">
+              <div className="h-full border-l border-dashed border-gray-300"></div>
+            </div>
+            
+            {/* Header - Grey Rule Bar Only */}
+            <div className="mb-6" style={{ marginTop: '16px', marginBottom: '10px' }}>
+              <div 
+                className="w-full mr-3"
+                style={{
+                  backgroundColor: '#CFCFCF',
+                  height: '24px',
+                  borderRadius: '2px'
+                }}
+                aria-hidden="true"
+              />
+            </div>
+            
+            <div className="pb-4" style={{ borderBottom: '2px solid #CFCFCF' }}>
+              {/* Reading Passage Display */}
+              {hasPassage && activeTab === 'problem' && (
+                <>
+                  <h3 className={`text-sm font-semibold mb-3 ${
+                    isDarkMode ? 'text-green-400' : 'text-gray-800'
+                  }`}>
+                    📖 Reading Passage
+                  </h3>
+                  {currentQuestion.passage?.title && (
+                    <h4 className={`text-sm font-medium mb-3 ${
+                      isDarkMode ? 'text-green-300' : 'text-gray-700'
+                    }`}>
+                      {currentQuestion.passage.title}
+                    </h4>
+                  )}
+                  <div 
+                    style={{
+                      ...contentTextStyle,
+                      fontSize: `${displaySettings.fontSize - 1}px`,
+                      color: isDarkMode ? '#ffffff' : contentTextStyle.color
+                    }}
+                    className="whitespace-pre-wrap text-sm leading-relaxed"
+                  >
+                    {currentQuestion.passage?.content}
+                  </div>
+                  {currentQuestion.passage?.source && (
+                    <div className={`text-xs mt-3 opacity-75 ${
+                      isDarkMode ? 'text-green-400' : 'text-gray-600'
+                    }`}>
+                      Source: {currentQuestion.passage.source}
+                    </div>
+                  )}
+                </>
+              )}
+
+              {/* Solution Section */}
+              {activeTab === 'solution' && (
+                <>
+                  <h3 className={`text-sm font-semibold mb-3 ${
+                    isDarkMode ? 'text-green-400' : 'text-gray-800'
+                  }`}>
+                    💡 Solution & Explanation
+                  </h3>
+                  <TypingAnimation
+                    text={formatSolution(currentQuestion)}
+                    speed={15}
+                    isHTML={true}
+                    className="whitespace-pre-wrap text-sm leading-relaxed"
+                    style={{
+                      ...contentTextStyle,
+                      fontSize: `${displaySettings.fontSize - 1}px`,
+                      color: isDarkMode ? '#ffffff' : contentTextStyle.color
+                    }}
+                  />
+                </>
+              )}
+
+              {/* Key Idea Section */}
+              {activeTab === 'quote' && (
+                <>
+                  <h3 className={`text-sm font-semibold mb-3 ${
+                    isDarkMode ? 'text-green-400' : 'text-gray-800'
+                  }`}>
+                    🎯 Key Idea
+                  </h3>
+                  <div 
+                    style={{
+                      ...contentTextStyle,
+                      fontSize: `${displaySettings.fontSize - 1}px`,
+                      color: isDarkMode ? '#ffffff' : contentTextStyle.color
+                    }}
+                    className="whitespace-pre-wrap text-sm leading-relaxed"
+                  >
+                    {formatQuote(currentQuestion.quote)}
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         )}
 
@@ -779,7 +853,7 @@ Keep the evaluation constructive and educational.`;
                 />
               </div>
 
-              <div className="space-y-3">
+              <div className="space-y-3 pb-4" style={{ borderBottom: '2px solid #CFCFCF' }}>
                 {isSATWriting ? (
                   <div className="space-y-4">
                     <Textarea
@@ -908,55 +982,103 @@ Keep the evaluation constructive and educational.`;
 
           </div>
 
-          {/* Solution Below */}
-          {activeTab !== 'problem' && (
-            <div className={`rounded-xl p-4 transition-colors ${
-              isDarkMode ? 'bg-gray-800 border border-green-500/30' : 'bg-white border border-gray-200'
-            }`}>
+          {/* Passage or Solution Below */}
+          {(hasPassage || activeTab !== 'problem') && (
+            <div className="bg-white p-8">
               {/* Broken Line Spacer */}
               <div className="mb-4 flex justify-center">
                 <div className="w-full border-t border-dashed border-gray-300"></div>
               </div>
               
-              {activeTab === 'solution' && (
-                <>
-                  <h3 className={`text-sm font-semibold mb-3 ${
-                    isDarkMode ? 'text-green-400' : 'text-gray-800'
-                  }`}>
-                    💡 Solution & Explanation
-                  </h3>
-                  <TypingAnimation
-                    text={formatSolution(currentQuestion)}
-                    speed={15}
-                    isHTML={true}
-                    className="whitespace-pre-wrap text-sm leading-relaxed"
-                    style={{
-                      ...contentTextStyle,
-                      fontSize: `${displaySettings.fontSize - 1}px`,
-                      color: isDarkMode ? '#ffffff' : contentTextStyle.color
-                    }}
-                  />
-                </>
-              )}
-              {activeTab === 'quote' && (
-                <>
-                  <h3 className={`text-sm font-semibold mb-3 ${
-                    isDarkMode ? 'text-green-400' : 'text-gray-800'
-                  }`}>
-                    🎯 Key Idea
-                  </h3>
-                  <div 
-                    style={{
-                      ...contentTextStyle,
-                      fontSize: `${displaySettings.fontSize - 1}px`,
-                      color: isDarkMode ? '#ffffff' : contentTextStyle.color
-                    }}
-                    className="whitespace-pre-wrap text-sm leading-relaxed"
-                >
-                  {formatQuote(currentQuestion.quote)}
-                </div>
-                </>
-              )}
+              {/* Header - Grey Rule Bar Only */}
+              <div className="mb-6" style={{ marginTop: '16px', marginBottom: '10px' }}>
+                <div 
+                  className="w-full mr-3"
+                  style={{
+                    backgroundColor: '#CFCFCF',
+                    height: '24px',
+                    borderRadius: '2px'
+                  }}
+                  aria-hidden="true"
+                />
+              </div>
+              
+              <div className="pb-4" style={{ borderBottom: '2px solid #CFCFCF' }}>
+                {/* Reading Passage Display */}
+                {hasPassage && activeTab === 'problem' && (
+                  <>
+                    <h3 className={`text-sm font-semibold mb-3 ${
+                      isDarkMode ? 'text-green-400' : 'text-gray-800'
+                    }`}>
+                      📖 Reading Passage
+                    </h3>
+                    {currentQuestion.passage?.title && (
+                      <h4 className={`text-sm font-medium mb-3 ${
+                        isDarkMode ? 'text-green-300' : 'text-gray-700'
+                      }`}>
+                        {currentQuestion.passage.title}
+                      </h4>
+                    )}
+                    <div 
+                      style={{
+                        ...contentTextStyle,
+                        fontSize: `${displaySettings.fontSize - 1}px`,
+                        color: isDarkMode ? '#ffffff' : contentTextStyle.color
+                      }}
+                      className="whitespace-pre-wrap text-sm leading-relaxed"
+                    >
+                      {currentQuestion.passage?.content}
+                    </div>
+                    {currentQuestion.passage?.source && (
+                      <div className={`text-xs mt-3 opacity-75 ${
+                        isDarkMode ? 'text-green-400' : 'text-gray-600'
+                      }`}>
+                        Source: {currentQuestion.passage.source}
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {activeTab === 'solution' && (
+                  <>
+                    <h3 className={`text-sm font-semibold mb-3 ${
+                      isDarkMode ? 'text-green-400' : 'text-gray-800'
+                    }`}>
+                      💡 Solution & Explanation
+                    </h3>
+                    <TypingAnimation
+                      text={formatSolution(currentQuestion)}
+                      speed={15}
+                      isHTML={true}
+                      className="whitespace-pre-wrap text-sm leading-relaxed"
+                      style={{
+                        ...contentTextStyle,
+                        fontSize: `${displaySettings.fontSize - 1}px`,
+                        color: isDarkMode ? '#ffffff' : contentTextStyle.color
+                      }}
+                    />
+                  </>
+                )}
+                {activeTab === 'quote' && (
+                  <>
+                    <h3 className={`text-sm font-semibold mb-3 ${
+                      isDarkMode ? 'text-green-400' : 'text-gray-800'
+                    }`}>
+                      🎯 Key Idea
+                    </h3>
+                    <div 
+                      style={{
+                        ...contentTextStyle,
+                        fontSize: `${displaySettings.fontSize - 1}px`,
+                        color: isDarkMode ? '#ffffff' : contentTextStyle.color
+                      }}
+                      className="whitespace-pre-wrap text-sm leading-relaxed"
+                    >
+                    {formatQuote(currentQuestion.quote)}
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
           )}
         </div>
@@ -1010,12 +1132,12 @@ Keep the evaluation constructive and educational.`;
             
             {/* Graph Section - Above Question Content (Alternative Layout) */}
             {graphUrl && (
-              <div className="mb-6 bg-gray-50 border border-gray-200 rounded-lg p-4">
+              <div className="mb-6 bg-white p-4">
                 <div className="flex justify-center">
                   <img 
                     src={graphUrl} 
                     alt="Question Graph" 
-                    className="max-w-full h-auto max-h-80 border border-gray-300 rounded shadow-sm"
+                    className="max-w-full h-auto max-h-80"
                     style={{ backgroundColor: 'white' }}
                   />
                 </div>
@@ -1035,7 +1157,7 @@ Keep the evaluation constructive and educational.`;
           <div className={`rounded-xl p-6 transition-colors ${
             isDarkMode ? 'bg-gray-900' : 'bg-white'
           }`} style={{ backgroundColor: isDarkMode ? undefined : boardColor }}>
-            <div className="space-y-3">
+            <div className="space-y-3 pb-4" style={{ borderBottom: '2px solid #CFCFCF' }}>
               {isSATWriting ? (
                 <div className="space-y-4">
                   <Textarea
@@ -1162,55 +1284,103 @@ Keep the evaluation constructive and educational.`;
             </div>
           </div>
 
-          {/* Solution Below for Mobile */}
-          {activeTab !== 'problem' && (
-            <div className={`rounded-xl p-4 transition-colors ${
-              isDarkMode ? 'bg-gray-800 border border-green-500/30' : 'bg-white border border-gray-200'
-            }`}>
+          {/* Passage or Solution Below for Mobile */}
+          {(hasPassage || activeTab !== 'problem') && (
+            <div className="bg-white p-8">
               {/* Broken Line Spacer */}
               <div className="mb-4 flex justify-center">
                 <div className="w-full border-t border-dashed border-gray-300"></div>
               </div>
               
-              {activeTab === 'solution' && (
-                <>
-                  <h3 className={`text-sm font-semibold mb-3 ${
-                    isDarkMode ? 'text-green-400' : 'text-gray-800'
-                  }`}>
-                    💡 Solution & Explanation
-                  </h3>
-                  <TypingAnimation
-                    text={formatSolution(currentQuestion)}
-                    speed={15}
-                    isHTML={true}
-                    className="whitespace-pre-wrap text-sm leading-relaxed"
-                    style={{
-                      ...contentTextStyle,
-                      fontSize: `${displaySettings.fontSize - 1}px`,
-                      color: isDarkMode ? '#ffffff' : contentTextStyle.color
-                    }}
-                  />
-                </>
-              )}
-              {activeTab === 'quote' && (
-                <>
-                  <h3 className={`text-sm font-semibold mb-3 ${
-                    isDarkMode ? 'text-green-400' : 'text-gray-800'
-                  }`}>
-                    🎯 Key Idea
-                  </h3>
-                  <div 
-                    style={{
-                      ...contentTextStyle,
-                      fontSize: `${displaySettings.fontSize - 1}px`,
-                      color: isDarkMode ? '#ffffff' : contentTextStyle.color
-                    }}
-                    className="whitespace-pre-wrap text-sm leading-relaxed"
-                >
-                  {formatQuote(currentQuestion.quote)}
-                </div>
-                </>
-              )}
+              {/* Header - Grey Rule Bar Only */}
+              <div className="mb-6" style={{ marginTop: '16px', marginBottom: '10px' }}>
+                <div 
+                  className="w-full mr-3"
+                  style={{
+                    backgroundColor: '#CFCFCF',
+                    height: '24px',
+                    borderRadius: '2px'
+                  }}
+                  aria-hidden="true"
+                />
+              </div>
+              
+              <div className="pb-4" style={{ borderBottom: '2px solid #CFCFCF' }}>
+                {/* Reading Passage Display */}
+                {hasPassage && activeTab === 'problem' && (
+                  <>
+                    <h3 className={`text-sm font-semibold mb-3 ${
+                      isDarkMode ? 'text-green-400' : 'text-gray-800'
+                    }`}>
+                      📖 Reading Passage
+                    </h3>
+                    {currentQuestion.passage?.title && (
+                      <h4 className={`text-sm font-medium mb-3 ${
+                        isDarkMode ? 'text-green-300' : 'text-gray-700'
+                      }`}>
+                        {currentQuestion.passage.title}
+                      </h4>
+                    )}
+                    <div 
+                      style={{
+                        ...contentTextStyle,
+                        fontSize: `${displaySettings.fontSize - 1}px`,
+                        color: isDarkMode ? '#ffffff' : contentTextStyle.color
+                      }}
+                      className="whitespace-pre-wrap text-sm leading-relaxed"
+                    >
+                      {currentQuestion.passage?.content}
+                    </div>
+                    {currentQuestion.passage?.source && (
+                      <div className={`text-xs mt-3 opacity-75 ${
+                        isDarkMode ? 'text-green-400' : 'text-gray-600'
+                      }`}>
+                        Source: {currentQuestion.passage.source}
+                      </div>
+                    )}
+                  </>
+                )}
+
+                {activeTab === 'solution' && (
+                  <>
+                    <h3 className={`text-sm font-semibold mb-3 ${
+                      isDarkMode ? 'text-green-400' : 'text-gray-800'
+                    }`}>
+                      💡 Solution & Explanation
+                    </h3>
+                    <TypingAnimation
+                      text={formatSolution(currentQuestion)}
+                      speed={15}
+                      isHTML={true}
+                      className="whitespace-pre-wrap text-sm leading-relaxed"
+                      style={{
+                        ...contentTextStyle,
+                        fontSize: `${displaySettings.fontSize - 1}px`,
+                        color: isDarkMode ? '#ffffff' : contentTextStyle.color
+                      }}
+                    />
+                  </>
+                )}
+                {activeTab === 'quote' && (
+                  <>
+                    <h3 className={`text-sm font-semibold mb-3 ${
+                      isDarkMode ? 'text-green-400' : 'text-gray-800'
+                    }`}>
+                      🎯 Key Idea
+                    </h3>
+                    <div 
+                      style={{
+                        ...contentTextStyle,
+                        fontSize: `${displaySettings.fontSize - 1}px`,
+                        color: isDarkMode ? '#ffffff' : contentTextStyle.color
+                      }}
+                      className="whitespace-pre-wrap text-sm leading-relaxed"
+                    >
+                    {formatQuote(currentQuestion.quote)}
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
           )}
         </div>

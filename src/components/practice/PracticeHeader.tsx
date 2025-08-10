@@ -271,9 +271,15 @@ export const PracticeHeader = ({
             </ScrollArea>
           </DropdownMenuContent>
         </DropdownMenu>
-        <h1 className={`text-base sm:text-lg font-thin tracking-wide ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-          Academic Arc
-        </h1>
+        <div className="flex items-center">
+          <h1 className="text-base sm:text-lg font-semibold tracking-wide bg-gradient-to-r from-gray-300 via-gray-400 to-blue-400 bg-clip-text text-transparent">
+            SAT
+            <span className="text-[8px] font-bold text-gray-400 border border-gray-300 rounded-full w-2.5 h-2.5 inline-flex items-center justify-center leading-none ml-0.5 mr-1 align-top">
+              ®
+            </span>
+            Premium
+          </h1>
+        </div>
       </div>
       
       <div className="flex items-center gap-1 sm:gap-2 overflow-hidden">
@@ -423,26 +429,6 @@ export const PracticeHeader = ({
           </DropdownMenuContent>
         </DropdownMenu>
 
-        {/* Desktop Filter Display */}
-        <div className={`hidden md:flex items-center px-2 py-1 rounded-full text-xs transition-all max-w-32 ${
-          hasActiveFilters()
-            ? (isDarkMode ? 'bg-green-900/30 text-green-400 border border-green-500/30' : 'bg-blue-50 text-blue-700 border border-blue-200')
-            : (isDarkMode ? 'bg-gray-800 text-gray-400' : 'bg-gray-100 text-gray-600')
-        }`}>
-          <Filter className={`h-3 w-3 mr-1 ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`} />
-          <span className="max-w-20 truncate font-thin">{getActiveFilterText()}</span>
-          {hasActiveFilters() && (
-            <button
-              onClick={handleClearAllFilters}
-              className={`ml-1 hover:bg-opacity-75 rounded-full p-0.5 transition-colors ${
-                isDarkMode ? 'hover:bg-green-700' : 'hover:bg-blue-200'
-              }`}
-              title="Clear all filters"
-            >
-              ×
-            </button>
-          )}
-        </div>
 
         {/* Desktop Individual Filter Buttons */}
         <div className="hidden md:flex items-center gap-1">
@@ -458,7 +444,7 @@ export const PracticeHeader = ({
               >
                 <BookOpen className={`h-4 w-4 mr-1 ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`} />
                 <span className={`font-thin text-xs ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                  {selectedModule.replace("SAT ", "")}
+                  {selectedModule === "All SAT Math" ? "All SAT Math" : selectedModule}
                 </span>
                 <ChevronDown className={`ml-1 h-3 w-3 transition-transform ${isModuleDropdownOpen ? "rotate-180" : ""} ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
               </Button>
@@ -495,7 +481,7 @@ export const PracticeHeader = ({
               >
                 <Target className={`h-4 w-4 mr-1 ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`} />
                 <span className={`font-thin text-xs ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                  {selectedExam !== null ? `Exam ${selectedExam}` : "Exams"}
+                  {selectedExam !== null ? `Exam ${selectedExam}` : "All Exams"}
                 </span>
                 <ChevronDown className={`ml-1 h-3 w-3 transition-transform ${isExamDropdownOpen ? "rotate-180" : ""} ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
               </Button>
@@ -532,7 +518,7 @@ export const PracticeHeader = ({
               >
                 <BookOpen className={`h-4 w-4 mr-1 ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`} />
                 <span className={`font-thin text-xs ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                  {selectedChapter === "All Chapters" ? "Chapters" : selectedChapter.split(":")[0]}
+                  {selectedChapter}
                 </span>
                 <ChevronDown className={`ml-1 h-3 w-3 transition-transform ${isChapterDropdownOpen ? "rotate-180" : ""} ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
               </Button>
