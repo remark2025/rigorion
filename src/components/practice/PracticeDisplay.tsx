@@ -436,7 +436,7 @@ Keep the evaluation constructive and educational.`;
           } bg-white p-8`}>
           
           {/* SAT Question Header - Authentic Style */}
-          <QuestionHeader questionNumber={currentQuestion.number} />
+          <QuestionHeader questionNumber={currentQuestion.number} chapter={currentQuestion.chapter} />
           
           {/* Action Icons Row */}
           <div className="mb-6 flex items-center justify-end gap-2">
@@ -649,17 +649,20 @@ Keep the evaluation constructive and educational.`;
                 <div className="w-full border-t border-dashed border-gray-300"></div>
               </div>
               
-              {/* Solution Header - Grey Rule Bar Only */}
+              {/* Solution Header - Step by Step Explanation */}
               <div className="mb-6" style={{ marginTop: '16px', marginBottom: '10px' }}>
                 <div 
-                  className="w-full mr-3"
+                  className="w-full mr-3 flex items-center justify-center"
                   style={{
                     backgroundColor: '#CFCFCF',
                     height: '24px',
                     borderRadius: '2px'
                   }}
-                  aria-hidden="true"
-                />
+                >
+                  <span className="text-sm font-semibold text-blue-700">
+                    Step by Step Explanation
+                  </span>
+                </div>
               </div>
               
               <div className="pb-4" style={{ borderBottom: '2px solid #CFCFCF' }}>
@@ -696,17 +699,20 @@ Keep the evaluation constructive and educational.`;
               <div className="h-full border-l border-dashed border-gray-300"></div>
             </div>
             
-            {/* Header - Grey Rule Bar Only */}
+            {/* Header - Step by Step Explanation */}
             <div className="mb-6" style={{ marginTop: '16px', marginBottom: '10px' }}>
               <div 
-                className="w-full mr-3"
+                className="w-full mr-3 flex items-center justify-center"
                 style={{
                   backgroundColor: '#CFCFCF',
                   height: '24px',
                   borderRadius: '2px'
                 }}
-                aria-hidden="true"
-              />
+              >
+                <span className="text-sm font-semibold text-blue-700">
+                  Step by Step Explanation
+                </span>
+              </div>
             </div>
             
             <div className="pb-4" style={{ borderBottom: '2px solid #CFCFCF' }}>
@@ -805,7 +811,7 @@ Keep the evaluation constructive and educational.`;
             }`} style={{ backgroundColor: isDarkMode ? undefined : boardColor }}>
               
               {/* SAT Question Header - Authentic Style */}
-              <QuestionHeader questionNumber={currentQuestion.number} />
+              <QuestionHeader questionNumber={currentQuestion.number} chapter={currentQuestion.chapter} />
               
               {/* Action Icons Row */}
               <div className="mb-4 flex items-center justify-end gap-1">
@@ -990,17 +996,20 @@ Keep the evaluation constructive and educational.`;
                 <div className="w-full border-t border-dashed border-gray-300"></div>
               </div>
               
-              {/* Header - Grey Rule Bar Only */}
+              {/* Header - Step by Step Explanation */}
               <div className="mb-6" style={{ marginTop: '16px', marginBottom: '10px' }}>
                 <div 
-                  className="w-full mr-3"
+                  className="w-full mr-3 flex items-center justify-center"
                   style={{
                     backgroundColor: '#CFCFCF',
                     height: '24px',
                     borderRadius: '2px'
                   }}
-                  aria-hidden="true"
-                />
+                >
+                  <span className="text-sm font-semibold text-blue-700">
+                    Step by Step Explanation
+                  </span>
+                </div>
               </div>
               
               <div className="pb-4" style={{ borderBottom: '2px solid #CFCFCF' }}>
@@ -1090,7 +1099,7 @@ Keep the evaluation constructive and educational.`;
             isDarkMode ? 'bg-gray-900' : 'bg-white'
           }`} style={{ backgroundColor: isDarkMode ? undefined : boardColor }}>
             {/* SAT Question Header - Authentic Style */}
-            <QuestionHeader questionNumber={currentQuestion.number} />
+            <QuestionHeader questionNumber={currentQuestion.number} chapter={currentQuestion.chapter} />
             
             {/* Action Icons Row */}
             <div className="mb-4 flex items-center justify-end gap-1">
@@ -1292,17 +1301,20 @@ Keep the evaluation constructive and educational.`;
                 <div className="w-full border-t border-dashed border-gray-300"></div>
               </div>
               
-              {/* Header - Grey Rule Bar Only */}
+              {/* Header - Step by Step Explanation */}
               <div className="mb-6" style={{ marginTop: '16px', marginBottom: '10px' }}>
                 <div 
-                  className="w-full mr-3"
+                  className="w-full mr-3 flex items-center justify-center"
                   style={{
                     backgroundColor: '#CFCFCF',
                     height: '24px',
                     borderRadius: '2px'
                   }}
-                  aria-hidden="true"
-                />
+                >
+                  <span className="text-sm font-semibold text-blue-700">
+                    Step by Step Explanation
+                  </span>
+                </div>
               </div>
               
               <div className="pb-4" style={{ borderBottom: '2px solid #CFCFCF' }}>

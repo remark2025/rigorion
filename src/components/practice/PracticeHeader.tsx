@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Target, Navigation, ChevronDown, LogOut, Bell, Filter, Moon, Sun, BookOpen, Clock, Home, Users, BarChart, Menu, Settings } from "lucide-react";
+import { Target, Navigation, ChevronDown, LogOut, Bell, Filter, Moon, Sun, BookOpen, Clock, Home, Users, BarChart, Menu, Settings, Timer, TrendingUp, Hand, Coffee, GraduationCap } from "lucide-react";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -224,6 +224,23 @@ export const PracticeHeader = ({
     return selectedExam !== null || selectedChapter !== "All Chapters" || selectedModule !== "All SAT Math";
   };
 
+  const getModeIcon = (currentMode: string) => {
+    switch (currentMode) {
+      case "timer":
+        return <Timer className={`h-4 w-4 mr-1 ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`} />;
+      case "level":
+        return <TrendingUp className={`h-4 w-4 mr-1 ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`} />;
+      case "manual":
+        return <Hand className={`h-4 w-4 mr-1 ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`} />;
+      case "pomodoro":
+        return <Coffee className={`h-4 w-4 mr-1 ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`} />;
+      case "exam":
+        return <GraduationCap className={`h-4 w-4 mr-1 ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`} />;
+      default:
+        return <Clock className={`h-4 w-4 mr-1 ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`} />;
+    }
+  };
+
   return (
     <header className={`fixed top-0 left-0 right-0 w-full z-50 border-b px-1 sm:px-2 md:px-4 py-2 sm:py-3 flex items-center justify-between shadow-sm transition-all duration-300 overflow-hidden ${
       isDarkMode ? 'bg-gray-900 border-green-500/30' : 'bg-white border-gray-200'
@@ -272,7 +289,7 @@ export const PracticeHeader = ({
           </DropdownMenuContent>
         </DropdownMenu>
         <div className="flex items-center">
-          <h1 className="text-base sm:text-lg font-semibold tracking-wide bg-gradient-to-r from-gray-300 via-gray-400 to-blue-400 bg-clip-text text-transparent">
+          <h1 className="text-base sm:text-lg font-semibold tracking-wide bg-gradient-to-r from-gray-300 via-blue-400 to-blue-500 bg-clip-text text-transparent">
             SAT
             <span className="text-[8px] font-bold text-gray-400 border border-gray-300 rounded-full w-2.5 h-2.5 inline-flex items-center justify-center leading-none ml-0.5 mr-1 align-top">
               ®
@@ -575,8 +592,8 @@ export const PracticeHeader = ({
               }`}
               onClick={onOpenMode}
             >
-              <Clock className={`h-4 w-4 mr-2 ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`} />
-              <span className={`font-source-sans text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+              {getModeIcon(mode)}
+              <span className={`font-source-sans text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} ml-1`}>
                 Mode: {mode === "manual" ? "Manual" : mode.charAt(0).toUpperCase() + mode.slice(1)}
               </span>
             </DropdownMenuItem>
@@ -599,11 +616,16 @@ export const PracticeHeader = ({
           
           <button
             onClick={onOpenMode}
-            className={`px-2 py-1 rounded-full bg-transparent transition-colors text-xs font-thin ${mode !== "manual" ? "text-emerald-500" : ""} ${
+            className={`px-2 py-1 rounded-full bg-transparent transition-colors text-xs font-thin flex items-center ${
+              mode !== "manual" 
+                ? (isDarkMode ? "text-green-300 bg-green-900/20" : "text-blue-600 bg-blue-50") 
+                : ""
+            } ${
               isDarkMode ? 'hover:bg-gray-800 text-gray-300' : 'hover:bg-gray-100 text-gray-600'
             }`}
           >
-            {mode === "manual" ? "Manual" : mode.charAt(0).toUpperCase() + mode.slice(1)}
+            {getModeIcon(mode)}
+            <span>{mode === "manual" ? "Manual" : mode.charAt(0).toUpperCase() + mode.slice(1)}</span>
           </button>
         </div>
 

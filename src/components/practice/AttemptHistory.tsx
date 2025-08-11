@@ -44,9 +44,9 @@ const AttemptHistory: React.FC<AttemptHistoryProps> = ({
 
   const getDotStyle = (isCorrect: boolean) => {
     if (isCorrect) {
-      return 'w-3 h-3 rounded-full bg-green-600 shadow-sm transition-all duration-200';
+      return 'w-3 h-3 rounded-full bg-green-500 shadow-2xl shadow-green-400 blur-[2px] transition-all duration-300 hover:blur-[3px] hover:shadow-green-500 hover:bg-green-400 filter drop-shadow-lg';
     } else {
-      return 'w-3 h-3 rounded-full bg-red-600 shadow-sm transition-all duration-200';
+      return 'w-3 h-3 rounded-full bg-red-500 shadow-2xl shadow-red-400 blur-[2px] transition-all duration-300 hover:blur-[3px] hover:shadow-red-500 hover:bg-red-400 filter drop-shadow-lg';
     }
   };
 

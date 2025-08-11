@@ -3,11 +3,13 @@ import React from 'react';
 interface QuestionHeaderProps {
   questionNumber: number;
   className?: string;
+  chapter?: string;
 }
 
 const QuestionHeader: React.FC<QuestionHeaderProps> = ({ 
   questionNumber, 
-  className = "" 
+  className = "",
+  chapter
 }) => {
   return (
     <div className={`mb-3 ${className}`} style={{ marginTop: '16px', marginBottom: '10px' }}>
@@ -33,16 +35,21 @@ const QuestionHeader: React.FC<QuestionHeaderProps> = ({
           {questionNumber}
         </div>
 
-        {/* Rule Bar */}
+        {/* Rule Bar with Chapter Title */}
         <div 
-          className="flex-1 ml-2 mr-3"
+          className="flex-1 ml-2 mr-3 flex items-center justify-start pl-4"
           style={{
             backgroundColor: '#CFCFCF',
             height: '24px',
             borderRadius: '2px'
           }}
-          aria-hidden="true"
-        />
+        >
+          {chapter && (
+            <span className="text-sm font-semibold text-blue-700">
+              {chapter}
+            </span>
+          )}
+        </div>
       </h3>
     </div>
   );
