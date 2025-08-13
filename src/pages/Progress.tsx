@@ -19,7 +19,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useTheme } from "@/contexts/ThemeContext";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart as RechartsBarChart, Bar } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart as RechartsBarChart, Bar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
 
 // Define course type
 type Course = {
@@ -60,115 +60,349 @@ const DUMMY_PROGRESS = {
   longestQuestionTime: 8.0,
   performanceGraph: Array.from({
     length: 15
-  }, (_, i) => ({
-    date: new Date(Date.now() - (14 - i) * 24 * 3600 * 1000).toISOString().slice(0, 10),
-    attempted: Math.floor(Math.random() * 30) + 10
-  })),
-  chapterPerformance: [
+  }, (_, i) => {
+    const date = new Date(Date.now() - (14 - i) * 24 * 3600 * 1000);
+    const userAttempted = Math.floor(Math.random() * 30) + 10;
+    const globalAverage = Math.floor(Math.random() * 25) + 8;
+    const previousDay = i > 0 ? Math.floor(Math.random() * 30) + 10 : userAttempted;
+    
+    // Most practiced skills rotation
+    const skills = [
+      { name: 'Linear Equations', percentile: 85, contribution: 35 },
+      { name: 'Ratios & Proportions', percentile: 95, contribution: 42 },
+      { name: 'Vocabulary in Context', percentile: 87, contribution: 28 },
+      { name: 'Punctuation & Grammar', percentile: 91, contribution: 38 },
+      { name: 'Quadratic Functions', percentile: 58, contribution: 25 },
+      { name: 'Main Ideas & Themes', percentile: 89, contribution: 31 },
+      { name: 'Standard Conventions', percentile: 84, contribution: 33 }
+    ];
+    
+    const mostPracticedSkill = skills[i % skills.length];
+    
+    return {
+      date: date.toISOString().slice(0, 10),
+      attempted: userAttempted,
+      globalAverage: globalAverage,
+      momentum: userAttempted - previousDay,
+      dayName: date.toLocaleDateString('en-US', { weekday: 'short' }),
+      mostPracticedSkill: mostPracticedSkill
+    };
+  }),
+  skillAnalytics: [
+    // SAT Math Skills
     {
-      chapterId: '1',
-      chapterName: 'Chapter 1',
+      skillId: 'math_1',
+      skillName: 'Linear Equations in One Variable',
+      chapter: 'Heart of Algebra',
+      section: 'Math',
+      correct: 18,
+      incorrect: 2,
+      unattempted: 5,
+      solvedProblems: 20,
+      practicePerDay: 3.2,
+      percentileGrowth: +12,
+      globalPercentile: 85,
+    },
+    {
+      skillId: 'math_2',
+      skillName: 'Systems of Linear Equations',
+      chapter: 'Heart of Algebra',
+      section: 'Math',
       correct: 12,
-      incorrect: 3,
-      unattempted: 5,
+      incorrect: 4,
+      unattempted: 8,
+      solvedProblems: 16,
+      practicePerDay: 2.1,
+      percentileGrowth: +8,
+      globalPercentile: 72,
     },
     {
-      chapterId: '2',
-      chapterName: 'Chapter 2',
+      skillId: 'math_3',
+      skillName: 'Quadratic Functions',
+      chapter: 'Passport to Advanced Math',
+      section: 'Math',
       correct: 8,
-      incorrect: 2,
-      unattempted: 5,
-    },
-    {
-      chapterId: '3',
-      chapterName: 'Chapter 3',
-      correct: 10,
-      incorrect: 5,
-      unattempted: 10,
-    },
-    {
-      chapterId: '4',
-      chapterName: 'Chapter 4',
-      correct: 20,
-      incorrect: 4,
-      unattempted: 6,
-    },
-    {
-      chapterId: '5',
-      chapterName: 'Chapter 5',
-      correct: 5,
-      incorrect: 3,
-      unattempted: 10,
-    },
-    {
-      chapterId: '6',
-      chapterName: 'Chapter 6',
-      correct: 14,
-      incorrect: 1,
-      unattempted: 5,
-    },
-    {
-      chapterId: '7',
-      chapterName: 'Chapter 7',
-      correct: 9,
       incorrect: 6,
-      unattempted: 5,
+      unattempted: 12,
+      solvedProblems: 14,
+      practicePerDay: 1.8,
+      percentileGrowth: -3,
+      globalPercentile: 58,
     },
     {
-      chapterId: '8',
-      chapterName: 'Chapter 8',
-      correct: 11,
+      skillId: 'math_4',
+      skillName: 'Polynomial Expressions',
+      chapter: 'Passport to Advanced Math',
+      section: 'Math',
+      correct: 15,
+      incorrect: 3,
+      unattempted: 7,
+      solvedProblems: 18,
+      practicePerDay: 2.7,
+      percentileGrowth: +15,
+      globalPercentile: 88,
+    },
+    {
+      skillId: 'math_5',
+      skillName: 'Ratios and Proportions',
+      chapter: 'Problem Solving & Data Analysis',
+      section: 'Math',
+      correct: 22,
+      incorrect: 1,
+      unattempted: 2,
+      solvedProblems: 23,
+      practicePerDay: 4.1,
+      percentileGrowth: +20,
+      globalPercentile: 95,
+    },
+    {
+      skillId: 'math_6',
+      skillName: 'Statistics and Probability',
+      chapter: 'Problem Solving & Data Analysis',
+      section: 'Math',
+      correct: 14,
+      incorrect: 5,
+      unattempted: 6,
+      solvedProblems: 19,
+      practicePerDay: 2.9,
+      percentileGrowth: +5,
+      globalPercentile: 79,
+    },
+    {
+      skillId: 'math_7',
+      skillName: 'Geometry and Trigonometry',
+      chapter: 'Additional Topics in Math',
+      section: 'Math',
+      correct: 9,
+      incorrect: 7,
+      unattempted: 9,
+      solvedProblems: 16,
+      practicePerDay: 1.6,
+      percentileGrowth: -8,
+      globalPercentile: 45,
+    },
+    {
+      skillId: 'math_8',
+      skillName: 'Complex Numbers',
+      chapter: 'Additional Topics in Math',
+      section: 'Math',
+      correct: 6,
+      incorrect: 4,
+      unattempted: 15,
+      solvedProblems: 10,
+      practicePerDay: 1.2,
+      percentileGrowth: -5,
+      globalPercentile: 32,
+    },
+    // SAT Reading Skills
+    {
+      skillId: 'read_1',
+      skillName: 'Main Ideas and Central Themes',
+      chapter: 'Information and Ideas',
+      section: 'Reading',
+      correct: 16,
       incorrect: 3,
       unattempted: 6,
+      solvedProblems: 19,
+      practicePerDay: 2.8,
+      percentileGrowth: +18,
+      globalPercentile: 89,
     },
     {
-      chapterId: '9',
-      chapterName: 'Chapter 9',
-      correct: 7,
-      incorrect: 4,
-      unattempted: 9,
-    },
-    {
-      chapterId: '10',
-      chapterName: 'Chapter 10',
-      correct: 13,
+      skillId: 'read_2',
+      skillName: 'Supporting Details and Evidence',
+      chapter: 'Information and Ideas',
+      section: 'Reading',
+      correct: 20,
       incorrect: 2,
-      unattempted: 5,
+      unattempted: 3,
+      solvedProblems: 22,
+      practicePerDay: 3.5,
+      percentileGrowth: +22,
+      globalPercentile: 93,
     },
     {
-      chapterId: '11',
-      chapterName: 'Chapter 11',
-      correct: 6,
-      incorrect: 3,
-      unattempted: 11,
+      skillId: 'read_3',
+      skillName: 'Inferences and Implications',
+      chapter: 'Information and Ideas',
+      section: 'Reading',
+      correct: 11,
+      incorrect: 6,
+      unattempted: 8,
+      solvedProblems: 17,
+      practicePerDay: 2.3,
+      percentileGrowth: +2,
+      globalPercentile: 64,
     },
     {
-      chapterId: '12',
-      chapterName: 'Chapter 12',
-      correct: 15,
+      skillId: 'read_4',
+      skillName: 'Vocabulary in Context',
+      chapter: 'Craft and Structure',
+      section: 'Reading',
+      correct: 18,
+      incorrect: 4,
+      unattempted: 3,
+      solvedProblems: 22,
+      practicePerDay: 3.7,
+      percentileGrowth: +16,
+      globalPercentile: 87,
+    },
+    {
+      skillId: 'read_5',
+      skillName: 'Text Structure and Purpose',
+      chapter: 'Craft and Structure',
+      section: 'Reading',
+      correct: 13,
       incorrect: 5,
-      unattempted: 5,
+      unattempted: 7,
+      solvedProblems: 18,
+      practicePerDay: 2.4,
+      percentileGrowth: +7,
+      globalPercentile: 76,
     },
     {
-      chapterId: '13',
-      chapterName: 'Chapter 13',
+      skillId: 'read_6',
+      skillName: 'Point of View and Perspective',
+      chapter: 'Craft and Structure',
+      section: 'Reading',
+      correct: 9,
+      incorrect: 8,
+      unattempted: 8,
+      solvedProblems: 17,
+      practicePerDay: 2.1,
+      percentileGrowth: -4,
+      globalPercentile: 52,
+    },
+    {
+      skillId: 'read_7',
+      skillName: 'Quantitative Information',
+      chapter: 'Integration of Knowledge',
+      section: 'Reading',
+      correct: 7,
+      incorrect: 6,
+      unattempted: 12,
+      solvedProblems: 13,
+      practicePerDay: 1.5,
+      percentileGrowth: -7,
+      globalPercentile: 38,
+    },
+    {
+      skillId: 'read_8',
+      skillName: 'Comparing Dual Passages',
+      chapter: 'Integration of Knowledge',
+      section: 'Reading',
+      correct: 10,
+      incorrect: 7,
+      unattempted: 8,
+      solvedProblems: 17,
+      practicePerDay: 2.0,
+      percentileGrowth: +1,
+      globalPercentile: 68,
+    },
+    // SAT Writing Skills
+    {
+      skillId: 'write_1',
+      skillName: 'Standard English Conventions',
+      chapter: 'Language & Usage',
+      section: 'Writing',
+      correct: 17,
+      incorrect: 3,
+      unattempted: 5,
+      solvedProblems: 20,
+      practicePerDay: 3.1,
+      percentileGrowth: +14,
+      globalPercentile: 84,
+    },
+    {
+      skillId: 'write_2',
+      skillName: 'Sentence Structure',
+      chapter: 'Language & Usage',
+      section: 'Writing',
+      correct: 14,
+      incorrect: 4,
+      unattempted: 7,
+      solvedProblems: 18,
+      practicePerDay: 2.6,
+      percentileGrowth: +9,
+      globalPercentile: 78,
+    },
+    {
+      skillId: 'write_3',
+      skillName: 'Punctuation and Grammar',
+      chapter: 'Language & Usage',
+      section: 'Writing',
+      correct: 19,
+      incorrect: 2,
+      unattempted: 4,
+      solvedProblems: 21,
+      practicePerDay: 3.4,
+      percentileGrowth: +19,
+      globalPercentile: 91,
+    },
+    {
+      skillId: 'write_4',
+      skillName: 'Rhetorical Strategy',
+      chapter: 'Expression of Ideas',
+      section: 'Writing',
+      correct: 12,
+      incorrect: 5,
+      unattempted: 8,
+      solvedProblems: 17,
+      practicePerDay: 2.2,
+      percentileGrowth: +4,
+      globalPercentile: 71,
+    },
+    {
+      skillId: 'write_5',
+      skillName: 'Organization and Transitions',
+      chapter: 'Expression of Ideas',
+      section: 'Writing',
+      correct: 15,
+      incorrect: 3,
+      unattempted: 7,
+      solvedProblems: 18,
+      practicePerDay: 2.8,
+      percentileGrowth: +11,
+      globalPercentile: 82,
+    },
+    {
+      skillId: 'write_6',
+      skillName: 'Effective Language Use',
+      chapter: 'Expression of Ideas',
+      section: 'Writing',
+      correct: 11,
+      incorrect: 6,
+      unattempted: 8,
+      solvedProblems: 17,
+      practicePerDay: 2.1,
+      percentileGrowth: +3,
+      globalPercentile: 67,
+    },
+    {
+      skillId: 'write_7',
+      skillName: 'Style and Tone',
+      chapter: 'Expression of Ideas',
+      section: 'Writing',
       correct: 8,
       incorrect: 7,
-      unattempted: 5,
+      unattempted: 10,
+      solvedProblems: 15,
+      practicePerDay: 1.7,
+      percentileGrowth: -6,
+      globalPercentile: 43,
     },
     {
-      chapterId: '14',
-      chapterName: 'Chapter 14',
-      correct: 10,
+      skillId: 'write_8',
+      skillName: 'Quantitative Information',
+      chapter: 'Expression of Ideas',
+      section: 'Writing',
+      correct: 13,
       incorrect: 4,
-      unattempted: 6,
-    },
-    {
-      chapterId: '15',
-      chapterName: 'Chapter 15',
-      correct: 9,
-      incorrect: 3,
       unattempted: 8,
+      solvedProblems: 17,
+      practicePerDay: 2.5,
+      percentileGrowth: +8,
+      globalPercentile: 75,
     },
   ],
   goals: [{
@@ -556,14 +790,46 @@ const Progress = () => {
                     {/* Projected Score */}
                     <div className={`p-6 rounded-xl ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm border-0`}>
                       <div className="flex items-center justify-between">
-                        <div>
-                          <h3 className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Projected Score</h3>
-                          <div className="mt-2">
-                            <span className={`text-3xl font-bold ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`}>{DUMMY_PROGRESS.projectedScore}</span>
-                            <span className={`text-sm ml-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>/100</span>
+                        <div className="flex-1">
+                          <h3 className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} mb-3`}>Projected Score</h3>
+                          
+                          {/* Current Subject Score */}
+                          <div className="mb-2">
+                            <div className="flex items-baseline gap-2">
+                              <span className={`text-2xl font-bold ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`}>
+                                {(() => {
+                                  const selectedCourseName = courses.find(c => c.id === selectedCourse)?.name || 'SAT Math';
+                                  if (selectedCourseName.includes('Math')) return '720';
+                                  if (selectedCourseName.includes('Reading')) return '680';
+                                  if (selectedCourseName.includes('Writing')) return '700';
+                                  return '720';
+                                })()}
+                              </span>
+                              <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                ±{(() => {
+                                  const selectedCourseName = courses.find(c => c.id === selectedCourse)?.name || 'SAT Math';
+                                  if (selectedCourseName.includes('Math')) return '35';
+                                  if (selectedCourseName.includes('Reading')) return '40';
+                                  if (selectedCourseName.includes('Writing')) return '30';
+                                  return '35';
+                                })()}
+                              </span>
+                            </div>
+                            <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                              {courses.find(c => c.id === selectedCourse)?.name.split(' ')[1] || 'Math'} (200–800)
+                            </div>
+                          </div>
+
+                          {/* Total Score */}
+                          <div className="pt-2 border-t border-gray-200 dark:border-gray-600">
+                            <div className="flex items-baseline gap-2">
+                              <span className={`text-lg font-semibold ${isDarkMode ? 'text-green-300' : 'text-blue-500'}`}>1420</span>
+                              <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>±50</span>
+                            </div>
+                            <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Total (400–1600)</div>
                           </div>
                         </div>
-                        <Target className={`h-8 w-8 ${isDarkMode ? 'text-green-400/70' : 'text-blue-500/70'}`} />
+                        <Target className={`h-8 w-8 ${isDarkMode ? 'text-green-400/70' : 'text-blue-500/70'} ml-2`} />
                       </div>
                     </div>
 
@@ -585,78 +851,134 @@ const Progress = () => {
                   {/* Minimalistic Separator */}
                   <div className={`border-t ${isDarkMode ? 'border-gray-700/50' : 'border-gray-200/50'}`}></div>
 
-                  {/* Chapter Performance Table - Full Width */}
+                  {/* SAT Skill Analytics Table - Full Width */}
                   <div className={`p-8 rounded-xl ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm border-0`}>
-                    <h3 className={`text-xl font-semibold mb-6 ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>Chapter Performance Analysis</h3>
+                    <div className="flex items-center justify-between mb-6">
+                      <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>
+                        {courses.find(c => c.id === selectedCourse)?.name || 'SAT Math'} - Skill Analytics
+                      </h3>
+                      <div className={`px-3 py-1 rounded-full text-sm font-medium ${isDarkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600'}`}>
+                        {DUMMY_PROGRESS.skillAnalytics.filter((skill) => {
+                          const selectedCourseName = courses.find(c => c.id === selectedCourse)?.name || 'SAT Math';
+                          if (selectedCourseName.includes('Math')) return skill.section === 'Math';
+                          if (selectedCourseName.includes('Reading')) return skill.section === 'Reading';
+                          if (selectedCourseName.includes('Writing')) return skill.section === 'Writing';
+                          return skill.section === 'Math';
+                        }).length} Skills
+                      </div>
+                    </div>
                       
                     <div className="overflow-x-auto">
                       <table className="w-full">
                         <thead>
                           <tr className={`border-b-2 ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-                            <th className={`text-left py-4 px-6 font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Chapter</th>
-                            <th className={`text-center py-4 px-4 font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Accuracy</th>
-                            <th className={`text-center py-4 px-4 font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Avg Speed</th>
-                            <th className={`text-center py-4 px-4 font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Accuracy Percentile</th>
-                            <th className={`text-center py-4 px-4 font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Progress</th>
-                            <th className={`text-center py-4 px-6 font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Remark</th>
+                            <th className={`text-left py-4 px-4 font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Skill</th>
+                            <th className={`text-left py-4 px-3 font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Chapter</th>
+                            <th className={`text-center py-4 px-3 font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Accuracy</th>
+                            <th className={`text-center py-4 px-3 font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Solved</th>
+                            <th className={`text-center py-4 px-3 font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Daily Practice</th>
+                            <th className={`text-center py-4 px-3 font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Global Percentile</th>
+                            <th className={`text-center py-4 px-3 font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Growth</th>
+                            <th className={`text-center py-4 px-3 font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Progress</th>
+                            <th className={`text-center py-4 px-4 font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Status</th>
                           </tr>
                         </thead>
                         <tbody>
-                          {DUMMY_PROGRESS.chapterPerformance.map((chapter) => {
-                            const accuracy = Math.round((chapter.correct / (chapter.correct + chapter.incorrect)) * 100);
-                            const avgSpeed = (Math.random() * 2 + 0.8).toFixed(1); // questions per minute
-                            const accuracyPercentile = Math.floor(Math.random() * 40 + 60);
-                            const progress = Math.round(((chapter.correct + chapter.incorrect) / (chapter.correct + chapter.incorrect + chapter.unattempted)) * 100);
+                          {DUMMY_PROGRESS.skillAnalytics
+                            .filter((skill) => {
+                              const selectedCourseName = courses.find(c => c.id === selectedCourse)?.name || 'SAT Math';
+                              if (selectedCourseName.includes('Math')) return skill.section === 'Math';
+                              if (selectedCourseName.includes('Reading')) return skill.section === 'Reading';
+                              if (selectedCourseName.includes('Writing')) return skill.section === 'Writing';
+                              return skill.section === 'Math'; // Default to Math if no match
+                            })
+                            .map((skill) => {
+                            const accuracy = Math.round((skill.correct / (skill.correct + skill.incorrect)) * 100);
+                            const progress = Math.round(((skill.correct + skill.incorrect) / (skill.correct + skill.incorrect + skill.unattempted)) * 100);
                             
-                            // Generate remark based on performance
-                            const getRemark = (acc: number, perc: number) => {
-                              if (acc >= 85 && perc >= 80) return { text: "Excellent", color: "text-green-600" };
-                              if (acc >= 75 && perc >= 70) return { text: "Good", color: "text-blue-600" };
-                              if (acc >= 65 && perc >= 60) return { text: "Average", color: "text-yellow-600" };
-                              if (acc >= 50) return { text: "Needs Work", color: "text-orange-600" };
-                              return { text: "Focus Required", color: "text-red-600" };
+                            // Generate status based on performance
+                            const getStatus = (acc: number, growth: number) => {
+                              if (acc >= 85 && growth >= 10) return { text: "Mastered", color: "text-green-600", bg: "bg-green-100" };
+                              if (acc >= 75 && growth >= 5) return { text: "Strong", color: "text-blue-600", bg: "bg-blue-100" };
+                              if (acc >= 65 && growth >= 0) return { text: "Learning", color: "text-yellow-600", bg: "bg-yellow-100" };
+                              if (acc >= 50) return { text: "Developing", color: "text-orange-600", bg: "bg-orange-100" };
+                              return { text: "Needs Focus", color: "text-red-600", bg: "bg-red-100" };
                             };
                             
-                            const remark = getRemark(accuracy, accuracyPercentile);
+                            const status = getStatus(accuracy, skill.percentileGrowth);
+                            
+                            // Section color coding
+                            const getSectionColor = (section: string) => {
+                              switch(section) {
+                                case 'Math': return isDarkMode ? 'text-blue-400' : 'text-blue-600';
+                                case 'Reading': return isDarkMode ? 'text-green-400' : 'text-green-600';
+                                case 'Writing': return isDarkMode ? 'text-purple-400' : 'text-purple-600';
+                                default: return isDarkMode ? 'text-gray-400' : 'text-gray-600';
+                              }
+                            };
                             
                             return (
-                              <tr key={chapter.chapterId} className={`border-b ${isDarkMode ? 'border-gray-700/50' : 'border-gray-100'} hover:${isDarkMode ? 'bg-gray-700/30' : 'bg-blue-50/30'} transition-colors`}>
-                                <td className={`py-4 px-6 font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>
-                                  {chapter.chapterName}
+                              <tr key={skill.skillId} className={`border-b ${isDarkMode ? 'border-gray-700/50' : 'border-gray-100'} hover:${isDarkMode ? 'bg-gray-700/30' : 'bg-blue-50/30'} transition-colors`}>
+                                <td className={`py-4 px-4 ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>
+                                  <div className="font-medium text-sm">{skill.skillName}</div>
                                 </td>
-                                <td className="py-4 px-4 text-center">
-                                  <span className={`font-bold text-lg ${accuracy >= 80 ? 'text-green-600' : accuracy >= 60 ? 'text-yellow-600' : 'text-red-600'}`}>
+                                <td className={`py-4 px-3 text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                                  {skill.chapter}
+                                </td>
+                                <td className="py-4 px-3 text-center">
+                                  <span className={`font-bold ${accuracy >= 80 ? 'text-green-600' : accuracy >= 60 ? 'text-yellow-600' : 'text-red-600'}`}>
                                     {accuracy}%
                                   </span>
                                 </td>
-                                <td className={`py-4 px-4 text-center font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                                  {avgSpeed} <span className="text-xs text-gray-500">q/min</span>
+                                <td className={`py-4 px-3 text-center font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                                  {skill.solvedProblems}
                                 </td>
-                                <td className="py-4 px-4 text-center">
-                                  <span className={`font-bold ${accuracyPercentile >= 80 ? 'text-green-600' : accuracyPercentile >= 60 ? 'text-yellow-600' : 'text-red-600'}`}>
-                                    {accuracyPercentile}th
+                                <td className={`py-4 px-3 text-center font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                                  {skill.practicePerDay.toFixed(1)}
+                                </td>
+                                <td className="py-4 px-3 text-center">
+                                  <div className="flex flex-col items-center">
+                                    <span className={`font-bold text-lg ${
+                                      skill.globalPercentile >= 90 ? 'text-green-600' : 
+                                      skill.globalPercentile >= 75 ? 'text-blue-600' : 
+                                      skill.globalPercentile >= 50 ? 'text-yellow-600' : 
+                                      'text-red-600'
+                                    }`}>
+                                      {skill.globalPercentile}th
+                                    </span>
+                                    <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                      {skill.globalPercentile >= 90 ? 'Elite' : 
+                                       skill.globalPercentile >= 75 ? 'Strong' : 
+                                       skill.globalPercentile >= 50 ? 'Average' : 
+                                       'Below Avg'}
+                                    </span>
+                                  </div>
+                                </td>
+                                <td className="py-4 px-3 text-center">
+                                  <span className={`font-bold ${skill.percentileGrowth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                    {skill.percentileGrowth > 0 ? '+' : ''}{skill.percentileGrowth}
                                   </span>
                                 </td>
-                                <td className="py-4 px-4">
-                                  <div className="flex items-center gap-3">
-                                    <div className={`flex-1 bg-gray-200 rounded-full h-3 ${isDarkMode ? 'bg-gray-700' : ''}`}>
+                                <td className="py-4 px-3">
+                                  <div className="flex items-center gap-2">
+                                    <div className={`flex-1 bg-gray-200 rounded-full h-2 ${isDarkMode ? 'bg-gray-700' : ''}`}>
                                       <div 
-                                        className={`h-3 rounded-full transition-all duration-500 ${
+                                        className={`h-2 rounded-full transition-all duration-500 ${
                                           progress >= 80 ? 'bg-green-500' : progress >= 60 ? 'bg-blue-500' : 'bg-yellow-500'
                                         }`}
                                         style={{ width: `${progress}%` }}
                                       ></div>
                                     </div>
-                                    <span className={`text-sm font-medium min-w-[45px] ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                    <span className={`text-xs font-medium min-w-[35px] ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                                       {progress}%
                                     </span>
                                   </div>
                                 </td>
-                                <td className="py-4 px-6 text-center">
-                                  <span className={`font-semibold px-3 py-1 rounded-full text-sm ${remark.color} ${
-                                    isDarkMode ? 'bg-gray-700' : 'bg-gray-100'
+                                <td className="py-4 px-4 text-center">
+                                  <span className={`font-semibold px-2 py-1 rounded-full text-xs ${status.color} ${
+                                    isDarkMode ? 'bg-gray-700' : status.bg
                                   }`}>
-                                    {remark.text}
+                                    {status.text}
                                   </span>
                                 </td>
                               </tr>
@@ -678,18 +1000,74 @@ const Progress = () => {
                             dataKey="date" 
                             stroke={isDarkMode ? '#9ca3af' : '#6b7280'}
                             fontSize={12}
+                            tickFormatter={(value) => {
+                              const date = new Date(value);
+                              return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                            }}
                           />
                           <YAxis 
                             stroke={isDarkMode ? '#9ca3af' : '#6b7280'}
                             fontSize={12}
+                            label={{ value: 'Questions Attempted', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle' } }}
                           />
                           <Tooltip 
                             contentStyle={{
                               backgroundColor: isDarkMode ? '#1f2937' : '#ffffff',
                               border: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb',
-                              borderRadius: '8px'
+                              borderRadius: '8px',
+                              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                            }}
+                            labelFormatter={(label) => {
+                              const date = new Date(label);
+                              return date.toLocaleDateString('en-US', { 
+                                weekday: 'long', 
+                                month: 'long', 
+                                day: 'numeric' 
+                              });
+                            }}
+                            formatter={(value, name, props) => {
+                              if (name === 'attempted') {
+                                const momentum = props.payload.momentum;
+                                const skill = props.payload.mostPracticedSkill;
+                                const momentumText = momentum > 0 ? `+${momentum}` : momentum.toString();
+                                const momentumColor = momentum > 0 ? '#10b981' : momentum < 0 ? '#ef4444' : '#6b7280';
+                                const percentileColor = skill.percentile >= 90 ? '#10b981' : skill.percentile >= 75 ? '#3b82f6' : skill.percentile >= 50 ? '#eab308' : '#ef4444';
+                                
+                                return [
+                                  <div style={{ color: isDarkMode ? '#e5e7eb' : '#374151' }}>
+                                    <div className="mb-2">
+                                      <strong>Your Performance: {value} questions</strong>
+                                    </div>
+                                    <div style={{ color: momentumColor, fontSize: '12px', marginBottom: '8px' }}>
+                                      Momentum: {momentumText} vs. previous day
+                                    </div>
+                                    <div className="border-t pt-2" style={{ borderColor: isDarkMode ? '#374151' : '#e5e7eb' }}>
+                                      <div style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '4px' }}>
+                                        Most Practiced Skill:
+                                      </div>
+                                      <div style={{ fontSize: '11px' }}>
+                                        <div>{skill.name}</div>
+                                        <div style={{ color: percentileColor, fontWeight: 'bold' }}>
+                                          {skill.percentile}th percentile • {skill.contribution}% of today's practice
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>,
+                                  ''
+                                ];
+                              }
+                              if (name === 'globalAverage') {
+                                return [
+                                  <div style={{ color: isDarkMode ? '#fb923c' : '#ea580c' }}>
+                                    Global Average: <strong>{value}</strong>
+                                  </div>,
+                                  ''
+                                ];
+                              }
+                              return [value, name];
                             }}
                           />
+                          {/* User Performance Line */}
                           <Line 
                             type="monotone" 
                             dataKey="attempted" 
@@ -697,9 +1075,33 @@ const Progress = () => {
                             strokeWidth={3}
                             dot={{ fill: isDarkMode ? '#10b981' : '#3b82f6', r: 4 }}
                             activeDot={{ r: 6, fill: isDarkMode ? '#10b981' : '#3b82f6' }}
+                            name="attempted"
+                          />
+                          {/* Global Average Line */}
+                          <Line 
+                            type="monotone" 
+                            dataKey="globalAverage" 
+                            stroke={isDarkMode ? '#fb923c' : '#ea580c'}
+                            strokeWidth={2}
+                            strokeDasharray="5 5"
+                            dot={{ fill: isDarkMode ? '#fb923c' : '#ea580c', r: 3 }}
+                            activeDot={{ r: 5, fill: isDarkMode ? '#fb923c' : '#ea580c' }}
+                            name="globalAverage"
                           />
                         </LineChart>
                       </ResponsiveContainer>
+                    </div>
+
+                    {/* Chart Legend */}
+                    <div className="flex items-center justify-center gap-6 mt-4">
+                      <div className="flex items-center gap-2">
+                        <div className={`w-4 h-0.5 ${isDarkMode ? 'bg-green-400' : 'bg-blue-600'} rounded`}></div>
+                        <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Your Performance</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className={`w-4 h-0.5 ${isDarkMode ? 'bg-orange-400' : 'bg-orange-600'} rounded border-dashed border-t-2`} style={{ borderStyle: 'dashed' }}></div>
+                        <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Global Average</span>
+                      </div>
                     </div>
                   </div>
 
@@ -751,60 +1153,90 @@ const Progress = () => {
                       </div>
                     </div>
 
-                    {/* Right Column - Global Analysis */}
+                    {/* Right Column - Key Insights Radar Chart */}
                     <div className={`p-8 rounded-xl ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm border-0`}>
-                      <h3 className={`text-xl font-semibold mb-6 ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>Global Analysis</h3>
+                      <h3 className={`text-xl font-semibold mb-6 ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>Key Performance Insights</h3>
                       
                       <div className="space-y-6">
-                        {/* Performance Distribution */}
-                        <div>
-                          <h4 className={`font-semibold mb-3 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Score Distribution</h4>
-                          <div className="h-48">
-                            <ResponsiveContainer width="100%" height="100%">
-                              <RechartsBarChart data={[
-                                { range: '1200-1300', count: 2 },
-                                { range: '1300-1400', count: 5 },
-                                { range: '1400-1500', count: 4 },
-                                { range: '1500-1600', count: 1 }
-                              ]}>
-                                <CartesianGrid strokeDasharray="3 3" stroke={isDarkMode ? '#374151' : '#e5e7eb'} />
-                                <XAxis 
-                                  dataKey="range" 
-                                  stroke={isDarkMode ? '#9ca3af' : '#6b7280'}
-                                  fontSize={12}
-                                />
-                                <YAxis 
-                                  stroke={isDarkMode ? '#9ca3af' : '#6b7280'}
-                                  fontSize={12}
-                                />
-                                <Tooltip 
-                                  contentStyle={{
-                                    backgroundColor: isDarkMode ? '#1f2937' : '#ffffff',
-                                    border: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb',
-                                    borderRadius: '8px'
-                                  }}
-                                />
-                                <Bar dataKey="count" fill={isDarkMode ? '#10b981' : '#3b82f6'} radius={[4, 4, 0, 0]} />
-                              </RechartsBarChart>
-                            </ResponsiveContainer>
-                          </div>
+                        {/* Radar Chart */}
+                        <div className="h-64">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <RadarChart data={[
+                              { metric: 'Peak Hours', value: 85, fullMark: 100 },
+                              { metric: 'Easy Questions', value: 90, fullMark: 100 },
+                              { metric: 'Medium Questions', value: 70, fullMark: 100 },
+                              { metric: 'Hard Questions', value: 55, fullMark: 100 },
+                              { metric: 'Time Management', value: 78, fullMark: 100 },
+                              { metric: 'Consistency', value: 82, fullMark: 100 },
+                              { metric: 'Focus Duration', value: 75, fullMark: 100 }
+                            ]}>
+                              <PolarGrid stroke={isDarkMode ? '#374151' : '#e5e7eb'} />
+                              <PolarAngleAxis 
+                                dataKey="metric" 
+                                tick={{ fontSize: 11, fill: isDarkMode ? '#9ca3af' : '#6b7280' }}
+                              />
+                              <PolarRadiusAxis 
+                                angle={90} 
+                                domain={[0, 100]} 
+                                tick={{ fontSize: 10, fill: isDarkMode ? '#9ca3af' : '#6b7280' }}
+                              />
+                              <Radar
+                                name="Performance"
+                                dataKey="value"
+                                stroke={isDarkMode ? '#10b981' : '#3b82f6'}
+                                fill={isDarkMode ? '#10b981' : '#3b82f6'}
+                                fillOpacity={0.2}
+                                strokeWidth={2}
+                              />
+                            </RadarChart>
+                          </ResponsiveContainer>
                         </div>
 
-                        {/* Strengths & Weaknesses */}
-                        <div>
-                          <h4 className={`font-semibold mb-3 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Key Insights</h4>
-                          <div className="space-y-3">
-                            <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-green-900/30' : 'bg-green-50'} border-l-4 border-green-500`}>
-                              <p className={`text-sm font-medium ${isDarkMode ? 'text-green-300' : 'text-green-700'}`}>Strong Areas</p>
-                              <p className={`text-xs ${isDarkMode ? 'text-green-400' : 'text-green-600'}`}>Algebra, Data Analysis</p>
+                        {/* Performance Breakdown */}
+                        <div className="space-y-3">
+                          <h4 className={`font-semibold text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Performance Breakdown</h4>
+                          
+                          {/* Peak Performance Hours */}
+                          <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-green-900/30' : 'bg-green-50'} border-l-4 border-green-500`}>
+                            <div className="flex justify-between items-center">
+                              <div>
+                                <p className={`text-sm font-medium ${isDarkMode ? 'text-green-300' : 'text-green-700'}`}>Peak Hours</p>
+                                <p className={`text-xs ${isDarkMode ? 'text-green-400' : 'text-green-600'}`}>2:00 PM - 4:00 PM</p>
+                              </div>
+                              <span className={`text-lg font-bold ${isDarkMode ? 'text-green-400' : 'text-green-600'}`}>85%</span>
                             </div>
-                            <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-yellow-900/30' : 'bg-yellow-50'} border-l-4 border-yellow-500`}>
-                              <p className={`text-sm font-medium ${isDarkMode ? 'text-yellow-300' : 'text-yellow-700'}`}>Improvement Areas</p>
-                              <p className={`text-xs ${isDarkMode ? 'text-yellow-400' : 'text-yellow-600'}`}>Advanced Math, Writing & Language</p>
+                          </div>
+
+                          {/* Time Distribution */}
+                          <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-blue-900/30' : 'bg-blue-50'} border-l-4 border-blue-500`}>
+                            <div className="flex justify-between items-center">
+                              <div>
+                                <p className={`text-sm font-medium ${isDarkMode ? 'text-blue-300' : 'text-blue-700'}`}>Time per Difficulty</p>
+                                <p className={`text-xs ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>Easy: 45s • Med: 78s • Hard: 125s</p>
+                              </div>
+                              <span className={`text-lg font-bold ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>78%</span>
                             </div>
-                            <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-blue-900/30' : 'bg-blue-50'} border-l-4 border-blue-500`}>
-                              <p className={`text-sm font-medium ${isDarkMode ? 'text-blue-300' : 'text-blue-700'}`}>Recommendation</p>
-                              <p className={`text-xs ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>Focus on geometry and grammar rules</p>
+                          </div>
+
+                          {/* Focus & Consistency */}
+                          <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-purple-900/30' : 'bg-purple-50'} border-l-4 border-purple-500`}>
+                            <div className="flex justify-between items-center">
+                              <div>
+                                <p className={`text-sm font-medium ${isDarkMode ? 'text-purple-300' : 'text-purple-700'}`}>Focus Duration</p>
+                                <p className={`text-xs ${isDarkMode ? 'text-purple-400' : 'text-purple-600'}`}>Avg: 45 min sessions</p>
+                              </div>
+                              <span className={`text-lg font-bold ${isDarkMode ? 'text-purple-400' : 'text-purple-600'}`}>75%</span>
+                            </div>
+                          </div>
+
+                          {/* Improvement Areas */}
+                          <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-orange-900/30' : 'bg-orange-50'} border-l-4 border-orange-500`}>
+                            <div className="flex justify-between items-center">
+                              <div>
+                                <p className={`text-sm font-medium ${isDarkMode ? 'text-orange-300' : 'text-orange-700'}`}>Hard Questions</p>
+                                <p className={`text-xs ${isDarkMode ? 'text-orange-400' : 'text-orange-600'}`}>Focus area for improvement</p>
+                              </div>
+                              <span className={`text-lg font-bold ${isDarkMode ? 'text-orange-400' : 'text-orange-600'}`}>55%</span>
                             </div>
                           </div>
                         </div>
