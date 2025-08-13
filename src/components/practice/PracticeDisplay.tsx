@@ -360,25 +360,28 @@ Keep the evaluation constructive and educational.`;
 
   // Helper function to format solution content
   const formatSolution = (currentQuestion: any) => {
-    // If there are solutionSteps, format them nicely
+    // If there are solutionSteps, format them nicely as HTML string
     if (currentQuestion.solutionSteps && Array.isArray(currentQuestion.solutionSteps)) {
-      return (
-        <div>
-          {currentQuestion.solution && (
-            <div className="mb-3">{currentQuestion.solution}</div>
-          )}
-          <div className="space-y-2">
-            {currentQuestion.solutionSteps.map((step: string, index: number) => (
-              <div key={index} className="flex items-start">
-                <span className="font-medium text-blue-600 dark:text-blue-400 mr-2 flex-shrink-0">
-                  Step {index + 1}:
-                </span>
-                <span>{step}</span>
-              </div>
-            ))}
+      let solutionHTML = '';
+      
+      if (currentQuestion.solution) {
+        solutionHTML += `<div style="margin-bottom: 12px;">${currentQuestion.solution}</div>`;
+      }
+      
+      solutionHTML += '<div>';
+      currentQuestion.solutionSteps.forEach((step: string, index: number) => {
+        solutionHTML += `
+          <div style="display: flex; align-items: flex-start; margin-bottom: 8px;">
+            <span style="font-weight: 500; color: #2563eb; margin-right: 8px; flex-shrink: 0;">
+              Step ${index + 1}:
+            </span>
+            <span>${step}</span>
           </div>
-        </div>
-      );
+        `;
+      });
+      solutionHTML += '</div>';
+      
+      return solutionHTML;
     }
     
     // Otherwise just show the solution string
@@ -582,14 +585,14 @@ Keep the evaluation constructive and educational.`;
                       
                       if (selectedAnswer && isSelected) {
                         if (isCorrect) {
-                          buttonStyle = 'bg-green-100 border-green-400 text-green-800 shadow-md';
+                          buttonStyle = 'bg-green-700 border-green-800 text-black shadow-md';
                           animationClass = 'transition-all duration-300 scale-105';
                         } else {
-                          buttonStyle = 'bg-red-100 border-red-400 text-red-800 shadow-md';
+                          buttonStyle = 'bg-red-500 border-red-600 text-white shadow-md';
                           animationClass = 'transition-all duration-300 scale-105';
                         }
                       } else if (selectedAnswer && isCorrectChoice) {
-                        buttonStyle = 'bg-green-100 border-green-400 text-green-800 shadow-md';
+                        buttonStyle = 'bg-green-700 border-green-800 text-black shadow-md';
                         animationClass = 'transition-all duration-300 scale-105';
                       } else {
                         buttonStyle = isDarkMode 
@@ -608,26 +611,35 @@ Keep the evaluation constructive and educational.`;
                             fontFamily: getFontFamily(),
                             fontSize: '12px',
                             fontWeight: '500',
-                            color: isDarkMode ? '#ffffff' : '#374151'
+                            color: selectedAnswer && isSelected && !isCorrect ? '#ffffff' : 
+                                   selectedAnswer && (isSelected && isCorrect || isCorrectChoice) ? '#ffffff' : 
+                                   isDarkMode ? '#ffffff' : '#374151'
                           }}
                         >
                           <div className="flex items-center justify-between w-full">
                             <div className="flex flex-col items-center text-center flex-1">
-                              <span className={`text-xs mb-0.5 ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>Option {choiceKey}</span>
+                              <span className={`text-xs mb-0.5 ${
+                                selectedAnswer && isSelected && !isCorrect ? 'text-white' : 
+                                selectedAnswer && (isSelected && isCorrect || isCorrectChoice) ? 'text-white' : 
+                                isDarkMode ? 'text-gray-300' : 'text-gray-500'
+                              }`}>Option {choiceKey}</span>
                               <span 
                                 className="text-xs leading-tight"
                                 dangerouslySetInnerHTML={{ __html: choice }}
                               />
                             </div>
                             <div className="flex items-center gap-2">
+                              {selectedAnswer && isSelected && isCorrect && (
+                                <span className="text-xs font-bold text-white">Correct</span>
+                              )}
                               {selectedAnswer && isSelected && !isCorrect && (
                                 <span className="text-xs font-bold text-red-900">Incorrect</span>
                               )}
                               {selectedAnswer && isSelected && (
-                                isCorrect ? <Check className="h-4 w-4 flex-shrink-0" /> : <X className="h-4 w-4 flex-shrink-0" />
+                                isCorrect ? <Check className="h-4 w-4 flex-shrink-0 text-white" /> : <X className="h-4 w-4 flex-shrink-0" />
                               )}
                               {selectedAnswer && !isSelected && isCorrectChoice && (
-                                <Check className="h-4 w-4 flex-shrink-0" />
+                                <Check className="h-4 w-4 flex-shrink-0 text-white" />
                               )}
                             </div>
                           </div>
@@ -641,8 +653,8 @@ Keep the evaluation constructive and educational.`;
             )}
           </div>
           
-          {/* Solution Below for Reading Questions when solution tab is active */}
-          {hasPassage && activeTab === 'solution' && (
+          {/* Solution Below for Reading Questions when answer is selected */}
+          {hasPassage && selectedAnswer && (
             <div className="bg-white p-8 mt-4">
               {/* Broken Line Spacer */}
               <div className="mb-4 flex justify-center">
@@ -673,7 +685,7 @@ Keep the evaluation constructive and educational.`;
                 </h3>
                 <TypingAnimation
                   text={formatSolution(currentQuestion)}
-                  speed={15}
+                  speed={8}
                   isHTML={true}
                   className="whitespace-pre-wrap text-sm leading-relaxed"
                   style={{
@@ -761,7 +773,7 @@ Keep the evaluation constructive and educational.`;
                   </h3>
                   <TypingAnimation
                     text={formatSolution(currentQuestion)}
-                    speed={15}
+                    speed={8}
                     isHTML={true}
                     className="whitespace-pre-wrap text-sm leading-relaxed"
                     style={{
@@ -930,12 +942,12 @@ Keep the evaluation constructive and educational.`;
                           
                           if (selectedAnswer && isSelected) {
                             if (isCorrect) {
-                              buttonStyle = 'bg-green-50 border-green-300 text-green-900';
+                              buttonStyle = 'bg-green-700 border-green-800 text-black';
                             } else {
-                              buttonStyle = 'bg-red-50 border-red-300 text-red-900';
+                              buttonStyle = 'bg-red-500 border-red-600 text-white';
                             }
                           } else if (selectedAnswer && isCorrectChoice) {
-                            buttonStyle = 'bg-green-50 border-green-300 text-green-900';
+                            buttonStyle = 'bg-green-700 border-green-800 text-black';
                           } else {
                             buttonStyle = 'bg-white border-gray-300 text-gray-900 hover:bg-gray-50';
                           }
@@ -947,22 +959,34 @@ Keep the evaluation constructive and educational.`;
                               className={`w-full h-auto min-h-[48px] rounded-md p-4 text-left justify-start transition-colors ${buttonStyle}`}
                               onClick={() => checkAnswer(choiceKey)}
                               disabled={!!selectedAnswer}
-                              style={contentTextStyle}
+                              style={{
+                                ...contentTextStyle,
+                                color: selectedAnswer && isSelected && !isCorrect ? '#ffffff' : 
+                                       selectedAnswer && (isSelected && isCorrect || isCorrectChoice) ? '#ffffff' : 
+                                       contentTextStyle.color
+                              }}
                             >
                               <div className="flex items-start justify-between w-full">
                                 <div className="flex items-start gap-3 flex-1">
-                                  <span className="font-semibold text-gray-700 mt-0.5">{choiceKey}.</span>
+                                  <span className={`font-semibold mt-0.5 ${
+                                    selectedAnswer && isSelected && !isCorrect ? 'text-white' : 
+                                    selectedAnswer && (isSelected && isCorrect || isCorrectChoice) ? 'text-white' : 
+                                    'text-gray-700'
+                                  }`}>{choiceKey}.</span>
                                   <span 
                                     className="flex-1 text-left"
                                     dangerouslySetInnerHTML={{ __html: choice }}
                                   />
                                 </div>
                                 <div className="flex items-center gap-2 ml-4">
+                                  {selectedAnswer && isSelected && isCorrect && (
+                                    <span className="text-xs font-bold text-white mr-1">Correct</span>
+                                  )}
                                   {selectedAnswer && isSelected && (
-                                    isCorrect ? <Check className="h-4 w-4 text-green-600" /> : <X className="h-4 w-4 text-red-600" />
+                                    isCorrect ? <Check className="h-4 w-4 text-white" /> : <X className="h-4 w-4 text-red-600" />
                                   )}
                                   {selectedAnswer && !isSelected && isCorrectChoice && (
-                                    <Check className="h-4 w-4 text-green-600" />
+                                    <Check className="h-4 w-4 text-white" />
                                   )}
                                 </div>
                               </div>
@@ -972,7 +996,7 @@ Keep the evaluation constructive and educational.`;
                       </div>
 
                     {/* SAT-style separator - shows after answer is selected */}
-                    {selectedAnswer && (
+                    {activeTab === 'solution' && (
                       <div className="mt-6 pt-4 border-t border-gray-300" style={{ borderWidth: '0.5px' }}>
                         <div className="text-center text-xs text-gray-500 font-medium tracking-wide">
                           • • •
@@ -1057,7 +1081,7 @@ Keep the evaluation constructive and educational.`;
                     </h3>
                     <TypingAnimation
                       text={formatSolution(currentQuestion)}
-                      speed={15}
+                      speed={8}
                       isHTML={true}
                       className="whitespace-pre-wrap text-sm leading-relaxed"
                       style={{
@@ -1237,12 +1261,12 @@ Keep the evaluation constructive and educational.`;
                         
                         if (selectedAnswer && isSelected) {
                           if (isCorrect) {
-                            buttonStyle = 'bg-green-50 border-green-300 text-green-900';
+                            buttonStyle = 'bg-green-700 border-green-800 text-black';
                           } else {
-                            buttonStyle = 'bg-red-50 border-red-300 text-red-900';
+                            buttonStyle = 'bg-red-500 border-red-600 text-white';
                           }
                         } else if (selectedAnswer && isCorrectChoice) {
-                          buttonStyle = 'bg-green-50 border-green-300 text-green-900';
+                          buttonStyle = 'bg-green-700 border-green-800 text-black';
                         } else {
                           buttonStyle = 'bg-white border-gray-300 text-gray-900 hover:bg-gray-50';
                         }
@@ -1254,22 +1278,34 @@ Keep the evaluation constructive and educational.`;
                             className={`w-full h-auto min-h-[48px] rounded-md p-4 text-left justify-start transition-colors ${buttonStyle}`}
                             onClick={() => checkAnswer(choiceKey)}
                             disabled={!!selectedAnswer}
-                            style={contentTextStyle}
+                            style={{
+                              ...contentTextStyle,
+                              color: selectedAnswer && isSelected && !isCorrect ? '#ffffff' : 
+                                     selectedAnswer && (isSelected && isCorrect || isCorrectChoice) ? '#ffffff' : 
+                                     contentTextStyle.color
+                            }}
                           >
                             <div className="flex items-start justify-between w-full">
                               <div className="flex items-start gap-3 flex-1">
-                                <span className="font-semibold text-gray-700 mt-0.5">{choiceKey}.</span>
+                                <span className={`font-semibold mt-0.5 ${
+                                  selectedAnswer && isSelected && !isCorrect ? 'text-white' : 
+                                  selectedAnswer && (isSelected && isCorrect || isCorrectChoice) ? 'text-white' : 
+                                  'text-gray-700'
+                                }`}>{choiceKey}.</span>
                                 <span 
                                   className="flex-1 text-left"
                                   dangerouslySetInnerHTML={{ __html: choice }}
                                 />
                               </div>
                               <div className="flex items-center gap-2 ml-4">
+                                {selectedAnswer && isSelected && isCorrect && (
+                                  <span className="text-xs font-bold text-white mr-1">Correct</span>
+                                )}
                                 {selectedAnswer && isSelected && (
-                                  isCorrect ? <Check className="h-4 w-4 text-green-600" /> : <X className="h-4 w-4 text-red-600" />
+                                  isCorrect ? <Check className="h-4 w-4 text-white" /> : <X className="h-4 w-4 text-red-600" />
                                 )}
                                 {selectedAnswer && !isSelected && isCorrectChoice && (
-                                  <Check className="h-4 w-4 text-green-600" />
+                                  <Check className="h-4 w-4 text-white" />
                                 )}
                               </div>
                             </div>
@@ -1279,7 +1315,7 @@ Keep the evaluation constructive and educational.`;
                     </div>
 
                     {/* SAT-style separator - shows after answer is selected (Mobile) */}
-                    {selectedAnswer && (
+                    {activeTab === 'solution' && (
                       <div className="mt-6 pt-4 border-t border-gray-300" style={{ borderWidth: '0.5px' }}>
                         <div className="text-center text-xs text-gray-500 font-medium tracking-wide">
                           • • •
@@ -1362,7 +1398,7 @@ Keep the evaluation constructive and educational.`;
                     </h3>
                     <TypingAnimation
                       text={formatSolution(currentQuestion)}
-                      speed={15}
+                      speed={8}
                       isHTML={true}
                       className="whitespace-pre-wrap text-sm leading-relaxed"
                       style={{

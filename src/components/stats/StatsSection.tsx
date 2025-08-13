@@ -53,37 +53,37 @@ export const StatsSection = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="bg-white p-8 rounded-xl shadow-lg transform hover:-translate-y-1 transition-transform duration-300">
             <div className="flex flex-col items-center">
-              <div className="bg-gradient-to-r from-blue-400 to-blue-600 p-4 rounded-full mb-4">
-                <Users className="h-8 w-8 text-white" />
+              <div className="bg-white border border-gray-300 p-4 rounded-full mb-4">
+                <Users className="h-8 w-8 text-gray-400" />
               </div>
               <h3 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent">
                 {isVisible ? <AnimatedCounter end={50000} /> : "0"}+
               </h3>
-              <p className="text-gray-600 mt-2">Total Tests Taken</p>
+              <p className="text-gray-400 mt-2">Total Tests Taken</p>
             </div>
           </div>
           
           <div className="bg-white p-8 rounded-xl shadow-lg transform hover:-translate-y-1 transition-transform duration-300">
             <div className="flex flex-col items-center">
-              <div className="bg-gradient-to-r from-blue-400 to-blue-600 p-4 rounded-full mb-4">
-                <Calendar className="h-8 w-8 text-white" />
+              <div className="bg-white border border-gray-300 p-4 rounded-full mb-4">
+                <Calendar className="h-8 w-8 text-gray-400" />
               </div>
               <h3 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent">
                 {isVisible ? <AnimatedCounter end={1200} /> : "0"}+
               </h3>
-              <p className="text-gray-600 mt-2">Tests Today</p>
+              <p className="text-gray-400 mt-2">Tests Today</p>
             </div>
           </div>
           
           <div className="bg-white p-8 rounded-xl shadow-lg transform hover:-translate-y-1 transition-transform duration-300">
             <div className="flex flex-col items-center">
-              <div className="bg-gradient-to-r from-blue-400 to-blue-600 p-4 rounded-full mb-4">
-                <Star className="h-8 w-8 text-white" />
+              <div className="bg-white border border-gray-300 p-4 rounded-full mb-4">
+                <Star className="h-8 w-8 text-gray-400" />
               </div>
               <h3 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent">
                 {isVisible ? <AnimatedCounter end={4.9} duration={1500} /> : "0"}
               </h3>
-              <p className="text-gray-600 mt-2">Average Rating</p>
+              <p className="text-gray-400 mt-2">Average Rating</p>
             </div>
           </div>
         </div>

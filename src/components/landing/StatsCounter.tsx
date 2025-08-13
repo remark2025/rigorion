@@ -18,34 +18,34 @@ const STATS: StatType[] = [
     value: 5000,
     suffix: "+",
     label: "Active Students",
-    icon: <Users className="w-8 h-8 text-[#8A0303]" />
+    icon: <Users className="w-8 h-8 text-gray-400" />
   },
   {
     id: "questions",
     value: 5000,
     suffix: "+",
     label: "Practice Questions",
-    icon: <FileText className="w-8 h-8 text-[#8A0303]" />
+    icon: <FileText className="w-8 h-8 text-gray-400" />
   },
   {
     id: "solved",
     value: 250000,
     suffix: "+",
     label: "Problems Solved",
-    icon: <CheckCircle className="w-8 h-8 text-[#8A0303]" />
+    icon: <CheckCircle className="w-8 h-8 text-gray-400" />
   },
   {
     id: "average",
     value: 1420,
     label: "Average SAT Score",
-    icon: <TrendingUp className="w-8 h-8 text-[#8A0303]" />
+    icon: <TrendingUp className="w-8 h-8 text-gray-400" />
   },
   {
     id: "success",
     value: 98,
     suffix: "%",
     label: "Success Rate",
-    icon: <Award className="w-8 h-8 text-[#8A0303]" />
+    icon: <Award className="w-8 h-8 text-gray-400" />
   }
 ];
 
@@ -133,18 +133,18 @@ export const StatsCounter = () => {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
           {STATS.map((stat) => (
             <div key={stat.id} className="text-center group">
-              <div className="bg-gray-900 rounded-full w-48 h-48 mx-auto flex flex-col items-center justify-center p-6 transition-all duration-300 group-hover:bg-[#8A0303] group-hover:scale-105 shadow-lg">
-                <div className="inline-flex items-center justify-center w-12 h-12 bg-white bg-opacity-20 rounded-full mb-3 group-hover:bg-white group-hover:bg-opacity-30 transition-all duration-300">
-                  <div className="text-white group-hover:text-white">
+              <div className="bg-white border border-gray-300 rounded-full w-48 h-48 mx-auto flex flex-col items-center justify-center p-6 transition-all duration-300 group-hover:border-gray-400 group-hover:scale-105 shadow-lg">
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-gray-50 rounded-full mb-3 group-hover:bg-gray-100 transition-all duration-300">
+                  <div className="text-gray-400 group-hover:text-gray-500">
                     {React.cloneElement(stat.icon as React.ReactElement, {
-                      className: "w-6 h-6 text-white"
+                      className: "w-6 h-6 text-gray-400 group-hover:text-gray-500"
                     })}
                   </div>
                 </div>
-                <div className="text-2xl font-bold text-white mb-1">
+                <div className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent mb-1">
                   {counts[stat.id].toLocaleString()}{stat.suffix || ''}
                 </div>
-                <p className="text-xs text-gray-300 font-medium text-center leading-tight">{stat.label}</p>
+                <p className="text-xs text-gray-400 font-medium text-center leading-tight">{stat.label}</p>
               </div>
             </div>
           ))}
