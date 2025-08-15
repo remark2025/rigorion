@@ -1105,8 +1105,8 @@ const Progress = () => {
                     </div>
                   </div>
 
-                  {/* Exam Tests Summary & Global Analysis */}
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
+                  {/* Exam Tests Summary & Key Insights */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8 items-start">
                     {/* Left Column - Exam Tests Status Summary */}
                     <div className={`p-8 rounded-xl ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm border-0`}>
                       <h3 className={`text-xl font-semibold mb-6 ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>Exam Tests Summary</h3>
@@ -1150,43 +1150,209 @@ const Progress = () => {
                           </div>
                           <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Within time limit</p>
                         </div>
+
+                        {/* Separator */}
+                        <div className={`border-t ${isDarkMode ? 'border-gray-600' : 'border-gray-200'} my-6`}></div>
+
+                        {/* Calibration Analysis */}
+                        <div>
+                          <h4 className={`font-semibold mb-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                            Calibration (Metacognition)
+                          </h4>
+                          
+                          <div className="space-y-4">
+                            {/* Brier Score */}
+                            <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-gray-700/50' : 'bg-indigo-50'}`}>
+                              <div className="flex justify-between items-center mb-2">
+                                <span className={`font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Brier Score</span>
+                                <span className={`text-2xl font-bold ${
+                                  0.15 <= 0.20 ? (isDarkMode ? 'text-green-400' : 'text-green-600') :
+                                  0.15 <= 0.30 ? (isDarkMode ? 'text-yellow-400' : 'text-yellow-600') :
+                                  (isDarkMode ? 'text-red-400' : 'text-red-600')
+                                }`}>0.15</span>
+                              </div>
+                              <div className={`w-full bg-gray-200 rounded-full h-2 ${isDarkMode ? 'bg-gray-600' : ''}`}>
+                                <div 
+                                  className={`h-2 rounded-full transition-all duration-300 ${
+                                    0.15 <= 0.20 ? 'bg-green-500' : 
+                                    0.15 <= 0.30 ? 'bg-yellow-500' : 
+                                    'bg-red-500'
+                                  }`} 
+                                  style={{ width: `${Math.max(5, (1 - 0.15) * 100)}%` }}
+                                ></div>
+                              </div>
+                              <p className={`text-xs mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                Target: ≤ 0.20 (Lower is better)
+                              </p>
+                            </div>
+
+                            {/* Confidence Calibration */}
+                            <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-gray-700/50' : 'bg-purple-50'}`}>
+                              <div className="flex justify-between items-center mb-2">
+                                <span className={`font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Confidence Gap</span>
+                                <div className="text-center">
+                                  <span className={`text-2xl font-bold ${
+                                    Math.abs(3) < 5 ? (isDarkMode ? 'text-green-400' : 'text-green-600') :
+                                    Math.abs(3) < 10 ? (isDarkMode ? 'text-yellow-400' : 'text-yellow-600') :
+                                    (isDarkMode ? 'text-red-400' : 'text-red-600')
+                                  }`}>+3</span>
+                                  <span className={`text-sm ml-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>pp</span>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Under</span>
+                                <div className={`flex-1 h-2 rounded-full ${isDarkMode ? 'bg-gray-600' : 'bg-gray-200'} relative`}>
+                                  {/* Zero line */}
+                                  <div className="absolute left-1/2 top-0 w-0.5 h-2 bg-gray-400 transform -translate-x-0.5"></div>
+                                  {/* Confidence gap indicator */}
+                                  <div 
+                                    className={`absolute top-0 h-2 w-1 rounded ${
+                                      3 > 0 ? 'bg-orange-500' : 'bg-blue-500'
+                                    }`}
+                                    style={{ 
+                                      left: `${50 + (3 / 20) * 50}%`,
+                                      transform: 'translateX(-50%)'
+                                    }}
+                                  ></div>
+                                </div>
+                                <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Over</span>
+                              </div>
+                              <p className={`text-xs mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                Target: |gap| &lt; 5pp • {3 > 0 ? 'Slightly overconfident' : 'Slightly underconfident'}
+                              </p>
+                            </div>
+
+                            {/* Confidence Distribution */}
+                            <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-gray-700/50' : 'bg-cyan-50'}`}>
+                              <div className="flex justify-between items-center mb-3">
+                                <span className={`font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Confidence Pattern</span>
+                                <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Last 50 questions</span>
+                              </div>
+                              
+                              {/* Confidence level breakdown */}
+                              <div className="space-y-2">
+                                {[
+                                  { level: 5, label: 'Very Sure', count: 18, accuracy: 89 },
+                                  { level: 4, label: 'Sure', count: 15, accuracy: 80 },
+                                  { level: 3, label: 'Neutral', count: 12, accuracy: 67 },
+                                  { level: 2, label: 'Unsure', count: 3, accuracy: 33 },
+                                  { level: 1, label: 'Guessing', count: 2, accuracy: 50 }
+                                ].map((conf) => {
+                                  const calibrationGap = conf.accuracy - (conf.level * 20);
+                                  return (
+                                    <div key={conf.level} className="flex items-center gap-3">
+                                      <span className={`text-xs w-16 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                        {conf.label}
+                                      </span>
+                                      <div className="flex-1 flex items-center gap-2">
+                                        <div className={`w-full bg-gray-200 rounded-full h-1.5 ${isDarkMode ? 'bg-gray-600' : ''}`}>
+                                          <div 
+                                            className="bg-blue-500 h-1.5 rounded-full transition-all duration-300" 
+                                            style={{ width: `${(conf.count / 50) * 100}%` }}
+                                          ></div>
+                                        </div>
+                                        <span className={`text-xs min-w-[30px] ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                          {conf.count}
+                                        </span>
+                                        <span className={`text-xs min-w-[35px] font-medium ${
+                                          Math.abs(calibrationGap) < 10 ? 'text-green-600' : 
+                                          Math.abs(calibrationGap) < 20 ? 'text-yellow-600' : 
+                                          'text-red-600'
+                                        }`}>
+                                          {conf.accuracy}%
+                                        </span>
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                              
+                              <p className={`text-xs mt-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                Good calibration: confidence matches actual accuracy
+                              </p>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
 
                     {/* Right Column - Key Insights Radar Chart */}
-                    <div className={`p-8 rounded-xl ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm border-0`}>
+                    <div className={`p-8 rounded-xl ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm border-0 h-fit`}>
                       <h3 className={`text-xl font-semibold mb-6 ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>Key Performance Insights</h3>
                       
                       <div className="space-y-6">
-                        {/* Radar Chart */}
-                        <div className="h-64">
+                        {/* Radar Chart - Professional Enlarged */}
+                        <div className="h-96">
                           <ResponsiveContainer width="100%" height="100%">
-                            <RadarChart data={[
-                              { metric: 'Peak Hours', value: 85, fullMark: 100 },
-                              { metric: 'Easy Questions', value: 90, fullMark: 100 },
-                              { metric: 'Medium Questions', value: 70, fullMark: 100 },
-                              { metric: 'Hard Questions', value: 55, fullMark: 100 },
-                              { metric: 'Time Management', value: 78, fullMark: 100 },
-                              { metric: 'Consistency', value: 82, fullMark: 100 },
-                              { metric: 'Focus Duration', value: 75, fullMark: 100 }
-                            ]}>
-                              <PolarGrid stroke={isDarkMode ? '#374151' : '#e5e7eb'} />
+                            <RadarChart 
+                              data={[
+                                { metric: 'Peak Hours', value: 85, fullMark: 100 },
+                                { metric: 'Easy Questions', value: 90, fullMark: 100 },
+                                { metric: 'Medium Questions', value: 70, fullMark: 100 },
+                                { metric: 'Hard Questions', value: 55, fullMark: 100 },
+                                { metric: 'Time Management', value: 78, fullMark: 100 },
+                                { metric: 'Consistency', value: 82, fullMark: 100 },
+                                { metric: 'Focus Duration', value: 75, fullMark: 100 },
+                                { metric: 'Retention Rate', value: 68, fullMark: 100 }
+                              ]}
+                              margin={{ top: 30, right: 30, bottom: 30, left: 30 }}
+                            >
+                              <PolarGrid 
+                                stroke={isDarkMode ? '#374151' : '#e5e7eb'} 
+                                strokeWidth={1.2}
+                                gridType="polygon"
+                              />
                               <PolarAngleAxis 
                                 dataKey="metric" 
-                                tick={{ fontSize: 11, fill: isDarkMode ? '#9ca3af' : '#6b7280' }}
+                                tick={{ 
+                                  fontSize: 13, 
+                                  fill: isDarkMode ? '#d1d5db' : '#4b5563',
+                                  fontWeight: 600
+                                }}
+                                tickFormatter={(value) => {
+                                  // Abbreviate long metric names for better display
+                                  const abbreviations = {
+                                    'Peak Hours': 'Peak Hours',
+                                    'Easy Questions': 'Easy',
+                                    'Medium Questions': 'Medium', 
+                                    'Hard Questions': 'Hard',
+                                    'Time Management': 'Time Mgmt',
+                                    'Consistency': 'Consistency',
+                                    'Focus Duration': 'Focus',
+                                    'Retention Rate': 'Retention'
+                                  };
+                                  return abbreviations[value] || value;
+                                }}
                               />
                               <PolarRadiusAxis 
                                 angle={90} 
                                 domain={[0, 100]} 
-                                tick={{ fontSize: 10, fill: isDarkMode ? '#9ca3af' : '#6b7280' }}
+                                tick={{ 
+                                  fontSize: 12, 
+                                  fill: isDarkMode ? '#9ca3af' : '#6b7280',
+                                  fontWeight: 500
+                                }}
+                                tickCount={6}
                               />
                               <Radar
                                 name="Performance"
                                 dataKey="value"
                                 stroke={isDarkMode ? '#10b981' : '#3b82f6'}
                                 fill={isDarkMode ? '#10b981' : '#3b82f6'}
-                                fillOpacity={0.2}
-                                strokeWidth={2}
+                                fillOpacity={0.12}
+                                strokeWidth={4}
+                                dot={{ 
+                                  r: 6, 
+                                  fill: isDarkMode ? '#10b981' : '#3b82f6',
+                                  strokeWidth: 3,
+                                  stroke: isDarkMode ? '#064e3b' : '#1e40af'
+                                }}
+                                activeDot={{
+                                  r: 8,
+                                  fill: isDarkMode ? '#34d399' : '#60a5fa',
+                                  strokeWidth: 3,
+                                  stroke: isDarkMode ? '#064e3b' : '#1e40af'
+                                }}
                               />
                             </RadarChart>
                           </ResponsiveContainer>
@@ -1237,6 +1403,73 @@ const Progress = () => {
                                 <p className={`text-xs ${isDarkMode ? 'text-orange-400' : 'text-orange-600'}`}>Focus area for improvement</p>
                               </div>
                               <span className={`text-lg font-bold ${isDarkMode ? 'text-orange-400' : 'text-orange-600'}`}>55%</span>
+                            </div>
+                          </div>
+
+                          {/* Knowledge Retention */}
+                          <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-red-900/30' : 'bg-red-50'} border-l-4 border-red-500`}>
+                            <div className="flex justify-between items-center">
+                              <div>
+                                <p className={`text-sm font-medium ${isDarkMode ? 'text-red-300' : 'text-red-700'}`}>Retention Rate</p>
+                                <p className={`text-xs ${isDarkMode ? 'text-red-400' : 'text-red-600'}`}>Knowledge decay over 7 days</p>
+                              </div>
+                              <span className={`text-lg font-bold ${isDarkMode ? 'text-red-400' : 'text-red-600'}`}>68%</span>
+                            </div>
+                          </div>
+
+                          {/* Emotional Analytics */}
+                          <div className="mt-6">
+                            <h4 className={`font-semibold text-sm mb-3 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Emotional Analytics</h4>
+                            
+                            {/* Emotional Distribution */}
+                            <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-yellow-900/30' : 'bg-yellow-50'} border-l-4 border-yellow-500 mb-3`}>
+                              <div className="flex justify-between items-center">
+                                <div>
+                                  <p className={`text-sm font-medium ${isDarkMode ? 'text-yellow-300' : 'text-yellow-700'}`}>Emotional Balance</p>
+                                  <p className={`text-xs ${isDarkMode ? 'text-yellow-400' : 'text-yellow-600'}`}>😊 65% • 😐 25% • 😰 10%</p>
+                                </div>
+                                <span className={`text-lg font-bold ${isDarkMode ? 'text-yellow-400' : 'text-yellow-600'}`}>Positive</span>
+                              </div>
+                            </div>
+
+                            {/* Confidence vs Performance */}
+                            <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-indigo-900/30' : 'bg-indigo-50'} border-l-4 border-indigo-500 mb-3`}>
+                              <div className="flex justify-between items-center">
+                                <div>
+                                  <p className={`text-sm font-medium ${isDarkMode ? 'text-indigo-300' : 'text-indigo-700'}`}>Confidence Calibration</p>
+                                  <p className={`text-xs ${isDarkMode ? 'text-indigo-400' : 'text-indigo-600'}`}>Avg confidence: 3.8/5 • Accuracy: 72%</p>
+                                </div>
+                                <span className={`text-lg font-bold ${isDarkMode ? 'text-indigo-400' : 'text-indigo-600'}`}>Well-calibrated</span>
+                              </div>
+                            </div>
+
+                            {/* Stress Impact */}
+                            <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-pink-900/30' : 'bg-pink-50'} border-l-4 border-pink-500`}>
+                              <div className="flex justify-between items-center">
+                                <div>
+                                  <p className={`text-sm font-medium ${isDarkMode ? 'text-pink-300' : 'text-pink-700'}`}>Stress Impact</p>
+                                  <p className={`text-xs ${isDarkMode ? 'text-pink-400' : 'text-pink-600'}`}>When stressed: -15% accuracy</p>
+                                </div>
+                                <span className={`text-lg font-bold ${isDarkMode ? 'text-pink-400' : 'text-pink-600'}`}>Moderate</span>
+                              </div>
+                            </div>
+
+                            {/* Key Insight */}
+                            <div className={`mt-4 p-4 rounded-lg border-2 border-dashed ${
+                              isDarkMode ? 'border-gray-600 bg-gray-800/50' : 'border-gray-300 bg-gray-50'
+                            }`}>
+                              <div className="flex items-start gap-3">
+                                <div className="text-2xl">💡</div>
+                                <div>
+                                  <h5 className={`font-semibold text-sm ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>
+                                    Emotional Intelligence Insight
+                                  </h5>
+                                  <p className={`text-xs mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                    You perform best when confident (😊) with 85% accuracy. Try stress management 
+                                    techniques during practice to improve performance when feeling anxious.
+                                  </p>
+                                </div>
+                              </div>
                             </div>
                           </div>
                         </div>

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Target, Navigation, ChevronDown, LogOut, Bell, Filter, Moon, Sun, BookOpen, Clock, Home, Users, BarChart, Menu, Settings, Timer, TrendingUp, Hand, Coffee, GraduationCap } from "lucide-react";
+import { Target, Navigation, ChevronDown, LogOut, Bell, Filter, Moon, Sun, BookOpen, Clock, Home, Users, BarChart, Menu, Settings, Timer, TrendingUp, Hand, Coffee, GraduationCap, Type } from "lucide-react";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useTheme } from "@/contexts/ThemeContext";
+import FormattingToolbar from "./FormattingToolbar";
 
 interface PracticeHeaderProps {
   onToggleSidebar: () => void;
@@ -22,6 +23,13 @@ interface PracticeHeaderProps {
   sidebarOpen: boolean;
   setSidebarOpen: (open: boolean) => void;
   onFilterChange?: (filters: { chapter?: string; module?: string; exam?: number | null }) => void;
+  settings?: {
+    fontFamily: string;
+    fontSize: number;
+    colorStyle: string;
+    textColor: string;
+  };
+  onSettingsChange?: (key: string, value: string | number) => void;
 }
 
 export const PracticeHeader = ({ 
@@ -31,7 +39,14 @@ export const PracticeHeader = ({
   mode,
   sidebarOpen,
   setSidebarOpen,
-  onFilterChange
+  onFilterChange,
+  settings = {
+    fontFamily: 'inter',
+    fontSize: 14,
+    colorStyle: 'plain',
+    textColor: '#374151'
+  },
+  onSettingsChange
 }: PracticeHeaderProps) => {
   const navigate = useNavigate();
   const { user, profile, signOut } = useAuth();
@@ -300,18 +315,10 @@ export const PracticeHeader = ({
       </div>
       
       <div className="flex items-center gap-1 sm:gap-2 overflow-hidden">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={toggleDarkMode}
-          className={`rounded-full ${isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'}`}
-        >
-          {isDarkMode ? (
-            <Sun className="h-4 w-4 text-green-400" />
-          ) : (
-            <Moon className="h-4 w-4 text-blue-600" />
-          )}
-        </Button>
+        <FormattingToolbar 
+          settings={settings}
+          onSettingsChange={onSettingsChange}
+        />
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -561,44 +568,6 @@ export const PracticeHeader = ({
           </DropdownMenu>
         </div>
 
-        {/* Mobile Action Buttons */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              className={`md:hidden rounded-full transition-colors ${
-                isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
-              }`}
-            >
-              <Settings className={`h-4 w-4 ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`} />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className={`w-48 shadow-lg rounded-lg p-2 z-50 ${
-            isDarkMode ? 'bg-gray-900 border-green-500/30' : 'bg-white border-gray-200'
-          }`}>
-            <DropdownMenuItem 
-              className={`cursor-pointer py-2 px-3 rounded-md transition-colors flex items-center ${
-                isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-50'
-              }`}
-              onClick={onOpenObjective}
-            >
-              <Target className={`h-4 w-4 mr-2 ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`} />
-              <span className={`font-source-sans text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Objectives</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem 
-              className={`cursor-pointer py-2 px-3 rounded-md transition-colors flex items-center ${
-                isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-50'
-              }`}
-              onClick={onOpenMode}
-            >
-              {getModeIcon(mode)}
-              <span className={`font-source-sans text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} ml-1`}>
-                Mode: {mode === "manual" ? "Manual" : mode.charAt(0).toUpperCase() + mode.slice(1)}
-              </span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
         
         {/* Desktop Action Buttons */}
         <div className="hidden md:flex items-center gap-1">

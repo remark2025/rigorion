@@ -11,6 +11,8 @@ import HintDialog from "./HintDialog";
 import TypingAnimation from "@/components/ui/TypingAnimation";
 import AttemptHistory from "./AttemptHistory";
 import QuestionHeader from "./QuestionHeader";
+import { QuestionTracking } from "./QuestionTracking";
+import { PracticeTimer } from "./PracticeTimer";
 
 interface PracticeDisplayProps {
   currentQuestion: Question | null;
@@ -44,6 +46,11 @@ interface PracticeDisplayProps {
   progress?: number;
   correctAnswers?: number;
   incorrectAnswers?: number;
+  onInteractionsChange?: (interactions: Array<{
+    isCorrect: boolean;
+    timestamp: string;
+    questionId?: string;
+  }>) => void;
 }
 
 const PracticeDisplay = ({
@@ -65,6 +72,7 @@ const PracticeDisplay = ({
   progress = 0,
   correctAnswers = 0,
   incorrectAnswers = 0,
+  onInteractionsChange,
 }: PracticeDisplayProps) => {
   const { isDarkMode } = useTheme();
   const [localSelectedAnswer, setLocalSelectedAnswer] = useState<string | null>(null);
@@ -81,10 +89,16 @@ const PracticeDisplay = ({
   const [interactions, setInteractions] = useState<any[]>([]);
   const [showInteractionLog, setShowInteractionLog] = useState(false);
   const [sessionId] = useState<string>(`session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`);
+  
+  // Question tracking state
+  const [questionGuess, setQuestionGuess] = useState<number | null>(null);
+  const [questionEmotion, setQuestionEmotion] = useState<string | null>(null);
 
-  // Reset timer when question changes
+  // Reset timer and tracking when question changes
   useEffect(() => {
     setQuestionStartTime(Date.now());
+    setQuestionGuess(null);
+    setQuestionEmotion(null);
   }, [currentQuestionIndex]);
 
   const selectedAnswer = propSelectedAnswer !== undefined ? propSelectedAnswer : localSelectedAnswer;
@@ -252,6 +266,12 @@ const PracticeDisplay = ({
       setInteractions(prev => {
         const newInteractions = [...prev, interaction];
         console.log('📊 Total interactions now:', newInteractions.length);
+        
+        // Notify parent component of interactions change
+        if (onInteractionsChange) {
+          onInteractionsChange(newInteractions);
+        }
+        
         return newInteractions;
       });
       
@@ -438,46 +458,59 @@ Keep the evaluation constructive and educational.`;
             activeTab === 'problem' ? 'w-full' : 'w-3/5'
           } bg-white p-8`}>
           
+          {/* Timer - Positioned above question header */}
+          <PracticeTimer 
+            timerValue={timerValue}
+            mode={mode}
+          />
+          
           {/* SAT Question Header - Authentic Style */}
           <QuestionHeader questionNumber={currentQuestion.number} chapter={currentQuestion.chapter} />
           
-          {/* Action Icons Row */}
-          <div className="mb-6 flex items-center justify-end gap-2">
-            <HintDialog hint={currentQuestion.hint} currentQuestionIndex={currentQuestionIndex} />
-            <Button variant="ghost" size="sm" className="p-1 h-8 w-8 rounded hover:bg-gray-100">
-              <Flag className="h-4 w-4 text-blue-600" />
-            </Button>
-            <Button variant="ghost" size="sm" className="p-1 h-8 w-8 rounded hover:bg-gray-100">
-              <Bookmark className="h-4 w-4 text-blue-600" />
-            </Button>
-            {/* Calculator Icon */}
-            <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full">
-              {currentQuestion.calculatorAllowed ? (
-                <Calculator className="h-3 w-3 text-blue-500" />
-              ) : (
-                <div className="relative">
-                  <Calculator className="h-3 w-3 text-gray-400" />
-                  <X className="h-2 w-2 text-red-500 absolute -top-0.5 -right-0.5" />
-                </div>
-              )}
-            </Button>
+          {/* Question Tracking and Action Icons - Inline Row */}
+          <div className="mb-3 flex items-center justify-between">
+            {/* Left: Question Tracking */}
+            <QuestionTracking
+              questionId={currentQuestion.id || `q_${currentQuestionIndex}`}
+              onGuessChange={setQuestionGuess}
+              onEmotionChange={setQuestionEmotion}
+              initialGuess={questionGuess}
+              initialEmotion={questionEmotion}
+            />
             
-            {/* Separator */}
-            <div className="w-px h-6 bg-gray-300 mx-1"></div>
-            
-            {/* Attempt History */}
-            <AttemptHistory interactions={interactions} />
-            
-            {/* Interactions Log Button */}
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="p-1 h-6 w-6 rounded-full"
-              onClick={() => setShowInteractionLog(!showInteractionLog)}
-            >
-              <FileText className="h-3 w-3 text-purple-500" />
-            </Button>
+            {/* Right: Action Icons */}
+            <div className="flex items-center gap-2">
+              <HintDialog hint={currentQuestion.hint} currentQuestionIndex={currentQuestionIndex} />
+              <Button variant="ghost" size="sm" className="p-1 h-8 w-8 rounded hover:bg-gray-100">
+                <Flag className="h-4 w-4 text-blue-600" />
+              </Button>
+              <Button variant="ghost" size="sm" className="p-1 h-8 w-8 rounded hover:bg-gray-100">
+                <Bookmark className="h-4 w-4 text-blue-600" />
+              </Button>
+              {/* Calculator Icon */}
+              <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full">
+                {currentQuestion.calculatorAllowed ? (
+                  <Calculator className="h-3 w-3 text-blue-500" />
+                ) : (
+                  <div className="relative">
+                    <Calculator className="h-3 w-3 text-gray-400" />
+                    <X className="h-2 w-2 text-red-500 absolute -top-0.5 -right-0.5" />
+                  </div>
+                )}
+              </Button>
+              
+              {/* Interactions Log Button */}
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="p-1 h-6 w-6 rounded-full"
+                onClick={() => setShowInteractionLog(!showInteractionLog)}
+              >
+                <FileText className="h-3 w-3 text-purple-500" />
+              </Button>
+            </div>
           </div>
+          
           
           {/* Graph Section - Above Question Content */}
           {graphUrl && (
@@ -662,7 +695,7 @@ Keep the evaluation constructive and educational.`;
               </div>
               
               {/* Solution Header - Step by Step Explanation */}
-              <div className="mb-6" style={{ marginTop: '16px', marginBottom: '10px' }}>
+              <div className="mb-2" style={{ marginTop: '8px', marginBottom: '8px' }}>
                 <div 
                   className="w-full mr-3 flex items-center justify-center"
                   style={{
@@ -712,7 +745,7 @@ Keep the evaluation constructive and educational.`;
             </div>
             
             {/* Header - Step by Step Explanation */}
-            <div className="mb-6" style={{ marginTop: '16px', marginBottom: '10px' }}>
+            <div className="mb-2" style={{ marginTop: '8px', marginBottom: '8px' }}>
               <div 
                 className="w-full mr-3 flex items-center justify-center"
                 style={{
@@ -822,12 +855,29 @@ Keep the evaluation constructive and educational.`;
               isDarkMode ? 'bg-gray-900' : 'bg-white'
             }`} style={{ backgroundColor: isDarkMode ? undefined : boardColor }}>
               
+              {/* Timer - Positioned above question header */}
+              <PracticeTimer 
+                timerValue={timerValue}
+                mode={mode}
+              />
+              
               {/* SAT Question Header - Authentic Style */}
               <QuestionHeader questionNumber={currentQuestion.number} chapter={currentQuestion.chapter} />
               
-              {/* Action Icons Row */}
-              <div className="mb-4 flex items-center justify-end gap-1">
-                <HintDialog hint={currentQuestion.hint} currentQuestionIndex={currentQuestionIndex} />
+              {/* Question Tracking and Action Icons - Inline Row */}
+              <div className="mb-3 flex items-center justify-between">
+                {/* Left: Question Tracking */}
+                <QuestionTracking
+                  questionId={currentQuestion.id || `q_${currentQuestionIndex}`}
+                  onGuessChange={setQuestionGuess}
+                  onEmotionChange={setQuestionEmotion}
+                  initialGuess={questionGuess}
+                  initialEmotion={questionEmotion}
+                />
+                
+                {/* Right: Action Icons */}
+                <div className="flex items-center gap-1">
+                  <HintDialog hint={currentQuestion.hint} currentQuestionIndex={currentQuestionIndex} />
                   <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full">
                     <Flag className="h-3 w-3 text-blue-600" />
                   </Button>
@@ -846,12 +896,6 @@ Keep the evaluation constructive and educational.`;
                     )}
                   </Button>
                   
-                  {/* Separator */}
-                  <div className="w-px h-4 bg-gray-300 mx-1"></div>
-                  
-                  {/* Attempt History */}
-                  <AttemptHistory interactions={interactions} />
-                  
                   {/* Interactions Log Button */}
                   <Button 
                     variant="ghost" 
@@ -862,6 +906,8 @@ Keep the evaluation constructive and educational.`;
                     <FileText className="h-3 w-3 text-purple-500" />
                   </Button>
                 </div>
+              </div>
+              
               
               <div className="space-y-4 mb-6">
                 <div 
@@ -1021,7 +1067,7 @@ Keep the evaluation constructive and educational.`;
               </div>
               
               {/* Header - Step by Step Explanation */}
-              <div className="mb-6" style={{ marginTop: '16px', marginBottom: '10px' }}>
+              <div className="mb-2" style={{ marginTop: '8px', marginBottom: '8px' }}>
                 <div 
                   className="w-full mr-3 flex items-center justify-center"
                   style={{
@@ -1122,12 +1168,29 @@ Keep the evaluation constructive and educational.`;
           <div className={`rounded-lg p-4 transition-colors ${
             isDarkMode ? 'bg-gray-900' : 'bg-white'
           }`} style={{ backgroundColor: isDarkMode ? undefined : boardColor }}>
+            {/* Timer - Positioned above question header */}
+            <PracticeTimer 
+              timerValue={timerValue}
+              mode={mode}
+            />
+            
             {/* SAT Question Header - Authentic Style */}
             <QuestionHeader questionNumber={currentQuestion.number} chapter={currentQuestion.chapter} />
             
-            {/* Action Icons Row */}
-            <div className="mb-4 flex items-center justify-end gap-1">
-              <HintDialog hint={currentQuestion.hint} currentQuestionIndex={currentQuestionIndex} />
+            {/* Question Tracking and Action Icons - Inline Row */}
+            <div className="mb-3 flex items-center justify-between">
+              {/* Left: Question Tracking */}
+              <QuestionTracking
+                questionId={currentQuestion.id || `q_${currentQuestionIndex}`}
+                onGuessChange={setQuestionGuess}
+                onEmotionChange={setQuestionEmotion}
+                initialGuess={questionGuess}
+                initialEmotion={questionEmotion}
+              />
+              
+              {/* Right: Action Icons */}
+              <div className="flex items-center gap-1">
+                <HintDialog hint={currentQuestion.hint} currentQuestionIndex={currentQuestionIndex} />
                 <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full">
                   <Flag className="h-3 w-3 text-blue-600" />
                 </Button>
@@ -1146,12 +1209,6 @@ Keep the evaluation constructive and educational.`;
                   )}
                 </Button>
                 
-                {/* Separator */}
-                <div className="w-px h-4 bg-gray-300 mx-1"></div>
-                
-                {/* Attempt History */}
-                <AttemptHistory interactions={interactions} />
-                
                 {/* Interactions Log Button */}
                 <Button 
                   variant="ghost" 
@@ -1162,6 +1219,8 @@ Keep the evaluation constructive and educational.`;
                   <FileText className="h-3 w-3 text-purple-500" />
                 </Button>
               </div>
+            </div>
+            
             
             {/* Graph Section - Above Question Content (Alternative Layout) */}
             {graphUrl && (
@@ -1338,7 +1397,7 @@ Keep the evaluation constructive and educational.`;
               </div>
               
               {/* Header - Step by Step Explanation */}
-              <div className="mb-6" style={{ marginTop: '16px', marginBottom: '10px' }}>
+              <div className="mb-2" style={{ marginTop: '8px', marginBottom: '8px' }}>
                 <div 
                   className="w-full mr-3 flex items-center justify-center"
                   style={{

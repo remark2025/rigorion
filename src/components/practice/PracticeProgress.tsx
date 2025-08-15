@@ -3,8 +3,8 @@ import CountdownTimer from "./CountDownTimer";
 import { Button } from "@/components/ui/button";
 import PracticeTabSelector from "./PracticeTabSelector";
 import { useState } from "react";
-import FormattingToolbar from "./FormattingToolbar";
 import { useTheme } from "@/contexts/ThemeContext";
+import AttemptHistory from "./AttemptHistory";
 
 interface PracticeProgressProps {
   correctAnswers: number;
@@ -33,6 +33,11 @@ interface PracticeProgressProps {
     textColor: string;
   };
   onSettingsChange?: (key: string, value: string | number) => void;
+  interactions?: Array<{
+    isCorrect: boolean;
+    timestamp: string;
+    questionId?: string;
+  }>;
 }
 
 const PracticeProgress = ({
@@ -58,7 +63,8 @@ const PracticeProgress = ({
     colorStyle: 'plain',
     textColor: '#374151'
   },
-  onSettingsChange
+  onSettingsChange,
+  interactions = []
 }: PracticeProgressProps) => {
   const { isDarkMode } = useTheme();
 
@@ -107,11 +113,6 @@ const PracticeProgress = ({
       <div className="flex items-center w-full">
         {/* Left corner: Silver icons - fixed width */}
         <div className="flex items-center gap-1">
-          {/* Compact Formatting Toolbar */}
-          <FormattingToolbar 
-            settings={settings}
-            onSettingsChange={onSettingsChange}
-          />
         </div>
 
         {/* Center: Tab menu truly centered - always visible */}
@@ -119,65 +120,31 @@ const PracticeProgress = ({
           <PracticeTabSelector activeTab={activeTab} setActiveTab={setActiveTab} className="h-8 min-h-0" />
         </div>
 
-        {/* Right side: Progress bar and related details - responsive width */}
+        {/* Right side: Attempt History Dots - responsive width */}
         <div className="flex items-center justify-end w-full sm:w-[520px] lg:w-[720px]">
-          {/* Progress bar with target and timer inline */}
-          <div className="flex items-center gap-1 sm:gap-2 lg:gap-3 w-full">
-            {/* SAT Progress bar - clean design */}
-            <div className="flex-1">
-              <div className="relative h-[5px] sm:h-[6px] overflow-hidden bg-gray-200 rounded-sm">
-              {/* Correct answers - SAT green */}
-              <div
-                className="absolute left-0 top-0 h-full bg-green-600 transition-all duration-500 ease-out"
-                style={{ width: correctWidth, zIndex: 3 }}
-              />
-              {/* Incorrect answers - SAT red */}
-              <div
-                className="absolute top-0 h-full bg-red-600 transition-all duration-500 ease-out"
-                style={{
-                  left: incorrectLeft,
-                  width: incorrectWidth,
-                  zIndex: 2
-                }}
-              />
-              {/* Unattempted - SAT grey */}
-              <div
-                className="absolute top-0 right-0 h-full bg-gray-300 transition-all duration-500 ease-out"
-                style={{ width: unattemptedWidth, zIndex: 1 }}
-              />
-              {/* Progress percentage */}
-              <div className="absolute right-0 top-0 -translate-y-1/2 translate-x-full mt-1 ml-2 text-xs font-medium text-gray-700">
-                {totalPercentage}%
-              </div>
-              </div>
-            </div>
-
+          <div className="flex items-center gap-2">
+            {/* Attempt History Dots */}
+            <AttemptHistory interactions={interactions} maxVisible={24} />
+            
             {/* Target Progress - SAT styling */}
-            <div className="hidden sm:flex items-center gap-1">
+            <div className="hidden sm:flex items-center gap-1 ml-3">
               <span className="font-medium text-xs text-gray-700">
                 Target: {targetProgressPercentage}%
               </span>
             </div>
             
-            {/* Timer - SAT styling */}
-            <div className="flex items-center gap-1">
-              <Clock className="h-3 w-3 sm:h-4 sm:w-4 text-gray-600" />
-              {timerDuration > 0 ? (
-                <CountdownTimer
-                  durationInSeconds={timerDuration}
-                  onComplete={handleTimerComplete}
-                  isActive={isTimerActive}
-                  mode={mode}
-                  onUpdate={(remaining: string) => setTimeRemaining(remaining)}
-                  onAutoNext={onAutoNext}
-                  onPomodoroBreak={onPomodoroBreak}
-                />
-              ) : (
-                <span className="font-medium text-xs text-gray-700">{timeRemaining}</span>
-              )}
-            </div>
+            {/* Separator and Accuracy */}
+            {interactions.length > 0 && (
+              <>
+                <div className="w-px h-4 bg-gray-300 mx-2"></div>
+                <div className="flex items-center gap-1">
+                  <span className="font-medium text-xs text-gray-700">
+                    Accuracy: {Math.round((interactions.filter(i => i.isCorrect).length / interactions.length) * 100)}%
+                  </span>
+                </div>
+              </>
+            )}
           </div>
-          
         </div>
       </div>
 

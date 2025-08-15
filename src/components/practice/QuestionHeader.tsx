@@ -12,7 +12,7 @@ const QuestionHeader: React.FC<QuestionHeaderProps> = ({
   chapter
 }) => {
   return (
-    <div className={`mb-3 ${className}`} style={{ marginTop: '16px', marginBottom: '10px' }}>
+    <div className={`mb-2 ${className}`} style={{ marginTop: '8px', marginBottom: '8px' }}>
       <h3 
         id={`q-${questionNumber}`}
         className="flex items-center w-full"

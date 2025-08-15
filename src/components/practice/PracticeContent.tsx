@@ -132,6 +132,11 @@ export default function PracticeContent({
   const [showCommunityStats, setShowCommunityStats] = useState(false);
   
   const [boardColor, setBoardColor] = useState('white');
+  const [interactions, setInteractions] = useState<Array<{
+    isCorrect: boolean;
+    timestamp: string;
+    questionId?: string;
+  }>>([]);
 
 
   useEffect(() => {
@@ -551,6 +556,8 @@ export default function PracticeContent({
         sidebarOpen={sidebarOpen} 
         setSidebarOpen={setSidebarOpen}
         onFilterChange={handleFilterChange}
+        settings={propSettings}
+        onSettingsChange={onSettingsChange}
       />
 
       <PracticeProgress 
@@ -572,6 +579,7 @@ export default function PracticeContent({
           onPomodoroBreak={handlePomodoroBreak}
           settings={displaySettings}
           onSettingsChange={onSettingsChange}
+          interactions={interactions}
         />
 
       {/* Sidebar - Mobile and Desktop */}
@@ -602,6 +610,7 @@ export default function PracticeContent({
             progress={progress}
             correctAnswers={correctAnswers}
             incorrectAnswers={incorrectAnswers}
+            onInteractionsChange={setInteractions}
           />
         ) : (
           <div className={`w-full p-8 text-center ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>No question selected</div>

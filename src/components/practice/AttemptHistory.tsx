@@ -13,15 +13,15 @@ interface AttemptHistoryProps {
 
 const AttemptHistory: React.FC<AttemptHistoryProps> = ({ 
   interactions, 
-  maxVisible = 5 
+  maxVisible = 24 
 }) => {
   const { isDarkMode } = useTheme();
   const [currentIndex, setCurrentIndex] = useState(0);
   
   if (!interactions.length) return null;
 
-  // Get last 10 attempts (most recent first)
-  const recentAttempts = interactions.slice(-10).reverse();
+  // Get last 24 attempts (most recent first)
+  const recentAttempts = interactions.slice(-24).reverse();
   
   // Calculate visible window
   const totalAttempts = recentAttempts.length;
@@ -44,9 +44,9 @@ const AttemptHistory: React.FC<AttemptHistoryProps> = ({
 
   const getDotStyle = (isCorrect: boolean) => {
     if (isCorrect) {
-      return 'w-3 h-3 rounded-full bg-green-500 shadow-2xl shadow-green-400 blur-[2px] transition-all duration-300 hover:blur-[3px] hover:shadow-green-500 hover:bg-green-400 filter drop-shadow-lg';
+      return 'text-green-600 font-bold text-lg transition-all duration-300 hover:text-green-700';
     } else {
-      return 'w-3 h-3 rounded-full bg-red-500 shadow-2xl shadow-red-400 blur-[2px] transition-all duration-300 hover:blur-[3px] hover:shadow-red-500 hover:bg-red-400 filter drop-shadow-lg';
+      return 'text-red-600 font-bold text-lg transition-all duration-300 hover:text-red-700';
     }
   };
 
@@ -65,14 +65,16 @@ const AttemptHistory: React.FC<AttemptHistoryProps> = ({
         <ChevronLeft className="h-3 w-3" />
       </button>
 
-      {/* Attempt dots */}
+      {/* Attempt symbols */}
       <div className="flex items-center gap-1.5">
         {visibleAttempts.map((attempt, index) => (
           <div
             key={currentIndex + index}
             className={getDotStyle(attempt.isCorrect)}
             title={`${attempt.isCorrect ? 'Correct' : 'Incorrect'} - ${new Date(attempt.timestamp).toLocaleTimeString()}`}
-          />
+          >
+            {attempt.isCorrect ? '✓' : '−'}
+          </div>
         ))}
       </div>
 
