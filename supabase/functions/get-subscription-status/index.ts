@@ -58,12 +58,12 @@ serve(async (req) => {
       });
     }
 
-    // Calculate trial days remaining - using current_period_end as trial reference
+    // Calculate trial days remaining - using trial_end column
     let trialDaysRemaining = 0;
     const isTrialing = subscription.status === 'trialing';
     
-    if (isTrialing && subscription.current_period_end) {
-      const trialEnd = new Date(subscription.current_period_end);
+    if (isTrialing && subscription.trial_end) {
+      const trialEnd = new Date(subscription.trial_end);
       const now = new Date();
       const timeDiff = trialEnd.getTime() - now.getTime();
       trialDaysRemaining = Math.max(0, Math.ceil(timeDiff / (1000 * 60 * 60 * 24)));
@@ -77,7 +77,7 @@ serve(async (req) => {
       status: subscription.status,
       has_premium_access: hasAccess,
       is_trialing: isTrialing,
-      trial_ends_at: subscription.current_period_end,
+      trial_ends_at: subscription.trial_end,
       trial_days_remaining: trialDaysRemaining,
       needs_upgrade: !hasAccess,
       warning_days: trialDaysRemaining <= 3 && isTrialing,

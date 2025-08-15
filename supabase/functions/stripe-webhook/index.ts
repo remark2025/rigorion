@@ -51,9 +51,9 @@ serve(async (req) => {
       case 'customer.subscription.created': {
         const subscription = event.data.object as Stripe.Subscription;
         
-        // Find user by customer ID in user_subscriptions
+        // Find user by customer ID in subscriptions
         const { data: existingSubscription } = await supabaseClient
-          .from('user_subscriptions')
+          .from('subscriptions')
           .select('user_id')
           .eq('stripe_customer_id', subscription.customer)
           .single();
@@ -65,29 +65,27 @@ serve(async (req) => {
 
         // Update subscription record
         await supabaseClient
-          .from('user_subscriptions')
+          .from('subscriptions')
           .update({
-            plan_id: null, // Will be set based on subscription type
             stripe_subscription_id: subscription.id,
             status: subscription.status,
             current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
             current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
             trial_start: subscription.trial_start ? new Date(subscription.trial_start * 1000).toISOString() : null,
             trial_end: subscription.trial_end ? new Date(subscription.trial_end * 1000).toISOString() : null,
-            is_trial: subscription.status === 'trialing',
             cancel_at_period_end: subscription.cancel_at_period_end,
             canceled_at: subscription.canceled_at ? new Date(subscription.canceled_at * 1000).toISOString() : null,
             updated_at: new Date().toISOString()
           })
-          .eq('user_id', existingSubscription.user_id);
+          .eq('stripe_customer_id', subscription.customer);
 
         // Update billing event with user_id
         await supabaseClient.rpc('update_billing_event_user', {
           p_stripe_event_id: event.id,
-          p_user_id: customer.user_id
+          p_user_id: existingSubscription.user_id
         });
 
-        console.log(`Created subscription for user ${customer.user_id}`);
+        console.log(`Created subscription for user ${existingSubscription.user_id}`);
         break;
       }
 
@@ -96,7 +94,7 @@ serve(async (req) => {
         
         // Update subscription record
         const { error } = await supabaseClient
-          .from('user_subscriptions')
+          .from('subscriptions')
           .update({
             status: subscription.status,
             current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
@@ -105,7 +103,6 @@ serve(async (req) => {
             trial_end: subscription.trial_end ? new Date(subscription.trial_end * 1000).toISOString() : null,
             cancel_at_period_end: subscription.cancel_at_period_end,
             canceled_at: subscription.canceled_at ? new Date(subscription.canceled_at * 1000).toISOString() : null,
-            ended_at: subscription.ended_at ? new Date(subscription.ended_at * 1000).toISOString() : null,
             updated_at: new Date().toISOString()
           })
           .eq('stripe_subscription_id', subscription.id);
@@ -123,10 +120,10 @@ serve(async (req) => {
         
         // Mark subscription as canceled
         const { error } = await supabaseClient
-          .from('user_subscriptions')
+          .from('subscriptions')
           .update({
             status: 'canceled',
-            ended_at: new Date().toISOString(),
+            canceled_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
           })
           .eq('stripe_subscription_id', subscription.id);
@@ -145,7 +142,7 @@ serve(async (req) => {
         if (invoice.subscription) {
           // Find user by subscription
           const { data: subscription } = await supabaseClient
-            .from('user_subscriptions')
+            .from('subscriptions')
             .select('user_id')
             .eq('stripe_subscription_id', invoice.subscription)
             .single();
@@ -181,7 +178,7 @@ serve(async (req) => {
         if (invoice.subscription) {
           // Find user by subscription
           const { data: subscription } = await supabaseClient
-            .from('user_subscriptions')
+            .from('subscriptions')
             .select('user_id')
             .eq('stripe_subscription_id', invoice.subscription)
             .single();

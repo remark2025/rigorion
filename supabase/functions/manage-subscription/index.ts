@@ -36,14 +36,15 @@ serve(async (req) => {
       case 'cancel': {
         // Cancel subscription
         const { data: subscription } = await supabaseClient
-          .from('user_subscriptions')
+          .from('subscriptions')
           .select('stripe_subscription_id')
           .eq('user_id', user.id)
+          .in('status', ['active', 'trialing'])
           .single();
 
         if (!subscription?.stripe_subscription_id) {
           return new Response(
-            JSON.stringify({ error: "No active subscription found" }),
+            JSON.stringify({ error: "No active or trial subscription found" }),
             { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 404 }
           );
         }
@@ -56,7 +57,7 @@ serve(async (req) => {
 
         // Update in database
         await supabaseClient
-          .from('user_subscriptions')
+          .from('subscriptions')
           .update({
             cancel_at_period_end: true,
             canceled_at: new Date().toISOString(),
@@ -77,7 +78,7 @@ serve(async (req) => {
       case 'reactivate': {
         // Reactivate canceled subscription
         const { data: subscription } = await supabaseClient
-          .from('user_subscriptions')
+          .from('subscriptions')
           .select('stripe_subscription_id')
           .eq('user_id', user.id)
           .single();
@@ -97,7 +98,7 @@ serve(async (req) => {
 
         // Update in database
         await supabaseClient
-          .from('user_subscriptions')
+          .from('subscriptions')
           .update({
             cancel_at_period_end: false,
             canceled_at: null,
@@ -117,7 +118,7 @@ serve(async (req) => {
       case 'billing_portal': {
         // Create Stripe billing portal session
         const { data: subscription } = await supabaseClient
-          .from('user_subscriptions')
+          .from('subscriptions')
           .select('stripe_customer_id')
           .eq('user_id', user.id)
           .single();

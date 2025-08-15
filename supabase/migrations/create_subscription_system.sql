@@ -14,8 +14,8 @@ CREATE TABLE IF NOT EXISTS subscription_plans (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
--- Create user subscriptions table
-CREATE TABLE IF NOT EXISTS user_subscriptions (
+-- Create subscriptions table
+CREATE TABLE IF NOT EXISTS subscriptions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
   plan_id UUID REFERENCES subscription_plans(id),
@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS user_subscriptions (
 CREATE TABLE IF NOT EXISTS subscription_usage (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
-  subscription_id UUID REFERENCES user_subscriptions(id) ON DELETE CASCADE,
+  subscription_id UUID REFERENCES subscriptions(id) ON DELETE CASCADE,
   
   -- Usage metrics
   questions_attempted INTEGER DEFAULT 0,
@@ -85,25 +85,25 @@ INSERT INTO subscription_plans (name, description, price_monthly, price_yearly, 
 );
 
 -- Create indexes for performance
-CREATE INDEX IF NOT EXISTS idx_user_subscriptions_user_id ON user_subscriptions(user_id);
-CREATE INDEX IF NOT EXISTS idx_user_subscriptions_status ON user_subscriptions(status);
-CREATE INDEX IF NOT EXISTS idx_user_subscriptions_stripe_subscription_id ON user_subscriptions(stripe_subscription_id);
+CREATE INDEX IF NOT EXISTS idx_subscriptions_user_id ON subscriptions(user_id);
+CREATE INDEX IF NOT EXISTS idx_subscriptions_status ON subscriptions(status);
+CREATE INDEX IF NOT EXISTS idx_subscriptions_stripe_subscription_id ON subscriptions(stripe_subscription_id);
 CREATE INDEX IF NOT EXISTS idx_subscription_usage_user_id ON subscription_usage(user_id);
 
 -- Enable Row Level Security
 ALTER TABLE subscription_plans ENABLE ROW LEVEL SECURITY;
-ALTER TABLE user_subscriptions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE subscriptions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE subscription_usage ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies for subscription_plans (public read)
 CREATE POLICY "Anyone can view subscription plans" ON subscription_plans
   FOR SELECT USING (is_active = true);
 
--- RLS Policies for user_subscriptions (users can only see their own)
-CREATE POLICY "Users can view own subscription" ON user_subscriptions
+-- RLS Policies for subscriptions (users can only see their own)
+CREATE POLICY "Users can view own subscription" ON subscriptions
   FOR SELECT USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can update own subscription" ON user_subscriptions
+CREATE POLICY "Users can update own subscription" ON subscriptions
   FOR UPDATE USING (auth.uid() = user_id);
 
 -- RLS Policies for subscription_usage (users can only see their own)
@@ -117,10 +117,10 @@ CREATE POLICY "Users can update own usage" ON subscription_usage
 CREATE OR REPLACE FUNCTION check_subscription_access(user_uuid UUID)
 RETURNS BOOLEAN AS $$
 DECLARE
-  subscription_record user_subscriptions%ROWTYPE;
+  subscription_record subscriptions%ROWTYPE;
 BEGIN
   SELECT * INTO subscription_record
-  FROM user_subscriptions
+  FROM subscriptions
   WHERE user_id = user_uuid;
   
   -- No subscription found
@@ -144,9 +144,9 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Function to start trial for new user
 CREATE OR REPLACE FUNCTION start_trial_for_user(user_uuid UUID)
-RETURNS user_subscriptions AS $$
+RETURNS subscriptions AS $$
 DECLARE
-  new_subscription user_subscriptions;
+  new_subscription subscriptions;
   default_plan_id UUID;
 BEGIN
   -- Get default plan
@@ -156,7 +156,7 @@ BEGIN
   LIMIT 1;
   
   -- Create trial subscription
-  INSERT INTO user_subscriptions (
+  INSERT INTO subscriptions (
     user_id,
     plan_id,
     status,

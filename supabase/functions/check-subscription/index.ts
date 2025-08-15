@@ -30,7 +30,7 @@ serve(async (req) => {
 
     // Check if user has subscription
     const { data: subscription, error } = await supabaseClient
-      .from('user_subscriptions')
+      .from('subscriptions')
       .select(`
         *,
         subscription_plans (
