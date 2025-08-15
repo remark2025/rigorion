@@ -6,11 +6,10 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/components/auth/AuthProvider";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { CreditCard, Shield, Lock, Check, Star, Trophy, Zap, Sparkles, ArrowRight, CheckCircle } from "lucide-react";
-import CryptoPayment from '@/components/endpoints/CryptoPayment';
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -44,26 +43,22 @@ export const PaymentModal = ({ isOpen, onClose, planType = 'monthly', amount = '
     try {
       setLoading(true);
       
-      const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: {
-          priceId: planType === 'yearly' ? 'price_1QLmVDSKTQLErzjMTOWBVPJF' : 'price_1QLmUWSKTQLErzjMhqVJCQNx',
-          successUrl: `${window.location.origin}/payment-success`,
-          cancelUrl: `${window.location.origin}`
-        },
-      });
+      // Use Stripe payment link directly
+      const paymentUrl = "https://buy.stripe.com/test_3cI5kFak1gaN6zo3e0gIo00";
       
-      if (error) {
-        console.error("Payment error:", error);
-        toast.error("Failed to create payment session");
-        return;
-      }
+      // Add customer email as prefill if available
+      const customerEmail = session.user?.email;
+      const urlWithParams = customerEmail 
+        ? `${paymentUrl}?prefilled_email=${encodeURIComponent(customerEmail)}`
+        : paymentUrl;
       
-      if (data?.url) {
-        window.open(data.url, '_blank');
-        onClose();
-      }
+      // Open payment link in new tab
+      window.open(urlWithParams, '_blank');
+      onClose();
+      
+      toast.success("Redirecting to payment...");
     } catch (error) {
-      console.error("Error creating payment:", error);
+      console.error("Error opening payment:", error);
       toast.error("Something went wrong with the payment");
     } finally {
       setLoading(false);
@@ -127,7 +122,7 @@ export const PaymentModal = ({ isOpen, onClose, planType = 'monthly', amount = '
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-white">
         <DialogHeader className="text-center pb-6">
           <DialogTitle className="text-2xl font-medium text-gray-900">
-            Complete Payment
+            Subscribe to Premium
           </DialogTitle>
           <div className="flex items-center justify-center gap-2 mt-3">
             <span className="text-sm text-gray-600">Powered by</span>
@@ -144,8 +139,9 @@ export const PaymentModal = ({ isOpen, onClose, planType = 'monthly', amount = '
           <div className="flex justify-between items-center">
             <div>
               <h3 className="font-medium text-gray-900">
-                {planType === 'yearly' ? 'Annual Plan' : 'Monthly Plan'}
+                {planType === 'yearly' ? 'Annual Subscription' : 'Monthly Subscription'}
               </h3>
+              <p className="text-sm text-gray-600">Recurring billing • Cancel anytime</p>
             </div>
             <div className="text-right">
               <div className="text-2xl font-medium text-gray-900">${amount}</div>
@@ -157,14 +153,11 @@ export const PaymentModal = ({ isOpen, onClose, planType = 'monthly', amount = '
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-6">
+          <TabsList className="grid w-full grid-cols-1 mb-6">
             <TabsTrigger value="cards" className="flex items-center gap-2">
               <CreditCard className="h-4 w-4" />
-              Card
+              Credit Card
             </TabsTrigger>
-            <TabsTrigger value="paypal">PayPal</TabsTrigger>
-            <TabsTrigger value="googlepay">Google Pay</TabsTrigger>
-            <TabsTrigger value="crypto">Crypto</TabsTrigger>
           </TabsList>
 
           <TabsContent value="cards" className="space-y-6">
@@ -193,7 +186,7 @@ export const PaymentModal = ({ isOpen, onClose, planType = 'monthly', amount = '
                             disabled={loading}
                             className="bg-gray-900 hover:bg-gray-800 text-white"
                           >
-                            {loading ? "Processing..." : "Pay Now"}
+                            {loading ? "Processing..." : "Subscribe Now"}
                           </Button>
                         </div>
                       </CardContent>
@@ -266,50 +259,11 @@ export const PaymentModal = ({ isOpen, onClose, planType = 'monthly', amount = '
                 onClick={newCard.name && newCard.number && newCard.expiry && newCard.cvc ? handleStripePayment : handleAddCard}
                 disabled={loading}
               >
-                {loading ? "Processing..." : `Pay $${amount}`}
+                {loading ? "Processing..." : `Subscribe for $${amount}/${planType === 'yearly' ? 'year' : 'month'}`}
               </Button>
             </div>
           </TabsContent>
 
-          <TabsContent value="paypal" className="space-y-6">
-            <Card>
-              <CardHeader className="text-center">
-                <CardTitle>PayPal</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center space-y-4">
-                  <div className="text-2xl font-medium">${amount}</div>
-                </div>
-              </CardContent>
-              <CardFooter>
-                <Button className="w-full bg-gray-900 hover:bg-gray-800" onClick={() => toast.info("PayPal integration coming soon")}>
-                  Continue with PayPal
-                </Button>
-              </CardFooter>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="googlepay" className="space-y-6">
-            <Card>
-              <CardHeader className="text-center">
-                <CardTitle>Google Pay</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center space-y-4">
-                  <div className="text-2xl font-medium">${amount}</div>
-                </div>
-              </CardContent>
-              <CardFooter>
-                <Button className="w-full bg-gray-900 hover:bg-gray-800" onClick={() => toast.info("Google Pay integration coming soon")}>
-                  Pay with Google Pay
-                </Button>
-              </CardFooter>
-            </Card>
-          </TabsContent>
-          
-          <TabsContent value="crypto" className="space-y-6">
-            <CryptoPayment />
-          </TabsContent>
         </Tabs>
 
         {/* Security */}

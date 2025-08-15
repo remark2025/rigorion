@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
-import { PaymentModal } from "@/components/payment/PaymentModal";
+import { FinalPaymentModal } from "@/components/payment/FinalPaymentModal";
 
 export const Hero = () => {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
@@ -69,7 +69,7 @@ export const Hero = () => {
         </div>
       </div>
       
-      <PaymentModal 
+      <FinalPaymentModal 
         isOpen={showPaymentModal} 
         onClose={() => setShowPaymentModal(false)}
         planType="monthly"
@@ -77,7 +77,7 @@ export const Hero = () => {
       />
       
       {/* Custom CSS for smooth fade animations */}
-      <style jsx>{`
+      <style>{`
         @keyframes fade-in {
           0% {
             opacity: 0;

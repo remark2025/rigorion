@@ -18,6 +18,8 @@ import NotFound from "@/pages/NotFound";
 import Payment from "@/pages/Payment";
 import PaymentSuccess from "@/pages/PaymentSuccess";
 import Endpoints from "@/pages/Endpoints";
+import StripeTest from "@/pages/StripeTest";
+import Account from "@/pages/Account";
 
 function App() {
   return (
@@ -47,6 +49,16 @@ function App() {
                 <Route path="/endpoints" element={
                   <ProtectedRoute>
                     <Endpoints />
+                  </ProtectedRoute>
+                } />
+                <Route path="/stripe-test" element={
+                  <ProtectedRoute>
+                    <StripeTest />
+                  </ProtectedRoute>
+                } />
+                <Route path="/account" element={
+                  <ProtectedRoute>
+                    <Account />
                   </ProtectedRoute>
                 } />
                 <Route path="*" element={<NotFound />} />

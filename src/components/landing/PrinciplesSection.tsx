@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Calculator, Brain, Timer, Shield, BarChart3, Users, Target, Gamepad2, Settings, CheckCircle, TrendingUp, Zap } from 'lucide-react';
-import { PaymentModal } from '@/components/payment/PaymentModal';
+import { FinalPaymentModal } from '@/components/payment/FinalPaymentModal';
 
 type FeatureType = {
   id: number;
@@ -262,14 +262,14 @@ export const PrinciplesSection = () => {
         </div>
       </div>
       
-      <PaymentModal 
+      <FinalPaymentModal 
         isOpen={showPaymentModal} 
         onClose={() => setShowPaymentModal(false)}
         planType="monthly"
         amount="49.99"
       />
 
-      <style jsx>{`
+      <style>{`
         @keyframes slide-left {
           0% {
             transform: translateX(0);

@@ -54,7 +54,7 @@ serve(async (req) => {
       customerId = customer.id;
     }
 
-    // Create payment session
+    // Create subscription session
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       line_items: [
@@ -63,20 +63,22 @@ serve(async (req) => {
           quantity: 1,
         },
       ],
-      mode: "payment",
+      mode: "subscription",
       success_url: `${successUrl}?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: cancelUrl,
+      allow_promotion_codes: true,
+      billing_address_collection: 'required',
     });
 
-    // Save payment info
+    // Save subscription info
     await supabaseClient
-      .from('payments')
+      .from('subscriptions')
       .insert({
         user_id: user.id,
         stripe_customer_id: customerId,
         stripe_session_id: session.id,
-        payment_status: "pending",
-        amount: 0, // This will be updated after payment completion
+        status: "pending",
+        created_at: new Date().toISOString(),
       });
 
     return new Response(

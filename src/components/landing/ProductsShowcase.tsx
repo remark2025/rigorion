@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { BookOpen, PenTool, Calculator, FileText, GraduationCap, Brain, Target, Globe } from 'lucide-react';
-import { PaymentModal } from '@/components/payment/PaymentModal';
+import { FinalPaymentModal } from '@/components/payment/FinalPaymentModal';
 
 type ProductType = {
   id: number;
@@ -96,7 +96,7 @@ export const ProductsShowcase = () => {
         </div>
       </div>
       
-      <PaymentModal 
+      <FinalPaymentModal 
         isOpen={showPaymentModal} 
         onClose={() => setShowPaymentModal(false)}
         planType="monthly"

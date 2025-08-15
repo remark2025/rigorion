@@ -1,7 +1,7 @@
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { MapPin, Mail, Phone, Clock, Users, Target, Heart, Star, Award, Shield } from "lucide-react";
-import { PaymentModal } from "@/components/payment/PaymentModal";
+import { FinalPaymentModal } from "@/components/payment/FinalPaymentModal";
 import { useState } from "react";
 
 const About = () => {
@@ -255,7 +255,7 @@ const About = () => {
 
       <Footer />
       
-      <PaymentModal 
+      <FinalPaymentModal 
         isOpen={showPaymentModal} 
         onClose={() => setShowPaymentModal(false)}
         planType="monthly"
