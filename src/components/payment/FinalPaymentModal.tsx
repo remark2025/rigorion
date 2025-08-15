@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { CreditCard, Shield, Check, ArrowRight, Quote } from "lucide-react";
 
@@ -19,6 +20,16 @@ export const FinalPaymentModal = ({ isOpen, onClose, planType = 'monthly', amoun
   const handleStripePayment = async () => {
     try {
       setLoading(true);
+      
+      // First, ensure customer exists in our database
+      if (session?.user) {
+        try {
+          await supabase.functions.invoke('create-customer');
+        } catch (error) {
+          console.warn("Customer creation warning:", error);
+          // Continue with payment even if customer creation fails
+        }
+      }
       
       // Use Stripe payment link directly
       const paymentUrl = "https://buy.stripe.com/test_3cI5kFak1gaN6zo3e0gIo00";

@@ -38,7 +38,7 @@ export const useSubscription = () => {
 
     try {
       setLoading(true);
-      const { data, error } = await supabase.functions.invoke('check-subscription');
+      const { data, error } = await supabase.functions.invoke('get-subscription-status');
 
       if (error) {
         console.error('Subscription check error:', error);
@@ -46,7 +46,15 @@ export const useSubscription = () => {
         return;
       }
 
-      setSubscriptionStatus(data);
+      setSubscriptionStatus({
+        hasAccess: data.has_premium_access,
+        isTrialing: data.is_trialing,
+        isPaid: data.status === 'active' && !data.is_trialing,
+        trialEndsAt: data.trial_ends_at,
+        trialDaysRemaining: data.trial_days_remaining,
+        status: data.status,
+        subscription: data
+      });
       setError(null);
     } catch (err) {
       console.error('Subscription check failed:', err);
@@ -58,8 +66,8 @@ export const useSubscription = () => {
 
   const cancelSubscription = async () => {
     try {
-      const { data, error } = await supabase.functions.invoke('manage-subscription', {
-        body: { action: 'cancel' }
+      const { data, error } = await supabase.functions.invoke('manage-billing', {
+        body: { action: 'cancel_subscription' }
       });
 
       if (error) {
@@ -78,8 +86,8 @@ export const useSubscription = () => {
 
   const reactivateSubscription = async () => {
     try {
-      const { data, error } = await supabase.functions.invoke('manage-subscription', {
-        body: { action: 'reactivate' }
+      const { data, error } = await supabase.functions.invoke('manage-billing', {
+        body: { action: 'reactivate_subscription' }
       });
 
       if (error) {
@@ -98,8 +106,8 @@ export const useSubscription = () => {
 
   const openBillingPortal = async () => {
     try {
-      const { data, error } = await supabase.functions.invoke('manage-subscription', {
-        body: { action: 'billing_portal' }
+      const { data, error } = await supabase.functions.invoke('customer-portal', {
+        body: { return_url: window.location.origin + '/account' }
       });
 
       if (error) {
