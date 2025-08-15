@@ -51,35 +51,35 @@ serve(async (req) => {
       case 'customer.subscription.created': {
         const subscription = event.data.object as Stripe.Subscription;
         
-        // Find user by customer ID
-        const { data: customer } = await supabaseClient
-          .from('customers')
+        // Find user by customer ID in user_subscriptions
+        const { data: existingSubscription } = await supabaseClient
+          .from('user_subscriptions')
           .select('user_id')
           .eq('stripe_customer_id', subscription.customer)
           .single();
 
-        if (!customer) {
+        if (!existingSubscription) {
           console.error('Customer not found for subscription:', subscription.id);
           break;
         }
 
-        // Create subscription record
+        // Update subscription record
         await supabaseClient
           .from('user_subscriptions')
-          .insert({
-            user_id: customer.user_id,
-            subscription_plan_id: 1, // Assuming plan ID 1 for monthly
+          .update({
+            plan_id: null, // Will be set based on subscription type
             stripe_subscription_id: subscription.id,
-            stripe_customer_id: subscription.customer as string,
             status: subscription.status,
             current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
             current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
             trial_start: subscription.trial_start ? new Date(subscription.trial_start * 1000).toISOString() : null,
             trial_end: subscription.trial_end ? new Date(subscription.trial_end * 1000).toISOString() : null,
+            is_trial: subscription.status === 'trialing',
             cancel_at_period_end: subscription.cancel_at_period_end,
             canceled_at: subscription.canceled_at ? new Date(subscription.canceled_at * 1000).toISOString() : null,
-            ended_at: subscription.ended_at ? new Date(subscription.ended_at * 1000).toISOString() : null
-          });
+            updated_at: new Date().toISOString()
+          })
+          .eq('user_id', existingSubscription.user_id);
 
         // Update billing event with user_id
         await supabaseClient.rpc('update_billing_event_user', {

@@ -24,7 +24,17 @@ export const FinalPaymentModal = ({ isOpen, onClose, planType = 'monthly', amoun
       // First, ensure customer exists in our database
       if (session?.user) {
         try {
-          await supabase.functions.invoke('create-customer');
+          const { data, error } = await supabase.functions.invoke('create-customer', {
+            headers: {
+              Authorization: `Bearer ${session.access_token}`,
+            }
+          });
+          
+          if (error) {
+            console.warn("Customer creation error:", error);
+          } else {
+            console.log("Customer creation success:", data);
+          }
         } catch (error) {
           console.warn("Customer creation warning:", error);
           // Continue with payment even if customer creation fails

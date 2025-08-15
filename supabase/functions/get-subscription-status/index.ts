@@ -28,11 +28,14 @@ serve(async (req) => {
       );
     }
 
-    // Use the database function to get comprehensive subscription info
-    const { data: subscriptionInfo, error } = await supabaseClient
-      .rpc('get_subscription_info', { user_uuid: user.id });
+    // Get subscription info from subscriptions table
+    const { data: subscription, error } = await supabaseClient
+      .from('subscriptions')
+      .select('*')
+      .eq('user_id', user.id)
+      .single();
 
-    if (error) {
+    if (error && error.code !== 'PGRST116') { // PGRST116 = no rows found
       console.error("Error getting subscription info:", error);
       return new Response(
         JSON.stringify({ error: "Failed to get subscription status" }),
@@ -40,21 +43,46 @@ serve(async (req) => {
       );
     }
 
-    // Calculate trial days remaining
+    // Default response for no subscription
+    if (!subscription) {
+      return new Response(JSON.stringify({
+        status: 'none',
+        has_premium_access: false,
+        is_trialing: false,
+        trial_days_remaining: 0,
+        needs_upgrade: true,
+        warning_days: false
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 200,
+      });
+    }
+
+    // Calculate trial days remaining - using current_period_end as trial reference
     let trialDaysRemaining = 0;
-    if (subscriptionInfo.is_trialing && subscriptionInfo.trial_ends_at) {
-      const trialEnd = new Date(subscriptionInfo.trial_ends_at);
+    const isTrialing = subscription.status === 'trialing';
+    
+    if (isTrialing && subscription.current_period_end) {
+      const trialEnd = new Date(subscription.current_period_end);
       const now = new Date();
       const timeDiff = trialEnd.getTime() - now.getTime();
       trialDaysRemaining = Math.max(0, Math.ceil(timeDiff / (1000 * 60 * 60 * 24)));
     }
 
+    // Determine premium access
+    const hasAccess = subscription.status === 'active' || (subscription.status === 'trialing' && trialDaysRemaining > 0);
+
     // Return enhanced status
     return new Response(JSON.stringify({
-      ...subscriptionInfo,
+      status: subscription.status,
+      has_premium_access: hasAccess,
+      is_trialing: isTrialing,
+      trial_ends_at: subscription.current_period_end,
       trial_days_remaining: trialDaysRemaining,
-      needs_upgrade: !subscriptionInfo.has_premium_access,
-      warning_days: trialDaysRemaining <= 3 && subscriptionInfo.is_trialing
+      needs_upgrade: !hasAccess,
+      warning_days: trialDaysRemaining <= 3 && isTrialing,
+      stripe_customer_id: subscription.stripe_customer_id,
+      stripe_subscription_id: subscription.stripe_subscription_id
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,

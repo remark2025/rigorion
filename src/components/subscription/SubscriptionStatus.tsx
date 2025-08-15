@@ -216,11 +216,31 @@ export const SubscriptionStatus = () => {
           )}
 
           {isTrialing && (
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={handleBillingPortal}
+                disabled={actionLoading === 'billing'}
+              >
+                {actionLoading === 'billing' ? "Loading..." : "Manage Billing"}
+              </Button>
+              
+              <Button
+                variant="destructive"
+                onClick={handleCancel}
+                disabled={actionLoading === 'cancel'}
+              >
+                {actionLoading === 'cancel' ? "Processing..." : "Cancel Trial"}
+              </Button>
+            </div>
+          )}
+
+          {!hasAccess && (
             <Alert className="mt-4">
               <AlertDescription className="text-center">
-                <p className="font-medium mb-2">Enjoying your trial?</p>
+                <p className="font-medium mb-2">Get Premium Access</p>
                 <p className="text-sm text-gray-600 mb-3">
-                  Subscribe now to continue accessing all premium features after your trial ends.
+                  Subscribe to access all premium features and unlimited practice questions.
                 </p>
                 <Button className="bg-blue-600 hover:bg-blue-700">
                   Subscribe Now

@@ -39,12 +39,12 @@ serve(async (req) => {
           .from('subscriptions')
           .select('stripe_subscription_id, stripe_customer_id')
           .eq('user_id', user.id)
-          .eq('status', 'active')
+          .in('status', ['active', 'trialing'])
           .single();
 
         if (!subscription?.stripe_subscription_id) {
           return new Response(
-            JSON.stringify({ error: "No active subscription found" }),
+            JSON.stringify({ error: "No active or trial subscription found" }),
             { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 404 }
           );
         }

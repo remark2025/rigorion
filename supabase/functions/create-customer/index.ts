@@ -30,14 +30,28 @@ serve(async (req) => {
       );
     }
 
+    // Get user profile ID (since your tables reference profiles, not auth.users)
+    const { data: profile } = await supabaseClient
+      .from('profiles')
+      .select('id')
+      .eq('user_id', user.id)
+      .single();
+
+    if (!profile) {
+      return new Response(
+        JSON.stringify({ error: "Profile not found" }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 404 }
+      );
+    }
+
     // Check if customer already exists
     const { data: existingCustomer } = await supabaseClient
       .from('customers')
       .select('stripe_customer_id')
-      .eq('user_id', user.id)
+      .eq('user_id', profile.id)
       .single();
 
-    if (existingCustomer) {
+    if (existingCustomer?.stripe_customer_id) {
       return new Response(JSON.stringify({
         customer_id: existingCustomer.stripe_customer_id,
         message: "Customer already exists"
@@ -51,17 +65,17 @@ serve(async (req) => {
     const stripeCustomer = await stripe.customers.create({
       email: user.email,
       metadata: {
-        user_id: user.id
+        user_id: user.id,
+        profile_id: profile.id
       }
     });
 
-    // Create customer record in database
+    // Create customer record in your customers table
     const { error: customerError } = await supabaseClient
       .from('customers')
       .insert({
-        user_id: user.id,
-        stripe_customer_id: stripeCustomer.id,
-        email: user.email
+        user_id: profile.id,
+        stripe_customer_id: stripeCustomer.id
       });
 
     if (customerError) {
@@ -72,21 +86,9 @@ serve(async (req) => {
       );
     }
 
-    // Log the customer creation
-    await supabaseClient.rpc('log_billing_event', {
-      p_user_id: user.id,
-      p_source: 'customer_creation',
-      p_event_type: 'customer_created',
-      p_stripe_event_id: null,
-      p_payload: { 
-        stripe_customer_id: stripeCustomer.id,
-        email: user.email
-      }
-    });
-
     return new Response(JSON.stringify({
       customer_id: stripeCustomer.id,
-      message: "Customer created successfully"
+      message: "Customer created successfully - subscription will be created when payment succeeds"
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
