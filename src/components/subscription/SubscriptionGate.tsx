@@ -13,7 +13,7 @@ interface SubscriptionGateProps {
 }
 
 export const SubscriptionGate = ({ children, feature, fallback }: SubscriptionGateProps) => {
-  const { hasAccess, isTrialing, trialDaysRemaining, loading } = useSubscription();
+  const { hasAccess, isPaid, accessLevel, loading } = useSubscription();
   const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   if (loading) {
@@ -25,37 +25,9 @@ export const SubscriptionGate = ({ children, feature, fallback }: SubscriptionGa
     );
   }
 
-  // User has access - show content
-  if (hasAccess) {
-    return (
-      <div>
-        {isTrialing && trialDaysRemaining && trialDaysRemaining <= 3 && (
-          <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-            <div className="flex items-center gap-2 text-yellow-800">
-              <Clock className="h-4 w-4" />
-              <span className="text-sm font-medium">
-                Trial ending in {trialDaysRemaining} day{trialDaysRemaining !== 1 ? 's' : ''}!
-              </span>
-              <Button 
-                size="sm" 
-                className="ml-auto bg-yellow-600 hover:bg-yellow-700"
-                onClick={() => setShowPaymentModal(true)}
-              >
-                Subscribe Now
-              </Button>
-            </div>
-          </div>
-        )}
-        {children}
-        
-        <FinalPaymentModal 
-          isOpen={showPaymentModal}
-          onClose={() => setShowPaymentModal(false)}
-          planType="monthly"
-          amount="49.99"
-        />
-      </div>
-    );
+  // User has premium access - show content
+  if (hasAccess && isPaid) {
+    return <>{children}</>;
   }
 
   // Custom fallback provided
@@ -101,10 +73,10 @@ export const SubscriptionGate = ({ children, feature, fallback }: SubscriptionGa
               className="w-full bg-blue-600 hover:bg-blue-700"
             >
               <Crown className="h-4 w-4 mr-2" />
-              Start 7-Day Free Trial
+              Upgrade to Premium
             </Button>
             <p className="text-xs text-gray-500 mt-2">
-              No credit card required for trial
+              Instant access to all features
             </p>
           </div>
         </CardContent>

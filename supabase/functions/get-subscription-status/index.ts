@@ -1,98 +1,107 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0"
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-}
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type"
+};
 
 serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders })
-  }
+  if (req.method === "OPTIONS") return new Response(null, {
+    headers: corsHeaders
+  });
 
   try {
-    const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
-    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
-    const supabaseClient = createClient(supabaseUrl, supabaseServiceKey);
+    const supabase = createClient(
+      Deno.env.get("SUPABASE_URL"), 
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")
+    );
+    
+    const token = (req.headers.get("Authorization") || "").replace("Bearer ", "");
+    const { data: { user } } = await supabase.auth.getUser(token);
 
-    // Get user from auth header
-    const authHeader = req.headers.get("Authorization")!;
-    const token = authHeader.replace("Bearer ", "");
-    const { data: { user } } = await supabaseClient.auth.getUser(token);
+    if (!user) return new Response(JSON.stringify({
+      error: "Not authenticated"
+    }), {
+      headers: {
+        ...corsHeaders,
+        "Content-Type": "application/json"
+      },
+      status: 401
+    });
 
-    if (!user) {
-      return new Response(
-        JSON.stringify({ error: "Not authenticated" }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 401 }
-      );
-    }
+    // Use the RPC function to get subscription info
+    const { data: info, error: rpcError } = await supabase.rpc("get_subscription_info", {
+      user_uuid: user.id
+    });
 
-    // Get subscription info from subscriptions table
-    const { data: subscription, error } = await supabaseClient
-      .from('subscriptions')
-      .select('*')
-      .eq('user_id', user.id)
-      .single();
-
-    if (error && error.code !== 'PGRST116') { // PGRST116 = no rows found
-      console.error("Error getting subscription info:", error);
-      return new Response(
-        JSON.stringify({ error: "Failed to get subscription status" }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 500 }
-      );
-    }
-
-    // Default response for no subscription
-    if (!subscription) {
+    if (rpcError) {
+      console.error("RPC error:", rpcError);
       return new Response(JSON.stringify({
-        status: 'none',
-        has_premium_access: false,
-        is_trialing: false,
-        trial_days_remaining: 0,
-        needs_upgrade: true,
-        warning_days: false
+        error: "Failed to get subscription info"
       }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-        status: 200,
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "application/json"
+        },
+        status: 500
       });
     }
 
-    // Calculate trial days remaining - using trial_end column
-    let trialDaysRemaining = 0;
-    const isTrialing = subscription.status === 'trialing';
+    // The RPC returns an array with one row, so get the first item
+    const subscriptionInfo = Array.isArray(info) ? info[0] : info;
     
-    if (isTrialing && subscription.trial_end) {
-      const trialEnd = new Date(subscription.trial_end);
-      const now = new Date();
-      const timeDiff = trialEnd.getTime() - now.getTime();
-      trialDaysRemaining = Math.max(0, Math.ceil(timeDiff / (1000 * 60 * 60 * 24)));
+    if (!subscriptionInfo) {
+      // No subscription found - return free user defaults
+      return new Response(JSON.stringify({
+        status: "free",
+        has_premium_access: false,
+        access_level: "free",
+        needs_upgrade: true,
+        stripe_customer_id: null,
+        stripe_subscription_id: null,
+        current_period_end: null,
+        tier: "free"
+      }), {
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "application/json"
+        },
+        status: 200
+      });
     }
 
-    // Determine premium access
-    const hasAccess = subscription.status === 'active' || (subscription.status === 'trialing' && trialDaysRemaining > 0);
+    const hasAccess = !!subscriptionInfo.has_premium_access;
+    const accessLevel = subscriptionInfo.tier || 'free';
 
-    // Return enhanced status
     return new Response(JSON.stringify({
-      status: subscription.status,
+      status: subscriptionInfo.subscription_status || "free",
       has_premium_access: hasAccess,
-      is_trialing: isTrialing,
-      trial_ends_at: subscription.trial_end,
-      trial_days_remaining: trialDaysRemaining,
+      access_level: accessLevel,
       needs_upgrade: !hasAccess,
-      warning_days: trialDaysRemaining <= 3 && isTrialing,
-      stripe_customer_id: subscription.stripe_customer_id,
-      stripe_subscription_id: subscription.stripe_subscription_id
+      stripe_customer_id: subscriptionInfo.stripe_customer_id,
+      stripe_subscription_id: subscriptionInfo.stripe_subscription_id,
+      current_period_end: subscriptionInfo.current_period_end,
+      tier: subscriptionInfo.tier || 'free',
+      cancel_at_period_end: subscriptionInfo.cancel_at_period_end || false
     }), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-      status: 200,
+      headers: {
+        ...corsHeaders,
+        "Content-Type": "application/json"
+      },
+      status: 200
     });
 
-  } catch (error) {
-    console.error("Subscription status error:", error);
-    return new Response(
-      JSON.stringify({ error: error.message }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 500 }
-    );
+  } catch (e) {
+    console.error("Subscription status error:", e);
+    return new Response(JSON.stringify({
+      error: e.message
+    }), {
+      headers: {
+        ...corsHeaders,
+        "Content-Type": "application/json"
+      },
+      status: 500
+    });
   }
 });

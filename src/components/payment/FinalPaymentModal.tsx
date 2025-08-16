@@ -72,10 +72,10 @@ export const FinalPaymentModal = ({ isOpen, onClose, planType = 'monthly', amoun
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-lg bg-gradient-to-br from-gray-50 to-white border-2 border-blue-200 shadow-xl">
-        <DialogHeader className="text-center pb-4">
-          <DialogTitle className="text-2xl font-bold text-gray-800 mb-2">
-            Invest in Your Future
+      <DialogContent className="max-w-md bg-white border border-gray-200 shadow-lg">
+        <DialogHeader className="text-center pb-2">
+          <DialogTitle className="text-xl font-bold text-gray-800 mb-1">
+            Upgrade to Premium
           </DialogTitle>
           <div className="flex items-center justify-center gap-2">
             <Shield className="h-4 w-4 text-blue-500" />
@@ -83,56 +83,35 @@ export const FinalPaymentModal = ({ isOpen, onClose, planType = 'monthly', amoun
           </div>
         </DialogHeader>
 
-        {/* Inspiring Quote Section */}
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 mb-6 border border-blue-100">
-          <div className="flex items-start gap-3">
-            <Quote className="h-6 w-6 text-blue-500 mt-1 flex-shrink-0" />
-            <div>
-              <blockquote className="text-gray-700 font-medium italic text-lg leading-relaxed mb-3">
-                "An investment in knowledge pays the best interest. The more you learn today, the more you earn tomorrow."
-              </blockquote>
-              <cite className="text-blue-600 text-sm font-semibold">— Benjamin Franklin (adapted)</cite>
-            </div>
-          </div>
-        </div>
-
         {/* Plan Summary */}
-        <div className="bg-white rounded-xl p-6 mb-6 border border-gray-200 shadow-sm">
-          <div className="text-center mb-4">
-            <div className="text-4xl font-bold text-gray-800 mb-2">${amount}</div>
-            <div className="text-lg font-semibold text-gray-700 mb-1">
-              {planType === 'yearly' ? 'Annual Investment' : 'Monthly Investment'}
+        <div className="bg-gray-50 rounded-lg p-4 mb-4">
+          <div className="text-center mb-3">
+            <div className="text-3xl font-bold text-gray-800 mb-1">${amount}</div>
+            <div className="text-sm font-medium text-gray-700">
+              {planType === 'yearly' ? 'Annual Plan' : 'Monthly Plan'}
             </div>
-            <div className="text-sm text-gray-500">
+            <div className="text-xs text-gray-500 mt-1">
               Cancel anytime • 30-day guarantee
             </div>
           </div>
           
           {/* Features */}
-          <div className="space-y-3 text-sm">
-            <div className="flex items-center gap-3">
-              <div className="w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center">
-                <Check className="h-3 w-3 text-blue-600" />
-              </div>
-              <span className="text-gray-700">Unlimited practice questions & explanations</span>
+          <div className="space-y-2 text-sm">
+            <div className="flex items-center gap-2">
+              <Check className="h-4 w-4 text-blue-600" />
+              <span className="text-gray-700">Unlimited practice questions</span>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center">
-                <Check className="h-3 w-3 text-blue-600" />
-              </div>
-              <span className="text-gray-700">AI-powered performance analytics</span>
+            <div className="flex items-center gap-2">
+              <Check className="h-4 w-4 text-blue-600" />
+              <span className="text-gray-700">AI-powered analytics</span>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center">
-                <Check className="h-3 w-3 text-blue-600" />
-              </div>
-              <span className="text-gray-700">Personalized study recommendations</span>
+            <div className="flex items-center gap-2">
+              <Check className="h-4 w-4 text-blue-600" />
+              <span className="text-gray-700">Personalized recommendations</span>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center">
-                <Check className="h-3 w-3 text-blue-600" />
-              </div>
-              <span className="text-gray-700">Priority support & score improvement guarantee</span>
+            <div className="flex items-center gap-2">
+              <Check className="h-4 w-4 text-blue-600" />
+              <span className="text-gray-700">Priority support</span>
             </div>
           </div>
         </div>
@@ -141,28 +120,27 @@ export const FinalPaymentModal = ({ isOpen, onClose, planType = 'monthly', amoun
         <Button 
           onClick={handleStripePayment}
           disabled={loading}
-          className="w-full h-14 bg-white hover:bg-gray-50 border-2 border-blue-300 hover:border-blue-400 text-blue-600 hover:text-blue-700 font-semibold text-lg transition-all duration-200 shadow-sm hover:shadow-md"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium"
         >
           {loading ? (
-            <div className="flex items-center gap-3">
-              <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
               <span>Processing...</span>
             </div>
           ) : (
-            <div className="flex items-center gap-3">
-              <CreditCard className="h-5 w-5" />
-              <span>Start My Investment Journey</span>
-              <ArrowRight className="h-5 w-5" />
+            <div className="flex items-center gap-2">
+              <CreditCard className="h-4 w-4" />
+              <span>Subscribe Now</span>
             </div>
           )}
         </Button>
 
         {/* Security & Trust */}
-        <div className="mt-6 pt-4 border-t border-gray-200">
-          <div className="flex items-center justify-center gap-6 text-xs text-gray-500">
+        <div className="mt-3 pt-3 border-t border-gray-200">
+          <div className="flex items-center justify-center gap-4 text-xs text-gray-500">
             <div className="flex items-center gap-1">
               <Shield className="h-3 w-3 text-green-500" />
-              <span>Bank-level Security</span>
+              <span>Secure</span>
             </div>
             <div className="flex items-center gap-1">
               <Check className="h-3 w-3 text-blue-500" />
@@ -170,15 +148,15 @@ export const FinalPaymentModal = ({ isOpen, onClose, planType = 'monthly', amoun
             </div>
             <div className="flex items-center gap-1">
               <CreditCard className="h-3 w-3 text-purple-500" />
-              <span>Secure Checkout</span>
+              <span>Safe Checkout</span>
             </div>
           </div>
         </div>
 
         {/* User Info */}
         {session?.user?.email && (
-          <div className="text-center text-sm text-gray-600 mt-4 bg-gray-50 rounded-lg py-2 px-4">
-            Investing as: <span className="font-medium text-blue-600">{session.user.email}</span>
+          <div className="text-center text-xs text-gray-500 mt-2">
+            Subscribing as: <span className="font-medium text-gray-700">{session.user.email}</span>
           </div>
         )}
       </DialogContent>

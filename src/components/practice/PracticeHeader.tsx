@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Target, Navigation, ChevronDown, LogOut, Bell, Filter, Moon, Sun, BookOpen, Clock, User, Users, BarChart, Menu, Settings, Timer, TrendingUp, Hand, Coffee, GraduationCap, Type } from "lucide-react";
+import { Target, Navigation, ChevronDown, LogOut, Filter, Moon, Sun, BookOpen, Clock, User, Users, BarChart, Menu, Settings, Timer, TrendingUp, Hand, Coffee, GraduationCap, Type } from "lucide-react";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -320,44 +320,6 @@ export const PracticeHeader = ({
           onSettingsChange={onSettingsChange}
         />
 
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className={`relative rounded-full ${isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'}`}
-            >
-              <Bell className={`h-4 w-4 ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`} />
-              {hasNotifications && (
-                <span className="absolute top-1 right-1.5 w-2 h-2 bg-blue-500 rounded-full"></span>
-              )}
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className={`w-80 shadow-lg rounded-lg p-2 z-50 ${
-            isDarkMode ? 'bg-gray-900 border-green-500/30' : 'bg-white border-gray-200'
-          }`}>
-            <div className="flex justify-between items-center mb-2 px-2">
-              <h3 className={`font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Notifications</h3>
-              <Button variant="ghost" size="sm" className={`text-xs ${isDarkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-500 hover:text-gray-700'}`}>
-                Mark all as read
-              </Button>
-            </div>
-            <DropdownMenuSeparator className={isDarkMode ? 'bg-green-500/30' : ''} />
-            <ScrollArea className="h-64">
-              <div className={`p-2 text-sm rounded-md mb-2 ${
-                isDarkMode ? 'bg-gray-800' : 'bg-blue-50'
-              }`}>
-                <p className={`font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>New chapter available!</p>
-                <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Advanced Calculus chapter is now available.</p>
-                <p className={`text-xs mt-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-500'}`}>2 hours ago</p>
-              </div>
-            </ScrollArea>
-            <DropdownMenuSeparator className={isDarkMode ? 'bg-green-500/30' : ''} />
-            <Button variant="ghost" size="sm" className={`w-full text-center text-sm mt-1 ${isDarkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-600'}`}>
-              View all notifications
-            </Button>
-          </DropdownMenuContent>
-        </DropdownMenu>
 
         {/* Mobile Filter Menu */}
         <DropdownMenu>

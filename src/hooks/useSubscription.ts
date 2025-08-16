@@ -5,10 +5,8 @@ import { toast } from 'sonner';
 
 interface SubscriptionStatus {
   hasAccess: boolean;
-  isTrialing: boolean;
   isPaid: boolean;
-  trialEndsAt?: string;
-  trialDaysRemaining?: number;
+  accessLevel: 'free' | 'paid';
   status: string;
   subscription?: any;
 }
@@ -17,9 +15,9 @@ export const useSubscription = () => {
   const { session } = useAuth();
   const [subscriptionStatus, setSubscriptionStatus] = useState<SubscriptionStatus>({
     hasAccess: false,
-    isTrialing: false,
     isPaid: false,
-    status: 'none'
+    accessLevel: 'free',
+    status: 'free'
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -28,9 +26,9 @@ export const useSubscription = () => {
     if (!session) {
       setSubscriptionStatus({
         hasAccess: false,
-        isTrialing: false,
         isPaid: false,
-        status: 'none'
+        accessLevel: 'free',
+        status: 'free'
       });
       setLoading(false);
       return;
@@ -48,10 +46,8 @@ export const useSubscription = () => {
 
       setSubscriptionStatus({
         hasAccess: data.has_premium_access,
-        isTrialing: data.is_trialing,
-        isPaid: data.status === 'active' && !data.is_trialing,
-        trialEndsAt: data.trial_ends_at,
-        trialDaysRemaining: data.trial_days_remaining,
+        isPaid: data.access_level === 'paid',
+        accessLevel: data.access_level,
         status: data.status,
         subscription: data
       });
@@ -66,16 +62,23 @@ export const useSubscription = () => {
 
   const cancelSubscription = async () => {
     try {
-      const { data, error } = await supabase.functions.invoke('manage-billing', {
-        body: { action: 'cancel_subscription' }
+      if (!session?.user?.id) {
+        toast.error('User not authenticated');
+        throw new Error('No user found');
+      }
+
+      // Use RPC function to cancel subscription
+      const { data, error } = await supabase.rpc('cancel_user_subscription', {
+        user_uuid: session.user.id
       });
 
       if (error) {
+        console.error('Cancel subscription error:', error);
         toast.error('Failed to cancel subscription');
         throw error;
       }
 
-      toast.success(data.message);
+      toast.success('Subscription cancelled successfully. You will retain access until the end of your billing period.');
       await checkSubscription(); // Refresh status
       return data;
     } catch (err) {
@@ -86,16 +89,23 @@ export const useSubscription = () => {
 
   const reactivateSubscription = async () => {
     try {
-      const { data, error } = await supabase.functions.invoke('manage-billing', {
-        body: { action: 'reactivate_subscription' }
+      if (!session?.user?.id) {
+        toast.error('User not authenticated');
+        throw new Error('No user found');
+      }
+
+      // Use RPC function to reactivate subscription
+      const { data, error } = await supabase.rpc('reactivate_user_subscription', {
+        user_uuid: session.user.id
       });
 
       if (error) {
+        console.error('Reactivate subscription error:', error);
         toast.error('Failed to reactivate subscription');
         throw error;
       }
 
-      toast.success(data.message);
+      toast.success('Subscription reactivated successfully!');
       await checkSubscription(); // Refresh status
       return data;
     } catch (err) {

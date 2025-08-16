@@ -5,18 +5,22 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0"
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, OPTIONS",
 }
 
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
-    return new Response(null, { headers: corsHeaders })
+    return new Response(null, { 
+      headers: corsHeaders,
+      status: 200 
+    })
   }
 
   try {
     const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
-    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY") || "";
-    const supabaseClient = createClient(supabaseUrl, supabaseAnonKey);
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
+    const supabaseClient = createClient(supabaseUrl, supabaseServiceKey);
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", { apiVersion: "2023-10-16" });
 
     // Get session from request headers
@@ -31,41 +35,53 @@ serve(async (req) => {
       );
     }
 
-    // Parse request body
-    const { subscriptionId } = await req.json();
+    // Parse request body - subscriptionId is optional
+    const body = await req.json().catch(() => ({}));
+    const { subscriptionId } = body;
 
-    if (!subscriptionId) {
-      return new Response(
-        JSON.stringify({ error: "Subscription ID is required" }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 400 }
-      );
+    let stripeSubscription = null;
+
+    // If we have a subscription ID, cancel in Stripe
+    if (subscriptionId) {
+      try {
+        stripeSubscription = await stripe.subscriptions.update(subscriptionId, {
+          cancel_at_period_end: true,
+        });
+      } catch (stripeError) {
+        console.warn('Stripe cancellation failed:', stripeError);
+        // Continue with database update even if Stripe fails
+      }
     }
 
-    // Cancel the subscription in Stripe
-    const subscription = await stripe.subscriptions.update(subscriptionId, {
+    // Update subscription status in database - use subscription ID if available, otherwise find by user
+    const updateData = {
+      status: 'canceled',
+      canceled_at: new Date().toISOString(),
       cancel_at_period_end: true,
-    });
+      updated_at: new Date().toISOString(),
+    };
 
-    // Update subscription status in database
-    await supabaseClient
-      .from('subscriptions')
-      .update({
-        status: 'canceled',
-        canceled_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      })
-      .eq('stripe_subscription_id', subscriptionId)
-      .eq('user_id', user.id);
+    let updateQuery = supabaseClient.from('subscriptions').update(updateData);
+    
+    if (subscriptionId) {
+      updateQuery = updateQuery.eq('stripe_subscription_id', subscriptionId);
+    }
+    
+    const { data: updatedSubscription } = await updateQuery
+      .eq('user_id', user.id)
+      .select()
+      .single();
 
     return new Response(
       JSON.stringify({ 
         success: true, 
-        subscription: {
-          id: subscription.id,
-          status: subscription.status,
-          cancel_at_period_end: subscription.cancel_at_period_end,
-          current_period_end: subscription.current_period_end,
-        }
+        subscription: stripeSubscription ? {
+          id: stripeSubscription.id,
+          status: stripeSubscription.status,
+          cancel_at_period_end: stripeSubscription.cancel_at_period_end,
+          current_period_end: stripeSubscription.current_period_end,
+        } : updatedSubscription,
+        message: 'Subscription cancelled successfully'
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 200 }
     );

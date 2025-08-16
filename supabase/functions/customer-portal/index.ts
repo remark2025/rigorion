@@ -32,37 +32,60 @@ serve(async (req) => {
 
     const { return_url } = await req.json();
 
-    // Get customer ID from database
-    const { data: customer, error: customerError } = await supabaseClient
+    // Get customer ID from database - try customers table first, then subscriptions
+    let stripeCustomerId = null;
+    
+    // Try customers table first
+    const { data: customer } = await supabaseClient
       .from('customers')
       .select('stripe_customer_id')
       .eq('user_id', user.id)
       .single();
+    
+    if (customer?.stripe_customer_id) {
+      stripeCustomerId = customer.stripe_customer_id;
+    } else {
+      // Fallback to subscriptions table
+      const { data: subscription } = await supabaseClient
+        .from('subscriptions')
+        .select('stripe_customer_id')
+        .eq('user_id', user.id)
+        .single();
+      
+      if (subscription?.stripe_customer_id) {
+        stripeCustomerId = subscription.stripe_customer_id;
+      }
+    }
 
-    if (customerError || !customer?.stripe_customer_id) {
+    if (!stripeCustomerId) {
       return new Response(
-        JSON.stringify({ error: "Customer not found or no Stripe customer ID" }),
+        JSON.stringify({ error: "No Stripe customer ID found for this user" }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 404 }
       );
     }
 
     // Create Stripe billing portal session
     const portalSession = await stripe.billingPortal.sessions.create({
-      customer: customer.stripe_customer_id,
+      customer: stripeCustomerId,
       return_url: return_url || `${req.headers.get('origin') || 'http://localhost:8081'}/account`,
     });
 
-    // Log the portal access
-    await supabaseClient.rpc('log_billing_event', {
-      p_user_id: user.id,
-      p_source: 'customer_portal',
-      p_event_type: 'portal_session_created',
-      p_stripe_event_id: null,
-      p_payload: { 
-        portal_session_id: portalSession.id,
-        return_url: return_url
-      }
-    });
+    // Optional: Log the portal access (skip if RPC doesn't exist)
+    try {
+      await supabaseClient.rpc('log_billing_event', {
+        p_user_id: user.id,
+        p_source: 'customer_portal',
+        p_event_type: 'portal_session_created',
+        p_stripe_event_id: null,
+        p_payload: { 
+          portal_session_id: portalSession.id,
+          return_url: return_url
+        }
+      });
+    } catch (logError) {
+      console.warn('Could not log billing event:', logError);
+      // Continue without logging
+    }
 
     return new Response(JSON.stringify({
       url: portalSession.url,

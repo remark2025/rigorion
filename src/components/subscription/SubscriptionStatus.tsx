@@ -5,14 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { CreditCard, Calendar, AlertTriangle, CheckCircle, Clock, Crown } from "lucide-react";
+import { useNavigate } from 'react-router-dom';
 
 export const SubscriptionStatus = () => {
   const {
     hasAccess,
-    isTrialing,
     isPaid,
-    trialEndsAt,
-    trialDaysRemaining,
+    accessLevel,
     status,
     subscription,
     loading,
@@ -23,6 +22,7 @@ export const SubscriptionStatus = () => {
   } = useSubscription();
 
   const [actionLoading, setActionLoading] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   const handleCancel = async () => {
     setActionLoading('cancel');
@@ -82,13 +82,12 @@ export const SubscriptionStatus = () => {
   }
 
   const getStatusBadge = () => {
-    if (isTrialing) {
-      return <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">Free Trial</Badge>;
-    }
     if (isPaid) {
-      return <Badge variant="default" className="bg-green-100 text-green-800">Active</Badge>;
+      return <Badge variant="default" className="bg-green-100 text-green-800">Premium Active</Badge>;
     }
-    return <Badge variant="outline">No Subscription</Badge>;
+    return <Badge variant="outline" className="bg-blue-100 text-blue-800">
+      {accessLevel?.charAt(0).toUpperCase() + accessLevel?.slice(1)} Version
+    </Badge>;
   };
 
   const formatDate = (dateString: string) => {
@@ -116,47 +115,19 @@ export const SubscriptionStatus = () => {
         </CardHeader>
 
         <CardContent className="space-y-4">
-          {/* Trial Status */}
-          {isTrialing && (
-            <Alert className="bg-yellow-50 border-yellow-200">
-              <Clock className="h-4 w-4" />
+          {/* Current Plan Status */}
+          {accessLevel === 'free' && (
+            <Alert className="bg-blue-50 border-blue-200">
+              <CheckCircle className="h-4 w-4 text-blue-600" />
               <AlertDescription>
-                <div className="font-medium">Free Trial Active</div>
+                <div className="font-medium">{accessLevel?.charAt(0).toUpperCase() + accessLevel?.slice(1)} Version Active</div>
                 <div className="text-sm text-gray-600 mt-1">
-                  {trialDaysRemaining} day{trialDaysRemaining !== 1 ? 's' : ''} remaining until {formatDate(trialEndsAt!)}
+                  You have access to limited practice questions and basic features. Upgrade to Premium for unlimited access and advanced features.
                 </div>
               </AlertDescription>
             </Alert>
           )}
 
-          {/* Paid Subscription Status */}
-          {isPaid && (
-            <Alert className="bg-green-50 border-green-200">
-              <CheckCircle className="h-4 w-4" />
-              <AlertDescription>
-                <div className="font-medium">Premium Access Active</div>
-                <div className="text-sm text-gray-600 mt-1">
-                  You have full access to all premium features
-                  {subscription?.cancel_at_period_end && (
-                    <span className="text-yellow-600 font-medium"> (Cancels at period end)</span>
-                  )}
-                </div>
-              </AlertDescription>
-            </Alert>
-          )}
-
-          {/* No Access */}
-          {!hasAccess && (
-            <Alert className="bg-gray-50 border-gray-200">
-              <AlertTriangle className="h-4 w-4" />
-              <AlertDescription>
-                <div className="font-medium">No Active Subscription</div>
-                <div className="text-sm text-gray-600 mt-1">
-                  Subscribe to access premium features and unlimited practice questions
-                </div>
-              </AlertDescription>
-            </Alert>
-          )}
 
           {/* Subscription Details */}
           {subscription && (
@@ -164,19 +135,53 @@ export const SubscriptionStatus = () => {
               <div className="flex items-center gap-3">
                 <Calendar className="h-4 w-4 text-gray-400" />
                 <div>
+                  <p className="text-sm font-medium">Plan</p>
+                  <p className="text-sm text-gray-600 capitalize">
+                    {accessLevel} {accessLevel !== 'free' ? 'Plan' : 'Version'}
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-3">
+                <CheckCircle className="h-4 w-4 text-gray-400" />
+                <div>
                   <p className="text-sm font-medium">Status</p>
                   <p className="text-sm text-gray-600 capitalize">{status}</p>
                 </div>
               </div>
               
-              {subscription.current_period_end && (
+              {(isPaid || accessLevel === 'premium') && subscription.current_period_end && (
+                <>
+                  <div className="flex items-center gap-3">
+                    <CreditCard className="h-4 w-4 text-gray-400" />
+                    <div>
+                      <p className="text-sm font-medium">Next Payment</p>
+                      <p className="text-sm text-gray-600">
+                        {formatDate(subscription.current_period_end)}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {subscription.cancel_at_period_end && (
+                    <div className="flex items-center gap-3">
+                      <AlertTriangle className="h-4 w-4 text-yellow-500" />
+                      <div>
+                        <p className="text-sm font-medium text-yellow-700">Cancellation</p>
+                        <p className="text-sm text-yellow-600">
+                          Ends {formatDate(subscription.current_period_end)}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </>
+              )}
+              
+              {accessLevel === 'free' && (
                 <div className="flex items-center gap-3">
-                  <CreditCard className="h-4 w-4 text-gray-400" />
+                  <Crown className="h-4 w-4 text-blue-500" />
                   <div>
-                    <p className="text-sm font-medium">Next billing date</p>
-                    <p className="text-sm text-gray-600">
-                      {formatDate(subscription.current_period_end)}
-                    </p>
+                    <p className="text-sm font-medium">Upgrade Benefits</p>
+                    <p className="text-sm text-gray-600">Unlimited access & features</p>
                   </div>
                 </div>
               )}
@@ -184,66 +189,61 @@ export const SubscriptionStatus = () => {
           )}
         </CardContent>
 
-        <CardFooter className="flex gap-2">
-          {isPaid && (
-            <>
-              <Button
-                variant="outline"
-                onClick={handleBillingPortal}
-                disabled={actionLoading === 'billing'}
-              >
-                {actionLoading === 'billing' ? "Loading..." : "Manage Billing"}
-              </Button>
+        <CardFooter className="flex flex-col gap-3">
+          {(isPaid || accessLevel === 'premium') && (
+            <div className="w-full space-y-2">
+              {/* Main buttons row */}
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  onClick={handleBillingPortal}
+                  disabled={actionLoading === 'billing'}
+                  className="flex-1"
+                >
+                  {actionLoading === 'billing' ? "Loading..." : "Manage Billing"}
+                </Button>
+                
+                {subscription?.cancel_at_period_end ? (
+                  <Button
+                    onClick={handleReactivate}
+                    disabled={actionLoading === 'reactivate'}
+                    className="bg-green-600 hover:bg-green-700 flex-1"
+                  >
+                    {actionLoading === 'reactivate' ? "Processing..." : "Reactivate Subscription"}
+                  </Button>
+                ) : (
+                  <Button
+                    variant="destructive"
+                    onClick={handleCancel}
+                    disabled={actionLoading === 'cancel'}
+                    className="flex-1"
+                  >
+                    {actionLoading === 'cancel' ? "Processing..." : "Unsubscribe"}
+                  </Button>
+                )}
+              </div>
               
-              {subscription?.cancel_at_period_end ? (
-                <Button
-                  onClick={handleReactivate}
-                  disabled={actionLoading === 'reactivate'}
-                  className="bg-green-600 hover:bg-green-700"
-                >
-                  {actionLoading === 'reactivate' ? "Processing..." : "Reactivate Subscription"}
-                </Button>
-              ) : (
-                <Button
-                  variant="destructive"
-                  onClick={handleCancel}
-                  disabled={actionLoading === 'cancel'}
-                >
-                  {actionLoading === 'cancel' ? "Processing..." : "Cancel Subscription"}
-                </Button>
+              {/* Warning for unsubscribe */}
+              {!subscription?.cancel_at_period_end && (
+                <div className="text-xs text-gray-500 text-center">
+                  Unsubscribe will cancel at the end of your billing period
+                </div>
               )}
-            </>
-          )}
-
-          {isTrialing && (
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                onClick={handleBillingPortal}
-                disabled={actionLoading === 'billing'}
-              >
-                {actionLoading === 'billing' ? "Loading..." : "Manage Billing"}
-              </Button>
-              
-              <Button
-                variant="destructive"
-                onClick={handleCancel}
-                disabled={actionLoading === 'cancel'}
-              >
-                {actionLoading === 'cancel' ? "Processing..." : "Cancel Trial"}
-              </Button>
             </div>
           )}
 
-          {!hasAccess && (
+          {accessLevel === 'free' && (
             <Alert className="mt-4">
               <AlertDescription className="text-center">
-                <p className="font-medium mb-2">Get Premium Access</p>
+                <p className="font-medium mb-2">Upgrade to Premium</p>
                 <p className="text-sm text-gray-600 mb-3">
-                  Subscribe to access all premium features and unlimited practice questions.
+                  Get unlimited practice questions, detailed analytics, and advanced features.
                 </p>
-                <Button className="bg-blue-600 hover:bg-blue-700">
-                  Subscribe Now
+                <Button 
+                  className="bg-blue-600 hover:bg-blue-700"
+                  onClick={() => window.open('https://buy.stripe.com/test_3cI5kFak1gaN6zo3e0gIo00', '_blank')}
+                >
+                  Upgrade Now
                 </Button>
               </AlertDescription>
             </Alert>
