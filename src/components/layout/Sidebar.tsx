@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/drawer";
 
 const navigationItems = [
-  { label: "Home", path: "/" },
+  { label: "Account", path: "/account" },
   { label: "Practice", path: "/practice" },
   { label: "Analytics", path: "/analytics" },
   { label: "About", path: "/about" },

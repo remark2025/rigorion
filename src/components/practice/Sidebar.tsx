@@ -15,7 +15,7 @@ export const Sidebar = ({ onClose }: SidebarProps) => {
   const navigate = useNavigate();
 
   const menuItems = [
-    { icon: Home, label: "Home", path: "/" },
+    { icon: User, label: "Account", path: "/account" },
     { icon: BookOpen, label: "Practice", path: "/practice" },
     { icon: BarChart, label: "Progress", path: "/progress" },
     { icon: MessageSquare, label: "Endpoints", path: "/endpoints" },

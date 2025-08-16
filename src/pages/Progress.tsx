@@ -2,7 +2,7 @@ import { useState, useCallback } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { LeaderboardData } from "@/components/progress/LeaderboardData";
 import { FullPageLoader } from "@/components/progress/FullPageLoader";
-import { Navigation, Bell, Home, Users, BookOpen, BarChart, Target, ChevronDown, LogOut, Moon, Sun, Menu, Clock, Trophy, TrendingUp } from "lucide-react";
+import { Navigation, Bell, User, Users, BookOpen, BarChart, Target, ChevronDown, LogOut, Moon, Sun, Menu, Clock, Trophy, TrendingUp } from "lucide-react";
 import { SecureProgressDataProvider } from "@/components/progress/SecureProgressDataProvider";
 import { useProgress } from "@/contexts/ProgressContext";
 import { Button } from "@/components/ui/button";
@@ -444,7 +444,7 @@ const Progress = () => {
   }, [queryClient]);
   
   const pages = [
-    { name: "Home", path: "/" },
+    { name: "Account", path: "/account" },
     { name: "Practice", path: "/practice" },
     { name: "Analytics", path: "/analytics" },
     { name: "About us", path: "/about" },
@@ -477,8 +477,8 @@ const Progress = () => {
 
   const getPageIcon = (pageName: string) => {
     switch (pageName) {
-      case "Home":
-        return <Home className={`h-4 w-4 mr-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />;
+      case "Account":
+        return <User className={`h-4 w-4 mr-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />;
       case "Practice":
         return <BookOpen className={`h-4 w-4 mr-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />;
       case "Analytics":

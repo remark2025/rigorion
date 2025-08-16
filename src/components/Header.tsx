@@ -33,7 +33,7 @@ export const Header = () => {
         
         <div className="flex items-center">
           <nav className="hidden md:flex space-x-6 mr-6">
-            <Link to="/" className="text-gray-600 hover:text-blue-600 transition-colors">Home</Link>
+            <Link to="/account" className="text-gray-600 hover:text-blue-600 transition-colors">Account</Link>
             <Link to="/about" className="text-gray-600 hover:text-blue-600 transition-colors">About us</Link>
             <Link to="/practice" className="text-gray-600 hover:text-blue-600 transition-colors">Practice</Link>
             <Link to="/analytics" className="text-gray-600 hover:text-blue-600 transition-colors">Analytics</Link>
@@ -53,7 +53,7 @@ export const Header = () => {
         <div className="md:hidden absolute top-full left-0 w-full bg-white border-b shadow-md py-2">
           <div className="container mx-auto px-4">
             <div className="flex flex-col space-y-2">
-              <Link to="/" className="text-gray-600 hover:text-blue-600 py-2 transition-colors" onClick={() => setIsNavOpen(false)}>Home</Link>
+              <Link to="/account" className="text-gray-600 hover:text-blue-600 py-2 transition-colors" onClick={() => setIsNavOpen(false)}>Account</Link>
               <Link to="/about" className="text-gray-600 hover:text-blue-600 py-2 transition-colors" onClick={() => setIsNavOpen(false)}>About us</Link>
               <Link to="/practice" className="text-gray-600 hover:text-blue-600 py-2 transition-colors" onClick={() => setIsNavOpen(false)}>Practice</Link>
               <Link to="/analytics" className="text-gray-600 hover:text-blue-600 py-2 transition-colors" onClick={() => setIsNavOpen(false)}>Analytics</Link>

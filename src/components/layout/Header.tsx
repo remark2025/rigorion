@@ -25,7 +25,7 @@ const Header = () => {
   const userInitials = userEmail ? userEmail.substring(0, 2).toUpperCase() : "AA";
 
   const navigationItems = [
-    { name: "Home", path: "/" },
+    { name: "Account", path: "/account" },
     { name: "Practice", path: "/practice" },
     { name: "Analytics", path: "/analytics" },
     { name: "About us", path: "/about" },

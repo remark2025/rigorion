@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Target, Navigation, ChevronDown, LogOut, Bell, Filter, Moon, Sun, BookOpen, Clock, Home, Users, BarChart, Menu, Settings, Timer, TrendingUp, Hand, Coffee, GraduationCap, Type } from "lucide-react";
+import { Target, Navigation, ChevronDown, LogOut, Bell, Filter, Moon, Sun, BookOpen, Clock, User, Users, BarChart, Menu, Settings, Timer, TrendingUp, Hand, Coffee, GraduationCap, Type } from "lucide-react";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -61,7 +61,7 @@ export const PracticeHeader = ({
   const [selectedExam, setSelectedExam] = useState<number | null>(null);
 
   const pages = [
-    { name: "Home", path: "/" },
+    { name: "Account", path: "/account" },
     { name: "Practice", path: "/practice" },
     { name: "Analytics", path: "/analytics" },
     { name: "About us", path: "/about" },
@@ -206,8 +206,8 @@ export const PracticeHeader = ({
 
   const getPageIcon = (pageName: string) => {
     switch (pageName) {
-      case "Home":
-        return <Home className={`h-4 w-4 mr-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />;
+      case "Account":
+        return <User className={`h-4 w-4 mr-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />;
       case "Practice":
         return <BookOpen className={`h-4 w-4 mr-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />;
       case "Analytics":
