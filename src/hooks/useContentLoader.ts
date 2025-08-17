@@ -94,14 +94,33 @@ export function useContentLoader() {
 
       // Fetch pack metadata and content from content edge function
       console.log(`Downloading pack: ${packId}`);
-      const response = await fetch(`/functions/v1/content?id=${packId}`, {
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      
+      // Add ETag header for caching if we have the pack cached
+      const headers: Record<string, string> = {
+        'Authorization': `Bearer ${session.access_token}`,
+        'Content-Type': 'application/json',
+      };
+      
+      // Add If-None-Match header if we have cached ETag
+      if (cachedPack?.hash) {
+        headers['If-None-Match'] = `"${cachedPack.hash}"`;
+      }
+      
+      const response = await fetch(`/functions/v1/content?id=${packId}`, { headers });
 
       setState(prev => ({ ...prev, downloadProgress: 30 }));
+
+      // Handle 304 Not Modified - use cached content
+      if (response.status === 304 && cachedPack) {
+        console.log(`Pack ${packId} not modified, using cached version`);
+        setState(prev => ({
+          ...prev,
+          isLoading: false,
+          loadingPack: null,
+          downloadProgress: 100,
+        }));
+        return true;
+      }
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
