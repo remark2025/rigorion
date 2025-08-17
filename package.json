@@ -8,10 +8,15 @@
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "content:validate": "node scripts/validate-content.js",
+    "content:build": "node scripts/build-content-packs.js",
+    "content:deploy": "node scripts/deploy-content.js",
+    "content:pipeline": "npm run content:validate && npm run content:build && npm run content:deploy"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
+    "idb": "^8.0.0",
     "@radix-ui/react-accordion": "^1.2.0",
     "@radix-ui/react-alert-dialog": "^1.1.1",
     "@radix-ui/react-aspect-ratio": "^1.1.0",

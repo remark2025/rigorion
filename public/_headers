@@ -1,0 +1,49 @@
+# Security headers for production deployment
+/*
+  # Content Security Policy
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.stripe.com; worker-src 'self' blob:; child-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests; block-all-mixed-content
+
+  # Prevent XSS attacks
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  X-XSS-Protection: 1; mode=block
+
+  # Security headers
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), location=(), payment=(), usb=()
+
+  # HSTS (enable for HTTPS only)
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+
+  # Prevent MIME sniffing
+  X-Content-Type-Options: nosniff
+
+  # Control embedding
+  X-Frame-Options: DENY
+
+# Service Worker specific headers
+/sw.js
+  Content-Type: application/javascript
+  Cache-Control: public, max-age=0, must-revalidate
+
+# Manifest file
+/manifest.webmanifest
+  Content-Type: application/manifest+json
+  Cache-Control: public, max-age=86400
+
+# Static assets
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+  
+# Content packs (if served statically)
+/content/*
+  Cache-Control: public, max-age=31536000, immutable
+  Content-Type: application/json
+
+# API routes with additional security
+/functions/*
+  X-Robots-Tag: noindex, nofollow
+  Access-Control-Allow-Origin: https://your-domain.com
+  Access-Control-Allow-Methods: GET, POST, OPTIONS
+  Access-Control-Allow-Headers: Authorization, Content-Type, X-Client-Info
+  Access-Control-Max-Age: 86400

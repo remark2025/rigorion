@@ -40,16 +40,44 @@ serve(async (req) => {
     }
 
     if (route === "pack" && id && hash) {
-      // Optional: Check premium access for paid content
-      // const { data: subscription } = await supabase
-      //   .rpc('get_subscription_info', { user_uuid: user.id });
-      // if (!subscription?.has_premium_access) {
-      //   return json({ error: "Premium access required" }, 403);
-      // }
+      // Define free vs paid packs
+      const freePacks = ["core", "basic"]; // Whitelist of free packs
+      const isPaidPack = !freePacks.includes(id);
+      
+      console.log(`Pack request: user_id=${user.id}, pack_id=${id}, paid_pack=${isPaidPack}`);
+      
+      // Check entitlement for paid packs
+      if (isPaidPack) {
+        const { data: subscription, error: subError } = await supabase
+          .rpc('get_subscription_info', { user_uuid: user.id });
+        
+        const hasAccess = subscription?.has_premium_access || false;
+        console.log(`Entitlement check: user_id=${user.id}, pack_id=${id}, entitled=${hasAccess}`);
+        
+        if (subError) {
+          console.error(`Subscription check failed: user_id=${user.id}, error=${subError.message}`);
+          return json({ error: "Unable to verify subscription" }, 500);
+        }
+        
+        if (!hasAccess) {
+          console.log(`Access denied: user_id=${user.id}, pack_id=${id}, entitled=false`);
+          return json({ 
+            error: "Premium access required",
+            pack_id: id,
+            entitled: false,
+            upgrade_required: true
+          }, 403);
+        }
+      }
 
       const path = `packs/${id}@${hash}.json`;
       const { data, error } = await supabase.storage.from("question-packs").download(path);
-      if (error) return json({ error: "Pack not found" }, 404);
+      if (error) {
+        console.log(`Pack not found: pack_id=${id}, hash=${hash}, error=${error.message}`);
+        return json({ error: "Pack not found" }, 404);
+      }
+      
+      console.log(`Pack served: user_id=${user.id}, pack_id=${id}, entitled=true`);
       const headers = {
         ...cors,
         "Content-Type": "application/json",

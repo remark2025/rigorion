@@ -27,7 +27,19 @@ serve(async (req) => {
 
   const body = await req.json().catch(() => ({}));
   const items = Array.isArray(body?.items) ? body.items : [];
-  if (items.length === 0) return json({ error: "No items" }, 400);
+  
+  // Validation
+  if (items.length === 0) return json({ error: "No items provided" }, 400);
+  
+  const MAX_BATCH_SIZE = 50;
+  if (items.length > MAX_BATCH_SIZE) {
+    return json({ 
+      error: `Batch too large. Maximum ${MAX_BATCH_SIZE} items allowed.`,
+      max_batch_size: MAX_BATCH_SIZE,
+      received: items.length,
+      suggestion: `Split into ${Math.ceil(items.length / MAX_BATCH_SIZE)} smaller batches`
+    }, 413);
+  }
 
   // Normalize + basic validation
   const rows = items.map((it: any) => ({
