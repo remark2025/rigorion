@@ -7,13 +7,18 @@ import { useLogInteraction } from "@/services/edgeFunctionService";
 
 export default function LogInteractionTable() {
   const [customPayload, setCustomPayload] = useState({
-    questionId: "q_math_789",
-    isCorrect: false,
-    timeSpentSeconds: 89,
-    timestamp: new Date().toISOString(),
-    sessionId: "session_" + Date.now(),
-    userId: "user_456",
-    displayedTargetProgressPercentile: 70 // This matches "Target Progress: 70%" in UI
+    question_id: "q_math_789",
+    user_id: "user_456",
+    is_correct: false,
+    time_spent_seconds: 89,
+    attempted_at: new Date().toISOString(),
+    bookmarked: false,
+    hint_checked: false,
+    solution_checked: false,
+    confidence_level: 3,
+    objective_progress: 70,
+    idempotency_key: `user_456_q_math_789_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    attempt_number: 1
   });
 
   // State to manage demo request results

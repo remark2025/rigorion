@@ -94,15 +94,46 @@ const PracticeDisplay = ({
   const [questionGuess, setQuestionGuess] = useState<number | null>(null);
   const [questionEmotion, setQuestionEmotion] = useState<string | null>(null);
 
+  // Enhanced interaction tracking state
+  const [hintsViewed, setHintsViewed] = useState<string[]>([]);
+  const [solutionAccessed, setSolutionAccessed] = useState<boolean>(false);
+  const [tipsAccessed, setTipsAccessed] = useState<string[]>([]);
+  const [answerChangeCount, setAnswerChangeCount] = useState<number>(0);
+  const [helpActions, setHelpActions] = useState<string[]>([]);
+  const [isBookmarked, setIsBookmarked] = useState<boolean>(false);
+  const [questionAttempts, setQuestionAttempts] = useState<Map<string, number>>(new Map());
+
   // Reset timer and tracking when question changes
   useEffect(() => {
     setQuestionStartTime(Date.now());
     setQuestionGuess(null);
     setQuestionEmotion(null);
+    
+    // Reset enhanced tracking for new question
+    setHintsViewed([]);
+    setSolutionAccessed(false);
+    setTipsAccessed([]);
+    setAnswerChangeCount(0);
+    setHelpActions([]);
+    setIsBookmarked(false);
   }, [currentQuestionIndex]);
 
   const selectedAnswer = propSelectedAnswer !== undefined ? propSelectedAnswer : localSelectedAnswer;
   const isCorrect = propIsCorrect !== undefined ? propIsCorrect : localIsCorrect;
+
+  // Track when solution tab is viewed
+  useEffect(() => {
+    if (activeTab === 'solution') {
+      trackSolutionView();
+    }
+  }, [activeTab]);
+
+  // Track answer changes
+  useEffect(() => {
+    if (selectedAnswer !== null && selectedAnswer !== propSelectedAnswer) {
+      trackAnswerChange();
+    }
+  }, [selectedAnswer, propSelectedAnswer]);
 
   // Check if this is a SAT Writing module
   const isSATWriting =
@@ -165,6 +196,141 @@ const PracticeDisplay = ({
     };
   };
 
+  // Enhanced tracking helper functions
+  const trackHintUsage = (hintId: string) => {
+    if (!hintsViewed.includes(hintId)) {
+      setHintsViewed(prev => [...prev, hintId]);
+      setHelpActions(prev => [...prev, 'hint']);
+      console.log(`🔍 Hint accessed: ${hintId}`);
+    }
+  };
+
+  const trackSolutionView = () => {
+    if (!solutionAccessed) {
+      setSolutionAccessed(true);
+      setHelpActions(prev => [...prev, 'solution']);
+      console.log(`📖 Solution viewed for question: ${currentQuestion?.id}`);
+    }
+  };
+
+  const trackTipAccess = (tipId: string) => {
+    if (!tipsAccessed.includes(tipId)) {
+      setTipsAccessed(prev => [...prev, tipId]);
+      setHelpActions(prev => [...prev, 'tip']);
+      console.log(`💡 Tip accessed: ${tipId}`);
+    }
+  };
+
+  const trackAnswerChange = () => {
+    setAnswerChangeCount(prev => prev + 1);
+    console.log(`✏️ Answer changed (count: ${answerChangeCount + 1})`);
+  };
+
+  const trackBookmark = () => {
+    setIsBookmarked(prev => !prev);
+    console.log(`🔖 Question ${isBookmarked ? 'unbookmarked' : 'bookmarked'}: ${currentQuestion?.id}`);
+  };
+
+  const getAttemptNumber = (questionId: string): number => {
+    const currentCount = questionAttempts.get(questionId) || 0;
+    const newCount = currentCount + 1;
+    setQuestionAttempts(prev => new Map(prev).set(questionId, newCount));
+    return newCount;
+  };
+
+  // Target progress calculation functions
+  const calculateEstimatedScore = (): number => {
+    if (!interactions || interactions.length === 0) return 1200; // Default starting score
+    
+    const correctCount = interactions.filter(int => int?.isCorrect).length;
+    const accuracy = correctCount / interactions.length;
+    const baseScore = 1200;
+    const maxScore = 1600;
+    const estimatedScore = baseScore + (accuracy * (maxScore - baseScore));
+    
+    return Math.round(estimatedScore);
+  };
+
+  const calculateQuestionsNeeded = (): number => {
+    const targetScore = 1500; // Default target, should come from user settings
+    const currentScore = calculateEstimatedScore();
+    
+    if (currentScore >= targetScore) return 0;
+    
+    const scoreGap = targetScore - currentScore;
+    const questionsNeeded = Math.ceil(scoreGap / 10); // Rough estimate: 10 points per improved question
+    
+    return questionsNeeded;
+  };
+
+  const identifyWeakAreas = (): string[] => {
+    const weakAreas: string[] = [];
+    const topicPerformance = new Map<string, { correct: number; total: number }>();
+    
+    interactions.forEach(int => {
+      const topic = int.topic || 'General';
+      const stats = topicPerformance.get(topic) || { correct: 0, total: 0 };
+      stats.total++;
+      if (int.isCorrect) stats.correct++;
+      topicPerformance.set(topic, stats);
+    });
+    
+    topicPerformance.forEach((stats, topic) => {
+      const accuracy = stats.correct / stats.total;
+      if (accuracy < 0.7 && stats.total >= 3) { // Less than 70% accuracy with at least 3 attempts
+        weakAreas.push(topic);
+      }
+    });
+    
+    return weakAreas;
+  };
+
+  const identifyStrengths = (): string[] => {
+    const strengths: string[] = [];
+    const topicPerformance = new Map<string, { correct: number; total: number }>();
+    
+    interactions.forEach(int => {
+      const topic = int.topic || 'General';
+      const stats = topicPerformance.get(topic) || { correct: 0, total: 0 };
+      stats.total++;
+      if (int.isCorrect) stats.correct++;
+      topicPerformance.set(topic, stats);
+    });
+    
+    topicPerformance.forEach((stats, topic) => {
+      const accuracy = stats.correct / stats.total;
+      if (accuracy >= 0.85 && stats.total >= 3) { // 85% or better accuracy with at least 3 attempts
+        strengths.push(topic);
+      }
+    });
+    
+    return strengths;
+  };
+
+  const calculateDailyProgress = (): number => {
+    if (!interactions || interactions.length === 0) return 0;
+    
+    const dailyGoal = 20; // Default daily goal: 20 questions
+    const today = new Date().toDateString();
+    const todayInteractions = interactions.filter(int => 
+      int?.timestamp && new Date(int.timestamp).toDateString() === today
+    );
+    
+    return Math.min(100, Math.round((todayInteractions.length / dailyGoal) * 100));
+  };
+
+  const calculateWeeklyProgress = (): number => {
+    if (!interactions || interactions.length === 0) return 0;
+    
+    const weeklyGoal = 100; // Default weekly goal: 100 questions
+    const oneWeekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const weekInteractions = interactions.filter(int => 
+      int?.timestamp && new Date(int.timestamp) >= oneWeekAgo
+    );
+    
+    return Math.min(100, Math.round((weekInteractions.length / weeklyGoal) * 100));
+  };
+
   // Create interaction record (only for answered questions)
   const createInteraction = (answer: string, isCorrectAnswer: boolean) => {
     let timeSpent: number;
@@ -186,14 +352,60 @@ const PracticeDisplay = ({
     
     const objectiveProgress = calculateObjectiveProgress();
     
+    const userId = "user_123"; // This should come from auth context
+    const questionId = currentQuestion?.id;
+    const attemptNumber = getAttemptNumber(questionId || 'unknown');
+    const idempotencyKey = `${userId}_${questionId}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
     const interaction = {
+      // ✅ Core tracking fields (exactly as agreed)
+      question_id: questionId,
+      user_id: userId,
+      is_correct: isCorrectAnswer,
+      time_spent_seconds: timeSpent,
+      attempted_at: new Date().toISOString(),
+      bookmarked: isBookmarked,
+      hint_checked: hintsViewed.length > 0,
+      solution_checked: solutionAccessed,
+      confidence_level: questionGuess,
+      objective_progress: objectiveProgress.targetProgress, // This is what shows in "Target Progress: X%" in UI
+      idempotency_key: idempotencyKey,
+      attempt_number: attemptNumber,
+      
+      // ✅ Legacy fields for compatibility (will be removed later)
       questionId: currentQuestion?.id,
+      userId: "user_123",
+      answer: answer,
       isCorrect: isCorrectAnswer,
       timeSpentSeconds: timeSpent,
       timestamp: new Date().toISOString(),
       sessionId: sessionId,
-      userId: "user_123", // This should come from auth context
-      displayedTargetProgressPercentile: objectiveProgress.targetProgress // This is what shows in "Target Progress: X%" in UI
+      displayedTargetProgressPercentile: objectiveProgress.targetProgress,
+      
+      // 🆕 Enhanced tracking fields
+      confidenceLevel: questionGuess,
+      hintsUsed: [...hintsViewed],
+      solutionViewed: solutionAccessed,
+      ideasChecked: [...tipsAccessed], 
+      answerChanges: answerChangeCount,
+      helpSequence: [...helpActions],
+      attemptNumber: getAttemptNumber(currentQuestion?.id || 'unknown'),
+      bookmarked: isBookmarked,
+      
+      // 📚 Question metadata
+      topic: currentQuestion?.chapter || 'unknown',
+      difficulty: currentQuestion?.difficulty || 'unknown',
+      
+      // 🎯 Target progress analytics
+      targetProgress: {
+        targetScore: 1500, // Default target, should come from user settings
+        currentEstimatedScore: calculateEstimatedScore(),
+        questionsToTarget: calculateQuestionsNeeded(),
+        weakAreas: identifyWeakAreas(),
+        strengthAreas: identifyStrengths(),
+        dailyGoalProgress: calculateDailyProgress(),
+        weeklyGoalProgress: calculateWeeklyProgress()
+      }
     };
 
     return interaction;
@@ -484,8 +696,13 @@ Keep the evaluation constructive and educational.`;
               <Button variant="ghost" size="sm" className="p-1 h-8 w-8 rounded hover:bg-gray-100">
                 <Flag className="h-4 w-4 text-blue-600" />
               </Button>
-              <Button variant="ghost" size="sm" className="p-1 h-8 w-8 rounded hover:bg-gray-100">
-                <Bookmark className="h-4 w-4 text-blue-600" />
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="p-1 h-8 w-8 rounded hover:bg-gray-100"
+                onClick={trackBookmark}
+              >
+                <Bookmark className={`h-4 w-4 ${isBookmarked ? 'text-yellow-500 fill-yellow-500' : 'text-blue-600'}`} />
               </Button>
               {/* Calculator Icon */}
               <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full">
@@ -1534,24 +1751,59 @@ Keep the evaluation constructive and educational.`;
           </div>
 
           <div className="space-y-2">
-            {interactions.map((interaction, index) => (
-              <div key={index} className={`p-2 rounded text-xs ${
-                isDarkMode ? 'bg-gray-700' : 'bg-gray-50'
-              }`}>
-                <div className="flex justify-between">
-                  <span className="font-medium">{interaction.questionId}</span>
-                  <span className={interaction.isCorrect ? 'text-green-500' : 'text-red-500'}>
-                    {interaction.isCorrect ? '✓' : '✗'}
-                  </span>
+            {interactions.map((interaction, index) => {
+              // Extract only the core tracking fields we agreed on
+              const coreData = {
+                question_id: interaction.question_id,
+                user_id: interaction.user_id,
+                is_correct: interaction.is_correct,
+                time_spent_seconds: interaction.time_spent_seconds,
+                attempted_at: interaction.attempted_at,
+                bookmarked: interaction.bookmarked,
+                hint_checked: interaction.hint_checked,
+                solution_checked: interaction.solution_checked,
+                confidence_level: interaction.confidence_level,
+                objective_progress: interaction.objective_progress,
+                idempotency_key: interaction.idempotency_key,
+                attempt_number: interaction.attempt_number
+              };
+
+              return (
+                <div key={index} className={`p-3 rounded text-xs border ${
+                  isDarkMode ? 'bg-gray-700 border-gray-600' : 'bg-gray-50 border-gray-200'
+                }`}>
+                  <div className="flex justify-between items-center mb-2">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">{interaction.question_id || interaction.questionId}</span>
+                      <span className={interaction.is_correct ? 'text-green-500' : 'text-red-500'}>
+                        {interaction.is_correct ? '✓' : '✗'}
+                      </span>
+                      <span className="text-gray-500">
+                        ⏱️ Time: {interaction.time_spent_seconds}s
+                      </span>
+                      {interaction.attempt_number && interaction.attempt_number > 1 && (
+                        <span className="bg-orange-100 text-orange-600 px-1 rounded text-xs">
+                          Attempt #{interaction.attempt_number}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <div className="mb-2">
+                    <div className="text-gray-500 font-medium mb-1">Raw JSON Data:</div>
+                    <pre className={`text-xs p-2 rounded overflow-x-auto ${
+                      isDarkMode ? 'bg-gray-800 text-green-300' : 'bg-gray-100 text-gray-800'
+                    }`}>
+                      {JSON.stringify(coreData, null, 2)}
+                    </pre>
+                  </div>
+                  
+                  <div className="text-gray-400 text-xs">
+                    {new Date(interaction.attempted_at || interaction.timestamp).toLocaleTimeString()}
+                  </div>
                 </div>
-                <div className="text-gray-500">
-                  Time: {interaction.timeSpentSeconds}s
-                </div>
-                <div className="text-gray-400">
-                  Progress: {interaction.displayedTargetProgressPercentile}% | {new Date(interaction.timestamp).toLocaleTimeString()}
-                </div>
-              </div>
-            ))}
+              );
+            })}
             
             {interactions.length === 0 && (
               <div className={`text-center py-4 text-sm ${
@@ -1568,13 +1820,18 @@ Keep the evaluation constructive and educational.`;
             <strong>Simplified Interaction Structure:</strong>
             <pre className="mt-1 p-2 bg-gray-100 dark:bg-gray-900 rounded text-xs overflow-x-auto">
               {`{
-  "questionId": "q_123",
-  "isCorrect": false,
-  "timeSpentSeconds": 45,
-  "timestamp": "2024-01-15T10:30:00Z",
-  "sessionId": "session_1234567890",
-  "userId": "user_123",
-  "displayedTargetProgressPercentile": 80
+  "question_id": "q_123",
+  "user_id": "user_123",
+  "is_correct": false,
+  "time_spent_seconds": 45,
+  "attempted_at": "2024-01-15T10:30:00Z",
+  "bookmarked": false,
+  "hint_checked": false,
+  "solution_checked": false,
+  "confidence_level": 3,
+  "objective_progress": 80,
+  "idempotency_key": "user_123_q_123_1704449400000_abc123def",
+  "attempt_number": 1
 }`}
             </pre>
           </div>

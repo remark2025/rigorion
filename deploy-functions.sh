@@ -1,17 +1,20 @@
 #!/bin/bash
 
-# Deploy all edge functions for the subscription system
-echo "Deploying edge functions..."
+echo "🚀 Deploying Edge Functions..."
 
-~/bin/supabase functions deploy get-subscription-status
-~/bin/supabase functions deploy manage-billing  
-~/bin/supabase functions deploy stripe-webhook
-~/bin/supabase functions deploy customer-portal
-~/bin/supabase functions deploy track-usage
+echo "📦 Deploying content function..."
+supabase functions deploy content
 
-echo "All functions deployed successfully!"
+echo "📦 Deploying attempts-batch function..."
+supabase functions deploy attempts-batch
+
+echo "📦 Deploying log-interaction function (updated)..."
+supabase functions deploy log-interaction
+
+echo "✅ All functions deployed!"
 echo ""
-echo "Don't forget to:"
-echo "1. Set environment variables in Supabase dashboard"
-echo "2. Configure Stripe webhook endpoint"
-echo "3. Test the subscription flow"
+echo "🔧 Next steps:"
+echo "1. Run the SQL migration in Supabase SQL Editor"
+echo "2. Create 'question-packs' storage bucket (private)"
+echo "3. Upload manifest.json to the bucket root"
+echo "4. Test with your JWT token"

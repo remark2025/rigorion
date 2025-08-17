@@ -2,7 +2,7 @@ import { useState, useCallback } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { LeaderboardData } from "@/components/progress/LeaderboardData";
 import { FullPageLoader } from "@/components/progress/FullPageLoader";
-import { Navigation, Bell, User, Users, BookOpen, BarChart, Target, ChevronDown, LogOut, Moon, Sun, Menu, Clock, Trophy, TrendingUp } from "lucide-react";
+import { Navigation, User, Users, BookOpen, BarChart, Target, ChevronDown, LogOut, Menu, Clock, Trophy, TrendingUp } from "lucide-react";
 import { SecureProgressDataProvider } from "@/components/progress/SecureProgressDataProvider";
 import { useProgress } from "@/contexts/ProgressContext";
 import { Button } from "@/components/ui/button";
@@ -425,10 +425,9 @@ const Progress = () => {
   const navigate = useNavigate();
   const { session, user, profile, signOut } = useAuth();
   const { progressData } = useProgress();
-  const { isDarkMode, toggleDarkMode } = useTheme();
+  const { isDarkMode } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isNavDropdownOpen, setIsNavDropdownOpen] = useState(false);
-  const [hasNotifications, setHasNotifications] = useState(true);
   const [courses, setCourses] = useState<Course[]>([
     { id: '1', name: 'SAT Math', status: 'active', expiresIn: 30 },
     { id: '2', name: 'SAT Reading', status: 'active', expiresIn: 25 },
@@ -560,58 +559,6 @@ const Progress = () => {
             </div>
 
             <div className="flex items-center gap-1 sm:gap-2 overflow-hidden">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={toggleDarkMode}
-                className={`rounded-full ${isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'}`}
-              >
-                {isDarkMode ? (
-                  <Sun className="h-4 w-4 text-green-400" />
-                ) : (
-                  <Moon className="h-4 w-4 text-blue-600" />
-                )}
-              </Button>
-
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className={`relative rounded-full ${isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'}`}
-                  >
-                    <Bell className={`h-4 w-4 ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`} />
-                    {hasNotifications && (
-                      <span className="absolute top-1 right-1.5 w-2 h-2 bg-blue-500 rounded-full"></span>
-                    )}
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className={`w-80 shadow-lg rounded-lg p-2 z-50 ${
-                  isDarkMode ? 'bg-gray-900 border-green-500/30' : 'bg-white border-gray-200'
-                }`}>
-                  <div className="flex justify-between items-center mb-2 px-2">
-                    <h3 className={`font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Notifications</h3>
-                    <Button variant="ghost" size="sm" className={`text-xs ${isDarkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-500 hover:text-gray-700'}`}>
-                      Mark all as read
-                    </Button>
-                  </div>
-                  <DropdownMenuSeparator className={isDarkMode ? 'bg-green-500/30' : ''} />
-                  <ScrollArea className="h-64">
-                    <div className={`p-2 text-sm rounded-md mb-2 ${
-                      isDarkMode ? 'bg-gray-800' : 'bg-blue-50'
-                    }`}>
-                      <p className={`font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-800'}`}>Progress milestone reached!</p>
-                      <p className={`${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>You've completed 75% of your course material.</p>
-                      <p className={`text-xs mt-1 ${isDarkMode ? 'text-gray-500' : 'text-gray-500'}`}>1 hour ago</p>
-                    </div>
-                  </ScrollArea>
-                  <DropdownMenuSeparator className={isDarkMode ? 'bg-green-500/30' : ''} />
-                  <Button variant="ghost" size="sm" className={`w-full text-center text-sm mt-1 ${isDarkMode ? 'text-gray-400 hover:text-gray-300' : 'text-gray-600'}`}>
-                    View all notifications
-                  </Button>
-                </DropdownMenuContent>
-              </DropdownMenu>
-
               {/* Course Dropdown */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

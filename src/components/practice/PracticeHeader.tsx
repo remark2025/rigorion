@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Target, Navigation, ChevronDown, LogOut, Filter, Moon, Sun, BookOpen, Clock, User, Users, BarChart, Menu, Settings, Timer, TrendingUp, Hand, Coffee, GraduationCap, Type } from "lucide-react";
+import { Target, Navigation, ChevronDown, LogOut, Filter, BookOpen, Clock, User, Users, BarChart, Menu, Settings, Timer, TrendingUp, Hand, Coffee, GraduationCap, Type } from "lucide-react";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -50,12 +50,11 @@ export const PracticeHeader = ({
 }: PracticeHeaderProps) => {
   const navigate = useNavigate();
   const { user, profile, signOut } = useAuth();
-  const { isDarkMode, toggleDarkMode } = useTheme();
+  const { isDarkMode } = useTheme();
   const [isNavDropdownOpen, setIsNavDropdownOpen] = useState(false);
   const [isChapterDropdownOpen, setIsChapterDropdownOpen] = useState(false);
   const [isModuleDropdownOpen, setIsModuleDropdownOpen] = useState(false);
   const [isExamDropdownOpen, setIsExamDropdownOpen] = useState(false);
-  const [hasNotifications, setHasNotifications] = useState(true);
   const [selectedChapter, setSelectedChapter] = useState<string>("All Chapters");
   const [selectedModule, setSelectedModule] = useState<string>("All SAT Math");
   const [selectedExam, setSelectedExam] = useState<number | null>(null);

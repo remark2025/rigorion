@@ -1,0 +1,26 @@
+{
+  "version": "2025-08-17",
+  "packs": [
+    { 
+      "id": "core", 
+      "hash": "3f7a2", 
+      "size": 1401235,
+      "description": "Core SAT Math concepts",
+      "questions": 150
+    },
+    { 
+      "id": "algebra", 
+      "hash": "a91b0", 
+      "size": 812335,
+      "description": "Advanced Algebra problems",
+      "questions": 75
+    },
+    { 
+      "id": "geometry", 
+      "hash": "b4c1d", 
+      "size": 690120,
+      "description": "Geometry and coordinate plane",
+      "questions": 60
+    }
+  ]
+}

@@ -8,13 +8,18 @@ const LogInteraction = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [payload, setPayload] = useState(JSON.stringify({
-    questionId: "q_math_456",
-    isCorrect: true,
-    timeSpentSeconds: 127,
-    timestamp: new Date().toISOString(),
-    sessionId: "session_" + Date.now(),
-    userId: "user_123",
-    displayedTargetProgressPercentile: 80 // This matches "Target Progress: 80%" in UI
+    question_id: "q_math_456",
+    user_id: "user_123",
+    is_correct: true,
+    time_spent_seconds: 127,
+    attempted_at: new Date().toISOString(),
+    bookmarked: false,
+    hint_checked: true,
+    solution_checked: false,
+    confidence_level: 4,
+    objective_progress: 80,
+    idempotency_key: `user_123_q_math_456_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+    attempt_number: 1
   }, null, 2));
 
   const postData = async () => {
