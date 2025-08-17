@@ -28,37 +28,37 @@ serve(async (req) => {
       );
     }
 
-    // Use RPC function to cancel subscription
-    const { data, error } = await supabaseClient.rpc('cancel_user_subscription', {
+    // Use RPC function to reactivate subscription
+    const { data, error } = await supabaseClient.rpc('reactivate_user_subscription', {
       user_uuid: user.id
     });
 
     if (error) {
-      console.error('Cancel subscription error:', error);
+      console.error('Reactivate subscription error:', error);
       return new Response(
-        JSON.stringify({ error: 'Failed to cancel subscription' }),
+        JSON.stringify({ error: 'Failed to reactivate subscription' }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 500 }
       );
     }
 
     if (!data) {
       return new Response(
-        JSON.stringify({ error: 'No active subscription found to cancel' }),
+        JSON.stringify({ error: 'No cancelled subscription found to reactivate' }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 404 }
       );
     }
 
     return new Response(JSON.stringify({
       success: true,
-      cancelled: data,
-      message: 'Subscription cancelled successfully'
+      reactivated: data,
+      message: 'Subscription reactivated successfully'
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
     });
 
   } catch (error) {
-    console.error("Cancel subscription error:", error);
+    console.error("Reactivate subscription error:", error);
     return new Response(
       JSON.stringify({ error: error.message }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 500 }
