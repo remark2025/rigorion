@@ -20,6 +20,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useTheme } from "@/contexts/ThemeContext";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart as RechartsBarChart, Bar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
+import { useProgressData } from "@/hooks/useAnalytics";
 
 // Define course type
 type Course = {
@@ -437,10 +438,24 @@ const Progress = () => {
   const [selectedView, setSelectedView] = useState<'analytics' | 'exam-results' | 'leaderboard'>('analytics');
   const queryClient = useQueryClient();
   
+  // Get real analytics data
+  const { 
+    progressData: realProgressData, 
+    loading: analyticsLoading, 
+    error: analyticsError,
+    refreshAnalytics 
+  } = useProgressData('all');
+  
   // Add refreshProgressData function to invalidate progress data cache
-  const refreshProgressData = useCallback(() => {
+  const refreshProgressData = useCallback(async () => {
     queryClient.invalidateQueries({ queryKey: ['userProgress'] });
-  }, [queryClient]);
+    if (refreshAnalytics) {
+      await refreshAnalytics();
+    }
+  }, [queryClient, refreshAnalytics]);
+
+  // Use real analytics data if available, otherwise fallback to dummy data
+  const currentProgressData = realProgressData || DUMMY_PROGRESS;
   
   const pages = [
     { name: "Account", path: "/account" },
@@ -492,7 +507,7 @@ const Progress = () => {
   
   
   return (
-    <SecureProgressDataProvider fallbackData={DUMMY_PROGRESS} showLoadingState={true}>
+    <SecureProgressDataProvider fallbackData={currentProgressData} showLoadingState={analyticsLoading}>
       <div className={`flex min-h-screen w-full transition-colors duration-300 ${
         isDarkMode ? 'bg-gray-900' : 'bg-mono-bg'
       }`}>
@@ -643,6 +658,12 @@ const Progress = () => {
                     }`}
                   >
                     Analytics
+                    {analyticsLoading && (
+                      <span className="ml-2 inline-block w-2 h-2 bg-blue-400 rounded-full animate-pulse"></span>
+                    )}
+                    {realProgressData && !analyticsLoading && (
+                      <span className="ml-2 inline-block w-2 h-2 bg-green-400 rounded-full" title="Real data"></span>
+                    )}
                   </button>
                   <button
                     onClick={() => setSelectedView('exam-results')}
@@ -692,7 +713,7 @@ const Progress = () => {
                         <div>
                           <h3 className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Current Streak</h3>
                           <div className="mt-2">
-                            <span className={`text-3xl font-bold ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`}>{DUMMY_PROGRESS.streak}</span>
+                            <span className={`text-3xl font-bold ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`}>{currentProgressData.streak}</span>
                             <span className={`text-sm ml-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>days</span>
                           </div>
                         </div>
@@ -721,13 +742,13 @@ const Progress = () => {
                               stroke={isDarkMode ? '#10b981' : '#3b82f6'}
                               strokeWidth="8"
                               fill="none"
-                              strokeDasharray={`${DUMMY_PROGRESS.totalProgressPercent * 2.83} 283`}
+                              strokeDasharray={`${currentProgressData.totalProgressPercent * 2.83} 283`}
                               strokeLinecap="round"
                             />
                           </svg>
                           <div className="absolute inset-0 flex items-center justify-center">
                             <span className={`text-xl font-bold ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`}>
-                              {DUMMY_PROGRESS.totalProgressPercent}%
+                              {currentProgressData.totalProgressPercent}%
                             </span>
                           </div>
                         </div>
@@ -786,7 +807,7 @@ const Progress = () => {
                         <div>
                           <h3 className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Global Ranking</h3>
                           <div className="mt-2">
-                            <span className={`text-3xl font-bold ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`}>#{DUMMY_PROGRESS.rank}</span>
+                            <span className={`text-3xl font-bold ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`}>#{currentProgressData.rank}</span>
                             <span className={`text-sm ml-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>worldwide</span>
                           </div>
                         </div>
@@ -805,7 +826,7 @@ const Progress = () => {
                         {courses.find(c => c.id === selectedCourse)?.name || 'SAT Math'} - Skill Analytics
                       </h3>
                       <div className={`px-3 py-1 rounded-full text-sm font-medium ${isDarkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600'}`}>
-                        {DUMMY_PROGRESS.skillAnalytics.filter((skill) => {
+                        {currentProgressData.skillAnalytics.filter((skill) => {
                           const selectedCourseName = courses.find(c => c.id === selectedCourse)?.name || 'SAT Math';
                           if (selectedCourseName.includes('Math')) return skill.section === 'Math';
                           if (selectedCourseName.includes('Reading')) return skill.section === 'Reading';
@@ -831,7 +852,7 @@ const Progress = () => {
                           </tr>
                         </thead>
                         <tbody>
-                          {DUMMY_PROGRESS.skillAnalytics
+                          {currentProgressData.skillAnalytics
                             .filter((skill) => {
                               const selectedCourseName = courses.find(c => c.id === selectedCourse)?.name || 'SAT Math';
                               if (selectedCourseName.includes('Math')) return skill.section === 'Math';
@@ -941,7 +962,7 @@ const Progress = () => {
                     <h3 className={`text-xl font-semibold mb-6 ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>Daily Performance Trend</h3>
                     <div className="h-80">
                       <ResponsiveContainer width="100%" height="100%">
-                        <LineChart data={DUMMY_PROGRESS.performanceGraph}>
+                        <LineChart data={currentProgressData.performanceGraph}>
                           <CartesianGrid strokeDasharray="3 3" stroke={isDarkMode ? '#374151' : '#e5e7eb'} />
                           <XAxis 
                             dataKey="date" 
@@ -1679,7 +1700,7 @@ const Progress = () => {
               context="progress"
               data={{
                 userId,
-                progressData: progressData || DUMMY_PROGRESS
+                progressData: progressData || currentProgressData
               }}
             />
           </div>
