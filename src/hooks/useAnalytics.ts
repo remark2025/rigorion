@@ -179,7 +179,11 @@ function generateFallbackSkills(): SkillAnalytics[] {
       totalQuestions: 50,
       masteryLevel: 'Beginner',
       weakestConcepts: [],
-      recommendedAction: 'Complete some practice questions to generate analytics'
+      recommendedAction: 'Complete some practice questions to generate analytics',
+      practicePerDay: 0,
+      solvedProblems: 0,
+      globalPercentile: 0,
+      percentileGrowth: 0
     }
   ];
 }

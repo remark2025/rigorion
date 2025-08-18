@@ -204,22 +204,31 @@ export class AnalyticsService {
       const skillAnalytics: SkillAnalytics[] = questionData.topic_stats.map((topic: TopicStats, index: number) => {
         const skillMapping = getSkillMapping(topic.topic_name);
         
+        const correct = Math.round(parseFloat(topic.success_rate) * topic.total_attempts / 100);
+        const incorrect = topic.total_attempts - correct;
+        const successRate = parseFloat(topic.success_rate);
+        
         return {
           skillId: `skill_${index + 1}`,
           skillName: skillMapping.name,
           chapter: skillMapping.chapter,
           section: skillMapping.section,
-          correct: Math.round(parseFloat(topic.success_rate) * topic.total_attempts / 100),
-          incorrect: topic.total_attempts - Math.round(parseFloat(topic.success_rate) * topic.total_attempts / 100),
+          correct: correct,
+          incorrect: incorrect,
           unattempted: Math.max(0, 50 - topic.total_attempts), // Assume 50 questions per skill
-          percentile: Math.round(parseFloat(topic.success_rate)),
+          percentile: Math.round(successRate),
           difficulty: mapDifficultyToLevel(parseFloat(topic.average_difficulty)),
           averageTime: parseFloat(topic.average_time),
           lastPracticed: new Date().toISOString(),
           totalQuestions: Math.max(topic.total_attempts, 30), // Minimum for display
-          masteryLevel: getMasteryLevel(parseFloat(topic.success_rate), topic.total_attempts),
+          masteryLevel: getMasteryLevel(successRate, topic.total_attempts),
           weakestConcepts: [], // Would need additional analysis
-          recommendedAction: getRecommendedAction(parseFloat(topic.success_rate), topic.total_attempts)
+          recommendedAction: getRecommendedAction(successRate, topic.total_attempts),
+          // Additional properties for Progress page
+          practicePerDay: Math.round((topic.total_attempts / 30) * 10) / 10, // Approximate practice per day
+          solvedProblems: correct + incorrect, // Total solved
+          globalPercentile: Math.min(95, Math.max(5, Math.round(successRate + Math.random() * 20 - 10))), // Simulated percentile
+          percentileGrowth: Math.round((Math.random() - 0.5) * 20) // Random growth between -10 and +10
         };
       });
 
@@ -336,6 +345,11 @@ export interface SkillAnalytics {
   masteryLevel: 'Beginner' | 'Developing' | 'Proficient' | 'Advanced';
   weakestConcepts: string[];
   recommendedAction: string;
+  // Additional properties expected by Progress page
+  practicePerDay: number;
+  solvedProblems: number;
+  globalPercentile: number;
+  percentileGrowth: number;
 }
 
 export interface PerformanceGraphData {
