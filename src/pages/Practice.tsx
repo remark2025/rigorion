@@ -17,7 +17,7 @@ import { Question } from "@/types/QuestionInterface";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { sampleQuestions } from "@/components/practice/sampleQuestion";
 
-const ENDPOINT = "my-function";
+const ENDPOINT = "content";
 
 // Convert comprehensive sample questions to the format expected by Practice.tsx
 const convertToApiFormat = (questions: Question[]) => {
@@ -75,13 +75,28 @@ const Practice = () => {
     try {
       // Create a more secure fetch method that doesn't expose raw JSON
       const secureFetch = async () => {
-        const baseUrl = "https://eantvimmgdmxzwrjwrop.supabase.co/functions/v1";
-        const url = `${baseUrl}/${ENDPOINT}`;
+        const baseUrl = "https://zmsqscxqxlhhehzwbylv.supabase.co/functions/v1";
+        const url = `${baseUrl}/${ENDPOINT}?id=core`; // Fetch core pack questions
+        
+        // Get user session for authentication
+        const token = localStorage.getItem('sb-zmsqscxqxlhhehzwbylv-auth-token');
+        let authToken = null;
+        
+        if (token) {
+          try {
+            const session = JSON.parse(token);
+            authToken = session?.access_token;
+          } catch (e) {
+            console.warn('Failed to parse auth token');
+          }
+        }
         
         const response = await fetch(url, {
           method: "GET",
           headers: { 
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "Authorization": authToken ? `Bearer ${authToken}` : "",
+            "apikey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inptc3FzY3hxeGxoaGVoendieWx2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTUyNjIwNDksImV4cCI6MjA3MDgzODA0OX0.ns8hcVCVuE81-kepvptKwfQtU4fs6_2EaPOZ2whEOIQ"
           },
           mode: "cors",
         });
@@ -108,14 +123,34 @@ const Practice = () => {
       console.log("About to store result, type:", typeof result, "isArray:", Array.isArray(result));
       await storeSecureFunctionData(ENDPOINT, result);
 
-      // Handle direct array response from edge function
+      // Handle content pack response format - your JSON structure
       let rawQuestions: any[] = [];
-      if (Array.isArray(result)) {
+      console.log("Processing content pack result:", result);
+      
+      if (result?.questions && Array.isArray(result.questions)) {
+        // Your content pack format: {id, title, questions: [...]}
+        rawQuestions = result.questions.map((q: any, index: number) => {
+          const correctOption = q.options?.find((opt: any) => opt.id === q.correct_answer);
+          return {
+            id: q.id,
+            number: index + 1,
+            content: q.content,
+            choices: q.options ? q.options.map((opt: any) => opt.text) : [],
+            correctAnswer: correctOption?.text || q.correct_answer,
+            solution: q.explanation || "No explanation available",
+            difficulty: q.difficulty || "intermediate", 
+            chapter: result.title || "SAT Practice",
+            module: result.category || "General",
+            hint: q.explanation,
+            calculatorAllowed: true,
+            type: q.type || "multiple_choice",
+            topics: q.topics || [],
+            estimatedTime: q.estimatedTime || 30
+          };
+        });
+        console.log("Mapped questions:", rawQuestions);
+      } else if (Array.isArray(result)) {
         rawQuestions = result;
-      } else if (result?.questions && Array.isArray(result.questions)) {
-        rawQuestions = result.questions;
-      } else if (result?.data && Array.isArray(result.data)) {
-        rawQuestions = result.data;
       } else {
         console.warn("No questions found in response structure, got:", typeof result);
         rawQuestions = [];
@@ -173,14 +208,34 @@ const Practice = () => {
       }
       
       if (data) {
-        // Handle direct array response from edge function
+        // Handle content pack response format - your JSON structure
         let rawQuestions: any[] = [];
-        if (Array.isArray(data)) {
+        console.log("Loading cached content pack data:", data);
+        
+        if (data?.questions && Array.isArray(data.questions)) {
+          // Your content pack format: {id, title, questions: [...]}
+          rawQuestions = data.questions.map((q: any, index: number) => {
+            const correctOption = q.options?.find((opt: any) => opt.id === q.correct_answer);
+            return {
+              id: q.id,
+              number: index + 1,
+              content: q.content,
+              choices: q.options ? q.options.map((opt: any) => opt.text) : [],
+              correctAnswer: correctOption?.text || q.correct_answer,
+              solution: q.explanation || "No explanation available",
+              difficulty: q.difficulty || "intermediate",
+              chapter: data.title || "SAT Practice",
+              module: data.category || "General",
+              hint: q.explanation,
+              calculatorAllowed: true,
+              type: q.type || "multiple_choice",
+              topics: q.topics || [],
+              estimatedTime: q.estimatedTime || 30
+            };
+          });
+          console.log("Mapped cached questions:", rawQuestions);
+        } else if (Array.isArray(data)) {
           rawQuestions = data;
-        } else if (data.questions && Array.isArray(data.questions)) {
-          rawQuestions = data.questions;
-        } else if (data.data && Array.isArray(data.data)) {
-          rawQuestions = data.data;
         }
 
         // Use mapper to process and validate questions

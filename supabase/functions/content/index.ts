@@ -29,8 +29,15 @@ serve(async (req) => {
   // Auth (verify user JWT)
   const auth = req.headers.get("Authorization") ?? "";
   const token = auth.startsWith("Bearer ") ? auth.slice(7) : auth;
+  
+  if (!token) return json({ error: "Missing authorization header" }, 401);
+  
   const { data: { user }, error: userErr } = await supabase.auth.getUser(token);
-  if (userErr || !user) return json({ error: "Not authenticated" }, 401);
+  if (userErr) {
+    console.error("JWT validation error:", userErr);
+    return json({ error: "Invalid JWT", details: userErr.message }, 401);
+  }
+  if (!user) return json({ error: "Not authenticated" }, 401);
 
   const url = new URL(req.url);
   const id = url.searchParams.get("id");
