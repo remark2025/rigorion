@@ -3,7 +3,9 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, Authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, GET, OPTIONS, PUT, DELETE",
+  "Access-Control-Max-Age": "86400",
 };
 
 interface UserAnalyticsRequest {
@@ -34,13 +36,25 @@ serve(async (req) => {
       );
     }
 
-    // Parse request parameters
-    const url = new URL(req.url);
-    const requestData: UserAnalyticsRequest = {
-      userId: url.searchParams.get('userId') || user.id,
-      timeframe: (url.searchParams.get('timeframe') as any) || 'all',
-      includeRecentActivity: url.searchParams.get('includeRecentActivity') !== 'false'
-    };
+    // Parse request parameters from body or URL
+    let requestData: UserAnalyticsRequest;
+    
+    if (req.method === 'POST' && req.headers.get('content-type')?.includes('application/json')) {
+      const body = await req.json();
+      requestData = {
+        userId: body.userId || user?.id,
+        timeframe: body.timeframe || 'all',
+        includeRecentActivity: body.includeRecentActivity !== false
+      };
+    } else {
+      // Fallback to URL parameters for GET requests
+      const url = new URL(req.url);
+      requestData = {
+        userId: url.searchParams.get('userId') || user?.id,
+        timeframe: (url.searchParams.get('timeframe') as any) || 'all',
+        includeRecentActivity: url.searchParams.get('includeRecentActivity') !== 'false'
+      };
+    }
 
     // Ensure user can only access their own data (unless admin)
     const targetUserId = requestData.userId || user.id;

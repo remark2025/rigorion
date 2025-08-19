@@ -114,19 +114,12 @@ export class AnalyticsService {
     includeRecentActivity: boolean = true
   ): Promise<UserAnalytics> {
     try {
-      const params = new URLSearchParams({
-        timeframe,
-        includeRecentActivity: includeRecentActivity.toString()
-      });
-
-      if (userId) {
-        params.append('userId', userId);
-      }
-
+      // Use Supabase function invocation with query parameters
       const { data, error } = await supabase.functions.invoke('user-analytics', {
-        body: {},
-        headers: {
-          'Content-Type': 'application/json',
+        body: {
+          userId,
+          timeframe,
+          includeRecentActivity
         }
       });
 
@@ -157,21 +150,14 @@ export class AnalyticsService {
     includeUserPerformance: boolean = false
   ): Promise<QuestionAnalyticsResponse | any> {
     try {
-      const params = new URLSearchParams({
-        sortBy,
-        order,
-        limit: limit.toString(),
-        includeUserPerformance: includeUserPerformance.toString()
-      });
-
-      if (questionId) {
-        params.append('questionId', questionId);
-      }
-
+      // Use Supabase function invocation with query parameters
       const { data, error } = await supabase.functions.invoke('question-analytics', {
-        body: {},
-        headers: {
-          'Content-Type': 'application/json',
+        body: {
+          questionId,
+          sortBy,
+          order,
+          limit,
+          includeUserPerformance
         }
       });
 

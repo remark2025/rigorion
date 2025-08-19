@@ -13,6 +13,8 @@ import AttemptHistory from "./AttemptHistory";
 import QuestionHeader from "./QuestionHeader";
 import { QuestionTracking } from "./QuestionTracking";
 import { PracticeTimer } from "./PracticeTimer";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 
 interface PracticeDisplayProps {
   currentQuestion: Question | null;
@@ -75,6 +77,8 @@ const PracticeDisplay = ({
   onInteractionsChange,
 }: PracticeDisplayProps) => {
   const { isDarkMode } = useTheme();
+  const { user } = useAuth();
+  
   const [localSelectedAnswer, setLocalSelectedAnswer] = useState<string | null>(null);
   const [localIsCorrect, setLocalIsCorrect] = useState<boolean | null>(null);
   const [showGoToInput, setShowGoToInput] = useState(false);
@@ -352,10 +356,11 @@ const PracticeDisplay = ({
     
     const objectiveProgress = calculateObjectiveProgress();
     
-    const userId = "user_123"; // This should come from auth context
+    const userId = user?.id || "anonymous";
     const questionId = currentQuestion?.id;
     const attemptNumber = getAttemptNumber(questionId || 'unknown');
-    const idempotencyKey = `${userId}_${questionId}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    // Generate a proper UUID for idempotency_key
+    const idempotencyKey = crypto.randomUUID();
 
     const interaction = {
       // ✅ Core tracking fields (exactly as agreed)
@@ -488,6 +493,24 @@ const PracticeDisplay = ({
       });
       
       console.log('✅ New Interaction Recorded:', JSON.stringify(interaction, null, 2));
+      
+      // Send interaction to analytics system using Supabase functions
+      if (user) {
+        supabase.functions.invoke('log-interaction', {
+          body: interaction
+        }).then(({ data, error }) => {
+          if (error) {
+            console.error('❌ Failed to log interaction to analytics:', error);
+          } else {
+            console.log('✅ Interaction logged successfully:', data);
+          }
+        }).catch(error => {
+          console.error('❌ Failed to log interaction to analytics:', error);
+          // Continue with local tracking even if server logging fails
+        });
+      } else {
+        console.warn('⚠️ User not authenticated, skipping server logging');
+      }
     }
     
     // Call the appropriate checkAnswer function

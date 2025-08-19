@@ -3,7 +3,9 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0"
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, Authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, GET, OPTIONS, PUT, DELETE",
+  "Access-Control-Max-Age": "86400",
 }
 
 interface LogInteractionRequest {
@@ -59,22 +61,19 @@ serve(async (req) => {
     // Generate idempotency key if not provided
     const idempotencyKey = requestData.idempotency_key || crypto.randomUUID();
 
-    // Calculate attempt number if not provided
-    let attemptNumber = requestData.attempt_number;
-    if (!attemptNumber) {
-      // Get existing attempts for this user/question combination
-      const { data: existingAttempts } = await supabaseClient
-        .from('question_interactions')
-        .select('attempt_number')
-        .eq('user_id', user.id)
-        .eq('question_public_id', requestData.question_id)
-        .order('attempt_number', { ascending: false })
-        .limit(1);
-      
-      attemptNumber = existingAttempts && existingAttempts.length > 0 
-        ? (existingAttempts[0].attempt_number || 0) + 1 
-        : 1;
-    }
+    // Calculate attempt number - always get the next available number
+    // Get existing attempts for this user/question combination
+    const { data: existingAttempts } = await supabaseClient
+      .from('question_interactions')
+      .select('attempt_number')
+      .eq('user_id', user.id)
+      .eq('question_public_id', requestData.question_id)
+      .order('attempt_number', { ascending: false })
+      .limit(1);
+    
+    const attemptNumber = existingAttempts && existingAttempts.length > 0 
+      ? (existingAttempts[0].attempt_number || 0) + 1 
+      : 1;
 
     // Prepare interaction data using new schema
     const interactionData = {
@@ -101,15 +100,55 @@ serve(async (req) => {
         }, { onConflict: 'user_id,question_public_id' });
     }
 
-    // Log the interaction to database
-    const { data: logResult, error: logError } = await supabaseClient
-      .from('question_interactions')
-      .insert(interactionData)
-      .select()
-      .single();
+    // Log the interaction to database with retry for duplicate key errors
+    let logResult;
+    let logError;
+    let retryCount = 0;
+    const maxRetries = 3;
+
+    while (retryCount < maxRetries) {
+      const result = await supabaseClient
+        .from('question_interactions')
+        .insert(interactionData)
+        .select()
+        .single();
+      
+      logResult = result.data;
+      logError = result.error;
+
+      // If successful, break out of retry loop
+      if (!logError) {
+        break;
+      }
+
+      // If duplicate key error, recalculate attempt number and retry
+      if (logError.code === '23505' && retryCount < maxRetries - 1) {
+        console.log(`Duplicate key detected, retrying with new attempt number (attempt ${retryCount + 1})`);
+        
+        // Recalculate attempt number
+        const { data: newExistingAttempts } = await supabaseClient
+          .from('question_interactions')
+          .select('attempt_number')
+          .eq('user_id', user.id)
+          .eq('question_public_id', requestData.question_id)
+          .order('attempt_number', { ascending: false })
+          .limit(1);
+        
+        const newAttemptNumber = newExistingAttempts && newExistingAttempts.length > 0 
+          ? (newExistingAttempts[0].attempt_number || 0) + 1 
+          : 1;
+        
+        interactionData.attempt_number = newAttemptNumber;
+        interactionData.idempotency_key = crypto.randomUUID(); // New idempotency key for retry
+        retryCount++;
+      } else {
+        // For other errors or max retries reached, break
+        break;
+      }
+    }
 
     if (logError) {
-      console.error("Error logging interaction:", logError);
+      console.error("Error logging interaction after retries:", logError);
       return new Response(
         JSON.stringify({ error: "Failed to log interaction", details: logError.message }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 500 }

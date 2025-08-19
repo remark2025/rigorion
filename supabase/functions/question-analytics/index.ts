@@ -3,7 +3,9 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, Authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Methods": "POST, GET, OPTIONS, PUT, DELETE",
+  "Access-Control-Max-Age": "86400",
 };
 
 interface QuestionAnalyticsRequest {
@@ -37,15 +39,29 @@ serve(async (req) => {
       }
     }
 
-    // Parse request parameters
-    const url = new URL(req.url);
-    const requestData: QuestionAnalyticsRequest = {
-      questionId: url.searchParams.get('questionId') || undefined,
-      sortBy: (url.searchParams.get('sortBy') as any) || 'difficulty',
-      order: (url.searchParams.get('order') as any) || 'desc',
-      limit: parseInt(url.searchParams.get('limit') || '50'),
-      includeUserPerformance: url.searchParams.get('includeUserPerformance') === 'true'
-    };
+    // Parse request parameters from body or URL
+    let requestData: QuestionAnalyticsRequest;
+    
+    if (req.method === 'POST' && req.headers.get('content-type')?.includes('application/json')) {
+      const body = await req.json();
+      requestData = {
+        questionId: body.questionId,
+        sortBy: body.sortBy || 'difficulty',
+        order: body.order || 'desc',
+        limit: body.limit || 50,
+        includeUserPerformance: body.includeUserPerformance || false
+      };
+    } else {
+      // Fallback to URL parameters for GET requests
+      const url = new URL(req.url);
+      requestData = {
+        questionId: url.searchParams.get('questionId') || undefined,
+        sortBy: (url.searchParams.get('sortBy') as any) || 'difficulty',
+        order: (url.searchParams.get('order') as any) || 'desc',
+        limit: parseInt(url.searchParams.get('limit') || '50'),
+        includeUserPerformance: url.searchParams.get('includeUserPerformance') === 'true'
+      };
+    }
 
     if (requestData.questionId) {
       // Get analytics for a specific question
