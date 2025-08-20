@@ -175,6 +175,16 @@ export function mapQuestion(raw: any, index?: number): Question {
               questionData.clue ||
               "Think about the problem step by step";
 
+  // Map keyPhrases for highlighting
+  const keyPhrases = questionData.keyPhrases || [];
+
+  // Map passage for reading questions
+  const passage = questionData.passage ? {
+    title: questionData.passage.title || "",
+    content: questionData.passage.content || "",
+    source: questionData.passage.source || ""
+  } : undefined;
+
   // Enhanced graph mapping to handle text links
   let graph: { url: string; alt?: string; caption?: string } | string | undefined;
   
@@ -197,6 +207,7 @@ export function mapQuestion(raw: any, index?: number): Question {
     id: questionData.question_id?.toString() || questionData.id?.toString() || `mapped-${index || Date.now()}`,
     number: number,
     content: content,
+    keyPhrases: keyPhrases,
     solution: solution,
     difficulty: difficulty,
     chapter: chapter,
@@ -208,6 +219,8 @@ export function mapQuestion(raw: any, index?: number): Question {
     explanation: questionData.explanation || solution,
     solutionSteps: solutionSteps,
     hint: hint,
+    calculatorAllowed: questionData.calculatorAllowed !== undefined ? questionData.calculatorAllowed : true,
+    passage: passage,
     graph: graph,
     quote: questionData.quote ? {
       text: questionData.quote.text || questionData.quote,

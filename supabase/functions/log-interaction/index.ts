@@ -21,6 +21,13 @@ interface LogInteractionRequest {
   objective_progress?: number;
   idempotency_key?: string;
   attempt_number?: number;
+  // New skill tracking fields
+  module?: 'math' | 'reading' | 'writing';
+  chapter?: number;
+  exam?: number;
+  level?: 'easy' | 'medium' | 'difficult';
+  topic?: string;
+  question_type?: string;
 }
 
 serve(async (req) => {
@@ -75,7 +82,7 @@ serve(async (req) => {
       ? (existingAttempts[0].attempt_number || 0) + 1 
       : 1;
 
-    // Prepare interaction data using new schema
+    // Prepare interaction data using enhanced schema
     const interactionData = {
       user_id: user.id,
       question_public_id: requestData.question_id,
@@ -87,7 +94,14 @@ serve(async (req) => {
       hint_checked: requestData.hint_checked || false,
       solution_checked: requestData.solution_checked || false,
       objective_progress: requestData.objective_progress ? Math.max(0, Math.min(100, requestData.objective_progress)) : null,
-      idempotency_key: idempotencyKey
+      idempotency_key: idempotencyKey,
+      // Enhanced skill tracking fields
+      module: requestData.module || null,
+      chapter: requestData.chapter || null,
+      exam: requestData.exam || null,
+      level: requestData.level || null,
+      topic: requestData.topic || null,
+      question_type: requestData.question_type || null
     };
 
     // Handle bookmarks separately

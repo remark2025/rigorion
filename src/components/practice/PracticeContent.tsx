@@ -194,12 +194,18 @@ export default function PracticeContent({
       const beforeFilter = filtered.length;
       
       filtered = filtered.filter(q => {
-        let questionExam = q.examNumber;
+        // Check both examNumber (legacy) and exam (new enhanced field) 
+        let questionExam = q.examNumber || (q as any).exam;
         
         // Convert string examNumber to number if needed
         if (typeof questionExam === 'string') {
           const parsed = parseInt(questionExam, 10);
           questionExam = isNaN(parsed) ? null : parsed;
+        }
+        
+        // Ensure we have a valid number
+        if (questionExam === null || questionExam === undefined || isNaN(questionExam)) {
+          questionExam = null;
         }
         
         const matches = questionExam === filters.exam;
@@ -232,20 +238,31 @@ export default function PracticeContent({
     if (filters.chapter && !filters.exam) {
       const beforeFilter = filtered.length;
       filtered = filtered.filter(q => {
-        // Exclude questions that have an examNumber - they belong to exams, not chapters
-        let questionExam = q.examNumber;
+        // Exclude questions that have an exam field - they belong to exams, not chapters
+        let questionExam = q.examNumber || (q as any).exam;
         if (typeof questionExam === 'string') {
           const parsed = parseInt(questionExam, 10);
           questionExam = isNaN(parsed) ? null : parsed;
         }
         
-        // If question has an examNumber, it doesn't belong to any chapter
+        // Ensure we have a valid number
+        if (questionExam === null || questionExam === undefined || isNaN(questionExam)) {
+          questionExam = null;
+        }
+        
+        // If question has an exam field, it doesn't belong to any chapter
         if (questionExam !== null && questionExam !== undefined) {
           return false;
         }
         
-        const chapterMatch = q.chapter?.match(/Chapter (\d+)/i);
-        const matchedChapterNumber = chapterMatch ? chapterMatch[1] : null;
+        // Handle both string "Chapter X" and number X formats
+        let matchedChapterNumber = null;
+        if (typeof q.chapter === 'string') {
+          const chapterMatch = q.chapter.match(/Chapter (\d+)/i);
+          matchedChapterNumber = chapterMatch ? chapterMatch[1] : null;
+        } else if (typeof q.chapter === 'number') {
+          matchedChapterNumber = q.chapter.toString();
+        }
         return matchedChapterNumber === filters.chapter;
       });
       console.log(`📚 Chapter filter: ${beforeFilter} → ${filtered.length}`);

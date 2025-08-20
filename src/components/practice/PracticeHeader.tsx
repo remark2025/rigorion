@@ -56,7 +56,7 @@ export const PracticeHeader = ({
   const [isModuleDropdownOpen, setIsModuleDropdownOpen] = useState(false);
   const [isExamDropdownOpen, setIsExamDropdownOpen] = useState(false);
   const [selectedChapter, setSelectedChapter] = useState<string>("All Chapters");
-  const [selectedModule, setSelectedModule] = useState<string>("All SAT Math");
+  const [selectedModule, setSelectedModule] = useState<string>("All Modules");
   const [selectedExam, setSelectedExam] = useState<number | null>(null);
 
   const pages = [
@@ -70,31 +70,23 @@ export const PracticeHeader = ({
     "All Chapters",
     "Chapter 1",
     "Chapter 2", 
-    "Chapter 3",
-    "Chapter 4",
-    "Chapter 5"
+    "Chapter 3"
   ];
 
   const exams = [
     "All Exams",
-    "Exam 1",
-    "Exam 2",
     "Exam 3",
-    "Exam 4",
     "Exam 5",
-    "Exam 6",
-    "Exam 7",
+    "Exam 7", 
     "Exam 8",
-    "Exam 9",
-    "Exam 10",
-    "Exam 11",
     "Exam 12"
   ];
 
   const modules = [
-    "All SAT Math",
-    "SAT Reading",
-    "SAT Writing"
+    "All Modules",
+    "math",
+    "reading", 
+    "writing"
   ];
 
   const handleNavigation = (path: string) => {
@@ -120,7 +112,7 @@ export const PracticeHeader = ({
       
       onFilterChange({
         chapter: chapterNumber,
-        module: selectedModule === "All SAT Math" ? undefined : selectedModule,
+        module: selectedModule === "All Modules" ? undefined : selectedModule,
         exam: selectedExam
       });
     }
@@ -140,7 +132,7 @@ export const PracticeHeader = ({
       
       onFilterChange({
         chapter: chapterNumber,
-        module: module === "All SAT Math" ? undefined : module,
+        module: module === "All Modules" ? undefined : module,
         exam: selectedExam
       });
     }
@@ -164,7 +156,7 @@ export const PracticeHeader = ({
         chapterNumber = match ? match[1] : undefined;
       }
       
-      const moduleValue = selectedModule === "All SAT Math" ? undefined : selectedModule;
+      const moduleValue = selectedModule === "All Modules" ? undefined : selectedModule;
       
       setSelectedExam(examNumber);
       
@@ -179,7 +171,7 @@ export const PracticeHeader = ({
   const handleClearAllFilters = () => {
     console.log("PracticeHeader - Clearing all filters");
     setSelectedChapter("All Chapters");
-    setSelectedModule("All SAT Math");
+    setSelectedModule("All Modules");
     setSelectedExam(null);
     
     if (onFilterChange) {
@@ -227,7 +219,7 @@ export const PracticeHeader = ({
     if (selectedChapter !== "All Chapters") {
       filters.push(selectedChapter);
     }
-    if (selectedModule !== "All SAT Math") {
+    if (selectedModule !== "All Modules") {
       filters.push(selectedModule);
     }
     
@@ -235,7 +227,7 @@ export const PracticeHeader = ({
   };
 
   const hasActiveFilters = () => {
-    return selectedExam !== null || selectedChapter !== "All Chapters" || selectedModule !== "All SAT Math";
+    return selectedExam !== null || selectedChapter !== "All Chapters" || selectedModule !== "All Modules";
   };
 
   const getModeIcon = (currentMode: string) => {
@@ -425,11 +417,11 @@ export const PracticeHeader = ({
                 size="sm"
                 className={`rounded-full bg-transparent transition-colors flex ${
                   isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
-                } ${selectedModule !== "All SAT Math" ? (isDarkMode ? 'text-green-300 bg-green-900/20' : 'text-blue-600 bg-blue-50') : ''}`}
+                } ${selectedModule !== "All Modules" ? (isDarkMode ? 'text-green-300 bg-green-900/20' : 'text-blue-600 bg-blue-50') : ''}`}
               >
                 <BookOpen className={`h-4 w-4 mr-1 ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`} />
                 <span className={`font-thin text-xs ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                  {selectedModule === "All SAT Math" ? "All SAT Math" : selectedModule}
+                  {selectedModule === "All Modules" ? "All Modules" : selectedModule}
                 </span>
                 <ChevronDown className={`ml-1 h-3 w-3 transition-transform ${isModuleDropdownOpen ? "rotate-180" : ""} ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
               </Button>

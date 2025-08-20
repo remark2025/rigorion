@@ -5,6 +5,7 @@ export interface Question {
     id: string;
     number: number;
     content: string;
+    keyPhrases?: string[]; // For highlighting key terms/concepts
     solution: string | Array<{step: string}>;
     difficulty: "easy" | "medium" | "hard";
     chapter: string;

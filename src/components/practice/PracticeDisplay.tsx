@@ -363,9 +363,8 @@ const PracticeDisplay = ({
     const idempotencyKey = crypto.randomUUID();
 
     const interaction = {
-      // ✅ Core tracking fields (exactly as agreed)
+      // ✅ Clean core tracking fields - no duplicates
       question_id: questionId,
-      user_id: userId,
       is_correct: isCorrectAnswer,
       time_spent_seconds: timeSpent,
       attempted_at: new Date().toISOString(),
@@ -373,44 +372,22 @@ const PracticeDisplay = ({
       hint_checked: hintsViewed.length > 0,
       solution_checked: solutionAccessed,
       confidence_level: questionGuess,
-      objective_progress: objectiveProgress.targetProgress, // This is what shows in "Target Progress: X%" in UI
+      objective_progress: objectiveProgress.targetProgress,
       idempotency_key: idempotencyKey,
-      attempt_number: attemptNumber,
       
-      // ✅ Legacy fields for compatibility (will be removed later)
-      questionId: currentQuestion?.id,
-      userId: "user_123",
-      answer: answer,
-      isCorrect: isCorrectAnswer,
-      timeSpentSeconds: timeSpent,
-      timestamp: new Date().toISOString(),
-      sessionId: sessionId,
-      displayedTargetProgressPercentile: objectiveProgress.targetProgress,
-      
-      // 🆕 Enhanced tracking fields
-      confidenceLevel: questionGuess,
-      hintsUsed: [...hintsViewed],
-      solutionViewed: solutionAccessed,
-      ideasChecked: [...tipsAccessed], 
-      answerChanges: answerChangeCount,
-      helpSequence: [...helpActions],
-      attemptNumber: getAttemptNumber(currentQuestion?.id || 'unknown'),
-      bookmarked: isBookmarked,
-      
-      // 📚 Question metadata
-      topic: currentQuestion?.chapter || 'unknown',
-      difficulty: currentQuestion?.difficulty || 'unknown',
-      
-      // 🎯 Target progress analytics
-      targetProgress: {
-        targetScore: 1500, // Default target, should come from user settings
-        currentEstimatedScore: calculateEstimatedScore(),
-        questionsToTarget: calculateQuestionsNeeded(),
-        weakAreas: identifyWeakAreas(),
-        strengthAreas: identifyStrengths(),
-        dailyGoalProgress: calculateDailyProgress(),
-        weeklyGoalProgress: calculateWeeklyProgress()
-      }
+      // ✅ Enhanced skill tracking fields
+      module: currentQuestion?.module?.toLowerCase() || null,
+      chapter: currentQuestion?.chapter ? parseInt(currentQuestion.chapter.toString()) : null,
+      exam: currentQuestion?.examNumber || null,
+      level: currentQuestion?.difficulty || null,
+      topic: currentQuestion?.chapter || null,
+      question_type: 'multiple_choice',
+
+      // ✅ Additional tracking for internal use
+      session_id: sessionId,
+      answer_changes: answerChangeCount,
+      hints_used: [...hintsViewed],
+      solution_viewed: solutionAccessed
     };
 
     return interaction;

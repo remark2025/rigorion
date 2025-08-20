@@ -76,7 +76,7 @@ const Practice = () => {
       // Create a more secure fetch method that doesn't expose raw JSON
       const secureFetch = async () => {
         const baseUrl = "https://zmsqscxqxlhhehzwbylv.supabase.co/functions/v1";
-        const url = `${baseUrl}/${ENDPOINT}?id=core`; // Fetch core pack questions
+        const url = `${baseUrl}/${ENDPOINT}?id=core&v=${Date.now()}`; // Fetch core pack questions with cache buster
         
         // Get user session for authentication
         const token = localStorage.getItem('sb-zmsqscxqxlhhehzwbylv-auth-token');
@@ -128,24 +128,36 @@ const Practice = () => {
       console.log("Processing content pack result:", result);
       
       if (result?.questions && Array.isArray(result.questions)) {
-        // Your content pack format: {id, title, questions: [...]}
+        // Enhanced content pack format with skill tracking
         rawQuestions = result.questions.map((q: any, index: number) => {
           const correctOption = q.options?.find((opt: any) => opt.id === q.correct_answer);
+          console.log(`Question ${q.id}: correct_answer=${q.correct_answer}, correctOption=`, correctOption);
           return {
             id: q.id,
             number: index + 1,
             content: q.content,
+            keyPhrases: q.keyPhrases || [],
             choices: q.options ? q.options.map((opt: any) => opt.text) : [],
             correctAnswer: correctOption?.text || q.correct_answer,
-            solution: q.explanation || "No explanation available",
-            difficulty: q.difficulty || "intermediate", 
-            chapter: result.title || "SAT Practice",
-            module: result.category || "General",
-            hint: q.explanation,
-            calculatorAllowed: true,
+            solution: q.solution || q.explanation || "No solution available",
+            solutionSteps: q.solutionSteps || [],
+            difficulty: q.difficulty || q.level || "intermediate", 
+            chapter: q.chapter || result.title || "SAT Practice",
+            module: q.module || result.category || "General",
+            examNumber: q.exam || 0,
+            hint: q.hint || q.explanation || "No hint available",
+            explanation: q.explanation || "No explanation available",
+            calculatorAllowed: q.calculatorAllowed !== undefined ? q.calculatorAllowed : true,
             type: q.type || "multiple_choice",
             topics: q.topics || [],
-            estimatedTime: q.estimatedTime || 30
+            estimatedTime: q.estimatedTime || 30,
+            topic: q.topic || "General",
+            bookmarked: false,
+            // Enhanced fields for skill tracking
+            level: q.level || q.difficulty || "medium",
+            passage: q.passage || undefined,
+            quote: q.quote || undefined,
+            graph: q.graph || undefined
           };
         });
         console.log("Mapped questions:", rawQuestions);
@@ -157,11 +169,15 @@ const Practice = () => {
       }
 
       // Use the mapper to normalize and validate questions
+      console.log("Raw questions before mapping:", rawQuestions.length, rawQuestions[0]);
       const mappedQuestions = mapQuestions(rawQuestions);
+      console.log("Mapped questions:", mappedQuestions.length, mappedQuestions[0]);
       const validQuestions = mappedQuestions.filter(validateQuestion);
+      console.log("Valid questions after validation:", validQuestions.length);
 
       if (validQuestions.length === 0) {
         console.warn("No valid questions after mapping and validation");
+        console.log("First mapped question for debugging:", mappedQuestions[0]);
         throw new Error("No valid questions available");
       }
 
