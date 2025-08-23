@@ -337,6 +337,16 @@ const PracticeDisplay = ({
 
   // Create interaction record (only for answered questions)
   const createInteraction = (answer: string, isCorrectAnswer: boolean) => {
+    // Debug logging for skill tracking fields
+    console.log('🔍 Question skill tracking fields:', {
+      id: currentQuestion?.id,
+      module: currentQuestion?.module,
+      chapter: currentQuestion?.chapter,
+      exam: currentQuestion?.exam,
+      level: currentQuestion?.level,
+      difficulty: currentQuestion?.difficulty,
+      topic: currentQuestion?.topic
+    });
     let timeSpent: number;
     
     // Use timer value in timer mode, per-question timing in other modes
@@ -375,12 +385,12 @@ const PracticeDisplay = ({
       objective_progress: objectiveProgress.targetProgress,
       idempotency_key: idempotencyKey,
       
-      // ✅ Enhanced skill tracking fields
-      module: currentQuestion?.module?.toLowerCase() || null,
-      chapter: currentQuestion?.chapter ? parseInt(currentQuestion.chapter.toString()) : null,
-      exam: currentQuestion?.examNumber || null,
-      level: currentQuestion?.difficulty || null,
-      topic: currentQuestion?.chapter || null,
+      // ✅ Enhanced skill tracking fields - using properly mapped fields
+      module: currentQuestion?.module || null, // 'math', 'reading', 'writing'
+      chapter: typeof currentQuestion?.chapter === 'number' ? currentQuestion.chapter : null, // number from enhanced content pack
+      exam: currentQuestion?.exam || null, // number from enhanced content pack
+      level: currentQuestion?.level || null, // 'easy', 'medium', 'difficult'
+      topic: currentQuestion?.topic || null,
       question_type: 'multiple_choice',
 
       // ✅ Additional tracking for internal use

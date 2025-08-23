@@ -8,7 +8,7 @@ export interface Question {
     keyPhrases?: string[]; // For highlighting key terms/concepts
     solution: string | Array<{step: string}>;
     difficulty: "easy" | "medium" | "hard";
-    chapter: string;
+    chapter: string | number; // Can be string "Chapter 1" or number 1
     module?: string;
     bookmarked: boolean;
     examNumber: number;
@@ -32,6 +32,10 @@ export interface Question {
         content: string;
         source?: string;
     };
+    // Enhanced skill tracking fields
+    level?: "easy" | "medium" | "difficult" | "hard";
+    exam?: number | null; // From enhanced content pack
+    topic?: string;
 }
 
 export default interface QuestionInterface {} // Or remove if unnecessary

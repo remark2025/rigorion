@@ -225,7 +225,11 @@ export function mapQuestion(raw: any, index?: number): Question {
     quote: questionData.quote ? {
       text: questionData.quote.text || questionData.quote,
       source: questionData.quote.source || "Unknown"
-    } : undefined
+    } : undefined,
+    // Enhanced skill tracking fields
+    level: questionData.level || questionData.difficulty || "medium",
+    exam: questionData.exam || null,
+    topic: questionData.topic || questionData.chapter || null
   };
 
   console.log('[MAPPER] Mapped question with examNumber:', mappedQuestion.examNumber);

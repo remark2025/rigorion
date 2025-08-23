@@ -861,8 +861,11 @@ const Progress = () => {
                               return skill.section === 'Math'; // Default to Math if no match
                             })
                             .map((skill) => {
-                            const accuracy = Math.round((skill.correct / (skill.correct + skill.incorrect)) * 100);
-                            const progress = Math.round(((skill.correct + skill.incorrect) / (skill.correct + skill.incorrect + skill.unattempted)) * 100);
+                            // Handle zero values to avoid NaN calculations
+                            const totalAttempted = skill.correct + skill.incorrect;
+                            const accuracy = totalAttempted > 0 ? Math.round((skill.correct / totalAttempted) * 100) : 0;
+                            const totalQuestions = skill.correct + skill.incorrect + skill.unattempted;
+                            const progress = totalQuestions > 0 ? Math.round((totalAttempted / totalQuestions) * 100) : 0;
                             
                             // Generate status based on performance
                             const getStatus = (acc: number, growth: number) => {
