@@ -1,0 +1,63 @@
+{
+  "topic": "Quadratic Functions",
+  "description": "Interactive solutions for quadratic function problems",
+  "solutions": {
+    "MATH-INTERACTIVE-001": {
+      "hasInteractiveGraph": true,
+      "graphConfig": {
+        "type": "quadratic",
+        "xRange": [-1, 5],
+        "yRange": [-5, 8],
+        "showGrid": true,
+        "showAxis": true,
+        "title": "Quadratic Function: y = ax² + bx + c"
+      },
+      "parameters": [
+        {
+          "name": "a",
+          "label": "Coefficient a",
+          "value": 2,
+          "min": -5,
+          "max": 5,
+          "step": 0.1,
+          "description": "Controls the width and direction of the parabola"
+        },
+        {
+          "name": "b",
+          "label": "Coefficient b", 
+          "value": -8,
+          "min": -10,
+          "max": 10,
+          "step": 0.1,
+          "description": "Affects the horizontal position of the vertex"
+        },
+        {
+          "name": "c",
+          "label": "Constant c",
+          "value": 6,
+          "min": -10,
+          "max": 10,
+          "step": 0.1,
+          "description": "The y-intercept of the parabola"
+        }
+      ],
+      "solutionSteps": [
+        {
+          "id": "step-1",
+          "title": "Use the First Point",
+          "description": "Substitute (0, 6) into y = ax² + bx + c",
+          "fromExpression": {
+            "latex": "y = ax^2 + bx + c",
+            "display": "y = ax² + bx + c"
+          },
+          "toExpression": {
+            "latex": "6 = a(0)^2 + b(0) + c",
+            "display": "6 = a(0)² + b(0) + c = c"
+          },
+          "explanation": "When x = 0, all terms with x disappear, leaving only c = 6",
+          "hint": "What happens when you substitute x = 0 into the equation?"
+        }
+      ]
+    }
+  }
+}

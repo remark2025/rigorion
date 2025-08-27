@@ -23,6 +23,7 @@ import Account from "@/pages/Account";
 import InteractiveMathDemo from "@/pages/InteractiveMathDemo";
 import InteractiveMathTest from "@/pages/InteractiveMathTest";
 import SimpleInteractiveTest from "@/pages/SimpleInteractiveTest";
+import ReadingSolutionDemo from "@/pages/ReadingSolutionDemo";
 
 function App() {
   return (
@@ -40,6 +41,7 @@ function App() {
                 <Route path="/interactive-math" element={<InteractiveMathDemo />} />
                 <Route path="/interactive-math-test" element={<InteractiveMathTest />} />
                 <Route path="/simple-test" element={<SimpleInteractiveTest />} />
+                <Route path="/reading-demo" element={<ReadingSolutionDemo />} />
                 <Route path="/analytics" element={<Analytics />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/payment" element={
