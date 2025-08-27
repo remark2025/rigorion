@@ -34,7 +34,11 @@ const convertToApiFormat = (questions: Question[]) => {
     examNumber: q.examNumber,
     hint: q.hint || q.explanation,
     graph: q.graph?.url || q.graph,
-    quote: q.quote  // Include the quote field!
+    quote: q.quote,  // Include the quote field!
+    interactiveSolution: q.interactiveSolution,  // 🧮 CRITICAL: Include interactive solution data!
+    solutionSteps: q.solutionSteps,  // Also include solution steps
+    calculatorAllowed: q.calculatorAllowed,  // Include calculator info
+    explanation: q.explanation  // Include explanation
   }));
 };
 

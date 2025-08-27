@@ -2,6 +2,164 @@ import { Question } from "@/types/QuestionInterface";
 
 // Comprehensive sample questions covering all chapters, subjects, and exam numbers
 export const comprehensiveSampleQuestions: Question[] = [
+  // Interactive Math Questions - Chapter 1: Heart of Algebra
+  {
+    id: "MATH-INTERACTIVE-001",
+    number: 0,
+    content: "🧮 INTERACTIVE MATH QUESTION: The graph of y = ax² + bx + c passes through the points (0, 6), (2, -2), and (4, 6). What is the value of the coefficient 'a'?",
+    difficulty: "medium",
+    chapter: "Chapter 1",
+    module: "All SAT Math",
+    bookmarked: false,
+    examNumber: 1,
+    choices: [
+      "a = 1",
+      "a = 2", 
+      "a = -1",
+      "a = 3"
+    ],
+    correctAnswer: "a = 2",
+    explanation: "Using the three given points, we can set up a system of equations to solve for the coefficients.",
+    solutionSteps: [
+      "Substitute point (0, 6): 6 = a(0)² + b(0) + c → c = 6",
+      "Substitute point (2, -2): -2 = a(4) + b(2) + 6 → 4a + 2b = -8",
+      "Substitute point (4, 6): 6 = a(16) + b(4) + 6 → 16a + 4b = 0",
+      "Solve the system: From 16a + 4b = 0, we get b = -4a",
+      "Substitute into 4a + 2b = -8: 4a + 2(-4a) = -8 → 4a - 8a = -8 → -4a = -8 → a = 2"
+    ],
+    solution: "The coefficient a = 2. This creates a parabola that opens upward and passes through all three given points.",
+    hint: "Use the three given points to create a system of three equations with three unknowns (a, b, c).",
+    calculatorAllowed: true,
+    interactiveSolution: {
+      hasInteractiveGraph: true,
+      graphConfig: {
+        type: 'quadratic',
+        xRange: [-1, 5],
+        yRange: [-5, 8],
+        showGrid: true,
+        showAxis: true,
+        title: 'Quadratic Function: y = ax² + bx + c'
+      },
+      parameters: [
+        {
+          name: 'a',
+          label: 'Coefficient a',
+          value: 2,
+          min: -5,
+          max: 5,
+          step: 0.1,
+          description: 'Controls the width and direction of the parabola'
+        },
+        {
+          name: 'b',
+          label: 'Coefficient b', 
+          value: -8,
+          min: -10,
+          max: 10,
+          step: 0.1,
+          description: 'Affects the horizontal position of the vertex'
+        },
+        {
+          name: 'c',
+          label: 'Constant c',
+          value: 6,
+          min: -10,
+          max: 10,
+          step: 0.1,
+          description: 'The y-intercept of the parabola'
+        }
+      ],
+      solutionSteps: [
+        {
+          id: 'step-1',
+          title: 'Use the First Point',
+          description: 'Substitute (0, 6) into y = ax² + bx + c',
+          fromExpression: {
+            latex: 'y = ax^2 + bx + c',
+            display: 'y = ax² + bx + c'
+          },
+          toExpression: {
+            latex: '6 = a(0)^2 + b(0) + c',
+            display: '6 = a(0)² + b(0) + c = c'
+          },
+          explanation: 'When x = 0, all terms with x disappear, leaving only c = 6',
+          hint: 'What happens when you substitute x = 0 into the equation?'
+        },
+        {
+          id: 'step-2',
+          title: 'Use the Second Point',
+          description: 'Substitute (2, -2) into y = ax² + bx + c',
+          fromExpression: {
+            latex: '-2 = a(2)^2 + b(2) + c',
+            display: '-2 = a(2)² + b(2) + c'
+          },
+          toExpression: {
+            latex: '-2 = 4a + 2b + 6',
+            display: '-2 = 4a + 2b + 6 → 4a + 2b = -8'
+          },
+          explanation: 'Substituting and simplifying gives us our first equation with a and b',
+          hint: 'Remember that c = 6 from step 1',
+          interactive: {
+            type: 'input',
+            correctAnswer: '-8'
+          }
+        },
+        {
+          id: 'step-3', 
+          title: 'Use the Third Point',
+          description: 'Substitute (4, 6) into y = ax² + bx + c',
+          fromExpression: {
+            latex: '6 = a(4)^2 + b(4) + c',
+            display: '6 = a(4)² + b(4) + c'
+          },
+          toExpression: {
+            latex: '6 = 16a + 4b + 6',
+            display: '6 = 16a + 4b + 6 → 16a + 4b = 0'
+          },
+          explanation: 'This gives us our second equation with a and b',
+          hint: 'Subtract 6 from both sides'
+        },
+        {
+          id: 'step-4',
+          title: 'Solve the System',
+          description: 'Solve the system: 4a + 2b = -8 and 16a + 4b = 0',
+          fromExpression: {
+            latex: '16a + 4b = 0',
+            display: 'From 16a + 4b = 0, we get b = -4a'
+          },
+          toExpression: {
+            latex: '4a + 2(-4a) = -8',
+            display: '4a + 2(-4a) = -8 → 4a - 8a = -8 → -4a = -8'
+          },
+          explanation: 'Substituting b = -4a into the first equation and solving for a',
+          hint: 'Divide both sides by -4',
+          interactive: {
+            type: 'input',
+            correctAnswer: '2'
+          }
+        },
+        {
+          id: 'step-5',
+          title: 'Final Answer',
+          description: 'Determine the value of coefficient a',
+          fromExpression: {
+            latex: '-4a = -8',
+            display: '-4a = -8'
+          },
+          toExpression: {
+            latex: 'a = 2',
+            display: 'a = 2'
+          },
+          explanation: 'Therefore, the coefficient a = 2, which means the parabola opens upward with this steepness.',
+          hint: 'Divide -8 by -4'
+        }
+      ]
+    },
+    quote: {
+      text: "Mathematics is not about numbers, equations, computations, or algorithms: it is about understanding.",
+      source: "William Paul Thurston"
+    }
+  },
   // Math Questions - Chapter 1: Heart of Algebra
   {
     id: "MATH-001",

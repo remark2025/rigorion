@@ -20,6 +20,9 @@ import PaymentSuccess from "@/pages/PaymentSuccess";
 import Endpoints from "@/pages/Endpoints";
 import StripeTest from "@/pages/StripeTest";
 import Account from "@/pages/Account";
+import InteractiveMathDemo from "@/pages/InteractiveMathDemo";
+import InteractiveMathTest from "@/pages/InteractiveMathTest";
+import SimpleInteractiveTest from "@/pages/SimpleInteractiveTest";
 
 function App() {
   return (
@@ -34,6 +37,9 @@ function App() {
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/practice" element={<Practice />} />
+                <Route path="/interactive-math" element={<InteractiveMathDemo />} />
+                <Route path="/interactive-math-test" element={<InteractiveMathTest />} />
+                <Route path="/simple-test" element={<SimpleInteractiveTest />} />
                 <Route path="/analytics" element={<Analytics />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/payment" element={

@@ -229,7 +229,10 @@ export function mapQuestion(raw: any, index?: number): Question {
     // Enhanced skill tracking fields
     level: questionData.level || questionData.difficulty || "medium",
     exam: questionData.exam || null,
-    topic: questionData.topic || questionData.chapter || null
+    topic: questionData.topic || questionData.chapter || null,
+    
+    // 🧮 CRITICAL: Preserve interactive solution data!
+    interactiveSolution: questionData.interactiveSolution
   };
 
   console.log('[MAPPER] Mapped question with examNumber:', mappedQuestion.examNumber);

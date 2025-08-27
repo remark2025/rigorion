@@ -15,6 +15,10 @@ import { QuestionTracking } from "./QuestionTracking";
 import { PracticeTimer } from "./PracticeTimer";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import InteractiveMathSolution from "@/components/math/InteractiveMathSolution";
+import InteractiveGraph from "@/components/math/InteractiveGraph";
+import SolutionStepBuilder from "@/components/math/SolutionStepBuilder";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface PracticeDisplayProps {
   currentQuestion: Question | null;
@@ -106,6 +110,7 @@ const PracticeDisplay = ({
   const [helpActions, setHelpActions] = useState<string[]>([]);
   const [isBookmarked, setIsBookmarked] = useState<boolean>(false);
   const [questionAttempts, setQuestionAttempts] = useState<Map<string, number>>(new Map());
+  const [solutionSubTab, setSolutionSubTab] = useState<"interactive" | "step-by-step" | "raw">("interactive");
 
   // Reset timer and tracking when question changes
   useEffect(() => {
@@ -120,6 +125,13 @@ const PracticeDisplay = ({
     setAnswerChangeCount(0);
     setHelpActions([]);
     setIsBookmarked(false);
+    
+    // Reset solution sub-tab when question changes - prefer interactive if available, otherwise step-by-step
+    if (currentQuestion?.interactiveSolution) {
+      setSolutionSubTab("interactive");
+    } else {
+      setSolutionSubTab("step-by-step");
+    }
   }, [currentQuestionIndex]);
 
   const selectedAnswer = propSelectedAnswer !== undefined ? propSelectedAnswer : localSelectedAnswer;
@@ -1023,7 +1035,7 @@ Keep the evaluation constructive and educational.`;
                 </>
               )}
 
-              {/* Solution Section */}
+              {/* Solution Section with Sub-Tabs */}
               {activeTab === 'solution' && (
                 <>
                   <h3 className={`text-sm font-semibold mb-3 ${
@@ -1031,17 +1043,117 @@ Keep the evaluation constructive and educational.`;
                   }`}>
                     💡 Solution & Explanation
                   </h3>
-                  <TypingAnimation
-                    text={formatSolution(currentQuestion)}
-                    speed={8}
-                    isHTML={true}
-                    className="whitespace-pre-wrap text-sm leading-relaxed"
-                    style={{
-                      ...contentTextStyle,
-                      fontSize: `${displaySettings.fontSize - 1}px`,
-                      color: isDarkMode ? '#ffffff' : contentTextStyle.color
-                    }}
-                  />
+                  
+                  <Tabs value={solutionSubTab} onValueChange={(value) => setSolutionSubTab(value as any)} className="w-full">
+                    <TabsList className="grid w-full grid-cols-3 mb-4">
+                      <TabsTrigger 
+                        value="interactive" 
+                        disabled={!currentQuestion.interactiveSolution}
+                        className="text-xs"
+                      >
+                        🧮 Interactive
+                      </TabsTrigger>
+                      <TabsTrigger value="step-by-step" className="text-xs">
+                        📚 Step-by-Step
+                      </TabsTrigger>
+                      <TabsTrigger value="raw" className="text-xs">
+                        📄 Raw Solution
+                      </TabsTrigger>
+                    </TabsList>
+                    
+                    <TabsContent value="interactive" className="mt-0">
+                      {currentQuestion.interactiveSolution ? (
+                        <div className="space-y-4">
+                          {/* Interactive Graph */}
+                          {currentQuestion.interactiveSolution.hasInteractiveGraph && (
+                            <InteractiveGraph
+                              equation="y = ax² + bx + c"
+                              parameters={currentQuestion.interactiveSolution.parameters || []}
+                              config={currentQuestion.interactiveSolution.graphConfig || {
+                                type: 'linear',
+                                xRange: [-5, 5],
+                                yRange: [-5, 5],
+                                showGrid: true,
+                                showAxis: true,
+                                title: 'Interactive Graph'
+                              }}
+                              onParameterChange={(params) => console.log('Parameters changed:', params)}
+                            />
+                          )}
+                          
+                          {/* Step Builder for Interactive */}
+                          {currentQuestion.interactiveSolution.solutionSteps && (
+                            <SolutionStepBuilder
+                              steps={currentQuestion.interactiveSolution.solutionSteps}
+                              title="Interactive Solution Steps"
+                              onStepComplete={(stepId, isCorrect) => console.log('Step completed:', stepId, isCorrect)}
+                              onAllStepsComplete={() => console.log('All steps completed!')}
+                              showHints={true}
+                            />
+                          )}
+                        </div>
+                      ) : (
+                        <div className={`text-center p-6 rounded-lg ${
+                          isDarkMode ? 'bg-gray-800 text-gray-400' : 'bg-gray-50 text-gray-600'
+                        }`}>
+                          <p>🔧 Interactive solution not available for this question</p>
+                          <p className="text-xs mt-2">Try the Step-by-Step or Raw Solution tabs</p>
+                        </div>
+                      )}
+                    </TabsContent>
+                    
+                    <TabsContent value="step-by-step" className="mt-0">
+                      {currentQuestion.solutionSteps && currentQuestion.solutionSteps.length > 0 ? (
+                        <SolutionStepBuilder
+                          steps={currentQuestion.solutionSteps.map((step, index) => ({
+                            id: `step-${index + 1}`,
+                            title: `Step ${index + 1}`,
+                            description: '',
+                            fromExpression: { latex: '', display: step },
+                            toExpression: { latex: '', display: '' },
+                            explanation: step,
+                            hint: `This is step ${index + 1} of the solution`
+                          }))}
+                          title="Step-by-Step Solution"
+                          onStepComplete={(stepId, isCorrect) => console.log('Step completed:', stepId, isCorrect)}
+                          onAllStepsComplete={() => console.log('All steps completed!')}
+                          showHints={true}
+                        />
+                      ) : (
+                        <div className="space-y-4">
+                          <TypingAnimation
+                            text={formatSolution(currentQuestion)}
+                            speed={8}
+                            isHTML={true}
+                            className="whitespace-pre-wrap text-sm leading-relaxed"
+                            style={{
+                              ...contentTextStyle,
+                              fontSize: `${displaySettings.fontSize - 1}px`,
+                              color: isDarkMode ? '#ffffff' : contentTextStyle.color
+                            }}
+                          />
+                        </div>
+                      )}
+                    </TabsContent>
+                    
+                    <TabsContent value="raw" className="mt-0">
+                      <div className={`p-4 rounded-lg border ${
+                        isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-50 border-gray-200'
+                      }`}>
+                        <TypingAnimation
+                          text={formatSolution(currentQuestion)}
+                          speed={8}
+                          isHTML={true}
+                          className="whitespace-pre-wrap text-sm leading-relaxed"
+                          style={{
+                            ...contentTextStyle,
+                            fontSize: `${displaySettings.fontSize - 1}px`,
+                            color: isDarkMode ? '#ffffff' : contentTextStyle.color
+                          }}
+                        />
+                      </div>
+                    </TabsContent>
+                  </Tabs>
                 </>
               )}
 
@@ -1352,17 +1464,117 @@ Keep the evaluation constructive and educational.`;
                     }`}>
                       💡 Solution & Explanation
                     </h3>
-                    <TypingAnimation
-                      text={formatSolution(currentQuestion)}
-                      speed={8}
-                      isHTML={true}
-                      className="whitespace-pre-wrap text-sm leading-relaxed"
-                      style={{
-                        ...contentTextStyle,
-                        fontSize: `${displaySettings.fontSize - 1}px`,
-                        color: isDarkMode ? '#ffffff' : contentTextStyle.color
-                      }}
-                    />
+                    
+                    <Tabs value={solutionSubTab} onValueChange={(value) => setSolutionSubTab(value as any)} className="w-full">
+                      <TabsList className="grid w-full grid-cols-3 mb-4">
+                        <TabsTrigger 
+                          value="interactive" 
+                          disabled={!currentQuestion.interactiveSolution}
+                          className="text-xs"
+                        >
+                          🧮 Interactive
+                        </TabsTrigger>
+                        <TabsTrigger value="step-by-step" className="text-xs">
+                          📚 Step-by-Step
+                        </TabsTrigger>
+                        <TabsTrigger value="raw" className="text-xs">
+                          📄 Raw Solution
+                        </TabsTrigger>
+                      </TabsList>
+                      
+                      <TabsContent value="interactive" className="mt-0">
+                        {currentQuestion.interactiveSolution ? (
+                          <div className="space-y-4">
+                            {/* Interactive Graph */}
+                            {currentQuestion.interactiveSolution.hasInteractiveGraph && (
+                              <InteractiveGraph
+                                equation="y = ax² + bx + c"
+                                parameters={currentQuestion.interactiveSolution.parameters || []}
+                                config={currentQuestion.interactiveSolution.graphConfig || {
+                                  type: 'linear',
+                                  xRange: [-5, 5],
+                                  yRange: [-5, 5],
+                                  showGrid: true,
+                                  showAxis: true,
+                                  title: 'Interactive Graph'
+                                }}
+                                onParameterChange={(params) => console.log('Parameters changed:', params)}
+                              />
+                            )}
+                            
+                            {/* Step Builder for Interactive */}
+                            {currentQuestion.interactiveSolution.solutionSteps && (
+                              <SolutionStepBuilder
+                                steps={currentQuestion.interactiveSolution.solutionSteps}
+                                title="Interactive Solution Steps"
+                                onStepComplete={(stepId, isCorrect) => console.log('Step completed:', stepId, isCorrect)}
+                                onAllStepsComplete={() => console.log('All steps completed!')}
+                                showHints={true}
+                              />
+                            )}
+                          </div>
+                        ) : (
+                          <div className={`text-center p-6 rounded-lg ${
+                            isDarkMode ? 'bg-gray-800 text-gray-400' : 'bg-gray-50 text-gray-600'
+                          }`}>
+                            <p>🔧 Interactive solution not available for this question</p>
+                            <p className="text-xs mt-2">Try the Step-by-Step or Raw Solution tabs</p>
+                          </div>
+                        )}
+                      </TabsContent>
+                      
+                      <TabsContent value="step-by-step" className="mt-0">
+                        {currentQuestion.solutionSteps && currentQuestion.solutionSteps.length > 0 ? (
+                          <SolutionStepBuilder
+                            steps={currentQuestion.solutionSteps.map((step, index) => ({
+                              id: `step-${index + 1}`,
+                              title: `Step ${index + 1}`,
+                              description: '',
+                              fromExpression: { latex: '', display: step },
+                              toExpression: { latex: '', display: '' },
+                              explanation: step,
+                              hint: `This is step ${index + 1} of the solution`
+                            }))}
+                            title="Step-by-Step Solution"
+                            onStepComplete={(stepId, isCorrect) => console.log('Step completed:', stepId, isCorrect)}
+                            onAllStepsComplete={() => console.log('All steps completed!')}
+                            showHints={true}
+                          />
+                        ) : (
+                          <div className="space-y-4">
+                            <TypingAnimation
+                              text={formatSolution(currentQuestion)}
+                              speed={8}
+                              isHTML={true}
+                              className="whitespace-pre-wrap text-sm leading-relaxed"
+                              style={{
+                                ...contentTextStyle,
+                                fontSize: `${displaySettings.fontSize - 1}px`,
+                                color: isDarkMode ? '#ffffff' : contentTextStyle.color
+                              }}
+                            />
+                          </div>
+                        )}
+                      </TabsContent>
+                      
+                      <TabsContent value="raw" className="mt-0">
+                        <div className={`p-4 rounded-lg border ${
+                          isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-50 border-gray-200'
+                        }`}>
+                          <TypingAnimation
+                            text={formatSolution(currentQuestion)}
+                            speed={8}
+                            isHTML={true}
+                            className="whitespace-pre-wrap text-sm leading-relaxed"
+                            style={{
+                              ...contentTextStyle,
+                              fontSize: `${displaySettings.fontSize - 1}px`,
+                              color: isDarkMode ? '#ffffff' : contentTextStyle.color
+                            }}
+                          />
+                        </div>
+                      </TabsContent>
+                    </Tabs>
                   </>
                 )}
                 {activeTab === 'quote' && (
@@ -1682,17 +1894,117 @@ Keep the evaluation constructive and educational.`;
                     }`}>
                       💡 Solution & Explanation
                     </h3>
-                    <TypingAnimation
-                      text={formatSolution(currentQuestion)}
-                      speed={8}
-                      isHTML={true}
-                      className="whitespace-pre-wrap text-sm leading-relaxed"
-                      style={{
-                        ...contentTextStyle,
-                        fontSize: `${displaySettings.fontSize - 1}px`,
-                        color: isDarkMode ? '#ffffff' : contentTextStyle.color
-                      }}
-                    />
+                    
+                    <Tabs value={solutionSubTab} onValueChange={(value) => setSolutionSubTab(value as any)} className="w-full">
+                      <TabsList className="grid w-full grid-cols-3 mb-4">
+                        <TabsTrigger 
+                          value="interactive" 
+                          disabled={!currentQuestion.interactiveSolution}
+                          className="text-xs"
+                        >
+                          🧮 Interactive
+                        </TabsTrigger>
+                        <TabsTrigger value="step-by-step" className="text-xs">
+                          📚 Step-by-Step
+                        </TabsTrigger>
+                        <TabsTrigger value="raw" className="text-xs">
+                          📄 Raw Solution
+                        </TabsTrigger>
+                      </TabsList>
+                      
+                      <TabsContent value="interactive" className="mt-0">
+                        {currentQuestion.interactiveSolution ? (
+                          <div className="space-y-4">
+                            {/* Interactive Graph */}
+                            {currentQuestion.interactiveSolution.hasInteractiveGraph && (
+                              <InteractiveGraph
+                                equation="y = ax² + bx + c"
+                                parameters={currentQuestion.interactiveSolution.parameters || []}
+                                config={currentQuestion.interactiveSolution.graphConfig || {
+                                  type: 'linear',
+                                  xRange: [-5, 5],
+                                  yRange: [-5, 5],
+                                  showGrid: true,
+                                  showAxis: true,
+                                  title: 'Interactive Graph'
+                                }}
+                                onParameterChange={(params) => console.log('Parameters changed:', params)}
+                              />
+                            )}
+                            
+                            {/* Step Builder for Interactive */}
+                            {currentQuestion.interactiveSolution.solutionSteps && (
+                              <SolutionStepBuilder
+                                steps={currentQuestion.interactiveSolution.solutionSteps}
+                                title="Interactive Solution Steps"
+                                onStepComplete={(stepId, isCorrect) => console.log('Step completed:', stepId, isCorrect)}
+                                onAllStepsComplete={() => console.log('All steps completed!')}
+                                showHints={true}
+                              />
+                            )}
+                          </div>
+                        ) : (
+                          <div className={`text-center p-6 rounded-lg ${
+                            isDarkMode ? 'bg-gray-800 text-gray-400' : 'bg-gray-50 text-gray-600'
+                          }`}>
+                            <p>🔧 Interactive solution not available for this question</p>
+                            <p className="text-xs mt-2">Try the Step-by-Step or Raw Solution tabs</p>
+                          </div>
+                        )}
+                      </TabsContent>
+                      
+                      <TabsContent value="step-by-step" className="mt-0">
+                        {currentQuestion.solutionSteps && currentQuestion.solutionSteps.length > 0 ? (
+                          <SolutionStepBuilder
+                            steps={currentQuestion.solutionSteps.map((step, index) => ({
+                              id: `step-${index + 1}`,
+                              title: `Step ${index + 1}`,
+                              description: '',
+                              fromExpression: { latex: '', display: step },
+                              toExpression: { latex: '', display: '' },
+                              explanation: step,
+                              hint: `This is step ${index + 1} of the solution`
+                            }))}
+                            title="Step-by-Step Solution"
+                            onStepComplete={(stepId, isCorrect) => console.log('Step completed:', stepId, isCorrect)}
+                            onAllStepsComplete={() => console.log('All steps completed!')}
+                            showHints={true}
+                          />
+                        ) : (
+                          <div className="space-y-4">
+                            <TypingAnimation
+                              text={formatSolution(currentQuestion)}
+                              speed={8}
+                              isHTML={true}
+                              className="whitespace-pre-wrap text-sm leading-relaxed"
+                              style={{
+                                ...contentTextStyle,
+                                fontSize: `${displaySettings.fontSize - 1}px`,
+                                color: isDarkMode ? '#ffffff' : contentTextStyle.color
+                              }}
+                            />
+                          </div>
+                        )}
+                      </TabsContent>
+                      
+                      <TabsContent value="raw" className="mt-0">
+                        <div className={`p-4 rounded-lg border ${
+                          isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-50 border-gray-200'
+                        }`}>
+                          <TypingAnimation
+                            text={formatSolution(currentQuestion)}
+                            speed={8}
+                            isHTML={true}
+                            className="whitespace-pre-wrap text-sm leading-relaxed"
+                            style={{
+                              ...contentTextStyle,
+                              fontSize: `${displaySettings.fontSize - 1}px`,
+                              color: isDarkMode ? '#ffffff' : contentTextStyle.color
+                            }}
+                          />
+                        </div>
+                      </TabsContent>
+                    </Tabs>
                   </>
                 )}
                 {activeTab === 'quote' && (

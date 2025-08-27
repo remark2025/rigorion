@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Hero } from "@/components/landing/Hero";
+import { UniversityLogos } from "@/components/landing/UniversityLogos";
 import { PartnerLogos } from "@/components/landing/PartnerLogos";
 import { PrinciplesSection } from "@/components/landing/PrinciplesSection";
 import { ComparisonTable } from "@/components/landing/ComparisonTable";
@@ -19,6 +20,7 @@ const Index = () => {
       
       <main className="flex-grow">
         <Hero />
+        <UniversityLogos />
         <PartnerLogos />
         <PrinciplesSection />
         <ComparisonTable />

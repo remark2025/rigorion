@@ -36,6 +36,51 @@ export interface Question {
     level?: "easy" | "medium" | "difficult" | "hard";
     exam?: number | null; // From enhanced content pack
     topic?: string;
+    
+    // Interactive math solution features
+    interactiveSolution?: {
+        hasInteractiveGraph?: boolean;
+        graphConfig?: {
+            type: 'quadratic' | 'linear' | 'exponential' | 'absolute' | 'polynomial';
+            xRange: [number, number];
+            yRange: [number, number];
+            showGrid: boolean;
+            showAxis: boolean;
+            title: string;
+        };
+        parameters?: Array<{
+            name: string;
+            label: string;
+            value: number;
+            min: number;
+            max: number;
+            step: number;
+            description: string;
+        }>;
+        solutionSteps?: Array<{
+            id: string;
+            title: string;
+            description: string;
+            fromExpression: {
+                latex: string;
+                display: string;
+                editable?: boolean;
+                placeholder?: string;
+            };
+            toExpression: {
+                latex: string;
+                display: string;
+            };
+            explanation: string;
+            hint?: string;
+            interactive?: {
+                type: 'fill-blank' | 'drag-drop' | 'multiple-choice' | 'input';
+                options?: string[];
+                blanks?: string[];
+                correctAnswer?: string;
+            };
+        }>;
+    };
 }
 
 export default interface QuestionInterface {} // Or remove if unnecessary
