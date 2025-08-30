@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Target, Navigation, ChevronDown, LogOut, Filter, BookOpen, Clock, User, Users, BarChart, Menu, Settings, Timer, TrendingUp, Hand, Coffee, GraduationCap, Type } from "lucide-react";
+import { Target, Navigation, ChevronDown, LogOut, Filter, BookOpen, Clock, User, Users, BarChart, Menu, Settings, Timer, TrendingUp, Hand, Coffee, GraduationCap, Type, CheckCircle, BookMarked } from "lucide-react";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -31,6 +31,8 @@ interface PracticeHeaderProps {
     textColor: string;
   };
   onSettingsChange?: (key: string, value: string | number) => void;
+  activeTab?: "problem" | "solution" | "quote";
+  setActiveTab?: (tab: "problem" | "solution" | "quote") => void;
 }
 
 export const PracticeHeader = ({ 
@@ -47,7 +49,9 @@ export const PracticeHeader = ({
     colorStyle: 'plain',
     textColor: '#374151'
   },
-  onSettingsChange
+  onSettingsChange,
+  activeTab,
+  setActiveTab
 }: PracticeHeaderProps) => {
   const navigate = useNavigate();
   const { user, profile, signOut } = useAuth();
@@ -250,16 +254,29 @@ export const PracticeHeader = ({
   };
 
   return (
-    <header className={`fixed top-0 left-0 right-0 w-full z-50 border-b px-1 sm:px-2 md:px-4 py-2 sm:py-3 flex items-center justify-between shadow-sm transition-all duration-300 overflow-hidden ${
+    <header className={`fixed top-0 left-0 right-0 w-full z-50 border-b shadow-sm transition-all duration-300 ${
       isDarkMode ? 'bg-gray-900 border-green-500/30' : 'bg-white border-gray-200'
     }`}>
+      {/* Timer Row - Top of header */}
+      <div className="flex items-center justify-center py-1 border-b border-gray-200">
+        <div className="flex items-center gap-2 px-3 py-1 bg-gray-100 rounded-full">
+          <Timer className="h-4 w-4 text-blue-600" />
+          <span className="text-sm font-mono font-semibold text-gray-700">
+            {/* Timer will be passed from parent */}
+            00:00
+          </span>
+        </div>
+      </div>
+      
+      {/* Main Header Content */}
+      <div className="px-1 sm:px-2 md:px-4 py-2 sm:py-3 flex items-center justify-between">
       <div className="flex items-center gap-1 sm:gap-2">
         {/* Mobile Hamburger Menu */}
         <Button
           variant="ghost"
           size="icon"
           onClick={onToggleSidebar}
-          className={`lg:hidden rounded-lg ${
+          className={`lg:hidden rounded-lg transition-all duration-200 ease-out hover:scale-105 active:scale-95 ${
             isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
           }`}
         >
@@ -270,21 +287,21 @@ export const PracticeHeader = ({
 
         {/* Desktop Navigation Dropdown */}
         <DropdownMenu open={isNavDropdownOpen} onOpenChange={setIsNavDropdownOpen}>
-          <DropdownMenuTrigger className={`hidden lg:block rounded-lg p-2 transition-colors ${
+          <DropdownMenuTrigger className={`hidden lg:block rounded-lg p-2 transition-all duration-200 ease-out hover:scale-105 active:scale-95 ${
             isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
           }`}>
             <Navigation className={`h-5 w-5 ${
               isDarkMode ? 'text-gray-400' : 'text-gray-500'
             }`} />
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className={`w-56 shadow-lg rounded-lg p-2 z-50 ${
+          <DropdownMenuContent align="start" className={`w-56 shadow-xl rounded-lg p-2 z-[60] absolute ${
             isDarkMode ? 'bg-gray-900 border-green-500/30' : 'bg-white border-gray-200'
-          }`}>
+          }`} sideOffset={5}>
             <ScrollArea className="h-auto max-h-[300px]">
               {pages.map((page, index) => (
                 <DropdownMenuItem 
                   key={index}
-                  className={`cursor-pointer py-2 rounded-sm transition-colors flex items-center ${
+                  className={`cursor-pointer py-2 rounded-sm transition-all duration-200 ease-out hover:scale-[1.02] active:scale-[0.98] flex items-center ${
                     isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
                   }`}
                   onClick={() => handleNavigation(page.path)}
@@ -296,15 +313,61 @@ export const PracticeHeader = ({
             </ScrollArea>
           </DropdownMenuContent>
         </DropdownMenu>
-        <div className="flex items-center">
-          <h1 className="text-base sm:text-lg font-semibold tracking-wide bg-gradient-to-r from-gray-300 via-blue-400 to-blue-500 bg-clip-text text-transparent">
-            SAT
-            <span className="text-[8px] font-bold text-gray-400 border border-gray-300 rounded-full w-2.5 h-2.5 inline-flex items-center justify-center leading-none ml-0.5 mr-1 align-top">
-              ®
-            </span>
-            Premium
-          </h1>
-        </div>
+        
+        {/* Tab Menu - Centered */}
+        {activeTab && setActiveTab && (
+          <div className="hidden lg:flex items-center">
+            <div className={`inline-flex items-center rounded-full px-2 py-1 border ${
+              isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-50 border-gray-200'
+            }`}>
+              <Button
+                variant="ghost"
+                size="sm"
+                className={`px-3 py-1 rounded-full transition-all duration-200 ease-out hover:scale-105 active:scale-95 h-6 text-xs ${activeTab === "problem" 
+                  ? isDarkMode 
+                    ? "text-green-400 bg-gray-700 shadow-sm" 
+                    : "text-blue-600 bg-blue-100 shadow-sm"
+                  : isDarkMode
+                    ? "text-gray-400 hover:text-green-300 hover:bg-gray-700"
+                    : "text-gray-500 hover:text-blue-600 hover:bg-blue-50"}`}
+                onClick={() => setActiveTab("problem")}
+              >
+                <Target className="h-3 w-3 mr-1" />
+                Problem
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className={`px-3 py-1 rounded-full transition-all duration-200 ease-out hover:scale-105 active:scale-95 h-6 text-xs ${activeTab === "solution" 
+                  ? isDarkMode 
+                    ? "text-green-400 bg-gray-700 shadow-sm" 
+                    : "text-blue-600 bg-blue-100 shadow-sm"
+                  : isDarkMode
+                    ? "text-gray-400 hover:text-green-300 hover:bg-gray-700"
+                    : "text-gray-500 hover:text-blue-600 hover:bg-blue-50"}`}
+                onClick={() => setActiveTab("solution")}
+              >
+                <CheckCircle className="h-3 w-3 mr-1" />
+                Solution
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                className={`px-3 py-1 rounded-full transition-all duration-200 ease-out hover:scale-105 active:scale-95 h-6 text-xs ${activeTab === "quote" 
+                  ? isDarkMode 
+                    ? "text-green-400 bg-gray-700 shadow-sm" 
+                    : "text-blue-600 bg-blue-100 shadow-sm"
+                  : isDarkMode
+                    ? "text-gray-400 hover:text-green-300 hover:bg-gray-700"
+                    : "text-gray-500 hover:text-blue-600 hover:bg-blue-50"}`}
+                onClick={() => setActiveTab("quote")}
+              >
+                <BookMarked className="h-3 w-3 mr-1" />
+                Idea
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
       
       <div className="flex items-center gap-1 sm:gap-2 overflow-hidden">
@@ -582,6 +645,7 @@ export const PracticeHeader = ({
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
+      </div>
       </div>
     </header>
   );

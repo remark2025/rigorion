@@ -685,23 +685,26 @@ Keep the evaluation constructive and educational.`;
       <div className="flex flex-col space-y-4">
         
         {/* Desktop: Clean SAT Layout */}
-        <div className="hidden lg:flex gap-4">
+        <div className="hidden lg:flex gap-6">
           
           {/* Column 1: Question + Answer Choices */}
           <div className={`${
-            activeTab === 'problem' ? 'w-full' : 'w-3/5'
+            activeTab === 'problem' ? 'w-full' : 'w-1/2'
           } bg-white p-8`}>
           
-          {/* Timer - Positioned above question header */}
-          <PracticeTimer 
+          {/* SAT Question Header with Timer and Navigation */}
+          <QuestionHeader 
+            questionNumber={currentQuestion.number} 
+            chapter={currentQuestion.chapter}
             timerValue={timerValue}
             mode={mode}
+            onNext={onNext}
+            onPrev={onPrev}
+            currentQuestionIndex={currentQuestionIndex}
+            totalQuestions={totalQuestions}
           />
           
-          {/* SAT Question Header - Authentic Style */}
-          <QuestionHeader questionNumber={currentQuestion.number} chapter={currentQuestion.chapter} />
-          
-          {/* Question Tracking and Action Icons - Inline Row */}
+          {/* Question Tracking and Action Icons Row */}
           <div className="mb-3 flex items-center justify-between">
             {/* Left: Question Tracking */}
             <QuestionTracking
@@ -715,19 +718,19 @@ Keep the evaluation constructive and educational.`;
             {/* Right: Action Icons */}
             <div className="flex items-center gap-2">
               <HintDialog hint={currentQuestion.hint} currentQuestionIndex={currentQuestionIndex} />
-              <Button variant="ghost" size="sm" className="p-1 h-8 w-8 rounded hover:bg-gray-100">
+              <Button variant="ghost" size="sm" className="p-1 h-8 w-8 rounded hover:bg-gray-100 transition-all duration-300 ease-out hover:scale-105 active:scale-95">
                 <Flag className="h-4 w-4 text-blue-600" />
               </Button>
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="p-1 h-8 w-8 rounded hover:bg-gray-100"
+                className="p-1 h-8 w-8 rounded hover:bg-gray-100 transition-all duration-300 ease-out hover:scale-105 active:scale-95"
                 onClick={trackBookmark}
               >
                 <Bookmark className={`h-4 w-4 ${isBookmarked ? 'text-yellow-500 fill-yellow-500' : 'text-blue-600'}`} />
               </Button>
               {/* Calculator Icon */}
-              <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full">
+              <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full transition-all duration-300 ease-out hover:scale-105 active:scale-95">
                 {currentQuestion.calculatorAllowed ? (
                   <Calculator className="h-3 w-3 text-blue-500" />
                 ) : (
@@ -742,7 +745,7 @@ Keep the evaluation constructive and educational.`;
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="p-1 h-6 w-6 rounded-full"
+                className="p-1 h-6 w-6 rounded-full transition-all duration-300 ease-out hover:scale-105 active:scale-95"
                 onClick={() => setShowInteractionLog(!showInteractionLog)}
               >
                 <FileText className="h-3 w-3 text-purple-500" />
@@ -876,7 +879,7 @@ Keep the evaluation constructive and educational.`;
                         <Button
                           key={index}
                           variant="outline"
-                          className={`w-full h-auto min-h-[30px] rounded-full px-2 py-1.5 text-center justify-center transition-all duration-200 ${buttonStyle} ${animationClass}`}
+                          className={`w-full h-auto min-h-[30px] rounded-full px-2 py-1.5 text-center justify-center transition-all duration-300 ease-out hover:scale-105 active:scale-95 ${buttonStyle} ${animationClass}`}
                           onClick={() => checkAnswer(choiceKey)}
                           disabled={!!selectedAnswer}
                           style={{ 
@@ -972,11 +975,11 @@ Keep the evaluation constructive and educational.`;
         </div>
 
 
-        {/* Column 3: Passage for Reading Questions OR Solution/Key Idea */}
+        {/* Column 2: Passage for Reading Questions OR Solution/Key Idea - 25% wider */}
         {(hasPassage || activeTab !== 'problem') && (
           <div className={`${
-            hasGraph ? 'w-2/5' : 'w-2/5'
-          } bg-white p-8 relative`}>
+            hasGraph ? 'w-1/2' : 'w-1/2'
+          } bg-white p-8 relative overflow-y-auto max-h-[calc(100vh-200px)]`}>
             
             {/* Vertical Spacer for side-by-side layout */}
             <div className="absolute left-0 top-4 bottom-4 flex items-center">
@@ -1194,16 +1197,19 @@ Keep the evaluation constructive and educational.`;
               isDarkMode ? 'bg-gray-900' : 'bg-white'
             }`} style={{ backgroundColor: isDarkMode ? undefined : boardColor }}>
               
-              {/* Timer - Positioned above question header */}
-              <PracticeTimer 
+              {/* SAT Question Header with Timer and Navigation */}
+              <QuestionHeader 
+                questionNumber={currentQuestion.number} 
+                chapter={currentQuestion.chapter}
                 timerValue={timerValue}
                 mode={mode}
+                onNext={onNext}
+                onPrev={onPrev}
+                currentQuestionIndex={currentQuestionIndex}
+                totalQuestions={totalQuestions}
               />
               
-              {/* SAT Question Header - Authentic Style */}
-              <QuestionHeader questionNumber={currentQuestion.number} chapter={currentQuestion.chapter} />
-              
-              {/* Question Tracking and Action Icons - Inline Row */}
+              {/* Question Tracking and Action Icons Row */}
               <div className="mb-3 flex items-center justify-between">
                 {/* Left: Question Tracking */}
                 <QuestionTracking
@@ -1217,14 +1223,14 @@ Keep the evaluation constructive and educational.`;
                 {/* Right: Action Icons */}
                 <div className="flex items-center gap-1">
                   <HintDialog hint={currentQuestion.hint} currentQuestionIndex={currentQuestionIndex} />
-                  <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full">
+                  <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full transition-all duration-300 ease-out hover:scale-105 active:scale-95">
                     <Flag className="h-3 w-3 text-blue-600" />
                   </Button>
-                  <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full">
+                  <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full transition-all duration-300 ease-out hover:scale-105 active:scale-95">
                     <Bookmark className="h-3 w-3 text-blue-600" />
                   </Button>
                   {/* Calculator Icon */}
-                  <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full">
+                  <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full transition-all duration-300 ease-out hover:scale-105 active:scale-95">
                     {currentQuestion.calculatorAllowed ? (
                       <Calculator className="h-3 w-3 text-blue-500" />
                     ) : (
@@ -1239,7 +1245,7 @@ Keep the evaluation constructive and educational.`;
                   <Button 
                     variant="ghost" 
                     size="sm" 
-                    className="p-1 h-6 w-6 rounded-full"
+                    className="p-1 h-6 w-6 rounded-full transition-all duration-300 ease-out hover:scale-105 active:scale-95"
                     onClick={() => setShowInteractionLog(!showInteractionLog)}
                   >
                     <FileText className="h-3 w-3 text-purple-500" />
@@ -1341,7 +1347,7 @@ Keep the evaluation constructive and educational.`;
                             <Button
                               key={index}
                               variant="outline"
-                              className={`w-full h-auto min-h-[48px] rounded-md p-4 text-left justify-start transition-colors ${buttonStyle}`}
+                              className={`w-full h-auto min-h-[48px] rounded-md p-4 text-left justify-start transition-all duration-300 ease-out hover:scale-[1.02] active:scale-[0.98] ${buttonStyle}`}
                               onClick={() => checkAnswer(choiceKey)}
                               disabled={!!selectedAnswer}
                               style={{
@@ -1607,16 +1613,19 @@ Keep the evaluation constructive and educational.`;
           <div className={`rounded-lg p-4 transition-colors ${
             isDarkMode ? 'bg-gray-900' : 'bg-white'
           }`} style={{ backgroundColor: isDarkMode ? undefined : boardColor }}>
-            {/* Timer - Positioned above question header */}
-            <PracticeTimer 
+            {/* SAT Question Header with Timer and Navigation */}
+            <QuestionHeader 
+              questionNumber={currentQuestion.number} 
+              chapter={currentQuestion.chapter}
               timerValue={timerValue}
               mode={mode}
+              onNext={onNext}
+              onPrev={onPrev}
+              currentQuestionIndex={currentQuestionIndex}
+              totalQuestions={totalQuestions}
             />
             
-            {/* SAT Question Header - Authentic Style */}
-            <QuestionHeader questionNumber={currentQuestion.number} chapter={currentQuestion.chapter} />
-            
-            {/* Question Tracking and Action Icons - Inline Row */}
+            {/* Question Tracking and Action Icons Row */}
             <div className="mb-3 flex items-center justify-between">
               {/* Left: Question Tracking */}
               <QuestionTracking
@@ -1630,14 +1639,14 @@ Keep the evaluation constructive and educational.`;
               {/* Right: Action Icons */}
               <div className="flex items-center gap-1">
                 <HintDialog hint={currentQuestion.hint} currentQuestionIndex={currentQuestionIndex} />
-                <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full">
+                <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full transition-all duration-300 ease-out hover:scale-105 active:scale-95">
                   <Flag className="h-3 w-3 text-blue-600" />
                 </Button>
-                <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full">
+                <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full transition-all duration-300 ease-out hover:scale-105 active:scale-95">
                   <Bookmark className="h-3 w-3 text-blue-600" />
                 </Button>
                 {/* Calculator Icon */}
-                <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full">
+                <Button variant="ghost" size="sm" className="p-1 h-6 w-6 rounded-full transition-all duration-300 ease-out hover:scale-105 active:scale-95">
                   {currentQuestion.calculatorAllowed ? (
                     <Calculator className="h-3 w-3 text-blue-500" />
                   ) : (
@@ -1652,7 +1661,7 @@ Keep the evaluation constructive and educational.`;
                 <Button 
                   variant="ghost" 
                   size="sm" 
-                  className="p-1 h-6 w-6 rounded-full"
+                  className="p-1 h-6 w-6 rounded-full transition-all duration-300 ease-out hover:scale-105 active:scale-95"
                   onClick={() => setShowInteractionLog(!showInteractionLog)}
                 >
                   <FileText className="h-3 w-3 text-purple-500" />
@@ -1773,7 +1782,7 @@ Keep the evaluation constructive and educational.`;
                           <Button
                             key={index}
                             variant="outline"
-                            className={`w-full h-auto min-h-[48px] rounded-md p-4 text-left justify-start transition-colors ${buttonStyle}`}
+                            className={`w-full h-auto min-h-[48px] rounded-md p-4 text-left justify-start transition-all duration-300 ease-out hover:scale-[1.02] active:scale-[0.98] ${buttonStyle}`}
                             onClick={() => checkAnswer(choiceKey)}
                             disabled={!!selectedAnswer}
                             style={{
@@ -2032,6 +2041,7 @@ Keep the evaluation constructive and educational.`;
         </div>
 
       </div>
+
 
       {/* Interactions Log Display */}
       {showInteractionLog && (

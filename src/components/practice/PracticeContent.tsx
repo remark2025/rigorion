@@ -575,34 +575,15 @@ export default function PracticeContent({
         onFilterChange={handleFilterChange}
         settings={propSettings}
         onSettingsChange={onSettingsChange}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
       />
 
-      <PracticeProgress 
-          correctAnswers={correctAnswers} 
-          incorrectAnswers={incorrectAnswers} 
-          totalQuestions={filteredQuestions.length} 
-          timerDuration={timerDuration} 
-          isTimerActive={isTimerActive} 
-          handleTimerComplete={handleTimerComplete} 
-          mode={mode} 
-          timeRemaining={timeRemaining} 
-          setTimeRemaining={setTimeRemaining} 
-          activeTab={activeTab} 
-          setActiveTab={setActiveTab} 
-          currentQuestionIndex={currentQuestionIndex} 
-          objective={objective} 
-          progress={progress} 
-          onAutoNext={nextQuestion}
-          onPomodoroBreak={handlePomodoroBreak}
-          settings={displaySettings}
-          onSettingsChange={onSettingsChange}
-          interactions={interactions}
-        />
 
       {/* Sidebar - Mobile and Desktop */}
       {sidebarOpen && <Sidebar onClose={() => setSidebarOpen(false)} />}
 
-      <div className="flex max-w-full mx-auto w-full flex-grow py-1 sm:py-2 md:py-3 px-1 sm:px-2 md:px-4 lg:px-0 pb-20 sm:pb-24 pt-28 sm:pt-32 md:pt-36">
+      <div className="flex max-w-full mx-auto w-full flex-grow py-1 sm:py-2 md:py-3 px-1 sm:px-2 md:px-4 lg:px-0 pb-20 sm:pb-24 pt-24 sm:pt-26 md:pt-28">
         {currentQuestion ? (
           <PracticeDisplay 
             currentQuestion={currentQuestion} 

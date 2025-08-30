@@ -7,24 +7,25 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RefreshCw, Play, Pause, RotateCcw, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { COMPONENT_THEMES, PROFESSIONAL_COLORS } from '@/utils/professionalColors';
 
-// Trademark Color Scheme - SAT Math Signature
-const TRADEMARK_COLORS = {
-  primary: '#6366F1',      // Vibrant indigo - main curve
-  secondary: '#8B5CF6',    // Purple - secondary elements
-  accent: '#F59E0B',       // Amber - key points
-  success: '#10B981',      // Emerald - intercepts
-  warning: '#F97316',      // Orange - vertex/special points
-  error: '#EF4444',        // Red - critical points
-  gradient: {
-    start: '#6366F1',
-    middle: '#8B5CF6',
-    end: '#EC4899'
-  },
+// Professional Color Scheme - Deep Intelligence Theme
+const PROFESSIONAL_THEME = {
+  primary: PROFESSIONAL_COLORS.keyStaff.blue,        // Deep blue - main curve
+  secondary: PROFESSIONAL_COLORS.keyStaff.deepBlue,  // Deeper blue - secondary elements
+  accent: PROFESSIONAL_COLORS.keyStaff.orange,       // Strategic orange - key points
+  success: PROFESSIONAL_COLORS.accents.forestGreen,  // Deep green - intercepts
+  warning: PROFESSIONAL_COLORS.keyStaff.deepOrange,  // Deep orange - vertex/special points
+  error: PROFESSIONAL_COLORS.keyStaff.red,           // Red - critical points
   background: {
-    light: 'rgba(99, 102, 241, 0.05)',
-    medium: 'rgba(99, 102, 241, 0.1)',
-    dark: 'rgba(99, 102, 241, 0.15)'
+    surface: PROFESSIONAL_COLORS.background.surface,
+    deep: PROFESSIONAL_COLORS.background.primary,
+    medium: PROFESSIONAL_COLORS.background.secondary
+  },
+  text: {
+    primary: PROFESSIONAL_COLORS.text.primary,
+    secondary: PROFESSIONAL_COLORS.text.secondary,
+    muted: PROFESSIONAL_COLORS.text.muted
   }
 };
 
@@ -125,7 +126,7 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
         y: [vertexY],
         mode: 'markers+text',
         marker: {
-          color: TRADEMARK_COLORS.warning,
+          color: PROFESSIONAL_THEME.warning,
           size: 16,
           symbol: 'diamond',
           line: {
@@ -146,7 +147,7 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
                        'y: %{y:.3f}<br>' +
                        '<i>Turning point of parabola</i><extra></extra>',
         hoverlabel: {
-          bgcolor: TRADEMARK_COLORS.warning,
+          bgcolor: PROFESSIONAL_THEME.warning,
           bordercolor: 'white',
           font: { color: 'white', size: 14 }
         }
@@ -158,7 +159,7 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
         y: [c],
         mode: 'markers+text',
         marker: {
-          color: TRADEMARK_COLORS.success,
+          color: PROFESSIONAL_THEME.success,
           size: 14,
           symbol: 'circle',
           line: {
@@ -179,7 +180,7 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
                        'y: %{y:.3f}<br>' +
                        '<i>Where curve crosses y-axis</i><extra></extra>',
         hoverlabel: {
-          bgcolor: TRADEMARK_COLORS.success,
+          bgcolor: PROFESSIONAL_THEME.success,
           bordercolor: 'white',
           font: { color: 'white', size: 14 }
         }
@@ -196,7 +197,7 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
           y: discriminant === 0 ? [0] : [0, 0],
           mode: 'markers+text',
           marker: {
-            color: TRADEMARK_COLORS.secondary,
+            color: PROFESSIONAL_THEME.secondary,
             size: 14,
             symbol: 'square',
             line: {
@@ -219,7 +220,7 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
                          'y: %{y}<br>' +
                          '<i>Where curve crosses x-axis</i><extra></extra>',
           hoverlabel: {
-            bgcolor: TRADEMARK_COLORS.secondary,
+            bgcolor: PROFESSIONAL_THEME.secondary,
             bordercolor: 'white',
             font: { color: 'white', size: 14 }
           }
@@ -274,7 +275,7 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
       type: 'scatter',
       mode: 'lines',
       line: {
-        color: TRADEMARK_COLORS.primary,
+        color: PROFESSIONAL_THEME.primary,
         width: 4,
         shape: 'spline',
         smoothing: 0.3
@@ -285,7 +286,7 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
                      'y: %{y:.3f}<br>' +
                      '<extra></extra>',
       hoverlabel: {
-        bgcolor: TRADEMARK_COLORS.primary,
+        bgcolor: PROFESSIONAL_THEME.primary,
         bordercolor: 'white',
         font: { color: 'white', size: 14 }
       }
@@ -299,7 +300,7 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
       text: `🎨 ${config.title}`,
       font: { 
         size: 20, 
-        color: TRADEMARK_COLORS.primary,
+        color: PROFESSIONAL_THEME.primary,
         family: 'Inter, Arial, sans-serif'
       },
       x: 0.5,
@@ -308,44 +309,44 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
     xaxis: {
       title: {
         text: 'x-axis',
-        font: { color: TRADEMARK_COLORS.primary, size: 14 }
+        font: { color: PROFESSIONAL_THEME.primary, size: 14 }
       },
       range: config.xRange,
       zeroline: config.showAxis,
-      zerolinecolor: TRADEMARK_COLORS.primary,
+      zerolinecolor: PROFESSIONAL_THEME.primary,
       zerolinewidth: 2,
       showgrid: config.showGrid,
       gridcolor: 'rgba(99, 102, 241, 0.2)',
       gridwidth: 1,
-      tickcolor: TRADEMARK_COLORS.primary,
-      tickfont: { color: TRADEMARK_COLORS.primary }
+      tickcolor: PROFESSIONAL_THEME.primary,
+      tickfont: { color: PROFESSIONAL_THEME.primary }
     },
     yaxis: {
       title: {
         text: 'y-axis',
-        font: { color: TRADEMARK_COLORS.primary, size: 14 }
+        font: { color: PROFESSIONAL_THEME.primary, size: 14 }
       },
       range: config.yRange,
       zeroline: config.showAxis,
-      zerolinecolor: TRADEMARK_COLORS.primary,
+      zerolinecolor: PROFESSIONAL_THEME.primary,
       zerolinewidth: 2,
       showgrid: config.showGrid,
       gridcolor: 'rgba(99, 102, 241, 0.2)',
       gridwidth: 1,
-      tickcolor: TRADEMARK_COLORS.primary,
-      tickfont: { color: TRADEMARK_COLORS.primary }
+      tickcolor: PROFESSIONAL_THEME.primary,
+      tickfont: { color: PROFESSIONAL_THEME.primary }
     },
-    plot_bgcolor: TRADEMARK_COLORS.background.light,
+    plot_bgcolor: PROFESSIONAL_THEME.background.light,
     paper_bgcolor: 'rgba(255, 255, 255, 0.95)',
     showlegend: true,
     legend: {
       x: 0.02,
       y: 0.98,
       bgcolor: 'rgba(255, 255, 255, 0.9)',
-      bordercolor: TRADEMARK_COLORS.primary,
+      bordercolor: PROFESSIONAL_THEME.primary,
       borderwidth: 1,
       font: {
-        color: TRADEMARK_COLORS.primary,
+        color: PROFESSIONAL_THEME.primary,
         size: 12
       }
     },
@@ -362,20 +363,21 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
       className={className}
     >
       <Card 
-        className="w-full border-2 shadow-xl overflow-hidden"
+        className="w-full border shadow-2xl overflow-hidden"
         style={{
-          borderColor: TRADEMARK_COLORS.primary,
-          background: `linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(99, 102, 241, 0.02) 100%)`
+          borderColor: PROFESSIONAL_COLORS.accents.steel,
+          background: PROFESSIONAL_THEME.background.surface,
+          boxShadow: '0 25px 50px -12px rgba(15, 23, 42, 0.15)'
         }}
       >
         <CardHeader 
-          className="border-b-2 p-6"
+          className="border-b p-6"
           style={{
-            borderColor: TRADEMARK_COLORS.primary,
-            background: `linear-gradient(90deg, ${TRADEMARK_COLORS.gradient.start} 0%, ${TRADEMARK_COLORS.gradient.middle} 50%, ${TRADEMARK_COLORS.gradient.end} 100%)`
+            borderColor: PROFESSIONAL_COLORS.accents.steel,
+            background: `linear-gradient(90deg, ${PROFESSIONAL_THEME.background.deep} 0%, ${PROFESSIONAL_THEME.background.medium} 100%)`
           }}
         >
-          <CardTitle className="flex items-center justify-between text-white">
+          <CardTitle className="flex items-center justify-between" style={{ color: PROFESSIONAL_COLORS.highlights.white }}>
             <motion.div 
               className="flex items-center gap-3"
               initial={{ x: -20, opacity: 0 }}
@@ -418,10 +420,11 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
       <CardContent className="space-y-6">
         {/* Interactive Graph with Trademark Styling */}
         <motion.div 
-          className="w-full h-96 border-2 rounded-xl shadow-lg overflow-hidden"
+          className="w-full h-96 border rounded-xl shadow-2xl overflow-hidden"
           style={{
-            borderColor: TRADEMARK_COLORS.primary,
-            background: `linear-gradient(135deg, ${TRADEMARK_COLORS.background.light} 0%, ${TRADEMARK_COLORS.background.medium} 100%)`
+            borderColor: PROFESSIONAL_COLORS.accents.steel,
+            background: PROFESSIONAL_THEME.background.surface,
+            boxShadow: '0 25px 50px -12px rgba(15, 23, 42, 0.25)'
           }}
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -459,7 +462,7 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
               key={param.name} 
               className="space-y-3 p-4 rounded-lg border-2 shadow-sm"
               style={{
-                borderColor: TRADEMARK_COLORS.secondary,
+                borderColor: PROFESSIONAL_THEME.secondary,
                 background: `linear-gradient(135deg, rgba(139, 92, 246, 0.05) 0%, rgba(99, 102, 241, 0.05) 100%)`
               }}
               initial={{ opacity: 0, x: -20 }}
@@ -471,9 +474,9 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
                 <Label 
                   htmlFor={param.name} 
                   className="text-sm font-semibold flex items-center gap-2"
-                  style={{ color: TRADEMARK_COLORS.primary }}
+                  style={{ color: PROFESSIONAL_THEME.primary }}
                 >
-                  <Sparkles className="h-4 w-4" style={{ color: TRADEMARK_COLORS.accent }} />
+                  <Sparkles className="h-4 w-4" style={{ color: PROFESSIONAL_THEME.accent }} />
                   {param.label}
                 </Label>
                 <Input
@@ -483,7 +486,7 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
                   onChange={(e) => handleParameterChange(param.name, parseFloat(e.target.value) || param.value)}
                   className="w-24 h-8 text-center font-mono font-semibold border-2"
                   style={{
-                    borderColor: TRADEMARK_COLORS.accent,
+                    borderColor: PROFESSIONAL_THEME.accent,
                     backgroundColor: 'rgba(245, 158, 11, 0.1)'
                   }}
                   step={param.step}
@@ -501,14 +504,14 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
                   step={param.step}
                   className="w-full"
                 />
-                <div className="flex justify-between text-xs mt-1" style={{ color: TRADEMARK_COLORS.secondary }}>
+                <div className="flex justify-between text-xs mt-1" style={{ color: PROFESSIONAL_THEME.secondary }}>
                   <span>{param.min}</span>
                   <span>{param.max}</span>
                 </div>
               </div>
               
               {param.description && (
-                <p className="text-xs italic" style={{ color: TRADEMARK_COLORS.secondary }}>
+                <p className="text-xs italic" style={{ color: PROFESSIONAL_THEME.secondary }}>
                   {param.description}
                 </p>
               )}
@@ -520,7 +523,7 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
         <motion.div 
           className="mt-6 p-5 rounded-xl border-2 shadow-md"
           style={{
-            borderColor: TRADEMARK_COLORS.accent,
+            borderColor: PROFESSIONAL_THEME.accent,
             background: `linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(99, 102, 241, 0.05) 100%)`
           }}
           initial={{ opacity: 0, scale: 0.95 }}
@@ -528,17 +531,17 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
           transition={{ duration: 0.5, delay: 0.4 }}
         >
           <div className="flex items-center gap-2 mb-3">
-            <Sparkles className="h-5 w-5" style={{ color: TRADEMARK_COLORS.accent }} />
-            <p className="text-lg font-bold" style={{ color: TRADEMARK_COLORS.primary }}>
+            <Sparkles className="h-5 w-5" style={{ color: PROFESSIONAL_THEME.accent }} />
+            <p className="text-lg font-bold" style={{ color: PROFESSIONAL_THEME.primary }}>
               Live Equation:
             </p>
           </div>
           <motion.p 
             className="text-2xl font-mono font-bold p-3 rounded-lg text-center"
             style={{
-              color: TRADEMARK_COLORS.primary,
+              color: PROFESSIONAL_THEME.primary,
               backgroundColor: 'rgba(255, 255, 255, 0.8)',
-              border: `2px solid ${TRADEMARK_COLORS.primary}`
+              border: `2px solid ${PROFESSIONAL_THEME.primary}`
             }}
             key={JSON.stringify(parameters)} // Re-animate when parameters change
             initial={{ scale: 0.95, opacity: 0.7 }}
