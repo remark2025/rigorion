@@ -19,6 +19,8 @@ import InteractiveMathSolution from "@/components/math/InteractiveMathSolution";
 import InteractiveGraph from "@/components/math/InteractiveGraph";
 import SolutionStepBuilder from "@/components/math/SolutionStepBuilder";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import InteractiveReadingSolution from "@/components/reading/InteractiveReadingSolution";
+import { getReadingSolution } from "@/data/sampleReadingSolutions";
 
 interface PracticeDisplayProps {
   currentQuestion: Question | null;
@@ -689,7 +691,7 @@ Keep the evaluation constructive and educational.`;
           
           {/* Column 1: Question + Answer Choices */}
           <div className={`${
-            activeTab === 'problem' ? 'w-full' : 'w-1/2'
+            activeTab === 'problem' && !hasPassage ? 'w-full' : 'w-2/5'
           } bg-white p-4`}>
           
           {/* SAT Question Header with Timer and Navigation */}
@@ -965,8 +967,8 @@ Keep the evaluation constructive and educational.`;
         {/* Column 2: Passage for Reading Questions OR Solution/Key Idea - 25% wider */}
         {(hasPassage || activeTab !== 'problem') && (
           <div className={`${
-            hasGraph ? 'w-1/2' : 'w-1/2'
-          } bg-white p-8 relative overflow-y-auto max-h-[calc(100vh-200px)]`}>
+            hasGraph ? 'w-1/2' : 'w-3/5'
+          } bg-white p-8 relative overflow-y-auto max-h-[calc(100vh-120px)]`}>
             
             {/* Vertical Spacer for side-by-side layout */}
             <div className="absolute left-0 top-4 bottom-4 flex items-center">
@@ -981,9 +983,9 @@ Keep the evaluation constructive and educational.`;
             </div>
             
             
-            <div className="pb-4" style={{ borderBottom: '2px solid #CFCFCF' }}>
-              {/* Reading Passage Display */}
-              {hasPassage && activeTab === 'problem' && (
+            <div className="pb-4 overflow-y-auto max-h-[calc(100vh-220px)]" style={{ borderBottom: '2px solid #CFCFCF' }}>
+              {/* Reading Passage Display - Show passage only when not viewing solution */}
+              {hasPassage && activeTab !== 'solution' && (
                 <>
                   <h3 className={`text-sm font-semibold mb-3 ${
                     isDarkMode ? 'text-green-400' : 'text-gray-800'
@@ -1020,38 +1022,45 @@ Keep the evaluation constructive and educational.`;
               {/* Solution Section with Sub-Tabs */}
               {activeTab === 'solution' && (
                 <>
-                  
-                  <Tabs value={solutionSubTab} onValueChange={(value) => setSolutionSubTab(value as any)} className="w-full">
-                    <TabsList 
-                      className="grid w-full grid-cols-3 mb-1 rounded-sm"
-                      style={{
-                        background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, rgba(99, 102, 241, 0.85) 25%, rgba(139, 92, 246, 0.8) 50%, rgba(148, 163, 184, 0.85) 75%, rgba(203, 213, 225, 0.9) 100%)',
-                        height: '28px',
-                        padding: '2px',
-                        boxShadow: '0 2px 8px rgba(59, 130, 246, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
-                        border: '1px solid rgba(255, 255, 255, 0.15)'
-                      }}
-                    >
-                      <TabsTrigger 
-                        value="interactive" 
-                        disabled={!currentQuestion.interactiveSolution}
-                        className="text-xs font-semibold text-white data-[state=active]:bg-white data-[state=active]:text-blue-700 rounded-sm h-6"
+                  {hasPassage ? (
+                    // Show Interactive Reading Solution for passage questions
+                    <InteractiveReadingSolution
+                      passageText={currentQuestion.passage?.content || ''}
+                      readingSolution={getReadingSolution(currentQuestion.id) || getReadingSolution("READING-CLIMATE-001")!}
+                    />
+                  ) : (
+                    // Show regular math solution for non-passage questions
+                    <Tabs value={solutionSubTab} onValueChange={(value) => setSolutionSubTab(value as any)} className="w-full">
+                      <TabsList 
+                        className="grid w-full grid-cols-3 mb-1 rounded-sm"
+                        style={{
+                          background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, rgba(99, 102, 241, 0.85) 25%, rgba(139, 92, 246, 0.8) 50%, rgba(148, 163, 184, 0.85) 75%, rgba(203, 213, 225, 0.9) 100%)',
+                          height: '28px',
+                          padding: '2px',
+                          boxShadow: '0 2px 8px rgba(59, 130, 246, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
+                          border: '1px solid rgba(255, 255, 255, 0.15)'
+                        }}
                       >
-                        Interactive
-                      </TabsTrigger>
-                      <TabsTrigger 
-                        value="step-by-step" 
-                        className="text-xs font-semibold text-white data-[state=active]:bg-white data-[state=active]:text-blue-700 rounded-sm h-6"
-                      >
-                        Step-by-Step
-                      </TabsTrigger>
-                      <TabsTrigger 
-                        value="raw" 
-                        className="text-xs font-semibold text-white data-[state=active]:bg-white data-[state=active]:text-blue-700 rounded-sm h-6"
-                      >
-                        Raw Solution
-                      </TabsTrigger>
-                    </TabsList>
+                        <TabsTrigger 
+                          value="interactive" 
+                          disabled={!currentQuestion.interactiveSolution}
+                          className="text-xs font-semibold text-white data-[state=active]:bg-white data-[state=active]:text-blue-700 rounded-sm h-6"
+                        >
+                          Interactive
+                        </TabsTrigger>
+                        <TabsTrigger 
+                          value="step-by-step" 
+                          className="text-xs font-semibold text-white data-[state=active]:bg-white data-[state=active]:text-blue-700 rounded-sm h-6"
+                        >
+                          Step-by-Step
+                        </TabsTrigger>
+                        <TabsTrigger 
+                          value="raw" 
+                          className="text-xs font-semibold text-white data-[state=active]:bg-white data-[state=active]:text-blue-700 rounded-sm h-6"
+                        >
+                          Raw Solution
+                        </TabsTrigger>
+                      </TabsList>
                     
                     <TabsContent value="interactive" className="mt-0 pt-0">
                       {currentQuestion.interactiveSolution ? (
@@ -1135,7 +1144,8 @@ Keep the evaluation constructive and educational.`;
                         />
                       </div>
                     </TabsContent>
-                  </Tabs>
+                    </Tabs>
+                  )}
                 </>
               )}
 
@@ -1416,8 +1426,8 @@ Keep the evaluation constructive and educational.`;
               </div>
               
               <div className="pb-4" style={{ borderBottom: '2px solid #CFCFCF' }}>
-                {/* Reading Passage Display */}
-                {hasPassage && activeTab === 'problem' && (
+                {/* Reading Passage Display - Show passage only when not viewing solution */}
+                {hasPassage && activeTab !== 'solution' && (
                   <>
                     <h3 className={`text-sm font-semibold mb-3 ${
                       isDarkMode ? 'text-green-400' : 'text-gray-800'
@@ -1453,8 +1463,15 @@ Keep the evaluation constructive and educational.`;
 
                 {activeTab === 'solution' && (
                   <>
-                    
-                    <Tabs value={solutionSubTab} onValueChange={(value) => setSolutionSubTab(value as any)} className="w-full">
+                    {hasPassage ? (
+                      // Show Interactive Reading Solution for passage questions
+                      <InteractiveReadingSolution
+                        passageText={currentQuestion.passage?.content || ''}
+                        readingSolution={getReadingSolution(currentQuestion.id) || getReadingSolution("READING-CLIMATE-001")!}
+                      />
+                    ) : (
+                      // Show regular math solution for non-passage questions
+                      <Tabs value={solutionSubTab} onValueChange={(value) => setSolutionSubTab(value as any)} className="w-full">
                       <TabsList 
                       className="grid w-full grid-cols-3 mb-1 rounded-sm"
                       style={{
@@ -1568,7 +1585,8 @@ Keep the evaluation constructive and educational.`;
                           />
                         </div>
                       </TabsContent>
-                    </Tabs>
+                      </Tabs>
+                    )}
                   </>
                 )}
                 {activeTab === 'quote' && (
@@ -1858,8 +1876,8 @@ Keep the evaluation constructive and educational.`;
               </div>
               
               <div className="pb-4" style={{ borderBottom: '2px solid #CFCFCF' }}>
-                {/* Reading Passage Display */}
-                {hasPassage && activeTab === 'problem' && (
+                {/* Reading Passage Display - Show passage only when not viewing solution */}
+                {hasPassage && activeTab !== 'solution' && (
                   <>
                     <h3 className={`text-sm font-semibold mb-3 ${
                       isDarkMode ? 'text-green-400' : 'text-gray-800'
@@ -1895,8 +1913,15 @@ Keep the evaluation constructive and educational.`;
 
                 {activeTab === 'solution' && (
                   <>
-                    
-                    <Tabs value={solutionSubTab} onValueChange={(value) => setSolutionSubTab(value as any)} className="w-full">
+                    {hasPassage ? (
+                      // Show Interactive Reading Solution for passage questions
+                      <InteractiveReadingSolution
+                        passageText={currentQuestion.passage?.content || ''}
+                        readingSolution={getReadingSolution(currentQuestion.id) || getReadingSolution("READING-CLIMATE-001")!}
+                      />
+                    ) : (
+                      // Show regular math solution for non-passage questions
+                      <Tabs value={solutionSubTab} onValueChange={(value) => setSolutionSubTab(value as any)} className="w-full">
                       <TabsList 
                       className="grid w-full grid-cols-3 mb-1 rounded-sm"
                       style={{
@@ -2010,7 +2035,8 @@ Keep the evaluation constructive and educational.`;
                           />
                         </div>
                       </TabsContent>
-                    </Tabs>
+                      </Tabs>
+                    )}
                   </>
                 )}
                 {activeTab === 'quote' && (

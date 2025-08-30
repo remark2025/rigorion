@@ -296,5 +296,45 @@ export const interactiveMathQuestions: Question[] = [
         }
       ]
     }
+  },
+  {
+    id: "reading_climate_1",
+    number: 15,
+    content: "According to the passage, what is the primary cause of current climate change trends?",
+    difficulty: "medium",
+    chapter: "Reading",
+    module: "Reading",
+    bookmarked: false,
+    examNumber: 1,
+    choices: [
+      "Natural weather variations",
+      "Anthropogenic factors from industrial activities", 
+      "Solar radiation changes",
+      "Ocean current shifts"
+    ],
+    correctAnswer: "Anthropogenic factors from industrial activities",
+    explanation: "The passage states that scientists have reached a consensus that anthropogenic factors—primarily the emission of greenhouse gases from industrial activities—are the predominant drivers of current warming trends.",
+    solutionSteps: [
+      "Identify the key sentence about climate change causes",
+      "Look for the term 'anthropogenic factors'",
+      "Note that this refers to human-caused factors",
+      "Connect this to industrial activities and greenhouse gas emissions"
+    ],
+    solution: "The passage clearly identifies anthropogenic factors (human-caused factors), specifically greenhouse gas emissions from industrial activities, as the primary drivers of current climate change trends.",
+    hint: "Look for the word 'anthropogenic' in the passage - this is a key scientific term.",
+    calculatorAllowed: false,
+    passage: {
+      title: "Climate Change and Its Global Impact",
+      content: `Climate change represents one of the most pressing challenges of our time, fundamentally altering weather patterns and ecosystem dynamics across the globe. Scientists have reached a consensus that anthropogenic factors—primarily the emission of greenhouse gases from industrial activities—are the predominant drivers of current warming trends.
+
+The ramifications of this phenomenon are far-reaching and multifaceted. Rising sea levels threaten coastal communities, while increasingly erratic precipitation patterns disrupt agricultural systems worldwide. Moreover, the thermal expansion of ocean waters, coupled with glacial melting, exacerbates flooding risks in low-lying areas.
+
+However, the situation is not entirely without hope. Innovative technologies, such as renewable energy systems and carbon capture mechanisms, offer potential pathways to mitigation. Furthermore, international cooperation through agreements like the Paris Climate Accord demonstrates a collective commitment to addressing this global crisis.
+
+Nevertheless, skeptics argue that the economic costs of transitioning to sustainable practices may outweigh the benefits, particularly for developing nations already struggling with poverty and infrastructure deficits. This perspective, while understandable, fails to account for the long-term economic devastation that unchecked climate change would inevitably bring.
+
+In conclusion, while the challenge of climate change is undeniably complex and daunting, the convergence of scientific understanding, technological innovation, and political will suggests that meaningful progress is not only possible but essential for the future of humanity.`,
+      source: "Scientific Journal on Climate Studies, 2024"
+    }
   }
 ];

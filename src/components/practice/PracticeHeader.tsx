@@ -639,26 +639,6 @@ export const PracticeHeader = ({
       </div>
       </div>
     </header>
-    
-    {/* Custom CSS for header shivering animation */}
-    <style>{`
-      @keyframes header-shiver {
-        0%, 100% { transform: translateX(0px) scale(1); }
-        10% { transform: translateX(1px) scale(1.002); }
-        20% { transform: translateX(-1px) scale(0.998); }
-        30% { transform: translateX(1px) scale(1.001); }
-        40% { transform: translateX(0px) scale(1); }
-        50% { transform: translateX(-1px) scale(1.001); }
-        60% { transform: translateX(1px) scale(0.999); }
-        70% { transform: translateX(-1px) scale(1.002); }
-        80% { transform: translateX(1px) scale(0.998); }
-        90% { transform: translateX(0px) scale(1.001); }
-      }
-      
-      .animate-header-shiver {
-        animation: header-shiver 60s ease-in-out infinite;
-      }
-    `}</style>
   );
 };
 

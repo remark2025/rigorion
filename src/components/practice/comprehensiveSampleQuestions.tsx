@@ -548,7 +548,16 @@ export const comprehensiveSampleQuestions: Question[] = [
       "Identify the phrase in context",
       "Consider figurative vs literal meaning",
       "Choose the meaning that fits the passage's tone"
-    ]
+    ],
+    passage: {
+      title: "Climate Change and Its Global Impact",
+      content: `Climate change represents one of the most pressing challenges of our time, fundamentally altering weather patterns and ecosystem dynamics across the globe. Scientists have reached a consensus that anthropogenic factors—primarily the emission of greenhouse gases from industrial activities—are the predominant drivers of current warming trends.
+
+This realization marked a watershed moment in environmental science, fundamentally changing how we approach conservation and policy-making. The ramifications of this phenomenon are far-reaching and multifaceted. Rising sea levels threaten coastal communities, while increasingly erratic precipitation patterns disrupt agricultural systems worldwide.
+
+However, the situation is not entirely without hope. Innovative technologies, such as renewable energy systems and carbon capture mechanisms, offer potential pathways to mitigation. Furthermore, international cooperation through agreements like the Paris Climate Accord demonstrates a collective commitment to addressing this global crisis.`,
+      source: "Environmental Science Quarterly, 2024"
+    }
   },
   {
     id: "READ-005", 

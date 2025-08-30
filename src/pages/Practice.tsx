@@ -35,6 +35,7 @@ const convertToApiFormat = (questions: Question[]) => {
     hint: q.hint || q.explanation,
     graph: q.graph?.url || q.graph,
     quote: q.quote,  // Include the quote field!
+    passage: q.passage,  // Include the passage field for reading questions!
     interactiveSolution: q.interactiveSolution,  // 🧮 CRITICAL: Include interactive solution data!
     solutionSteps: q.solutionSteps,  // Also include solution steps
     calculatorAllowed: q.calculatorAllowed,  // Include calculator info
