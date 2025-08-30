@@ -583,7 +583,7 @@ export default function PracticeContent({
       {/* Sidebar - Mobile and Desktop */}
       {sidebarOpen && <Sidebar onClose={() => setSidebarOpen(false)} />}
 
-      <div className="flex max-w-full mx-auto w-full flex-grow py-1 sm:py-2 md:py-3 px-1 sm:px-2 md:px-4 lg:px-0 pb-20 sm:pb-24 pt-24 sm:pt-26 md:pt-28">
+      <div className="flex max-w-full mx-auto w-full flex-grow py-1 sm:py-2 md:py-3 px-1 sm:px-2 md:px-4 lg:px-0 pb-20 sm:pb-24 pt-24 sm:pt-26 md:pt-14">
         {currentQuestion ? (
           <PracticeDisplay 
             currentQuestion={currentQuestion} 

@@ -440,7 +440,7 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
       <CardContent className="space-y-6">
         {/* Interactive Graph with Trademark Styling */}
         <motion.div 
-          className="w-full h-96 border rounded-xl shadow-2xl overflow-hidden"
+          className="w-full h-[600px] border rounded-xl shadow-2xl overflow-hidden"
           style={{
             borderColor: PROFESSIONAL_COLORS.accents.steel,
             background: PROFESSIONAL_THEME.background.surface,

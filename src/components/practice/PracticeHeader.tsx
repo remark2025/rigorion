@@ -254,9 +254,22 @@ export const PracticeHeader = ({
   };
 
   return (
-    <header className={`fixed top-0 left-0 right-0 w-full z-50 border-b shadow-sm transition-all duration-300 ${
-      isDarkMode ? 'bg-gray-900 border-green-500/30' : 'bg-white border-gray-200'
-    }`}>
+    <header 
+      className="fixed top-0 left-0 right-0 w-full z-50 border-b shadow-lg transition-all duration-300 animate-header-shiver"
+      style={{
+        background: isDarkMode 
+          ? 'linear-gradient(135deg, rgba(168, 85, 247, 0.85) 0%, rgba(139, 92, 246, 0.8) 20%, rgba(99, 102, 241, 0.85) 40%, rgba(79, 70, 229, 0.9) 60%, rgba(55, 65, 81, 0.8) 80%, rgba(31, 41, 55, 0.85) 100%)'
+          : 'linear-gradient(135deg, rgba(248, 250, 252, 0.9) 0%, rgba(226, 232, 240, 0.85) 15%, rgba(203, 213, 225, 0.9) 30%, rgba(148, 163, 184, 0.85) 45%, rgba(59, 130, 246, 0.9) 65%, rgba(37, 99, 235, 0.8) 85%, rgba(29, 78, 216, 0.85) 100%)',
+        borderColor: isDarkMode ? 'rgba(139, 92, 246, 0.4)' : 'rgba(37, 99, 235, 0.3)',
+        backdropFilter: 'blur(20px) saturate(180%)',
+        WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+        boxShadow: isDarkMode 
+          ? '0 8px 32px rgba(139, 92, 246, 0.2), 0 0 40px rgba(59, 130, 246, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+          : '0 8px 32px rgba(37, 99, 235, 0.2), 0 0 40px rgba(148, 163, 184, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
+        animation: 'header-shiver 60s ease-in-out infinite',
+        border: '1px solid rgba(255, 255, 255, 0.18)'
+      }}
+    >
       
       {/* Main Header Content */}
       <div className="px-1 sm:px-2 md:px-4 py-2 sm:py-3 flex items-center justify-between min-h-[48px]">
@@ -266,13 +279,9 @@ export const PracticeHeader = ({
           variant="ghost"
           size="icon"
           onClick={onToggleSidebar}
-          className={`lg:hidden rounded-lg transition-all duration-200 ease-out hover:scale-105 active:scale-95 ${
-            isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
-          }`}
+          className="lg:hidden rounded-lg transition-all duration-200 ease-out hover:scale-105 active:scale-95 hover:bg-white/20 text-white"
         >
-          <Menu className={`h-5 w-5 ${
-            isDarkMode ? 'text-gray-400' : 'text-gray-500'
-          }`} />
+          <Menu className="h-5 w-5 text-white" />
         </Button>
 
         {/* Desktop Navigation Dropdown */}
@@ -470,15 +479,13 @@ export const PracticeHeader = ({
               <Button
                 variant="ghost"
                 size="sm"
-                className={`rounded-full bg-transparent transition-colors flex w-[100px] justify-center ${
-                  isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
-                } ${selectedModule !== "All Modules" ? (isDarkMode ? 'text-green-300 bg-green-900/20' : 'text-blue-600 bg-blue-50') : ''}`}
+                className={`rounded-full bg-transparent transition-colors flex w-[100px] min-w-[100px] max-w-[100px] justify-center overflow-hidden hover:bg-white/20 text-white ${selectedModule !== "All Modules" ? 'bg-white/30' : ''}`}
               >
-                <BookOpen className={`h-4 w-4 mr-1 flex-shrink-0 ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`} />
-                <span className={`font-thin text-xs truncate max-w-[50px] ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                <BookOpen className="h-4 w-4 mr-1 flex-shrink-0 text-white" />
+                <span className="font-thin text-xs truncate max-w-[50px] text-white">
                   {selectedModule === "All Modules" ? "All" : selectedModule}
                 </span>
-                <ChevronDown className={`ml-1 h-3 w-3 flex-shrink-0 transition-transform ${isModuleDropdownOpen ? "rotate-180" : ""} ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                <ChevronDown className={`ml-1 h-3 w-3 flex-shrink-0 transition-transform ${isModuleDropdownOpen ? "rotate-180" : ""} text-white/80`} />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className={`w-56 shadow-lg rounded-lg p-2 z-50 ${
@@ -507,15 +514,13 @@ export const PracticeHeader = ({
               <Button
                 variant="ghost"
                 size="sm"
-                className={`rounded-full bg-transparent transition-colors flex w-[80px] justify-center ${
-                  isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
-                } ${selectedExam !== null ? (isDarkMode ? 'text-green-300 bg-green-900/20' : 'text-blue-600 bg-blue-50') : ''}`}
+                className={`rounded-full bg-transparent transition-colors flex w-[80px] min-w-[80px] max-w-[80px] justify-center overflow-hidden hover:bg-white/20 text-white ${selectedExam !== null ? 'bg-white/30' : ''}`}
               >
-                <Target className={`h-4 w-4 mr-1 flex-shrink-0 ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`} />
-                <span className={`font-thin text-xs truncate max-w-[40px] ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                <Target className="h-4 w-4 mr-1 flex-shrink-0 text-white" />
+                <span className="font-thin text-xs truncate max-w-[40px] text-white">
                   {selectedExam !== null ? `E${selectedExam}` : "All"}
                 </span>
-                <ChevronDown className={`ml-1 h-3 w-3 flex-shrink-0 transition-transform ${isExamDropdownOpen ? "rotate-180" : ""} ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                <ChevronDown className={`ml-1 h-3 w-3 flex-shrink-0 transition-transform ${isExamDropdownOpen ? "rotate-180" : ""} text-white/80`} />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className={`w-56 shadow-lg rounded-lg p-2 z-50 ${
@@ -544,7 +549,7 @@ export const PracticeHeader = ({
               <Button
                 variant="ghost"
                 size="sm"
-                className={`rounded-full bg-transparent transition-colors flex w-[120px] justify-center ${
+                className={`rounded-full bg-transparent transition-colors flex w-[120px] min-w-[120px] max-w-[120px] justify-center overflow-hidden ${
                   isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
                 } ${selectedChapter !== "All Chapters" ? (isDarkMode ? 'text-green-300 bg-green-900/20' : 'text-blue-600 bg-blue-50') : ''}`}
               >
@@ -597,9 +602,7 @@ export const PracticeHeader = ({
               mode !== "manual" 
                 ? (isDarkMode ? "text-green-300 bg-green-900/20" : "text-blue-600 bg-blue-50") 
                 : ""
-            } ${
-              isDarkMode ? 'hover:bg-gray-800 text-gray-300' : 'hover:bg-gray-100 text-gray-600'
-            }`}
+            } hover:bg-white/20 text-white`}
           >
             {getModeIcon(mode)}
             <span>{mode === "manual" ? "Manual" : mode.charAt(0).toUpperCase() + mode.slice(1)}</span>
@@ -609,9 +612,7 @@ export const PracticeHeader = ({
         <div className="ml-2 flex items-center flex-shrink-0">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Avatar className={`h-8 w-8 cursor-pointer transition-all ${
-                isDarkMode ? 'hover:ring-2 hover:ring-green-400' : 'hover:ring-2 hover:ring-blue-200'
-              }`}>
+              <Avatar className="h-8 w-8 cursor-pointer transition-all hover:ring-2 hover:ring-white/50">
                 <AvatarImage src={profile?.avatar_url} />
                 <AvatarFallback className={`text-xs ${
                   isDarkMode ? 'bg-green-600 text-white' : 'bg-blue-500 text-white'
@@ -638,6 +639,26 @@ export const PracticeHeader = ({
       </div>
       </div>
     </header>
+    
+    {/* Custom CSS for header shivering animation */}
+    <style>{`
+      @keyframes header-shiver {
+        0%, 100% { transform: translateX(0px) scale(1); }
+        10% { transform: translateX(1px) scale(1.002); }
+        20% { transform: translateX(-1px) scale(0.998); }
+        30% { transform: translateX(1px) scale(1.001); }
+        40% { transform: translateX(0px) scale(1); }
+        50% { transform: translateX(-1px) scale(1.001); }
+        60% { transform: translateX(1px) scale(0.999); }
+        70% { transform: translateX(-1px) scale(1.002); }
+        80% { transform: translateX(1px) scale(0.998); }
+        90% { transform: translateX(0px) scale(1.001); }
+      }
+      
+      .animate-header-shiver {
+        animation: header-shiver 60s ease-in-out infinite;
+      }
+    `}</style>
   );
 };
 

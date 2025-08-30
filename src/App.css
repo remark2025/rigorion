@@ -5,6 +5,15 @@
   text-align: center;
 }
 
+/* Prevent horizontal layout shift from modals */
+html {
+  scrollbar-gutter: stable;
+}
+
+body {
+  scrollbar-gutter: stable;
+}
+
 .logo {
   height: 6em;
   padding: 1.5em;

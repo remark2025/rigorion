@@ -95,9 +95,21 @@ const PracticeFooter = ({
   return (
     <>
       {/* Footer Navigation */}
-      <div className={`fixed bottom-0 left-0 right-0 border-t transition-colors duration-300 ${
-        isDarkMode ? 'bg-gray-900 border-green-500/30' : 'bg-white border-gray-200'
-      } z-10`}>
+      <div 
+        className="fixed bottom-0 left-0 right-0 border-t transition-colors duration-300 z-10"
+        style={{
+          background: isDarkMode 
+            ? 'linear-gradient(45deg, rgba(31, 41, 55, 0.85) 0%, rgba(55, 65, 81, 0.8) 20%, rgba(79, 70, 229, 0.9) 40%, rgba(99, 102, 241, 0.85) 60%, rgba(139, 92, 246, 0.8) 80%, rgba(168, 85, 247, 0.85) 100%)'
+            : 'linear-gradient(45deg, rgba(29, 78, 216, 0.85) 0%, rgba(37, 99, 235, 0.8) 15%, rgba(59, 130, 246, 0.9) 30%, rgba(148, 163, 184, 0.85) 45%, rgba(203, 213, 225, 0.9) 65%, rgba(226, 232, 240, 0.85) 85%, rgba(248, 250, 252, 0.9) 100%)',
+          borderColor: isDarkMode ? 'rgba(139, 92, 246, 0.4)' : 'rgba(37, 99, 235, 0.3)',
+          backdropFilter: 'blur(20px) saturate(180%)',
+          WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+          boxShadow: isDarkMode 
+            ? '0 -8px 32px rgba(139, 92, 246, 0.2), 0 0 40px rgba(59, 130, 246, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
+            : '0 -8px 32px rgba(37, 99, 235, 0.2), 0 0 40px rgba(148, 163, 184, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
+          border: '1px solid rgba(255, 255, 255, 0.18)'
+        }}
+      >
         <div className="flex items-center justify-between px-4 sm:px-6 py-3">
           {/* Left: Comment + Community Stats */}
           <div className="flex items-center gap-4">
@@ -105,32 +117,20 @@ const PracticeFooter = ({
               variant="ghost"
               size="sm"
               onClick={() => setShowComments(!showComments)}
-              className={`flex items-center gap-2 transition-colors ${
-                isDarkMode ? 'text-green-400 hover:text-green-300 hover:bg-gray-800' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-              }`}
+              className="flex items-center gap-2 transition-colors text-white/90 hover:text-white hover:bg-white/20"
             >
-              <MessageCircle className={`h-4 w-4 ${
-                isDarkMode 
-                  ? 'text-green-400' 
-                  : 'text-blue-600'
-              }`} />
-              <span className={`hidden sm:inline ${isDarkMode ? 'text-green-400' : 'text-gray-700'}`}>Comments</span>
+              <MessageCircle className="h-4 w-4 text-white/90" />
+              <span className="hidden sm:inline text-white/90">Comments</span>
             </Button>
             
             <Button
               variant="ghost"
               size="sm"
               onClick={onToggleCommunityStats}
-              className={`flex items-center gap-2 transition-colors ${
-                isDarkMode ? 'text-green-400 hover:text-green-300 hover:bg-gray-800' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-              }`}
+              className="flex items-center gap-2 transition-colors text-white/90 hover:text-white hover:bg-white/20"
             >
-              <BarChart2 className={`h-4 w-4 ${
-                isDarkMode 
-                  ? 'text-green-400' 
-                  : 'text-blue-600'
-              }`} />
-              <span className={`hidden sm:inline ${isDarkMode ? 'text-green-400' : 'text-gray-700'}`}>Community Stats</span>
+              <BarChart2 className="h-4 w-4 text-white/90" />
+              <span className="hidden sm:inline text-white/90">Community Stats</span>
             </Button>
           </div>
 
@@ -142,11 +142,7 @@ const PracticeFooter = ({
               size="sm"
               onClick={onPrevious}
               disabled={currentQuestionIndex === 0}
-              className={`flex items-center gap-2 transition-colors rounded-full ${
-                isDarkMode 
-                  ? 'bg-gray-900 text-green-400 hover:bg-gray-800 disabled:bg-gray-900 disabled:text-green-600/50' 
-                  : 'bg-white text-gray-700 hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-400'
-              }`}
+              className="flex items-center gap-2 transition-colors rounded-full bg-white/20 text-white hover:bg-white/30 disabled:bg-white/10 disabled:text-white/50"
             >
               <ChevronLeft className="h-4 w-4" />
               Previous
@@ -243,9 +239,7 @@ const PracticeFooter = ({
               variant="ghost"
               size="sm"
               onClick={() => setShowAIModal(true)}
-              className={`flex items-center gap-2 transition-colors ${
-                isDarkMode ? 'text-green-400 hover:text-green-300 hover:bg-gray-800' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-100'
-              }`}
+              className="flex items-center gap-2 transition-colors text-white/90 hover:text-white hover:bg-white/20"
             >
               <Bot className={`h-4 w-4 ${
                 isDarkMode 

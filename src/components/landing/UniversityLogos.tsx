@@ -34,18 +34,61 @@ const TOP_UNIVERSITIES: University[] = [
 ];
 
 export const UniversityLogos = () => {
-  // No need for state or intervals - pure CSS animation handles the seamless loop
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  // Same background images as the Hero section for unified design
+  const backgroundImages = [
+    '/resources/4k-white-two-skyscrapers-j25128ysdyqlmeo6.jpg',
+    '/resources/corner-building-for-4k-white-background-tsx7c82luhg36ygy.jpg',
+    '/resources/white-abstract-fading-horse-os2b11l2drnjvlqz.jpg'
+  ];
+
+  // Cycle through background images every 30 seconds (synchronized with Hero section)
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImageIndex((prevIndex) => 
+        (prevIndex + 1) % backgroundImages.length
+      );
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, [backgroundImages.length]);
 
   return (
-    <section className="relative py-4 bg-white border-t border-b border-gray-200 overflow-hidden">
-      <div className="container mx-auto px-6">
+    <section className="relative py-4 border-b border-gray-200 overflow-hidden">
+      {/* Animated Background Images with Soft Fading Effect */}
+      {backgroundImages.map((image, index) => (
+        <div
+          key={index}
+          className={`absolute inset-0 transition-opacity duration-[8000ms] ease-in-out ${
+            index === currentImageIndex ? 'opacity-100' : 'opacity-0'
+          }`}
+          style={{
+            backgroundImage: `url('${image}')`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat'
+          }}
+        />
+      ))}
+      
+      {/* Soft overlay for unified design and text readability */}
+      <div className="absolute inset-0 bg-white/85"></div>
+      
+      {/* Comprehensive soft edge gradients for seamless section blending */}
+      <div className="absolute top-0 left-0 right-0 h-12 bg-gradient-to-b from-white via-white/60 to-transparent z-10"></div>
+      <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-white via-white/60 to-transparent z-10"></div>
+      <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-white/80 to-transparent z-10"></div>
+      <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-white/80 to-transparent z-10"></div>
+      
+      <div className="container mx-auto px-6 relative z-20">
         <div className="text-center">
 
           {/* Animated University Logos - Horizontal Sliding */}
           <div className="relative h-16 overflow-hidden">
-            {/* Gradient masks for soft edges */}
-            <div className="absolute left-0 top-0 w-20 h-full bg-gradient-to-r from-white via-white/80 to-transparent z-10 pointer-events-none"></div>
-            <div className="absolute right-0 top-0 w-20 h-full bg-gradient-to-l from-white via-white/80 to-transparent z-10 pointer-events-none"></div>
+            {/* Enhanced gradient masks for soft edges that blend with background */}
+            <div className="absolute left-0 top-0 w-24 h-full bg-gradient-to-r from-white/95 via-white/70 to-transparent z-30 pointer-events-none"></div>
+            <div className="absolute right-0 top-0 w-24 h-full bg-gradient-to-l from-white/95 via-white/70 to-transparent z-30 pointer-events-none"></div>
             
             {/* Sliding container */}
             <div 
@@ -62,7 +105,7 @@ export const UniversityLogos = () => {
                   className="flex-shrink-0 flex items-center justify-center mx-8"
                   style={{ width: '100px' }}
                 >
-                  <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm border border-gray-100 hover:scale-105 transition-transform duration-200 overflow-hidden">
+                  <div className="w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg border border-gray-200/50 hover:scale-105 hover:bg-white transition-all duration-300 overflow-hidden">
                     <img 
                       src={university.logo} 
                       alt={university.name}
@@ -88,7 +131,7 @@ export const UniversityLogos = () => {
                   className="flex-shrink-0 flex items-center justify-center mx-8"
                   style={{ width: '100px' }}
                 >
-                  <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm border border-gray-100 hover:scale-105 transition-transform duration-200 overflow-hidden">
+                  <div className="w-10 h-10 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg border border-gray-200/50 hover:scale-105 hover:bg-white transition-all duration-300 overflow-hidden">
                     <img 
                       src={university.logo} 
                       alt={university.name}

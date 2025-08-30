@@ -680,9 +680,9 @@ Keep the evaluation constructive and educational.`;
   const hasGraph = !!graphUrl;
 
   return (
-    <div className="min-h-screen w-full px-2 sm:px-8 bg-white">
+    <div className="min-h-screen w-full px-2 sm:px-8 bg-white" style={{ scrollbarGutter: 'stable' }}>
       {/* SAT Practice Layout Container */}
-      <div className="flex flex-col space-y-2">
+      <div className="flex flex-col">
         
         {/* Desktop: Clean SAT Layout */}
         <div className="hidden lg:flex gap-6">
@@ -933,16 +933,18 @@ Keep the evaluation constructive and educational.`;
             <div className="bg-white p-4 mt-2">
               {/* Broken Line Spacer */}
               <div className="mb-4 flex justify-center">
-                <div className="w-full border-t border-dashed border-gray-300"></div>
+                <div 
+                  className="w-full"
+                  style={{
+                    height: '2px',
+                    background: 'linear-gradient(90deg, rgba(59, 130, 246, 0.8) 0%, rgba(99, 102, 241, 0.6) 25%, rgba(139, 92, 246, 0.5) 50%, rgba(148, 163, 184, 0.6) 75%, rgba(203, 213, 225, 0.8) 100%)',
+                    boxShadow: '0 0 4px rgba(59, 130, 246, 0.3)'
+                  }}
+                ></div>
               </div>
               
               
               <div className="pb-4" style={{ borderBottom: '2px solid #CFCFCF' }}>
-                <h3 className={`text-sm font-semibold mb-3 ${
-                  isDarkMode ? 'text-green-400' : 'text-gray-800'
-                }`}>
-                  💡 Solution & Explanation
-                </h3>
                 <TypingAnimation
                   text={formatSolution(currentQuestion)}
                   speed={8}
@@ -968,7 +970,14 @@ Keep the evaluation constructive and educational.`;
             
             {/* Vertical Spacer for side-by-side layout */}
             <div className="absolute left-0 top-4 bottom-4 flex items-center">
-              <div className="h-full border-l border-dashed border-gray-300"></div>
+              <div 
+                className="h-full"
+                style={{
+                  width: '2px',
+                  background: 'linear-gradient(180deg, rgba(59, 130, 246, 0.8) 0%, rgba(99, 102, 241, 0.6) 25%, rgba(139, 92, 246, 0.5) 50%, rgba(148, 163, 184, 0.6) 75%, rgba(203, 213, 225, 0.8) 100%)',
+                  boxShadow: '0 0 4px rgba(59, 130, 246, 0.3)'
+                }}
+              ></div>
             </div>
             
             
@@ -1014,35 +1023,37 @@ Keep the evaluation constructive and educational.`;
                   
                   <Tabs value={solutionSubTab} onValueChange={(value) => setSolutionSubTab(value as any)} className="w-full">
                     <TabsList 
-                      className="grid w-full grid-cols-3 mb-3 rounded-sm"
+                      className="grid w-full grid-cols-3 mb-1 rounded-sm"
                       style={{
-                        backgroundColor: '#CFCFCF',
+                        background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, rgba(99, 102, 241, 0.85) 25%, rgba(139, 92, 246, 0.8) 50%, rgba(148, 163, 184, 0.85) 75%, rgba(203, 213, 225, 0.9) 100%)',
                         height: '28px',
-                        padding: '2px'
+                        padding: '2px',
+                        boxShadow: '0 2px 8px rgba(59, 130, 246, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
+                        border: '1px solid rgba(255, 255, 255, 0.15)'
                       }}
                     >
                       <TabsTrigger 
                         value="interactive" 
                         disabled={!currentQuestion.interactiveSolution}
-                        className="text-xs font-semibold text-blue-700 data-[state=active]:bg-white data-[state=active]:text-blue-700 rounded-sm h-6"
+                        className="text-xs font-semibold text-white data-[state=active]:bg-white data-[state=active]:text-blue-700 rounded-sm h-6"
                       >
                         Interactive
                       </TabsTrigger>
                       <TabsTrigger 
                         value="step-by-step" 
-                        className="text-xs font-semibold text-blue-700 data-[state=active]:bg-white data-[state=active]:text-blue-700 rounded-sm h-6"
+                        className="text-xs font-semibold text-white data-[state=active]:bg-white data-[state=active]:text-blue-700 rounded-sm h-6"
                       >
                         Step-by-Step
                       </TabsTrigger>
                       <TabsTrigger 
                         value="raw" 
-                        className="text-xs font-semibold text-blue-700 data-[state=active]:bg-white data-[state=active]:text-blue-700 rounded-sm h-6"
+                        className="text-xs font-semibold text-white data-[state=active]:bg-white data-[state=active]:text-blue-700 rounded-sm h-6"
                       >
                         Raw Solution
                       </TabsTrigger>
                     </TabsList>
                     
-                    <TabsContent value="interactive" className="mt-0">
+                    <TabsContent value="interactive" className="mt-0 pt-0">
                       {currentQuestion.interactiveSolution ? (
                         <div className="space-y-4">
                           {/* Interactive Graph */}
@@ -1073,7 +1084,7 @@ Keep the evaluation constructive and educational.`;
                       )}
                     </TabsContent>
                     
-                    <TabsContent value="step-by-step" className="mt-0">
+                    <TabsContent value="step-by-step" className="mt-0 pt-0">
                       {currentQuestion.solutionSteps && currentQuestion.solutionSteps.length > 0 ? (
                         <SolutionStepBuilder
                           steps={currentQuestion.solutionSteps.map((step, index) => ({
@@ -1107,7 +1118,7 @@ Keep the evaluation constructive and educational.`;
                       )}
                     </TabsContent>
                     
-                    <TabsContent value="raw" className="mt-0">
+                    <TabsContent value="raw" className="mt-0 pt-0">
                       <div className={`p-4 rounded-lg border ${
                         isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-50 border-gray-200'
                       }`}>
@@ -1376,7 +1387,14 @@ Keep the evaluation constructive and educational.`;
             <div className="bg-white p-8">
               {/* Broken Line Spacer */}
               <div className="mb-4 flex justify-center">
-                <div className="w-full border-t border-dashed border-gray-300"></div>
+                <div 
+                  className="w-full"
+                  style={{
+                    height: '2px',
+                    background: 'linear-gradient(90deg, rgba(59, 130, 246, 0.8) 0%, rgba(99, 102, 241, 0.6) 25%, rgba(139, 92, 246, 0.5) 50%, rgba(148, 163, 184, 0.6) 75%, rgba(203, 213, 225, 0.8) 100%)',
+                    boxShadow: '0 0 4px rgba(59, 130, 246, 0.3)'
+                  }}
+                ></div>
               </div>
               
               {/* Header - Step by Step Explanation */}
@@ -1384,12 +1402,14 @@ Keep the evaluation constructive and educational.`;
                 <div 
                   className="w-full mr-3 flex items-center justify-center"
                   style={{
-                    backgroundColor: '#CFCFCF',
+                    background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, rgba(99, 102, 241, 0.85) 25%, rgba(139, 92, 246, 0.8) 50%, rgba(148, 163, 184, 0.85) 75%, rgba(203, 213, 225, 0.9) 100%)',
                     height: '24px',
-                    borderRadius: '2px'
+                    borderRadius: '2px',
+                    boxShadow: '0 2px 8px rgba(59, 130, 246, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
+                    border: '1px solid rgba(255, 255, 255, 0.15)'
                   }}
                 >
-                  <span className="text-sm font-semibold text-blue-700">
+                  <span className="text-sm font-semibold text-white">
                     Step by Step Explanation
                   </span>
                 </div>
@@ -1433,19 +1453,16 @@ Keep the evaluation constructive and educational.`;
 
                 {activeTab === 'solution' && (
                   <>
-                    <h3 className={`text-sm font-semibold mb-3 ${
-                      isDarkMode ? 'text-green-400' : 'text-gray-800'
-                    }`}>
-                      💡 Solution & Explanation
-                    </h3>
                     
                     <Tabs value={solutionSubTab} onValueChange={(value) => setSolutionSubTab(value as any)} className="w-full">
                       <TabsList 
-                      className="grid w-full grid-cols-3 mb-3 rounded-sm"
+                      className="grid w-full grid-cols-3 mb-1 rounded-sm"
                       style={{
-                        backgroundColor: '#CFCFCF',
+                        background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, rgba(99, 102, 241, 0.85) 25%, rgba(139, 92, 246, 0.8) 50%, rgba(148, 163, 184, 0.85) 75%, rgba(203, 213, 225, 0.9) 100%)',
                         height: '28px',
-                        padding: '2px'
+                        padding: '2px',
+                        boxShadow: '0 2px 8px rgba(59, 130, 246, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
+                        border: '1px solid rgba(255, 255, 255, 0.15)'
                       }}
                     >
                         <TabsTrigger 
@@ -1469,7 +1486,7 @@ Keep the evaluation constructive and educational.`;
                         </TabsTrigger>
                       </TabsList>
                       
-                      <TabsContent value="interactive" className="mt-0">
+                      <TabsContent value="interactive" className="mt-0 pt-0">
                         {currentQuestion.interactiveSolution ? (
                           <div className="space-y-4">
                             {/* Interactive Graph */}
@@ -1500,7 +1517,7 @@ Keep the evaluation constructive and educational.`;
                         )}
                       </TabsContent>
                       
-                      <TabsContent value="step-by-step" className="mt-0">
+                      <TabsContent value="step-by-step" className="mt-0 pt-0">
                         {currentQuestion.solutionSteps && currentQuestion.solutionSteps.length > 0 ? (
                           <SolutionStepBuilder
                             steps={currentQuestion.solutionSteps.map((step, index) => ({
@@ -1534,7 +1551,7 @@ Keep the evaluation constructive and educational.`;
                         )}
                       </TabsContent>
                       
-                      <TabsContent value="raw" className="mt-0">
+                      <TabsContent value="raw" className="mt-0 pt-0">
                         <div className={`p-4 rounded-lg border ${
                           isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-50 border-gray-200'
                         }`}>
@@ -1812,7 +1829,14 @@ Keep the evaluation constructive and educational.`;
             <div className="bg-white p-8">
               {/* Broken Line Spacer */}
               <div className="mb-4 flex justify-center">
-                <div className="w-full border-t border-dashed border-gray-300"></div>
+                <div 
+                  className="w-full"
+                  style={{
+                    height: '2px',
+                    background: 'linear-gradient(90deg, rgba(59, 130, 246, 0.8) 0%, rgba(99, 102, 241, 0.6) 25%, rgba(139, 92, 246, 0.5) 50%, rgba(148, 163, 184, 0.6) 75%, rgba(203, 213, 225, 0.8) 100%)',
+                    boxShadow: '0 0 4px rgba(59, 130, 246, 0.3)'
+                  }}
+                ></div>
               </div>
               
               {/* Header - Step by Step Explanation */}
@@ -1820,12 +1844,14 @@ Keep the evaluation constructive and educational.`;
                 <div 
                   className="w-full mr-3 flex items-center justify-center"
                   style={{
-                    backgroundColor: '#CFCFCF',
+                    background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, rgba(99, 102, 241, 0.85) 25%, rgba(139, 92, 246, 0.8) 50%, rgba(148, 163, 184, 0.85) 75%, rgba(203, 213, 225, 0.9) 100%)',
                     height: '24px',
-                    borderRadius: '2px'
+                    borderRadius: '2px',
+                    boxShadow: '0 2px 8px rgba(59, 130, 246, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
+                    border: '1px solid rgba(255, 255, 255, 0.15)'
                   }}
                 >
-                  <span className="text-sm font-semibold text-blue-700">
+                  <span className="text-sm font-semibold text-white">
                     Step by Step Explanation
                   </span>
                 </div>
@@ -1869,19 +1895,16 @@ Keep the evaluation constructive and educational.`;
 
                 {activeTab === 'solution' && (
                   <>
-                    <h3 className={`text-sm font-semibold mb-3 ${
-                      isDarkMode ? 'text-green-400' : 'text-gray-800'
-                    }`}>
-                      💡 Solution & Explanation
-                    </h3>
                     
                     <Tabs value={solutionSubTab} onValueChange={(value) => setSolutionSubTab(value as any)} className="w-full">
                       <TabsList 
-                      className="grid w-full grid-cols-3 mb-3 rounded-sm"
+                      className="grid w-full grid-cols-3 mb-1 rounded-sm"
                       style={{
-                        backgroundColor: '#CFCFCF',
+                        background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, rgba(99, 102, 241, 0.85) 25%, rgba(139, 92, 246, 0.8) 50%, rgba(148, 163, 184, 0.85) 75%, rgba(203, 213, 225, 0.9) 100%)',
                         height: '28px',
-                        padding: '2px'
+                        padding: '2px',
+                        boxShadow: '0 2px 8px rgba(59, 130, 246, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
+                        border: '1px solid rgba(255, 255, 255, 0.15)'
                       }}
                     >
                         <TabsTrigger 
@@ -1905,7 +1928,7 @@ Keep the evaluation constructive and educational.`;
                         </TabsTrigger>
                       </TabsList>
                       
-                      <TabsContent value="interactive" className="mt-0">
+                      <TabsContent value="interactive" className="mt-0 pt-0">
                         {currentQuestion.interactiveSolution ? (
                           <div className="space-y-4">
                             {/* Interactive Graph */}
@@ -1936,7 +1959,7 @@ Keep the evaluation constructive and educational.`;
                         )}
                       </TabsContent>
                       
-                      <TabsContent value="step-by-step" className="mt-0">
+                      <TabsContent value="step-by-step" className="mt-0 pt-0">
                         {currentQuestion.solutionSteps && currentQuestion.solutionSteps.length > 0 ? (
                           <SolutionStepBuilder
                             steps={currentQuestion.solutionSteps.map((step, index) => ({
@@ -1970,7 +1993,7 @@ Keep the evaluation constructive and educational.`;
                         )}
                       </TabsContent>
                       
-                      <TabsContent value="raw" className="mt-0">
+                      <TabsContent value="raw" className="mt-0 pt-0">
                         <div className={`p-4 rounded-lg border ${
                           isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-50 border-gray-200'
                         }`}>

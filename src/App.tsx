@@ -1,4 +1,5 @@
 
+import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Toaster } from "@/components/ui/toaster";
 import { ReactQueryProvider } from "@/components/ReactQueryProvider";
@@ -28,13 +29,18 @@ import WritingSolutionDemo from "@/pages/WritingSolutionDemo";
 import AdvancedAnimationDemo from "@/pages/AdvancedAnimationDemo";
 
 function App() {
+  // Prevent layout shift from modals by maintaining scrollbar space
+  React.useEffect(() => {
+    document.documentElement.style.scrollbarGutter = 'stable';
+  }, []);
+
   return (
     <ThemeProvider>
       <ReactQueryProvider>
         <AuthProvider>
           <AudioProvider>
             <Router>
-            <div className="min-h-screen bg-background text-foreground transition-colors duration-300">
+            <div className="min-h-screen bg-background text-foreground transition-colors duration-300" style={{ scrollbarGutter: 'stable' }}>
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/forgot-password" element={<ForgotPassword />} />
