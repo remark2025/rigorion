@@ -46,7 +46,7 @@ const QuestionHeader: React.FC<QuestionHeaderProps> = ({
         <h3 
           id={`q-${questionNumber}`}
           className="flex items-center flex-1 mx-4"
-          style={{ height: '24px' }}
+          style={{ height: '28px' }}
         >
           {/* Number Badge */}
           <div 
@@ -56,7 +56,7 @@ const QuestionHeader: React.FC<QuestionHeaderProps> = ({
               fontSize: '12px',
               lineHeight: '1.1',
               padding: '0 8px',
-              height: '24px',
+              height: '28px',
               borderRadius: '2px',
               fontFamily: 'system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
               minWidth: 'fit-content'
@@ -70,7 +70,7 @@ const QuestionHeader: React.FC<QuestionHeaderProps> = ({
             className="flex-1 ml-2 mr-3 flex items-center justify-start pl-4"
             style={{
               backgroundColor: '#CFCFCF',
-              height: '24px',
+              height: '28px',
               borderRadius: '2px'
             }}
           >

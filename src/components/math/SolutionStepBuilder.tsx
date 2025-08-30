@@ -73,6 +73,23 @@ interface SolutionStepBuilderProps {
   className?: string;
 }
 
+// Add keyframes for moving gradient animation
+const gradientKeyframes = `
+  @keyframes gradient-move {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+`;
+
+// Inject styles
+if (typeof document !== 'undefined' && !document.getElementById('gradient-animation-styles')) {
+  const style = document.createElement('style');
+  style.id = 'gradient-animation-styles';
+  style.textContent = gradientKeyframes;
+  document.head.appendChild(style);
+}
+
 export const SolutionStepBuilder: React.FC<SolutionStepBuilderProps> = ({
   steps,
   title,
@@ -318,14 +335,14 @@ export const SolutionStepBuilder: React.FC<SolutionStepBuilderProps> = ({
         className="w-full shadow-lg overflow-hidden"
         style={{
           border: `1px solid ${PROFESSIONAL_MATH_COLORS.secondary}`,
-          background: PROFESSIONAL_MATH_COLORS.background.light
+          background: 'white'
         }}
       >
         <CardHeader 
-          className="border-b p-3"
+          className="border-b p-2"
           style={{
             borderColor: PROFESSIONAL_MATH_COLORS.secondary,
-            background: PROFESSIONAL_MATH_COLORS.background.light
+            background: 'white'
           }}
         >
           <CardTitle className="flex items-center justify-between" style={{ color: PROFESSIONAL_MATH_COLORS.primary }}>
@@ -412,7 +429,7 @@ export const SolutionStepBuilder: React.FC<SolutionStepBuilderProps> = ({
           </motion.div>
       </CardHeader>
 
-      <CardContent className="p-4">
+      <CardContent className="p-3">
         <div className="relative">
           <AnimatePresence>
             {steps.map((step, index) => {
@@ -425,7 +442,7 @@ export const SolutionStepBuilder: React.FC<SolutionStepBuilderProps> = ({
 
               return (
                 <React.Fragment key={step.id}>
-                  {/* Connecting Line */}
+                  {/* Enhanced Connecting Line */}
                   {index > 0 && (
                     <motion.div
                       initial={{ scaleY: 0, opacity: 0 }}
@@ -433,13 +450,13 @@ export const SolutionStepBuilder: React.FC<SolutionStepBuilderProps> = ({
                         scaleY: isCompleted || isCurrent ? 1 : 0.3, 
                         opacity: isCompleted || isCurrent ? 1 : 0.3 
                       }}
-                      transition={{ duration: 0.6, delay: 0.2 }}
-                      className="w-1 h-8 mx-auto -mb-2 -mt-2 relative z-10"
+                      transition={{ duration: 0.8, delay: 0.1 }}
+                      className="w-2 h-6 mx-auto -mb-1 -mt-1 relative z-10 rounded-full"
                       style={{
                         background: isCompleted 
-                          ? `linear-gradient(180deg, ${PROFESSIONAL_MATH_COLORS.connecting} 0%, ${PROFESSIONAL_MATH_COLORS.connecting} 100%)`
-                          : 'linear-gradient(180deg, #E5E7EB 0%, #E5E7EB 100%)',
-                        boxShadow: isCompleted ? `0 0 8px ${PROFESSIONAL_MATH_COLORS.connecting}50` : 'none'
+                          ? `linear-gradient(180deg, ${PROFESSIONAL_MATH_COLORS.connecting} 0%, #22C55E 50%, ${PROFESSIONAL_MATH_COLORS.connecting} 100%)`
+                          : 'linear-gradient(180deg, #F3F4F6 0%, #E5E7EB 100%)',
+                        boxShadow: isCompleted ? `0 0 12px ${PROFESSIONAL_MATH_COLORS.connecting}40, inset 0 0 8px rgba(255,255,255,0.3)` : 'none'
                       }}
                     />
                   )}
@@ -450,25 +467,28 @@ export const SolutionStepBuilder: React.FC<SolutionStepBuilderProps> = ({
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
                     transition={{ duration: 0.5 }}
-                    className="relative mb-4 p-3 rounded-lg transition-all duration-500"
+                    className="relative mb-3 p-3 rounded-lg transition-all duration-500"
                     style={{
-                      backgroundColor: isCurrent 
-                        ? PROFESSIONAL_MATH_COLORS.background.step
-                        : isCompleted 
-                        ? PROFESSIONAL_MATH_COLORS.background.step
-                        : PROFESSIONAL_MATH_COLORS.background.medium,
+                      backgroundColor: 'white',
                       border: `2px solid ${
                         isCurrent 
-                          ? PROFESSIONAL_MATH_COLORS.primary
+                          ? '#D1D5DB'
                           : isCompleted 
-                          ? PROFESSIONAL_MATH_COLORS.success 
-                          : PROFESSIONAL_MATH_COLORS.secondary
+                          ? 'transparent'
+                          : '#F3F4F6'
                       }`,
+                      background: isCompleted 
+                        ? `linear-gradient(135deg, #10B981 0%, #22C55E 50%, #16A34A 100%)`
+                        : isCurrent
+                        ? `linear-gradient(135deg, #F9FAFB 0%, #F3F4F6 100%)`
+                        : 'white',
                       boxShadow: isCurrent 
-                        ? `0 4px 12px ${PROFESSIONAL_MATH_COLORS.primary}20, 0 0 0 1px ${PROFESSIONAL_MATH_COLORS.primary}30`
+                        ? '0 2px 8px rgba(0, 0, 0, 0.1)'
                         : isCompleted
-                        ? `0 2px 8px ${PROFESSIONAL_MATH_COLORS.success}15`
-                        : '0 1px 3px rgba(0, 0, 0, 0.1)'
+                        ? '0 4px 15px rgba(16, 185, 129, 0.3), inset 0 0 20px rgba(255,255,255,0.2)'
+                        : '0 1px 3px rgba(0, 0, 0, 0.05)',
+                      backgroundSize: isCompleted ? '200% 200%' : 'auto',
+                      animation: isCompleted ? 'gradient-move 3s ease infinite' : 'none'
                     }}
                   >
                 {/* Simple Step Header */}
@@ -488,14 +508,14 @@ export const SolutionStepBuilder: React.FC<SolutionStepBuilderProps> = ({
                     </div>
                     <h3 
                       className="font-semibold text-lg"
-                      style={{ color: PROFESSIONAL_MATH_COLORS.primary }}
+                      style={{ color: isCompleted ? 'white' : PROFESSIONAL_MATH_COLORS.primary }}
                     >
                       {step.title}
                     </h3>
                   </div>
                 </div>
                 
-                <p className="text-sm mb-4" style={{ color: PROFESSIONAL_COLORS.text.secondary }}>
+                <p className="text-sm mb-4" style={{ color: isCompleted ? 'rgba(255,255,255,0.9)' : PROFESSIONAL_COLORS.text.secondary }}>
                   {step.description}
                 </p>
 

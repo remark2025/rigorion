@@ -682,7 +682,7 @@ Keep the evaluation constructive and educational.`;
   return (
     <div className="min-h-screen w-full px-2 sm:px-8 bg-white">
       {/* SAT Practice Layout Container */}
-      <div className="flex flex-col space-y-4">
+      <div className="flex flex-col space-y-2">
         
         {/* Desktop: Clean SAT Layout */}
         <div className="hidden lg:flex gap-6">
@@ -690,7 +690,7 @@ Keep the evaluation constructive and educational.`;
           {/* Column 1: Question + Answer Choices */}
           <div className={`${
             activeTab === 'problem' ? 'w-full' : 'w-1/2'
-          } bg-white p-8`}>
+          } bg-white p-4`}>
           
           {/* SAT Question Header with Timer and Navigation */}
           <QuestionHeader 
@@ -705,7 +705,7 @@ Keep the evaluation constructive and educational.`;
           />
           
           {/* Question Tracking and Action Icons Row */}
-          <div className="mb-3 flex items-center justify-between">
+          <div className="mb-1 flex items-center justify-between">
             {/* Left: Question Tracking */}
             <QuestionTracking
               questionId={currentQuestion.id || `q_${currentQuestionIndex}`}
@@ -930,27 +930,12 @@ Keep the evaluation constructive and educational.`;
           
           {/* Solution Below for Reading Questions when answer is selected */}
           {hasPassage && selectedAnswer && (
-            <div className="bg-white p-8 mt-4">
+            <div className="bg-white p-4 mt-2">
               {/* Broken Line Spacer */}
               <div className="mb-4 flex justify-center">
                 <div className="w-full border-t border-dashed border-gray-300"></div>
               </div>
               
-              {/* Solution Header - Step by Step Explanation */}
-              <div className="mb-2" style={{ marginTop: '8px', marginBottom: '8px' }}>
-                <div 
-                  className="w-full mr-3 flex items-center justify-center"
-                  style={{
-                    backgroundColor: '#CFCFCF',
-                    height: '24px',
-                    borderRadius: '2px'
-                  }}
-                >
-                  <span className="text-sm font-semibold text-blue-700">
-                    Step by Step Explanation
-                  </span>
-                </div>
-              </div>
               
               <div className="pb-4" style={{ borderBottom: '2px solid #CFCFCF' }}>
                 <h3 className={`text-sm font-semibold mb-3 ${
@@ -986,21 +971,6 @@ Keep the evaluation constructive and educational.`;
               <div className="h-full border-l border-dashed border-gray-300"></div>
             </div>
             
-            {/* Header - Step by Step Explanation */}
-            <div className="mb-2" style={{ marginTop: '8px', marginBottom: '8px' }}>
-              <div 
-                className="w-full mr-3 flex items-center justify-center"
-                style={{
-                  backgroundColor: '#CFCFCF',
-                  height: '24px',
-                  borderRadius: '2px'
-                }}
-              >
-                <span className="text-sm font-semibold text-blue-700">
-                  Step by Step Explanation
-                </span>
-              </div>
-            </div>
             
             <div className="pb-4" style={{ borderBottom: '2px solid #CFCFCF' }}>
               {/* Reading Passage Display */}
@@ -1041,26 +1011,34 @@ Keep the evaluation constructive and educational.`;
               {/* Solution Section with Sub-Tabs */}
               {activeTab === 'solution' && (
                 <>
-                  <h3 className={`text-sm font-semibold mb-3 ${
-                    isDarkMode ? 'text-green-400' : 'text-gray-800'
-                  }`}>
-                    💡 Solution & Explanation
-                  </h3>
                   
                   <Tabs value={solutionSubTab} onValueChange={(value) => setSolutionSubTab(value as any)} className="w-full">
-                    <TabsList className="grid w-full grid-cols-3 mb-4">
+                    <TabsList 
+                      className="grid w-full grid-cols-3 mb-3 rounded-sm"
+                      style={{
+                        backgroundColor: '#CFCFCF',
+                        height: '28px',
+                        padding: '2px'
+                      }}
+                    >
                       <TabsTrigger 
                         value="interactive" 
                         disabled={!currentQuestion.interactiveSolution}
-                        className="text-xs"
+                        className="text-xs font-semibold text-blue-700 data-[state=active]:bg-white data-[state=active]:text-blue-700 rounded-sm h-6"
                       >
-                        🧮 Interactive
+                        Interactive
                       </TabsTrigger>
-                      <TabsTrigger value="step-by-step" className="text-xs">
-                        📚 Step-by-Step
+                      <TabsTrigger 
+                        value="step-by-step" 
+                        className="text-xs font-semibold text-blue-700 data-[state=active]:bg-white data-[state=active]:text-blue-700 rounded-sm h-6"
+                      >
+                        Step-by-Step
                       </TabsTrigger>
-                      <TabsTrigger value="raw" className="text-xs">
-                        📄 Raw Solution
+                      <TabsTrigger 
+                        value="raw" 
+                        className="text-xs font-semibold text-blue-700 data-[state=active]:bg-white data-[state=active]:text-blue-700 rounded-sm h-6"
+                      >
+                        Raw Solution
                       </TabsTrigger>
                     </TabsList>
                     
@@ -1200,7 +1178,7 @@ Keep the evaluation constructive and educational.`;
               />
               
               {/* Question Tracking and Action Icons Row */}
-              <div className="mb-3 flex items-center justify-between">
+              <div className="mb-1 flex items-center justify-between">
                 {/* Left: Question Tracking */}
                 <QuestionTracking
                   questionId={currentQuestion.id || `q_${currentQuestionIndex}`}
@@ -1462,19 +1440,32 @@ Keep the evaluation constructive and educational.`;
                     </h3>
                     
                     <Tabs value={solutionSubTab} onValueChange={(value) => setSolutionSubTab(value as any)} className="w-full">
-                      <TabsList className="grid w-full grid-cols-3 mb-4">
+                      <TabsList 
+                      className="grid w-full grid-cols-3 mb-3 rounded-sm"
+                      style={{
+                        backgroundColor: '#CFCFCF',
+                        height: '28px',
+                        padding: '2px'
+                      }}
+                    >
                         <TabsTrigger 
                           value="interactive" 
                           disabled={!currentQuestion.interactiveSolution}
-                          className="text-xs"
+                          className="text-xs font-semibold text-blue-700 data-[state=active]:bg-white data-[state=active]:text-blue-700 rounded-sm h-6"
                         >
-                          🧮 Interactive
+                          Interactive
                         </TabsTrigger>
-                        <TabsTrigger value="step-by-step" className="text-xs">
-                          📚 Step-by-Step
+                        <TabsTrigger 
+                          value="step-by-step" 
+                          className="text-xs font-semibold text-blue-700 data-[state=active]:bg-white data-[state=active]:text-blue-700 rounded-sm h-6"
+                        >
+                          Step-by-Step
                         </TabsTrigger>
-                        <TabsTrigger value="raw" className="text-xs">
-                          📄 Raw Solution
+                        <TabsTrigger 
+                          value="raw" 
+                          className="text-xs font-semibold text-blue-700 data-[state=active]:bg-white data-[state=active]:text-blue-700 rounded-sm h-6"
+                        >
+                          Raw Solution
                         </TabsTrigger>
                       </TabsList>
                       
@@ -1606,7 +1597,7 @@ Keep the evaluation constructive and educational.`;
             />
             
             {/* Question Tracking and Action Icons Row */}
-            <div className="mb-3 flex items-center justify-between">
+            <div className="mb-1 flex items-center justify-between">
               {/* Left: Question Tracking */}
               <QuestionTracking
                 questionId={currentQuestion.id || `q_${currentQuestionIndex}`}
@@ -1885,19 +1876,32 @@ Keep the evaluation constructive and educational.`;
                     </h3>
                     
                     <Tabs value={solutionSubTab} onValueChange={(value) => setSolutionSubTab(value as any)} className="w-full">
-                      <TabsList className="grid w-full grid-cols-3 mb-4">
+                      <TabsList 
+                      className="grid w-full grid-cols-3 mb-3 rounded-sm"
+                      style={{
+                        backgroundColor: '#CFCFCF',
+                        height: '28px',
+                        padding: '2px'
+                      }}
+                    >
                         <TabsTrigger 
                           value="interactive" 
                           disabled={!currentQuestion.interactiveSolution}
-                          className="text-xs"
+                          className="text-xs font-semibold text-blue-700 data-[state=active]:bg-white data-[state=active]:text-blue-700 rounded-sm h-6"
                         >
-                          🧮 Interactive
+                          Interactive
                         </TabsTrigger>
-                        <TabsTrigger value="step-by-step" className="text-xs">
-                          📚 Step-by-Step
+                        <TabsTrigger 
+                          value="step-by-step" 
+                          className="text-xs font-semibold text-blue-700 data-[state=active]:bg-white data-[state=active]:text-blue-700 rounded-sm h-6"
+                        >
+                          Step-by-Step
                         </TabsTrigger>
-                        <TabsTrigger value="raw" className="text-xs">
-                          📄 Raw Solution
+                        <TabsTrigger 
+                          value="raw" 
+                          className="text-xs font-semibold text-blue-700 data-[state=active]:bg-white data-[state=active]:text-blue-700 rounded-sm h-6"
+                        >
+                          Raw Solution
                         </TabsTrigger>
                       </TabsList>
                       

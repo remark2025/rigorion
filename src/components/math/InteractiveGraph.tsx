@@ -244,24 +244,35 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
   };
 
   const startAnimation = () => {
+    if (isAnimating) {
+      setIsAnimating(false);
+      return;
+    }
+
     setIsAnimating(true);
-    // Example animation: modify parameter 'a' over time
-    const param = initialParameters[0]; // Use first parameter for animation
+    const param = initialParameters[0];
     if (!param) return;
 
     let value = param.min;
     const interval = setInterval(() => {
+      if (!isAnimating) {
+        clearInterval(interval);
+        return;
+      }
+      
       value += (param.max - param.min) / 100 * animationSpeed;
-      if (value > param.max) value = param.min;
+      if (value > param.max) {
+        value = param.min;
+      }
       
       handleParameterChange(param.name, value);
     }, 100);
 
-    // Stop after 10 seconds
+    // Store interval reference for cleanup
     setTimeout(() => {
       clearInterval(interval);
       setIsAnimating(false);
-    }, 10000);
+    }, 5000); // Reduced to 5 seconds
   };
 
   const graphData = generateGraphData();
