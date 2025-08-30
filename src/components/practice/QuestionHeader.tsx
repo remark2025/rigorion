@@ -26,25 +26,10 @@ const QuestionHeader: React.FC<QuestionHeaderProps> = ({
   totalQuestions = 0
 }) => {
   return (
-    <div className={`mb-2 ${className}`} style={{ marginTop: '8px', marginBottom: '8px' }}>
-      {/* Timer Row - Above question header */}
-      {timerValue && mode && (
-        <div className="flex items-center justify-center mb-3">
-          <div className="flex items-center gap-2 px-3 py-1 bg-gray-100 rounded-full">
-            {mode === "timer" ? (
-              <Timer className="h-4 w-4 text-blue-600" />
-            ) : (
-              <Clock className="h-4 w-4 text-gray-600" />
-            )}
-            <span className="text-sm font-mono font-semibold text-gray-700">
-              {timerValue}
-            </span>
-          </div>
-        </div>
-      )}
+    <div className={`mb-1 ${className}`} style={{ marginTop: '4px', marginBottom: '4px' }}>
       
       {/* Navigation and Question Header Row */}
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex items-center justify-between mb-1">
         {/* Previous Button */}
         <Button
           variant="ghost"

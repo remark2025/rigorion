@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { 
   Type, 
@@ -8,7 +8,12 @@ import {
   Bold,
   Italic,
   Underline,
-  Highlighter
+  Highlighter,
+  Timer,
+  Play,
+  Pause,
+  Eye,
+  EyeOff
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -56,12 +61,34 @@ interface FormattingToolbarProps {
     };
   };
   onSettingsChange: (key: string, value: string | number | object) => void;
+  timerEnabled?: boolean;
 }
 
-export const FormattingToolbar = ({ settings, onSettingsChange }: FormattingToolbarProps) => {
+export const FormattingToolbar = ({ settings, onSettingsChange, timerEnabled = true }: FormattingToolbarProps) => {
   const { isDarkMode } = useTheme();
   const [colorPickerOpen, setColorPickerOpen] = useState(false);
   const [toolbarOpen, setToolbarOpen] = useState(false);
+  
+  // Timer state
+  const [timerVisible, setTimerVisible] = useState(true);
+  const [timerPaused, setTimerPaused] = useState(false);
+  const [elapsedTime, setElapsedTime] = useState(0);
+
+  // Timer effect
+  useEffect(() => {
+    if (!timerPaused && timerVisible && timerEnabled) {
+      const interval = setInterval(() => {
+        setElapsedTime(prev => prev + 1);
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [timerPaused, timerVisible, timerEnabled]);
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
 
   const handleFontSizeChange = (increment: boolean) => {
     const currentSize = settings.fontSize;
@@ -77,16 +104,48 @@ export const FormattingToolbar = ({ settings, onSettingsChange }: FormattingTool
   };
 
   return (
-    <Popover open={toolbarOpen} onOpenChange={setToolbarOpen}>
-      <PopoverTrigger asChild>
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className="h-8 w-8 p-0 bg-white rounded-full hover:bg-gray-100"
+    <div className="flex items-center gap-2">
+      {/* Timer Component */}
+      {timerEnabled && timerVisible && (
+        <div className="flex items-center gap-1 bg-gray-100 px-2 py-1 rounded-full">
+          <Timer className="h-3 w-3 text-gray-600" />
+          <span className="text-xs font-mono text-gray-700 min-w-[35px]">
+            {formatTime(elapsedTime)}
+          </span>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setTimerPaused(!timerPaused)}
+            className="h-5 w-5 p-0 text-gray-500 hover:text-gray-700"
+          >
+            {timerPaused ? <Play className="h-2 w-2" /> : <Pause className="h-2 w-2" />}
+          </Button>
+        </div>
+      )}
+      
+      {/* Timer visibility toggle */}
+      {timerEnabled && (
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => setTimerVisible(!timerVisible)}
+          className="h-6 w-6 p-0 text-gray-500 hover:text-gray-700"
         >
-          <Type className="h-4 w-4 text-blue-600" />
+          {timerVisible ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
         </Button>
-      </PopoverTrigger>
+      )}
+      
+      {/* Font Formatting Popover */}
+      <Popover open={toolbarOpen} onOpenChange={setToolbarOpen}>
+        <PopoverTrigger asChild>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="h-8 w-8 p-0 bg-white rounded-full hover:bg-gray-100"
+          >
+            <Type className="h-4 w-4 text-blue-600" />
+          </Button>
+        </PopoverTrigger>
       <PopoverContent 
         className="w-80 p-4 bg-white border-gray-200"
         side="bottom"
@@ -236,6 +295,7 @@ export const FormattingToolbar = ({ settings, onSettingsChange }: FormattingTool
         </div>
       </PopoverContent>
     </Popover>
+    </div>
   );
 };
 

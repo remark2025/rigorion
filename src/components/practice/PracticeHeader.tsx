@@ -257,20 +257,10 @@ export const PracticeHeader = ({
     <header className={`fixed top-0 left-0 right-0 w-full z-50 border-b shadow-sm transition-all duration-300 ${
       isDarkMode ? 'bg-gray-900 border-green-500/30' : 'bg-white border-gray-200'
     }`}>
-      {/* Timer Row - Top of header */}
-      <div className="flex items-center justify-center py-1 border-b border-gray-200">
-        <div className="flex items-center gap-2 px-3 py-1 bg-gray-100 rounded-full">
-          <Timer className="h-4 w-4 text-blue-600" />
-          <span className="text-sm font-mono font-semibold text-gray-700">
-            {/* Timer will be passed from parent */}
-            00:00
-          </span>
-        </div>
-      </div>
       
       {/* Main Header Content */}
-      <div className="px-1 sm:px-2 md:px-4 py-2 sm:py-3 flex items-center justify-between">
-      <div className="flex items-center gap-1 sm:gap-2">
+      <div className="px-1 sm:px-2 md:px-4 py-2 sm:py-3 flex items-center justify-between min-h-[48px]">
+      <div className="flex items-center gap-1 sm:gap-2 min-w-0 flex-1">
         {/* Mobile Hamburger Menu */}
         <Button
           variant="ghost"
@@ -294,7 +284,7 @@ export const PracticeHeader = ({
               isDarkMode ? 'text-gray-400' : 'text-gray-500'
             }`} />
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="start" className={`w-56 shadow-xl rounded-lg p-2 z-[60] absolute ${
+          <DropdownMenuContent align="start" className={`w-56 shadow-xl rounded-lg p-2 z-[60] ${
             isDarkMode ? 'bg-gray-900 border-green-500/30' : 'bg-white border-gray-200'
           }`} sideOffset={5}>
             <ScrollArea className="h-auto max-h-[300px]">
@@ -370,7 +360,7 @@ export const PracticeHeader = ({
         )}
       </div>
       
-      <div className="flex items-center gap-1 sm:gap-2 overflow-hidden">
+      <div className="flex items-center gap-1 sm:gap-2 overflow-hidden min-w-0 flex-shrink-0">
         <FormattingToolbar 
           settings={settings}
           onSettingsChange={onSettingsChange}
@@ -392,7 +382,7 @@ export const PracticeHeader = ({
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className={`w-64 shadow-lg rounded-lg p-2 z-50 ${
             isDarkMode ? 'bg-gray-900 border-green-500/30' : 'bg-white border-gray-200'
-          }`}>
+          }`} sideOffset={5} avoidCollisions={true}>
             <div className={`px-3 py-2 text-sm font-semibold border-b mb-2 ${
               isDarkMode ? 'text-gray-300 border-gray-700' : 'text-gray-700 border-gray-200'
             }`}>
@@ -473,27 +463,27 @@ export const PracticeHeader = ({
 
 
         {/* Desktop Individual Filter Buttons */}
-        <div className="hidden md:flex items-center gap-1">
+        <div className="hidden md:flex items-center gap-1 flex-shrink-0">
           {/* Module Filter - Desktop */}
           <DropdownMenu open={isModuleDropdownOpen} onOpenChange={setIsModuleDropdownOpen}>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
                 size="sm"
-                className={`rounded-full bg-transparent transition-colors flex ${
+                className={`rounded-full bg-transparent transition-colors flex w-[100px] justify-center ${
                   isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
                 } ${selectedModule !== "All Modules" ? (isDarkMode ? 'text-green-300 bg-green-900/20' : 'text-blue-600 bg-blue-50') : ''}`}
               >
-                <BookOpen className={`h-4 w-4 mr-1 ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`} />
-                <span className={`font-thin text-xs ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                  {selectedModule === "All Modules" ? "All Modules" : selectedModule}
+                <BookOpen className={`h-4 w-4 mr-1 flex-shrink-0 ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`} />
+                <span className={`font-thin text-xs truncate max-w-[50px] ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                  {selectedModule === "All Modules" ? "All" : selectedModule}
                 </span>
-                <ChevronDown className={`ml-1 h-3 w-3 transition-transform ${isModuleDropdownOpen ? "rotate-180" : ""} ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                <ChevronDown className={`ml-1 h-3 w-3 flex-shrink-0 transition-transform ${isModuleDropdownOpen ? "rotate-180" : ""} ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className={`w-56 shadow-lg rounded-lg p-2 z-50 ${
               isDarkMode ? 'bg-gray-900 border-green-500/30' : 'bg-white border-gray-200'
-            }`}>
+            }`} sideOffset={5} avoidCollisions={true}>
               <ScrollArea className="h-[150px]">
                 {modules.map((module) => (
                   <DropdownMenuItem 
@@ -517,20 +507,20 @@ export const PracticeHeader = ({
               <Button
                 variant="ghost"
                 size="sm"
-                className={`rounded-full bg-transparent transition-colors flex ${
+                className={`rounded-full bg-transparent transition-colors flex w-[80px] justify-center ${
                   isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
                 } ${selectedExam !== null ? (isDarkMode ? 'text-green-300 bg-green-900/20' : 'text-blue-600 bg-blue-50') : ''}`}
               >
-                <Target className={`h-4 w-4 mr-1 ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`} />
-                <span className={`font-thin text-xs ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                  {selectedExam !== null ? `Exam ${selectedExam}` : "All Exams"}
+                <Target className={`h-4 w-4 mr-1 flex-shrink-0 ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`} />
+                <span className={`font-thin text-xs truncate max-w-[40px] ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                  {selectedExam !== null ? `E${selectedExam}` : "All"}
                 </span>
-                <ChevronDown className={`ml-1 h-3 w-3 transition-transform ${isExamDropdownOpen ? "rotate-180" : ""} ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                <ChevronDown className={`ml-1 h-3 w-3 flex-shrink-0 transition-transform ${isExamDropdownOpen ? "rotate-180" : ""} ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className={`w-56 shadow-lg rounded-lg p-2 z-50 ${
               isDarkMode ? 'bg-gray-900 border-green-500/30' : 'bg-white border-gray-200'
-            }`}>
+            }`} sideOffset={5} avoidCollisions={true}>
               <ScrollArea className="h-[300px]">
                 {exams.map((exam, index) => (
                   <DropdownMenuItem 
@@ -554,20 +544,20 @@ export const PracticeHeader = ({
               <Button
                 variant="ghost"
                 size="sm"
-                className={`rounded-full bg-transparent transition-colors flex ${
+                className={`rounded-full bg-transparent transition-colors flex w-[120px] justify-center ${
                   isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
                 } ${selectedChapter !== "All Chapters" ? (isDarkMode ? 'text-green-300 bg-green-900/20' : 'text-blue-600 bg-blue-50') : ''}`}
               >
-                <BookOpen className={`h-4 w-4 mr-1 ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`} />
-                <span className={`font-thin text-xs ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                  {selectedChapter}
+                <BookOpen className={`h-4 w-4 mr-1 flex-shrink-0 ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`} />
+                <span className={`font-thin text-xs truncate max-w-[70px] ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                  {selectedChapter === "All Chapters" ? "All" : selectedChapter}
                 </span>
-                <ChevronDown className={`ml-1 h-3 w-3 transition-transform ${isChapterDropdownOpen ? "rotate-180" : ""} ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                <ChevronDown className={`ml-1 h-3 w-3 flex-shrink-0 transition-transform ${isChapterDropdownOpen ? "rotate-180" : ""} ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className={`w-64 shadow-lg rounded-lg p-2 z-50 ${
               isDarkMode ? 'bg-gray-900 border-green-500/30' : 'bg-white border-gray-200'
-            }`}>
+            }`} sideOffset={5} avoidCollisions={true}>
               <ScrollArea className="h-[300px]">
                 {chapters.map((chapter, index) => (
                   <DropdownMenuItem 
@@ -616,7 +606,7 @@ export const PracticeHeader = ({
           </button>
         </div>
 
-        <div className="ml-2 flex items-center">
+        <div className="ml-2 flex items-center flex-shrink-0">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Avatar className={`h-8 w-8 cursor-pointer transition-all ${
@@ -632,7 +622,7 @@ export const PracticeHeader = ({
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className={`w-48 shadow-lg rounded-md p-1 z-50 ${
               isDarkMode ? 'bg-gray-900 border-green-500/30' : 'bg-white border-gray-200'
-            }`}>
+            }`} sideOffset={5} avoidCollisions={true}>
               <DropdownMenuItem 
                 className={`cursor-pointer py-2 rounded-sm transition-colors flex items-center text-blue-500 ${
                   isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'

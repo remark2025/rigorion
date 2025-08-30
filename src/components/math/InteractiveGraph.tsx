@@ -371,26 +371,26 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
         }}
       >
         <CardHeader 
-          className="border-b p-6"
+          className="border-b p-2"
           style={{
             borderColor: PROFESSIONAL_COLORS.accents.steel,
             background: `linear-gradient(90deg, ${PROFESSIONAL_THEME.background.deep} 0%, ${PROFESSIONAL_THEME.background.medium} 100%)`
           }}
         >
-          <CardTitle className="flex items-center justify-between" style={{ color: PROFESSIONAL_COLORS.highlights.white }}>
+          <CardTitle className="flex items-center justify-between text-sm" style={{ color: PROFESSIONAL_COLORS.highlights.white }}>
             <motion.div 
-              className="flex items-center gap-3"
+              className="flex items-center gap-2"
               initial={{ x: -20, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              <Sparkles className="h-6 w-6" />
-              <span className="text-xl font-bold">
-                🎨 Interactive Graph: {equation}
+              <Sparkles className="h-4 w-4" />
+              <span className="text-sm font-semibold">
+                Interactive Graph: {equation}
               </span>
             </motion.div>
             <motion.div 
-              className="flex gap-3"
+              className="flex gap-2"
               initial={{ x: 20, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.3 }}
@@ -399,9 +399,9 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
                 variant="outline"
                 size="sm"
                 onClick={resetParameters}
-                className="flex items-center gap-1 bg-white/10 border-white/30 text-white hover:bg-white/20 transition-all duration-300"
+                className="flex items-center gap-1 bg-white/10 border-white/30 text-white hover:bg-white/20 transition-all duration-300 h-6 px-2 text-xs"
               >
-                <RotateCcw className="h-4 w-4" />
+                <RotateCcw className="h-3 w-3" />
                 Reset
               </Button>
               <Button
@@ -409,10 +409,10 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
                 size="sm"
                 onClick={startAnimation}
                 disabled={isAnimating}
-                className="flex items-center gap-1 bg-white/10 border-white/30 text-white hover:bg-white/20 transition-all duration-300 disabled:opacity-50"
+                className="flex items-center gap-1 bg-white/10 border-white/30 text-white hover:bg-white/20 transition-all duration-300 disabled:opacity-50 h-6 px-2 text-xs"
               >
-                {isAnimating ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-                {isAnimating ? 'Animating...' : 'Animate'}
+                {isAnimating ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
+                {isAnimating ? 'Playing...' : 'Animate'}
               </Button>
             </motion.div>
           </CardTitle>

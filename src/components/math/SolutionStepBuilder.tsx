@@ -221,46 +221,35 @@ export const SolutionStepBuilder: React.FC<SolutionStepBuilderProps> = ({
   const renderMathExpression = (expression: MathExpression, stepId?: string) => {
     if (expression.editable && stepId) {
       return (
-        <motion.div 
-          className="flex items-center space-x-3 p-4 rounded-lg"
-          style={{ backgroundColor: PROFESSIONAL_MATH_COLORS.background.light }}
-          whileHover={{ scale: 1.02 }}
-        >
-          <span className="font-mono text-xl font-semibold" style={{ color: PROFESSIONAL_MATH_COLORS.primary }}>
+        <div className="flex items-center space-x-2">
+          <span className="font-mono text-sm font-semibold" style={{ color: PROFESSIONAL_MATH_COLORS.primary }}>
             {expression.display.split('___')[0]}
           </span>
           <Input
             value={stepInputs[stepId] || ''}
             onChange={(e) => handleStepInput(stepId, e.target.value)}
             placeholder={expression.placeholder || '?'}
-            className="w-24 text-center font-mono text-lg font-bold border-2"
+            className="w-16 text-center font-mono text-sm font-bold border"
             style={{
               borderColor: PROFESSIONAL_MATH_COLORS.accent,
               backgroundColor: 'white',
               color: PROFESSIONAL_MATH_COLORS.primary
             }}
           />
-          <span className="font-mono text-xl font-semibold" style={{ color: PROFESSIONAL_MATH_COLORS.primary }}>
+          <span className="font-mono text-sm font-semibold" style={{ color: PROFESSIONAL_MATH_COLORS.primary }}>
             {expression.display.split('___')[1] || ''}
           </span>
-        </motion.div>
+        </div>
       );
     }
 
     return (
-      <motion.div 
-        className="font-mono text-xl font-semibold p-4 rounded-lg border-2 shadow-sm"
-        style={{
-          backgroundColor: 'rgba(255, 255, 255, 0.9)',
-          borderColor: PROFESSIONAL_MATH_COLORS.secondary,
-          color: PROFESSIONAL_MATH_COLORS.primary
-        }}
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.3 }}
+      <span 
+        className="font-mono text-sm font-semibold"
+        style={{ color: PROFESSIONAL_MATH_COLORS.primary }}
       >
         {expression.display}
-      </motion.div>
+      </span>
     );
   };
 
@@ -295,9 +284,9 @@ export const SolutionStepBuilder: React.FC<SolutionStepBuilderProps> = ({
             <Input
               value={stepInputs[step.id] || ''}
               onChange={(e) => handleStepInput(step.id, e.target.value)}
-              placeholder="Enter your answer..."
+              placeholder="Enter answer..."
               disabled={isCompleted}
-              className="flex-1 text-sm"
+              className="w-24 text-center text-sm"
             />
             {isCurrentStep && (
               <Button
@@ -305,7 +294,7 @@ export const SolutionStepBuilder: React.FC<SolutionStepBuilderProps> = ({
                 disabled={!stepInputs[step.id]?.trim()}
                 size="sm"
                 style={{ backgroundColor: PROFESSIONAL_MATH_COLORS.primary }}
-                className="text-white hover:opacity-90"
+                className="text-white hover:opacity-90 text-xs px-3"
               >
                 Check
               </Button>
@@ -333,7 +322,7 @@ export const SolutionStepBuilder: React.FC<SolutionStepBuilderProps> = ({
         }}
       >
         <CardHeader 
-          className="border-b p-4"
+          className="border-b p-3"
           style={{
             borderColor: PROFESSIONAL_MATH_COLORS.secondary,
             background: PROFESSIONAL_MATH_COLORS.background.light
@@ -423,7 +412,7 @@ export const SolutionStepBuilder: React.FC<SolutionStepBuilderProps> = ({
           </motion.div>
       </CardHeader>
 
-      <CardContent className="p-6">
+      <CardContent className="p-4">
         <div className="relative">
           <AnimatePresence>
             {steps.map((step, index) => {
@@ -461,7 +450,7 @@ export const SolutionStepBuilder: React.FC<SolutionStepBuilderProps> = ({
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
                     transition={{ duration: 0.5 }}
-                    className="relative mb-6 p-4 rounded-lg transition-all duration-500"
+                    className="relative mb-4 p-3 rounded-lg transition-all duration-500"
                     style={{
                       backgroundColor: isCurrent 
                         ? PROFESSIONAL_MATH_COLORS.background.step
@@ -510,31 +499,32 @@ export const SolutionStepBuilder: React.FC<SolutionStepBuilderProps> = ({
                   {step.description}
                 </p>
 
-                {/* Math Content */}
-                <div className="space-y-3">
-                  {/* Partially Solved Expression */}
-                  <div className="bg-gray-50 p-3 rounded border border-gray-200">
-                    {renderMathExpression(step.fromExpression, step.id)}
-                  </div>
-
-                  {/* Interactive Fill-in Area */}
-                  {step.interactive && !isCompleted && isCurrent && (
-                    <div className="bg-blue-50 p-3 rounded border border-blue-200">
-                      {renderInteractiveElement(step, index)}
+                {/* Compact Math Content - Single Line Preview */}
+                <div className="space-y-2">
+                  {/* Expression and Interactive in One Line */}
+                  <div className="flex items-center gap-3 bg-gray-50 p-2 rounded border border-gray-200">
+                    {/* Expression */}
+                    <div className="flex-shrink-0">
+                      {renderMathExpression(step.fromExpression, step.id)}
                     </div>
-                  )}
-
-                  {/* Completed Expression */}
-                  {isCompleted && (
-                    <motion.div 
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.4 }}
-                      className="bg-green-50 p-3 rounded border border-green-200"
-                    >
-                      {renderMathExpression(step.toExpression)}
-                    </motion.div>
-                  )}
+                    
+                    {/* Interactive Element Inline */}
+                    {step.interactive && !isCompleted && isCurrent && (
+                      <div className="flex-1 min-w-0">
+                        {renderInteractiveElement(step, index)}
+                      </div>
+                    )}
+                    
+                    {/* Arrow and Result */}
+                    {isCompleted && (
+                      <>
+                        <ArrowRight className="h-4 w-4 text-green-600 flex-shrink-0" />
+                        <div className="flex-shrink-0">
+                          {renderMathExpression(step.toExpression)}
+                        </div>
+                      </>
+                    )}
+                  </div>
                 </div>
 
                 {/* Simple Explanation */}
