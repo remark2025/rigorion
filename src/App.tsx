@@ -24,6 +24,8 @@ import InteractiveMathDemo from "@/pages/InteractiveMathDemo";
 import InteractiveMathTest from "@/pages/InteractiveMathTest";
 import SimpleInteractiveTest from "@/pages/SimpleInteractiveTest";
 import ReadingSolutionDemo from "@/pages/ReadingSolutionDemo";
+import WritingSolutionDemo from "@/pages/WritingSolutionDemo";
+import AdvancedAnimationDemo from "@/pages/AdvancedAnimationDemo";
 
 function App() {
   return (
@@ -42,6 +44,8 @@ function App() {
                 <Route path="/interactive-math-test" element={<InteractiveMathTest />} />
                 <Route path="/simple-test" element={<SimpleInteractiveTest />} />
                 <Route path="/reading-demo" element={<ReadingSolutionDemo />} />
+                <Route path="/writing-demo" element={<WritingSolutionDemo />} />
+                <Route path="/advanced-animations" element={<AdvancedAnimationDemo />} />
                 <Route path="/analytics" element={<Analytics />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/payment" element={

@@ -5,7 +5,28 @@ import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { RefreshCw, Play, Pause, RotateCcw } from 'lucide-react';
+import { RefreshCw, Play, Pause, RotateCcw, Sparkles } from 'lucide-react';
+import { motion } from 'framer-motion';
+
+// Trademark Color Scheme - SAT Math Signature
+const TRADEMARK_COLORS = {
+  primary: '#6366F1',      // Vibrant indigo - main curve
+  secondary: '#8B5CF6',    // Purple - secondary elements
+  accent: '#F59E0B',       // Amber - key points
+  success: '#10B981',      // Emerald - intercepts
+  warning: '#F97316',      // Orange - vertex/special points
+  error: '#EF4444',        // Red - critical points
+  gradient: {
+    start: '#6366F1',
+    middle: '#8B5CF6',
+    end: '#EC4899'
+  },
+  background: {
+    light: 'rgba(99, 102, 241, 0.05)',
+    medium: 'rgba(99, 102, 241, 0.1)',
+    dark: 'rgba(99, 102, 241, 0.15)'
+  }
+};
 
 interface MathParameter {
   name: string;
@@ -102,28 +123,66 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
       elements.push({
         x: [vertexX],
         y: [vertexY],
-        mode: 'markers',
+        mode: 'markers+text',
         marker: {
-          color: 'red',
-          size: 12,
-          symbol: 'circle'
+          color: TRADEMARK_COLORS.warning,
+          size: 16,
+          symbol: 'diamond',
+          line: {
+            color: 'white',
+            width: 3
+          }
         },
-        name: `Vertex (${vertexX.toFixed(2)}, ${vertexY.toFixed(2)})`,
-        hovertemplate: 'Vertex<br>x: %{x:.2f}<br>y: %{y:.2f}<extra></extra>'
+        text: ['V'],
+        textposition: 'middle center',
+        textfont: {
+          color: 'white',
+          size: 10,
+          family: 'Arial, sans-serif'
+        },
+        name: `🔶 Vertex (${vertexX.toFixed(3)}, ${vertexY.toFixed(3)})`,
+        hovertemplate: '<b>🔶 Vertex Point</b><br>' +
+                       'x: %{x:.3f}<br>' +
+                       'y: %{y:.3f}<br>' +
+                       '<i>Turning point of parabola</i><extra></extra>',
+        hoverlabel: {
+          bgcolor: TRADEMARK_COLORS.warning,
+          bordercolor: 'white',
+          font: { color: 'white', size: 14 }
+        }
       });
 
       // Y-intercept
       elements.push({
         x: [0],
         y: [c],
-        mode: 'markers',
+        mode: 'markers+text',
         marker: {
-          color: 'green',
-          size: 10,
-          symbol: 'circle'
+          color: TRADEMARK_COLORS.success,
+          size: 14,
+          symbol: 'circle',
+          line: {
+            color: 'white',
+            width: 2
+          }
         },
-        name: `Y-intercept (0, ${c})`,
-        hovertemplate: 'Y-intercept<br>x: %{x}<br>y: %{y}<extra></extra>'
+        text: ['Y'],
+        textposition: 'middle center',
+        textfont: {
+          color: 'white',
+          size: 9,
+          family: 'Arial, sans-serif'
+        },
+        name: `🟢 Y-intercept (0, ${c.toFixed(3)})`,
+        hovertemplate: '<b>🟢 Y-Intercept</b><br>' +
+                       'x: %{x}<br>' +
+                       'y: %{y:.3f}<br>' +
+                       '<i>Where curve crosses y-axis</i><extra></extra>',
+        hoverlabel: {
+          bgcolor: TRADEMARK_COLORS.success,
+          bordercolor: 'white',
+          font: { color: 'white', size: 14 }
+        }
       });
 
       // X-intercepts (if they exist)
@@ -135,14 +194,35 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
         elements.push({
           x: discriminant === 0 ? [x1] : [x1, x2],
           y: discriminant === 0 ? [0] : [0, 0],
-          mode: 'markers',
+          mode: 'markers+text',
           marker: {
-            color: 'blue',
-            size: 10,
-            symbol: 'circle'
+            color: TRADEMARK_COLORS.secondary,
+            size: 14,
+            symbol: 'square',
+            line: {
+              color: 'white',
+              width: 2
+            }
           },
-          name: discriminant === 0 ? `X-intercept (${x1.toFixed(2)}, 0)` : 'X-intercepts',
-          hovertemplate: 'X-intercept<br>x: %{x:.2f}<br>y: %{y}<extra></extra>'
+          text: discriminant === 0 ? ['X'] : ['X₁', 'X₂'],
+          textposition: 'middle center',
+          textfont: {
+            color: 'white',
+            size: 9,
+            family: 'Arial, sans-serif'
+          },
+          name: discriminant === 0 ? 
+            `🟪 X-intercept (${x1.toFixed(3)}, 0)` : 
+            `🟪 X-intercepts (${x1.toFixed(3)}, 0) & (${x2.toFixed(3)}, 0)`,
+          hovertemplate: '<b>🟪 X-Intercept</b><br>' +
+                         'x: %{x:.3f}<br>' +
+                         'y: %{y}<br>' +
+                         '<i>Where curve crosses x-axis</i><extra></extra>',
+          hoverlabel: {
+            bgcolor: TRADEMARK_COLORS.secondary,
+            bordercolor: 'white',
+            font: { color: 'white', size: 14 }
+          }
         });
       }
     }
@@ -186,6 +266,7 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
   const graphData = generateGraphData();
   const visualElements = generateVisualElements();
 
+  // Enhanced plot data with trademark styling
   const plotData = [
     {
       x: graphData.x,
@@ -193,142 +274,292 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
       type: 'scatter',
       mode: 'lines',
       line: {
-        color: '#3B82F6',
-        width: 3
+        color: TRADEMARK_COLORS.primary,
+        width: 4,
+        shape: 'spline',
+        smoothing: 0.3
       },
       name: equation,
-      hovertemplate: 'x: %{x:.2f}<br>y: %{y:.2f}<extra></extra>'
+      hovertemplate: '<b>%{fullData.name}</b><br>' +
+                     'x: %{x:.3f}<br>' +
+                     'y: %{y:.3f}<br>' +
+                     '<extra></extra>',
+      hoverlabel: {
+        bgcolor: TRADEMARK_COLORS.primary,
+        bordercolor: 'white',
+        font: { color: 'white', size: 14 }
+      }
     },
     ...visualElements
   ];
 
+  // Enhanced layout with trademark styling
   const layout = {
     title: {
-      text: config.title,
-      font: { size: 18 }
+      text: `🎨 ${config.title}`,
+      font: { 
+        size: 20, 
+        color: TRADEMARK_COLORS.primary,
+        family: 'Inter, Arial, sans-serif'
+      },
+      x: 0.5,
+      xanchor: 'center'
     },
     xaxis: {
-      title: 'x',
+      title: {
+        text: 'x-axis',
+        font: { color: TRADEMARK_COLORS.primary, size: 14 }
+      },
       range: config.xRange,
       zeroline: config.showAxis,
+      zerolinecolor: TRADEMARK_COLORS.primary,
+      zerolinewidth: 2,
       showgrid: config.showGrid,
-      gridcolor: '#E5E7EB'
+      gridcolor: 'rgba(99, 102, 241, 0.2)',
+      gridwidth: 1,
+      tickcolor: TRADEMARK_COLORS.primary,
+      tickfont: { color: TRADEMARK_COLORS.primary }
     },
     yaxis: {
-      title: 'y', 
+      title: {
+        text: 'y-axis',
+        font: { color: TRADEMARK_COLORS.primary, size: 14 }
+      },
       range: config.yRange,
       zeroline: config.showAxis,
+      zerolinecolor: TRADEMARK_COLORS.primary,
+      zerolinewidth: 2,
       showgrid: config.showGrid,
-      gridcolor: '#E5E7EB'
+      gridcolor: 'rgba(99, 102, 241, 0.2)',
+      gridwidth: 1,
+      tickcolor: TRADEMARK_COLORS.primary,
+      tickfont: { color: TRADEMARK_COLORS.primary }
     },
-    plot_bgcolor: 'rgba(0,0,0,0)',
-    paper_bgcolor: 'rgba(0,0,0,0)',
+    plot_bgcolor: TRADEMARK_COLORS.background.light,
+    paper_bgcolor: 'rgba(255, 255, 255, 0.95)',
     showlegend: true,
     legend: {
       x: 0.02,
-      y: 0.98
+      y: 0.98,
+      bgcolor: 'rgba(255, 255, 255, 0.9)',
+      bordercolor: TRADEMARK_COLORS.primary,
+      borderwidth: 1,
+      font: {
+        color: TRADEMARK_COLORS.primary,
+        size: 12
+      }
     },
-    margin: { t: 50, r: 20, b: 50, l: 50 }
+    margin: { t: 60, r: 30, b: 60, l: 60 },
+    hovermode: 'closest',
+    dragmode: 'pan'
   };
 
   return (
-    <Card className={`w-full ${className}`}>
-      <CardHeader>
-        <CardTitle className="flex items-center justify-between">
-          <span>Interactive Graph: {equation}</span>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={resetParameters}
-              className="flex items-center gap-1"
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+      className={className}
+    >
+      <Card 
+        className="w-full border-2 shadow-xl overflow-hidden"
+        style={{
+          borderColor: TRADEMARK_COLORS.primary,
+          background: `linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(99, 102, 241, 0.02) 100%)`
+        }}
+      >
+        <CardHeader 
+          className="border-b-2 p-6"
+          style={{
+            borderColor: TRADEMARK_COLORS.primary,
+            background: `linear-gradient(90deg, ${TRADEMARK_COLORS.gradient.start} 0%, ${TRADEMARK_COLORS.gradient.middle} 50%, ${TRADEMARK_COLORS.gradient.end} 100%)`
+          }}
+        >
+          <CardTitle className="flex items-center justify-between text-white">
+            <motion.div 
+              className="flex items-center gap-3"
+              initial={{ x: -20, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
             >
-              <RotateCcw className="h-4 w-4" />
-              Reset
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={startAnimation}
-              disabled={isAnimating}
-              className="flex items-center gap-1"
+              <Sparkles className="h-6 w-6" />
+              <span className="text-xl font-bold">
+                🎨 Interactive Graph: {equation}
+              </span>
+            </motion.div>
+            <motion.div 
+              className="flex gap-3"
+              initial={{ x: 20, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
             >
-              {isAnimating ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
-              {isAnimating ? 'Animating...' : 'Animate'}
-            </Button>
-          </div>
-        </CardTitle>
-      </CardHeader>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={resetParameters}
+                className="flex items-center gap-1 bg-white/10 border-white/30 text-white hover:bg-white/20 transition-all duration-300"
+              >
+                <RotateCcw className="h-4 w-4" />
+                Reset
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={startAnimation}
+                disabled={isAnimating}
+                className="flex items-center gap-1 bg-white/10 border-white/30 text-white hover:bg-white/20 transition-all duration-300 disabled:opacity-50"
+              >
+                {isAnimating ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                {isAnimating ? 'Animating...' : 'Animate'}
+              </Button>
+            </motion.div>
+          </CardTitle>
+        </CardHeader>
       <CardContent className="space-y-6">
-        {/* Interactive Graph */}
-        <div className="w-full h-96 border border-gray-200 rounded-lg">
+        {/* Interactive Graph with Trademark Styling */}
+        <motion.div 
+          className="w-full h-96 border-2 rounded-xl shadow-lg overflow-hidden"
+          style={{
+            borderColor: TRADEMARK_COLORS.primary,
+            background: `linear-gradient(135deg, ${TRADEMARK_COLORS.background.light} 0%, ${TRADEMARK_COLORS.background.medium} 100%)`
+          }}
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+        >
           <Plot
             data={plotData}
             layout={layout}
             config={{
               displayModeBar: true,
               displaylogo: false,
-              modeBarButtonsToRemove: ['pan2d', 'lasso2d', 'select2d']
+              modeBarButtonsToRemove: ['pan2d', 'lasso2d', 'select2d'],
+              toImageButtonOptions: {
+                format: 'png',
+                filename: 'sat_math_graph',
+                height: 500,
+                width: 700,
+                scale: 2
+              }
             }}
             style={{ width: '100%', height: '100%' }}
             useResizeHandler={true}
           />
-        </div>
+        </motion.div>
 
-        {/* Parameter Controls */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {initialParameters.map((param) => (
-            <div key={param.name} className="space-y-3">
+        {/* Enhanced Parameter Controls */}
+        <motion.div 
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
+          {initialParameters.map((param, index) => (
+            <motion.div 
+              key={param.name} 
+              className="space-y-3 p-4 rounded-lg border-2 shadow-sm"
+              style={{
+                borderColor: TRADEMARK_COLORS.secondary,
+                background: `linear-gradient(135deg, rgba(139, 92, 246, 0.05) 0%, rgba(99, 102, 241, 0.05) 100%)`
+              }}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.4, delay: index * 0.1 }}
+              whileHover={{ scale: 1.02 }}
+            >
               <div className="flex items-center justify-between">
-                <Label htmlFor={param.name} className="text-sm font-medium">
+                <Label 
+                  htmlFor={param.name} 
+                  className="text-sm font-semibold flex items-center gap-2"
+                  style={{ color: TRADEMARK_COLORS.primary }}
+                >
+                  <Sparkles className="h-4 w-4" style={{ color: TRADEMARK_COLORS.accent }} />
                   {param.label}
                 </Label>
                 <Input
                   id={param.name}
                   type="number"
-                  value={parameters[param.name]?.toFixed(2) || param.value}
+                  value={parameters[param.name]?.toFixed(3) || param.value}
                   onChange={(e) => handleParameterChange(param.name, parseFloat(e.target.value) || param.value)}
-                  className="w-20 h-8 text-center"
+                  className="w-24 h-8 text-center font-mono font-semibold border-2"
+                  style={{
+                    borderColor: TRADEMARK_COLORS.accent,
+                    backgroundColor: 'rgba(245, 158, 11, 0.1)'
+                  }}
                   step={param.step}
                   min={param.min}
                   max={param.max}
                 />
               </div>
               
-              <Slider
-                value={[parameters[param.name] || param.value]}
-                onValueChange={(values) => handleParameterChange(param.name, values[0])}
-                min={param.min}
-                max={param.max}
-                step={param.step}
-                className="w-full"
-              />
+              <div className="relative">
+                <Slider
+                  value={[parameters[param.name] || param.value]}
+                  onValueChange={(values) => handleParameterChange(param.name, values[0])}
+                  min={param.min}
+                  max={param.max}
+                  step={param.step}
+                  className="w-full"
+                />
+                <div className="flex justify-between text-xs mt-1" style={{ color: TRADEMARK_COLORS.secondary }}>
+                  <span>{param.min}</span>
+                  <span>{param.max}</span>
+                </div>
+              </div>
               
               {param.description && (
-                <p className="text-xs text-gray-500">{param.description}</p>
+                <p className="text-xs italic" style={{ color: TRADEMARK_COLORS.secondary }}>
+                  {param.description}
+                </p>
               )}
-            </div>
+            </motion.div>
           ))}
-        </div>
+        </motion.div>
 
-        {/* Current Equation Display */}
-        <div className="mt-4 p-3 bg-blue-50 rounded-lg">
-          <p className="text-sm font-medium text-blue-800">Current Equation:</p>
-          <p className="text-lg font-mono text-blue-900">
+        {/* Enhanced Current Equation Display */}
+        <motion.div 
+          className="mt-6 p-5 rounded-xl border-2 shadow-md"
+          style={{
+            borderColor: TRADEMARK_COLORS.accent,
+            background: `linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(99, 102, 241, 0.05) 100%)`
+          }}
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
+        >
+          <div className="flex items-center gap-2 mb-3">
+            <Sparkles className="h-5 w-5" style={{ color: TRADEMARK_COLORS.accent }} />
+            <p className="text-lg font-bold" style={{ color: TRADEMARK_COLORS.primary }}>
+              Live Equation:
+            </p>
+          </div>
+          <motion.p 
+            className="text-2xl font-mono font-bold p-3 rounded-lg text-center"
+            style={{
+              color: TRADEMARK_COLORS.primary,
+              backgroundColor: 'rgba(255, 255, 255, 0.8)',
+              border: `2px solid ${TRADEMARK_COLORS.primary}`
+            }}
+            key={JSON.stringify(parameters)} // Re-animate when parameters change
+            initial={{ scale: 0.95, opacity: 0.7 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.3 }}
+          >
             {config.type === 'quadratic' && 
-              `y = ${parameters.a?.toFixed(2) || 1}x² + ${parameters.b?.toFixed(2) || 0}x + ${parameters.c?.toFixed(2) || 0}`}
+              `y = ${parameters.a?.toFixed(3) || 1}x² ${parameters.b >= 0 ? '+' : ''}${parameters.b?.toFixed(3) || 0}x ${parameters.c >= 0 ? '+' : ''}${parameters.c?.toFixed(3) || 0}`}
             {config.type === 'linear' && 
-              `y = ${parameters.m?.toFixed(2) || 1}x + ${parameters.b?.toFixed(2) || 0}`}
+              `y = ${parameters.m?.toFixed(3) || 1}x ${parameters.b >= 0 ? '+' : ''}${parameters.b?.toFixed(3) || 0}`}
             {config.type === 'exponential' && 
-              `y = ${parameters.a?.toFixed(2) || 1} × ${parameters.b?.toFixed(2) || 2}^x`}
+              `y = ${parameters.a?.toFixed(3) || 1} × ${parameters.b?.toFixed(3) || 2}^x`}
             {config.type === 'absolute' && 
-              `y = ${parameters.a?.toFixed(2) || 1}|x - ${parameters.h?.toFixed(2) || 0}| + ${parameters.k?.toFixed(2) || 0}`}
+              `y = ${parameters.a?.toFixed(3) || 1}|x ${parameters.h >= 0 ? '-' : '+'}${Math.abs(parameters.h?.toFixed(3)) || 0}| ${parameters.k >= 0 ? '+' : ''}${parameters.k?.toFixed(3) || 0}`}
             {config.type === 'polynomial' && 
-              `y = ${parameters.a?.toFixed(2) || 1}x³ + ${parameters.b?.toFixed(2) || 0}x² + ${parameters.c?.toFixed(2) || 0}x + ${parameters.d?.toFixed(2) || 0}`}
-          </p>
-        </div>
+              `y = ${parameters.a?.toFixed(3) || 1}x³ ${parameters.b >= 0 ? '+' : ''}${parameters.b?.toFixed(3) || 0}x² ${parameters.c >= 0 ? '+' : ''}${parameters.c?.toFixed(3) || 0}x ${parameters.d >= 0 ? '+' : ''}${parameters.d?.toFixed(3) || 0}`}
+          </motion.p>
+        </motion.div>
       </CardContent>
     </Card>
+    </motion.div>
   );
 };
 

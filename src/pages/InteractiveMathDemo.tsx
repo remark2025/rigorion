@@ -170,20 +170,42 @@ const InteractiveMathDemo: React.FC = () => {
             <CardTitle>🌟 Interactive Features</CardTitle>
           </CardHeader>
           <CardContent>
+            <div className="mb-4 p-4 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-lg border-2 border-indigo-300">
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-2xl">🎨</span>
+                  <h3 className="font-bold text-indigo-800">NEW: Enhanced Experience!</h3>
+                </div>
+                <Button
+                  onClick={() => navigate('/advanced-animations')}
+                  className="bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white shadow-lg"
+                  size="sm"
+                >
+                  🚀 See All Animations
+                </Button>
+              </div>
+              <p className="text-indigo-700 text-sm">
+                ✨ <strong>Trademark Visual Design</strong> - Signature colors and animations<br/>
+                🔊 <strong>Sound Effects</strong> - Audio feedback for interactions (click sound button to toggle)<br/>
+                ⚡ <strong>Smooth Animations</strong> - Fluid transitions and visual enhancements<br/>
+                🔷 <strong>NEW: 3D Geometry</strong> - Interactive Three.js visualizations and particle systems
+              </p>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="text-center p-4 border rounded-lg">
-                <LineChart className="h-8 w-8 mx-auto mb-2 text-blue-600" />
+                <LineChart className="h-8 w-8 mx-auto mb-2 text-indigo-600" />
                 <h3 className="font-semibold mb-1">Dynamic Graphs</h3>
                 <p className="text-sm text-gray-600">
-                  Real-time parameter changes with visual feedback
+                  Real-time parameter changes with trademark visual styling
                 </p>
               </div>
               
               <div className="text-center p-4 border rounded-lg">
-                <Calculator className="h-8 w-8 mx-auto mb-2 text-green-600" />
+                <Calculator className="h-8 w-8 mx-auto mb-2 text-emerald-600" />
                 <h3 className="font-semibold mb-1">Step Builder</h3>
                 <p className="text-sm text-gray-600">
-                  Interactive step-by-step solution process
+                  Interactive solutions with sound effects and animations
                 </p>
               </div>
               

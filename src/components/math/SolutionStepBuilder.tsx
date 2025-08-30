@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,8 +13,33 @@ import {
   RotateCcw,
   Eye,
   EyeOff,
-  Play
+  Play,
+  Volume2,
+  VolumeX,
+  Sparkles,
+  Zap
 } from 'lucide-react';
+import { mathSounds } from '@/utils/mathSounds';
+
+// Trademark Color Scheme matching InteractiveGraph
+const MATH_COLORS = {
+  primary: '#6366F1',      // Vibrant indigo
+  secondary: '#8B5CF6',    // Purple
+  accent: '#F59E0B',       // Amber
+  success: '#10B981',      // Emerald
+  warning: '#F97316',      // Orange
+  error: '#EF4444',        // Red
+  gradient: {
+    start: '#6366F1',
+    middle: '#8B5CF6', 
+    end: '#EC4899'
+  },
+  background: {
+    light: 'rgba(99, 102, 241, 0.05)',
+    medium: 'rgba(99, 102, 241, 0.1)',
+    dark: 'rgba(99, 102, 241, 0.15)'
+  }
+};
 
 interface MathExpression {
   latex: string;
@@ -64,6 +89,8 @@ export const SolutionStepBuilder: React.FC<SolutionStepBuilderProps> = ({
   const [showHint, setShowHint] = useState<Record<string, boolean>>({});
   const [revealedSteps, setRevealedSteps] = useState<Set<number>>(new Set([0]));
   const [autoPlay, setAutoPlay] = useState(false);
+  const [soundEnabled, setSoundEnabled] = useState(true);
+  const [animationIntensity, setAnimationIntensity] = useState(1);
 
   const handleStepInput = (stepId: string, value: string) => {
     setStepInputs(prev => ({ ...prev, [stepId]: value }));
@@ -89,34 +116,56 @@ export const SolutionStepBuilder: React.FC<SolutionStepBuilderProps> = ({
     }
   }, []);
 
-  const completeStep = (stepId: string, stepIndex: number) => {
+  const completeStep = async (stepId: string, stepIndex: number) => {
     const step = steps.find(s => s.id === stepId);
     if (!step) return;
 
     const userInput = stepInputs[stepId] || '';
     const isCorrect = validateStep(step, userInput);
 
+    // Play sound based on correctness
+    if (soundEnabled) {
+      if (isCorrect) {
+        await mathSounds.playStepComplete();
+      } else {
+        await mathSounds.playError();
+      }
+    }
+
     setCompletedSteps(prev => new Set([...prev, stepId]));
     
-    // Reveal next step
+    // Reveal next step with enhanced animation
     if (stepIndex < steps.length - 1) {
-      setRevealedSteps(prev => new Set([...prev, stepIndex + 1]));
-      setCurrentStep(stepIndex + 1);
+      setTimeout(() => {
+        setRevealedSteps(prev => new Set([...prev, stepIndex + 1]));
+        setCurrentStep(stepIndex + 1);
+      }, isCorrect ? 500 : 1000); // Longer delay if incorrect
     }
 
     onStepComplete?.(stepId, isCorrect, userInput);
 
     // Check if all steps are complete
     if (completedSteps.size + 1 >= steps.length) {
-      setTimeout(() => onAllStepsComplete?.(), 500);
+      setTimeout(async () => {
+        if (soundEnabled) {
+          await mathSounds.playVictory();
+        }
+        onAllStepsComplete?.();
+      }, 800);
     }
   };
 
-  const toggleHint = (stepId: string) => {
+  const toggleHint = async (stepId: string) => {
+    if (soundEnabled && !showHint[stepId]) {
+      await mathSounds.playHint();
+    }
     setShowHint(prev => ({ ...prev, [stepId]: !prev[stepId] }));
   };
 
-  const resetSolution = () => {
+  const resetSolution = async () => {
+    if (soundEnabled) {
+      await mathSounds.playReset();
+    }
     setCurrentStep(0);
     setCompletedSteps(new Set());
     setStepInputs({});
@@ -125,20 +174,26 @@ export const SolutionStepBuilder: React.FC<SolutionStepBuilderProps> = ({
     setAutoPlay(false);
   };
 
-  const startAutoPlay = () => {
+  const startAutoPlay = async () => {
+    if (soundEnabled) {
+      await mathSounds.playAnimationStart();
+    }
     setAutoPlay(true);
     let stepIndex = 0;
     
-    const revealNext = () => {
+    const revealNext = async () => {
       if (stepIndex < steps.length) {
         setRevealedSteps(prev => new Set([...prev, stepIndex]));
         setCurrentStep(stepIndex);
         
         if (stepIndex < steps.length - 1) {
           stepIndex++;
-          setTimeout(revealNext, 2000); // 2 second delay between steps
+          setTimeout(revealNext, 2500); // Slightly longer delay for better experience
         } else {
           setAutoPlay(false);
+          if (soundEnabled) {
+            setTimeout(() => mathSounds.playSuccess(), 500);
+          }
         }
       }
     };
@@ -149,23 +204,46 @@ export const SolutionStepBuilder: React.FC<SolutionStepBuilderProps> = ({
   const renderMathExpression = (expression: MathExpression, stepId?: string) => {
     if (expression.editable && stepId) {
       return (
-        <div className="flex items-center space-x-2">
-          <span className="font-mono text-lg">{expression.display.split('___')[0]}</span>
+        <motion.div 
+          className="flex items-center space-x-3 p-4 rounded-lg"
+          style={{ backgroundColor: MATH_COLORS.background.light }}
+          whileHover={{ scale: 1.02 }}
+        >
+          <span className="font-mono text-xl font-semibold" style={{ color: MATH_COLORS.primary }}>
+            {expression.display.split('___')[0]}
+          </span>
           <Input
             value={stepInputs[stepId] || ''}
             onChange={(e) => handleStepInput(stepId, e.target.value)}
             placeholder={expression.placeholder || '?'}
-            className="w-20 text-center font-mono"
+            className="w-24 text-center font-mono text-lg font-bold border-2"
+            style={{
+              borderColor: MATH_COLORS.accent,
+              backgroundColor: 'white',
+              color: MATH_COLORS.primary
+            }}
           />
-          <span className="font-mono text-lg">{expression.display.split('___')[1] || ''}</span>
-        </div>
+          <span className="font-mono text-xl font-semibold" style={{ color: MATH_COLORS.primary }}>
+            {expression.display.split('___')[1] || ''}
+          </span>
+        </motion.div>
       );
     }
 
     return (
-      <div className="font-mono text-lg bg-gray-50 p-3 rounded-lg border">
+      <motion.div 
+        className="font-mono text-xl font-semibold p-4 rounded-lg border-2 shadow-sm"
+        style={{
+          backgroundColor: 'rgba(255, 255, 255, 0.9)',
+          borderColor: MATH_COLORS.secondary,
+          color: MATH_COLORS.primary
+        }}
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.3 }}
+      >
         {expression.display}
-      </div>
+      </motion.div>
     );
   };
 
@@ -222,43 +300,98 @@ export const SolutionStepBuilder: React.FC<SolutionStepBuilderProps> = ({
   };
 
   return (
-    <Card className={`w-full ${className}`}>
-      <CardHeader>
-        <CardTitle className="flex items-center justify-between">
-          <span>{title}</span>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={startAutoPlay}
-              disabled={autoPlay}
-              className="flex items-center gap-1"
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+      className={className}
+    >
+      <Card 
+        className="w-full border-2 shadow-xl overflow-hidden"
+        style={{
+          borderColor: MATH_COLORS.primary,
+          background: `linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(99, 102, 241, 0.02) 100%)`
+        }}
+      >
+        <CardHeader 
+          className="border-b-2 p-6"
+          style={{
+            borderColor: MATH_COLORS.primary,
+            background: `linear-gradient(90deg, ${MATH_COLORS.gradient.start} 0%, ${MATH_COLORS.gradient.middle} 50%, ${MATH_COLORS.gradient.end} 100%)`
+          }}
+        >
+          <CardTitle className="flex items-center justify-between text-white">
+            <motion.div 
+              className="flex items-center gap-3"
+              initial={{ x: -20, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
             >
-              <Play className="h-4 w-4" />
-              {autoPlay ? 'Playing...' : 'Auto Play'}
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={resetSolution}
-              className="flex items-center gap-1"
+              <Zap className="h-6 w-6" />
+              <span className="text-xl font-bold">
+                ⚡ {title}
+              </span>
+            </motion.div>
+            <motion.div 
+              className="flex gap-2"
+              initial={{ x: 20, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
             >
-              <RotateCcw className="h-4 w-4" />
-              Reset
-            </Button>
-          </div>
-        </CardTitle>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setSoundEnabled(!soundEnabled)}
+                className="flex items-center gap-1 bg-white/10 border-white/30 text-white hover:bg-white/20 transition-all duration-300"
+              >
+                {soundEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+                {soundEnabled ? 'Sound On' : 'Sound Off'}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={startAutoPlay}
+                disabled={autoPlay}
+                className="flex items-center gap-1 bg-white/10 border-white/30 text-white hover:bg-white/20 transition-all duration-300 disabled:opacity-50"
+              >
+                <Play className="h-4 w-4" />
+                {autoPlay ? 'Playing...' : 'Auto Play'}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={resetSolution}
+                className="flex items-center gap-1 bg-white/10 border-white/30 text-white hover:bg-white/20 transition-all duration-300"
+              >
+                <RotateCcw className="h-4 w-4" />
+                Reset
+              </Button>
+            </motion.div>
+          </CardTitle>
         
-        {/* Progress Bar */}
-        <div className="w-full bg-gray-200 rounded-full h-2">
-          <div 
-            className="bg-blue-600 h-2 rounded-full transition-all duration-500"
-            style={{ width: `${(completedSteps.size / steps.length) * 100}%` }}
-          />
-        </div>
-        <p className="text-sm text-gray-600">
-          Progress: {completedSteps.size} of {steps.length} steps complete
-        </p>
+          {/* Enhanced Progress Bar */}
+          <motion.div className="mt-4">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-sm font-medium text-white flex items-center gap-2">
+                <Sparkles className="h-4 w-4" />
+                Progress: {completedSteps.size} of {steps.length} steps
+              </span>
+              <span className="text-sm text-white/80">
+                {Math.round((completedSteps.size / steps.length) * 100)}% Complete
+              </span>
+            </div>
+            <div className="w-full bg-white/20 rounded-full h-3 overflow-hidden">
+              <motion.div 
+                className="h-3 rounded-full transition-all duration-1000"
+                style={{
+                  background: `linear-gradient(90deg, ${MATH_COLORS.success} 0%, ${MATH_COLORS.accent} 100%)`,
+                  width: `${(completedSteps.size / steps.length) * 100}%`
+                }}
+                initial={{ width: '0%' }}
+                animate={{ width: `${(completedSteps.size / steps.length) * 100}%` }}
+              />
+            </div>
+          </motion.div>
       </CardHeader>
 
       <CardContent className="space-y-6">
@@ -277,32 +410,82 @@ export const SolutionStepBuilder: React.FC<SolutionStepBuilderProps> = ({
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ duration: 0.5 }}
-                className={`border rounded-lg p-4 ${
-                  isCurrent 
-                    ? 'border-blue-500 bg-blue-50' 
+                className="border-2 rounded-xl p-6 shadow-lg transition-all duration-500"
+                style={{
+                  borderColor: isCurrent 
+                    ? MATH_COLORS.primary
                     : isCompleted 
-                    ? 'border-green-500 bg-green-50' 
-                    : 'border-gray-200'
-                }`}
+                    ? MATH_COLORS.success 
+                    : '#E5E7EB',
+                  backgroundColor: isCurrent 
+                    ? MATH_COLORS.background.light
+                    : isCompleted 
+                    ? 'rgba(16, 185, 129, 0.05)'
+                    : 'rgba(255, 255, 255, 0.9)',
+                  boxShadow: isCurrent 
+                    ? `0 0 20px ${MATH_COLORS.primary}20`
+                    : isCompleted
+                    ? `0 0 15px ${MATH_COLORS.success}15`
+                    : '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                }}
               >
                 {/* Step Header */}
                 <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center space-x-3">
-                    {isCompleted ? (
-                      <CheckCircle className="h-6 w-6 text-green-600" />
-                    ) : (
-                      <Circle className="h-6 w-6 text-gray-400" />
-                    )}
+                  <div className="flex items-center space-x-4">
+                    <motion.div
+                      initial={{ scale: 0.8 }}
+                      animate={{ scale: 1 }}
+                      transition={{ duration: 0.3, delay: 0.1 }}
+                    >
+                      {isCompleted ? (
+                        <div 
+                          className="h-8 w-8 rounded-full flex items-center justify-center"
+                          style={{ backgroundColor: MATH_COLORS.success }}
+                        >
+                          <CheckCircle className="h-5 w-5 text-white" />
+                        </div>
+                      ) : isCurrent ? (
+                        <div 
+                          className="h-8 w-8 rounded-full flex items-center justify-center animate-pulse"
+                          style={{ backgroundColor: MATH_COLORS.primary }}
+                        >
+                          <Zap className="h-4 w-4 text-white" />
+                        </div>
+                      ) : (
+                        <div className="h-8 w-8 rounded-full border-2 border-gray-300 flex items-center justify-center">
+                          <span className="text-sm font-semibold text-gray-400">{index + 1}</span>
+                        </div>
+                      )}
+                    </motion.div>
                     <div>
-                      <h3 className="font-semibold text-lg">Step {index + 1}: {step.title}</h3>
-                      <p className="text-sm text-gray-600">{step.description}</p>
+                      <h3 
+                        className="font-bold text-xl flex items-center gap-2"
+                        style={{ color: isCurrent ? MATH_COLORS.primary : isCompleted ? MATH_COLORS.success : '#374151' }}
+                      >
+                        Step {index + 1}: {step.title}
+                        {isCurrent && <Sparkles className="h-4 w-4" style={{ color: MATH_COLORS.accent }} />}
+                      </h3>
+                      <p className="text-sm" style={{ color: '#6B7280' }}>{step.description}</p>
                     </div>
                   </div>
 
-                  {/* Status Badge */}
-                  <Badge variant={isCompleted ? 'default' : isCurrent ? 'secondary' : 'outline'}>
-                    {isCompleted ? 'Complete' : isCurrent ? 'Current' : 'Pending'}
-                  </Badge>
+                  {/* Enhanced Status Badge */}
+                  <motion.div
+                    initial={{ scale: 0.9, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ duration: 0.3, delay: 0.2 }}
+                  >
+                    <Badge 
+                      className="px-3 py-1 text-xs font-semibold"
+                      style={{
+                        backgroundColor: isCompleted ? MATH_COLORS.success : isCurrent ? MATH_COLORS.primary : 'transparent',
+                        color: isCompleted || isCurrent ? 'white' : MATH_COLORS.primary,
+                        border: `2px solid ${isCompleted ? MATH_COLORS.success : isCurrent ? MATH_COLORS.primary : MATH_COLORS.primary}`
+                      }}
+                    >
+                      {isCompleted ? '✓ Complete' : isCurrent ? '⚡ Active' : '⏳ Pending'}
+                    </Badge>
+                  </motion.div>
                 </div>
 
                 {/* Math Expressions */}
@@ -310,10 +493,20 @@ export const SolutionStepBuilder: React.FC<SolutionStepBuilderProps> = ({
                   {/* From Expression */}
                   {renderMathExpression(step.fromExpression, step.id)}
                   
-                  {/* Arrow */}
-                  <div className="flex justify-center">
-                    <ArrowDown className="h-6 w-6 text-gray-400" />
-                  </div>
+                  {/* Enhanced Arrow */}
+                  <motion.div 
+                    className="flex justify-center"
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.2 }}
+                  >
+                    <div 
+                      className="p-2 rounded-full"
+                      style={{ backgroundColor: isCurrent ? MATH_COLORS.primary : MATH_COLORS.secondary }}
+                    >
+                      <ArrowDown className="h-5 w-5 text-white" />
+                    </div>
+                  </motion.div>
 
                   {/* Interactive Element */}
                   {renderInteractiveElement(step, index)}
@@ -321,23 +514,41 @@ export const SolutionStepBuilder: React.FC<SolutionStepBuilderProps> = ({
                   {/* To Expression (shown after completion or if not interactive) */}
                   {(isCompleted || !step.interactive) && (
                     <>
-                      <div className="flex justify-center">
-                        <ArrowDown className="h-6 w-6 text-green-500" />
-                      </div>
+                      <motion.div 
+                        className="flex justify-center"
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.5 }}
+                      >
+                        <div 
+                          className="p-2 rounded-full"
+                          style={{ backgroundColor: MATH_COLORS.success }}
+                        >
+                          <ArrowDown className="h-5 w-5 text-white" />
+                        </div>
+                      </motion.div>
                       {renderMathExpression(step.toExpression)}
                     </>
                   )}
                 </div>
 
-                {/* Explanation */}
+                {/* Enhanced Explanation */}
                 {isCompleted && (
                   <motion.div
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
-                    className="mt-4 p-3 bg-green-100 rounded-lg border-l-4 border-green-500"
+                    transition={{ duration: 0.6, delay: 0.3 }}
+                    className="mt-6 p-4 rounded-xl border-l-4 shadow-sm"
+                    style={{
+                      backgroundColor: 'rgba(16, 185, 129, 0.08)',
+                      borderLeftColor: MATH_COLORS.success
+                    }}
                   >
-                    <p className="text-sm font-medium text-green-800">Explanation:</p>
-                    <p className="text-sm text-green-700">{step.explanation}</p>
+                    <div className="flex items-center gap-2 mb-2">
+                      <CheckCircle className="h-5 w-5" style={{ color: MATH_COLORS.success }} />
+                      <p className="font-bold text-lg" style={{ color: MATH_COLORS.success }}>Perfect! Here's why:</p>
+                    </div>
+                    <p className="text-base leading-relaxed" style={{ color: '#059669' }}>{step.explanation}</p>
                   </motion.div>
                 )}
 
@@ -356,13 +567,26 @@ export const SolutionStepBuilder: React.FC<SolutionStepBuilderProps> = ({
                     
                     {showHint[step.id] && (
                       <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        className="mt-2 p-3 bg-blue-100 rounded-lg border-l-4 border-blue-500"
+                        initial={{ opacity: 0, height: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, height: 'auto', scale: 1 }}
+                        transition={{ duration: 0.4 }}
+                        className="mt-3 p-4 rounded-xl border-l-4 shadow-sm"
+                        style={{
+                          backgroundColor: 'rgba(245, 158, 11, 0.08)',
+                          borderLeftColor: MATH_COLORS.accent
+                        }}
                       >
-                        <div className="flex items-start gap-2">
-                          <Lightbulb className="h-4 w-4 text-blue-600 mt-0.5" />
-                          <p className="text-sm text-blue-700">{step.hint}</p>
+                        <div className="flex items-start gap-3">
+                          <div 
+                            className="p-1 rounded-full mt-0.5"
+                            style={{ backgroundColor: MATH_COLORS.accent }}
+                          >
+                            <Lightbulb className="h-4 w-4 text-white" />
+                          </div>
+                          <div>
+                            <p className="font-semibold mb-1" style={{ color: MATH_COLORS.accent }}>💡 Helpful Hint:</p>
+                            <p className="text-base leading-relaxed" style={{ color: '#D97706' }}>{step.hint}</p>
+                          </div>
                         </div>
                       </motion.div>
                     )}
@@ -386,22 +610,60 @@ export const SolutionStepBuilder: React.FC<SolutionStepBuilderProps> = ({
           })}
         </AnimatePresence>
 
-        {/* Completion Message */}
+        {/* Enhanced Completion Message */}
         {completedSteps.size >= steps.length && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="text-center p-6 bg-green-100 rounded-lg border-2 border-green-500"
+            initial={{ opacity: 0, scale: 0.8, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.8, type: 'spring', bounce: 0.4 }}
+            className="text-center p-8 rounded-2xl border-3 shadow-2xl"
+            style={{
+              background: `linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(245, 158, 11, 0.1) 100%)`,
+              borderColor: MATH_COLORS.success
+            }}
           >
-            <CheckCircle className="h-12 w-12 text-green-600 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-green-800 mb-2">🎉 Solution Complete!</h3>
-            <p className="text-green-700">
-              Great job! You've successfully worked through all the solution steps.
-            </p>
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ duration: 0.6, delay: 0.3, type: 'spring', bounce: 0.6 }}
+            >
+              <div 
+                className="h-16 w-16 rounded-full flex items-center justify-center mx-auto mb-4"
+                style={{ backgroundColor: MATH_COLORS.success }}
+              >
+                <CheckCircle className="h-10 w-10 text-white" />
+              </div>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+            >
+              <h3 className="text-3xl font-bold mb-3" style={{ color: MATH_COLORS.success }}>
+                🎉 Outstanding Work! 🌟
+              </h3>
+              <p className="text-lg leading-relaxed" style={{ color: MATH_COLORS.primary }}>
+                You've mastered this solution step-by-step! Your mathematical thinking is on point.
+              </p>
+              <div className="flex justify-center mt-4 gap-2">
+                {[...Array(5)].map((_, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, scale: 0 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.3, delay: 0.7 + i * 0.1 }}
+                    className="text-2xl"
+                  >
+                    ⭐
+                  </motion.div>
+                ))}
+              </div>
+            </motion.div>
           </motion.div>
         )}
       </CardContent>
     </Card>
+    </motion.div>
   );
 };
 
