@@ -9,7 +9,7 @@ import { motion } from 'framer-motion';
 import { useTheme } from '@/contexts/ThemeContext';
 
 // Import our new components
-import { Simple3DGeometry } from '@/components/geometry/Simple3DGeometry';
+import { Fallback3DDemo } from '@/components/geometry/Fallback3DDemo';
 import { SimpleMotionExplainer } from '@/components/animations/SimpleMotionExplainer';
 import { useMathParticles } from '@/components/effects/MathParticleSystem';
 import { SAT_ANIMATIONS, SAT_TRANSITIONS } from '@/utils/advancedAnimations';
@@ -124,9 +124,9 @@ const AdvancedAnimationDemo: React.FC = () => {
                 
                 <div className="text-center p-4 bg-purple-50 rounded-lg border border-purple-200">
                   <div className="text-3xl mb-2">🔷</div>
-                  <h3 className="font-semibold mb-1 text-purple-800">Three.js 3D</h3>
+                  <h3 className="font-semibold mb-1 text-purple-800">Canvas 3D</h3>
                   <p className="text-sm text-purple-600">
-                    Interactive 3D geometric visualizations with real-time controls
+                    High-performance 3D visualizations with maximum compatibility
                   </p>
                 </div>
                 
@@ -150,11 +150,12 @@ const AdvancedAnimationDemo: React.FC = () => {
               <div className="mt-6 p-4 bg-gradient-to-r from-indigo-100 to-purple-100 rounded-lg border border-indigo-300">
                 <h3 className="font-bold text-indigo-800 mb-2">🎯 What's New & Improved:</h3>
                 <ul className="text-indigo-700 text-sm space-y-1">
-                  <li>• <strong>3D Interactive Geometry</strong> - Three.js powered geometric visualizations</li>
+                  <li>• <strong>Canvas 3D Geometry</strong> - High-performance isometric visualizations</li>
                   <li>• <strong>Motion Canvas Explanations</strong> - Step-by-step mathematical proofs</li>
                   <li>• <strong>Advanced Particle Effects</strong> - Mathematical symbols and celebration effects</li>
                   <li>• <strong>Physics-Based Animations</strong> - Spring physics and realistic motion</li>
                   <li>• <strong>Sound-Synchronized Effects</strong> - Audio-visual feedback system</li>
+                  <li>• <strong>Universal Compatibility</strong> - Works on any device without WebGL dependencies</li>
                 </ul>
               </div>
             </CardContent>
@@ -189,7 +190,7 @@ const AdvancedAnimationDemo: React.FC = () => {
                   <div className="text-2xl">🧊</div>
                   Interactive 3D Cube
                 </h3>
-                <Simple3DGeometry
+                <Fallback3DDemo
                   config={cubeConfig}
                   onConfigChange={setCubeConfig}
                 />
@@ -200,7 +201,7 @@ const AdvancedAnimationDemo: React.FC = () => {
                   <div className="text-2xl">🌐</div>
                   Interactive 3D Sphere
                 </h3>
-                <Simple3DGeometry
+                <Fallback3DDemo
                   config={sphereConfig}
                   onConfigChange={setSphereConfig}
                 />
