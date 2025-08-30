@@ -18,7 +18,9 @@ import {
   Volume2,
   VolumeX,
   Sparkles,
-  Zap
+  Zap,
+  VolumeOff,
+  Square
 } from 'lucide-react';
 import { mathSounds } from '@/utils/mathSounds';
 import { COMPONENT_THEMES, PROFESSIONAL_COLORS } from '@/utils/professionalColors';
@@ -109,6 +111,9 @@ export const SolutionStepBuilder: React.FC<SolutionStepBuilderProps> = ({
   const [timerVisible, setTimerVisible] = useState(true);
   const [timerPaused, setTimerPaused] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
+  const [voiceEnabled, setVoiceEnabled] = useState(true);
+  const [isReading, setIsReading] = useState(false);
+  const [currentlySpeaking, setCurrentlySpeaking] = useState<string | null>(null);
 
   // Timer effect
   useEffect(() => {
@@ -124,6 +129,45 @@ export const SolutionStepBuilder: React.FC<SolutionStepBuilderProps> = ({
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  // Voice narration functions
+  const speakText = async (text: string, stepId?: string) => {
+    if (!voiceEnabled || !('speechSynthesis' in window)) return;
+    
+    // Stop any current speech
+    window.speechSynthesis.cancel();
+    
+    setIsReading(true);
+    setCurrentlySpeaking(stepId || null);
+    
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 0.9;
+    utterance.pitch = 1;
+    utterance.volume = 0.8;
+    
+    utterance.onend = () => {
+      setIsReading(false);
+      setCurrentlySpeaking(null);
+    };
+    
+    utterance.onerror = () => {
+      setIsReading(false);
+      setCurrentlySpeaking(null);
+    };
+    
+    window.speechSynthesis.speak(utterance);
+  };
+
+  const stopSpeech = () => {
+    window.speechSynthesis.cancel();
+    setIsReading(false);
+    setCurrentlySpeaking(null);
+  };
+
+  const speakStep = (step: SolutionStep) => {
+    const textToSpeak = `Step ${steps.indexOf(step) + 1}: ${step.title}. ${step.description}. ${step.explanation}`;
+    speakText(textToSpeak, step.id);
   };
 
   const handleStepInput = (stepId: string, value: string) => {
@@ -396,6 +440,24 @@ export const SolutionStepBuilder: React.FC<SolutionStepBuilderProps> = ({
               <Button
                 variant="outline"
                 size="sm"
+                onClick={() => setVoiceEnabled(!voiceEnabled)}
+                className="flex items-center gap-1 bg-white/10 border-white/30 text-white hover:bg-white/20 transition-all duration-300"
+              >
+                {voiceEnabled ? <VolumeOff className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
+              </Button>
+              {isReading && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={stopSpeech}
+                  className="flex items-center gap-1 bg-white/10 border-white/30 text-white hover:bg-white/20 transition-all duration-300"
+                >
+                  <Square className="h-4 w-4" />
+                </Button>
+              )}
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={resetSolution}
                 className="flex items-center gap-1 bg-white/10 border-white/30 text-white hover:bg-white/20 transition-all duration-300"
               >
@@ -507,11 +569,25 @@ export const SolutionStepBuilder: React.FC<SolutionStepBuilderProps> = ({
                       {isCompleted ? '✓' : index + 1}
                     </div>
                     <h3 
-                      className="font-semibold text-lg"
+                      className="font-semibold text-lg flex-1"
                       style={{ color: isCompleted ? 'white' : PROFESSIONAL_MATH_COLORS.primary }}
                     >
                       {step.title}
                     </h3>
+                    {/* Voice Control for Step */}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => currentlySpeaking === step.id ? stopSpeech() : speakStep(step)}
+                      disabled={!voiceEnabled}
+                      className={`h-8 w-8 p-0 disabled:opacity-50 transition-all duration-200 ${\n                        currentlySpeaking === step.id \n                          ? 'text-green-600 bg-green-50 hover:bg-green-100' \n                          : isCompleted \n                          ? 'text-white hover:text-green-100'\n                          : 'text-gray-500 hover:text-gray-700'\n                      }`}\n                      title={currentlySpeaking === step.id ? 'Stop Reading' : 'Read Step Aloud'}
+                    >
+                      {currentlySpeaking === step.id ? (
+                        <Square className="h-4 w-4" />
+                      ) : (
+                        <Volume2 className="h-4 w-4" />
+                      )}
+                    </Button>
                   </div>
                 </div>
                 
