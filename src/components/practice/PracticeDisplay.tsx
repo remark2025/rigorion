@@ -750,7 +750,7 @@ Keep the evaluation constructive and educational.`;
                 className="p-1 h-6 w-6 rounded-full transition-all duration-300 ease-out hover:scale-105 active:scale-95"
                 onClick={() => setShowInteractionLog(!showInteractionLog)}
               >
-                <FileText className="h-3 w-3 text-purple-500" />
+                <FileText className="h-3 w-3 text-blue-500" />
               </Button>
             </div>
           </div>
@@ -968,7 +968,10 @@ Keep the evaluation constructive and educational.`;
         {(hasPassage || activeTab !== 'problem') && (
           <div className={`${
             hasGraph ? 'w-1/2' : 'w-3/5'
-          } bg-white p-8 relative overflow-y-auto max-h-[calc(100vh-120px)]`}>
+          } p-8 relative overflow-y-auto max-h-[calc(100vh-120px)]`}
+            style={{
+              background: 'linear-gradient(to bottom, rgba(255, 255, 255, 1) 0%, rgba(248, 250, 252, 0.95) 50%, rgba(241, 245, 249, 0.9) 100%)'
+            }}>
             
             {/* Vertical Spacer for side-by-side layout */}
             <div className="absolute left-0 top-4 bottom-4 flex items-center">
@@ -1237,7 +1240,7 @@ Keep the evaluation constructive and educational.`;
                     className="p-1 h-6 w-6 rounded-full transition-all duration-300 ease-out hover:scale-105 active:scale-95"
                     onClick={() => setShowInteractionLog(!showInteractionLog)}
                   >
-                    <FileText className="h-3 w-3 text-purple-500" />
+                    <FileText className="h-3 w-3 text-blue-500" />
                   </Button>
                 </div>
               </div>
@@ -1670,7 +1673,7 @@ Keep the evaluation constructive and educational.`;
                   className="p-1 h-6 w-6 rounded-full transition-all duration-300 ease-out hover:scale-105 active:scale-95"
                   onClick={() => setShowInteractionLog(!showInteractionLog)}
                 >
-                  <FileText className="h-3 w-3 text-purple-500" />
+                  <FileText className="h-3 w-3 text-blue-500" />
                 </Button>
               </div>
             </div>

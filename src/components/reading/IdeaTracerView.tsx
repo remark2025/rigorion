@@ -52,7 +52,7 @@ export const IdeaTracerView: React.FC<IdeaTracerViewProps> = ({
 
   const getStructureColor = (structure: string) => {
     switch (structure) {
-      case 'compare-contrast': return 'bg-purple-100 text-purple-800';
+      case 'compare-contrast': return 'bg-blue-100 text-blue-800';
       case 'problem-solution': return 'bg-green-100 text-green-800';
       case 'chronological': return 'bg-blue-100 text-blue-800';
       case 'cause-effect': return 'bg-orange-100 text-orange-800';
@@ -68,7 +68,7 @@ export const IdeaTracerView: React.FC<IdeaTracerViewProps> = ({
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <GitBranch className="h-5 w-5 text-purple-600" />
+              <GitBranch className="h-5 w-5 text-blue-600" />
               Idea Tracer
             </div>
             <div className="flex gap-2">
@@ -109,8 +109,8 @@ export const IdeaTracerView: React.FC<IdeaTracerViewProps> = ({
         <CardContent>
           {/* Overall Structure Info */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-            <div className="text-center p-3 bg-purple-50 rounded-lg">
-              <div className="text-sm font-semibold text-purple-800">Structure Type</div>
+            <div className="text-center p-3 bg-blue-50 rounded-lg">
+              <div className="text-sm font-semibold text-blue-800">Structure Type</div>
               <Badge className={`mt-1 ${getStructureColor(solution.ideaTracer.logicalStructure)}`}>
                 {getStructureIcon(solution.ideaTracer.logicalStructure)} {solution.ideaTracer.logicalStructure}
               </Badge>
@@ -141,15 +141,15 @@ export const IdeaTracerView: React.FC<IdeaTracerViewProps> = ({
             transition={{ duration: 0.3 }}
           >
             {/* Overall Thesis */}
-            <Card className="border-2 border-purple-200">
-              <CardHeader className="bg-purple-50">
+            <Card className="border-2 border-blue-200">
+              <CardHeader className="bg-blue-50">
                 <CardTitle className="flex items-center gap-2">
-                  <Target className="h-5 w-5 text-purple-600" />
+                  <Target className="h-5 w-5 text-blue-600" />
                   Overall Thesis
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-4">
-                <div className="text-lg font-medium text-purple-900">
+                <div className="text-lg font-medium text-blue-900">
                   {solution.ideaTracer.overallThesis}
                 </div>
               </CardContent>
@@ -222,8 +222,8 @@ export const IdeaTracerView: React.FC<IdeaTracerViewProps> = ({
 
                             {/* Logical Flow */}
                             <div className="mb-4">
-                              <h4 className="font-semibold text-purple-800 mb-2">Logical Flow</h4>
-                              <p className="text-purple-700">
+                              <h4 className="font-semibold text-blue-800 mb-2">Logical Flow</h4>
+                              <p className="text-blue-700">
                                 {paragraph.logicalFlow}
                               </p>
                             </div>
