@@ -1084,16 +1084,6 @@ Keep the evaluation constructive and educational.`;
                             />
                           )}
                           
-                          {/* Step Builder for Interactive */}
-                          {currentQuestion.interactiveSolution.solutionSteps && (
-                            <SolutionStepBuilder
-                              steps={currentQuestion.interactiveSolution.solutionSteps}
-                              title="Interactive Solution Steps"
-                              onStepComplete={(stepId, isCorrect) => console.log('Step completed:', stepId, isCorrect)}
-                              onAllStepsComplete={() => console.log('All steps completed!')}
-                              showHints={true}
-                            />
-                          )}
                         </div>
                       ) : (
                         <div className={`text-center p-6 rounded-lg ${
@@ -1508,16 +1498,6 @@ Keep the evaluation constructive and educational.`;
                               />
                             )}
                             
-                            {/* Step Builder for Interactive */}
-                            {currentQuestion.interactiveSolution.solutionSteps && (
-                              <SolutionStepBuilder
-                                steps={currentQuestion.interactiveSolution.solutionSteps}
-                                title="Interactive Solution Steps"
-                                onStepComplete={(stepId, isCorrect) => console.log('Step completed:', stepId, isCorrect)}
-                                onAllStepsComplete={() => console.log('All steps completed!')}
-                                showHints={true}
-                              />
-                            )}
                           </div>
                         ) : (
                           <div className={`text-center p-6 rounded-lg ${
@@ -1941,16 +1921,6 @@ Keep the evaluation constructive and educational.`;
                               />
                             )}
                             
-                            {/* Step Builder for Interactive */}
-                            {currentQuestion.interactiveSolution.solutionSteps && (
-                              <SolutionStepBuilder
-                                steps={currentQuestion.interactiveSolution.solutionSteps}
-                                title="Interactive Solution Steps"
-                                onStepComplete={(stepId, isCorrect) => console.log('Step completed:', stepId, isCorrect)}
-                                onAllStepsComplete={() => console.log('All steps completed!')}
-                                showHints={true}
-                              />
-                            )}
                           </div>
                         ) : (
                           <div className={`text-center p-6 rounded-lg ${

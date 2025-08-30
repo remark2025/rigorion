@@ -386,7 +386,16 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
             >
               <Sparkles className="h-4 w-4" />
               <span className="text-sm font-semibold">
-                Interactive Graph: {equation}
+                {config.type === 'quadratic' && 
+                  `y = ${parameters.a?.toFixed(3) || 1}x² ${parameters.b >= 0 ? '+' : ''}${parameters.b?.toFixed(3) || 0}x ${parameters.c >= 0 ? '+' : ''}${parameters.c?.toFixed(3) || 0}`}
+                {config.type === 'linear' && 
+                  `y = ${parameters.m?.toFixed(3) || 1}x ${parameters.b >= 0 ? '+' : ''}${parameters.b?.toFixed(3) || 0}`}
+                {config.type === 'exponential' && 
+                  `y = ${parameters.a?.toFixed(3) || 1} × ${parameters.b?.toFixed(3) || 2}^x`}
+                {config.type === 'absolute' && 
+                  `y = ${parameters.a?.toFixed(3) || 1}|x ${parameters.h >= 0 ? '-' : '+'}${Math.abs(parameters.h?.toFixed(3)) || 0}| ${parameters.k >= 0 ? '+' : ''}${parameters.k?.toFixed(3) || 0}`}
+                {config.type === 'polynomial' && 
+                  `y = ${parameters.a?.toFixed(3) || 1}x³ ${parameters.b >= 0 ? '+' : ''}${parameters.b?.toFixed(3) || 0}x² ${parameters.c >= 0 ? '+' : ''}${parameters.c?.toFixed(3) || 0}x ${parameters.d >= 0 ? '+' : ''}${parameters.d?.toFixed(3) || 0}`}
               </span>
             </motion.div>
             <motion.div 
@@ -450,9 +459,9 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
           />
         </motion.div>
 
-        {/* Enhanced Parameter Controls */}
+        {/* Compact Coefficient Controls - 2 Lines */}
         <motion.div 
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          className="grid grid-cols-2 md:grid-cols-3 gap-3"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
@@ -460,23 +469,19 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
           {initialParameters.map((param, index) => (
             <motion.div 
               key={param.name} 
-              className="space-y-3 p-4 rounded-lg border-2 shadow-sm"
-              style={{
-                borderColor: PROFESSIONAL_THEME.secondary,
-                background: `linear-gradient(135deg, rgba(139, 92, 246, 0.05) 0%, rgba(99, 102, 241, 0.05) 100%)`
-              }}
+              className="space-y-2 p-3 rounded bg-gray-50 border"
+              style={{ borderColor: '#E5E7EB' }}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.4, delay: index * 0.1 }}
-              whileHover={{ scale: 1.02 }}
             >
+              {/* First Line: Label and Value */}
               <div className="flex items-center justify-between">
                 <Label 
                   htmlFor={param.name} 
-                  className="text-sm font-semibold flex items-center gap-2"
-                  style={{ color: PROFESSIONAL_THEME.primary }}
+                  className="text-sm font-semibold"
+                  style={{ color: '#374151' }}
                 >
-                  <Sparkles className="h-4 w-4" style={{ color: PROFESSIONAL_THEME.accent }} />
                   {param.label}
                 </Label>
                 <Input
@@ -484,10 +489,11 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
                   type="number"
                   value={parameters[param.name]?.toFixed(3) || param.value}
                   onChange={(e) => handleParameterChange(param.name, parseFloat(e.target.value) || param.value)}
-                  className="w-24 h-8 text-center font-mono font-semibold border-2"
+                  className="w-16 h-6 text-center font-mono text-sm border"
                   style={{
-                    borderColor: PROFESSIONAL_THEME.accent,
-                    backgroundColor: 'rgba(245, 158, 11, 0.1)'
+                    borderColor: '#D1D5DB',
+                    backgroundColor: 'white',
+                    color: '#111827'
                   }}
                   step={param.step}
                   min={param.min}
@@ -495,7 +501,8 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
                 />
               </div>
               
-              <div className="relative">
+              {/* Second Line: Slider and Description */}
+              <div className="space-y-1">
                 <Slider
                   value={[parameters[param.name] || param.value]}
                   onValueChange={(values) => handleParameterChange(param.name, values[0])}
@@ -504,62 +511,16 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
                   step={param.step}
                   className="w-full"
                 />
-                <div className="flex justify-between text-xs mt-1" style={{ color: PROFESSIONAL_THEME.secondary }}>
-                  <span>{param.min}</span>
-                  <span>{param.max}</span>
-                </div>
+                {param.description && (
+                  <p className="text-xs text-gray-600">
+                    {param.description}
+                  </p>
+                )}
               </div>
-              
-              {param.description && (
-                <p className="text-xs italic" style={{ color: PROFESSIONAL_THEME.secondary }}>
-                  {param.description}
-                </p>
-              )}
             </motion.div>
           ))}
         </motion.div>
 
-        {/* Enhanced Current Equation Display */}
-        <motion.div 
-          className="mt-6 p-5 rounded-xl border-2 shadow-md"
-          style={{
-            borderColor: PROFESSIONAL_THEME.accent,
-            background: `linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(99, 102, 241, 0.05) 100%)`
-          }}
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5, delay: 0.4 }}
-        >
-          <div className="flex items-center gap-2 mb-3">
-            <Sparkles className="h-5 w-5" style={{ color: PROFESSIONAL_THEME.accent }} />
-            <p className="text-lg font-bold" style={{ color: PROFESSIONAL_THEME.primary }}>
-              Live Equation:
-            </p>
-          </div>
-          <motion.p 
-            className="text-2xl font-mono font-bold p-3 rounded-lg text-center"
-            style={{
-              color: PROFESSIONAL_THEME.primary,
-              backgroundColor: 'rgba(255, 255, 255, 0.8)',
-              border: `2px solid ${PROFESSIONAL_THEME.primary}`
-            }}
-            key={JSON.stringify(parameters)} // Re-animate when parameters change
-            initial={{ scale: 0.95, opacity: 0.7 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ duration: 0.3 }}
-          >
-            {config.type === 'quadratic' && 
-              `y = ${parameters.a?.toFixed(3) || 1}x² ${parameters.b >= 0 ? '+' : ''}${parameters.b?.toFixed(3) || 0}x ${parameters.c >= 0 ? '+' : ''}${parameters.c?.toFixed(3) || 0}`}
-            {config.type === 'linear' && 
-              `y = ${parameters.m?.toFixed(3) || 1}x ${parameters.b >= 0 ? '+' : ''}${parameters.b?.toFixed(3) || 0}`}
-            {config.type === 'exponential' && 
-              `y = ${parameters.a?.toFixed(3) || 1} × ${parameters.b?.toFixed(3) || 2}^x`}
-            {config.type === 'absolute' && 
-              `y = ${parameters.a?.toFixed(3) || 1}|x ${parameters.h >= 0 ? '-' : '+'}${Math.abs(parameters.h?.toFixed(3)) || 0}| ${parameters.k >= 0 ? '+' : ''}${parameters.k?.toFixed(3) || 0}`}
-            {config.type === 'polynomial' && 
-              `y = ${parameters.a?.toFixed(3) || 1}x³ ${parameters.b >= 0 ? '+' : ''}${parameters.b?.toFixed(3) || 0}x² ${parameters.c >= 0 ? '+' : ''}${parameters.c?.toFixed(3) || 0}x ${parameters.d >= 0 ? '+' : ''}${parameters.d?.toFixed(3) || 0}`}
-          </motion.p>
-        </motion.div>
       </CardContent>
     </Card>
     </motion.div>
