@@ -533,21 +533,40 @@ export interface PerformanceGraphData {
   };
 }
 
+import { SAT_SKILLS_STRUCTURE, getAllSkills } from '@/data/satSkills';
+
 // Helper functions
 function getSkillMapping(topicName: string): { name: string; chapter: string; section: 'Math' | 'Reading' | 'Writing' } {
+  // Try to find matching skill in the official SAT structure
+  const allSkills = getAllSkills();
+  const matchingSkill = allSkills.find(skill => 
+    skill.title.toLowerCase().includes(topicName.toLowerCase()) ||
+    skill.domain.toLowerCase().includes(topicName.toLowerCase()) ||
+    topicName.toLowerCase().includes(skill.title.toLowerCase())
+  );
+
+  if (matchingSkill) {
+    return {
+      name: matchingSkill.title,
+      chapter: matchingSkill.domain,
+      section: matchingSkill.section === 'math' ? 'Math' : matchingSkill.section === 'reading' ? 'Reading' : 'Writing'
+    };
+  }
+
+  // Fallback mappings for backward compatibility
   const mappings: { [key: string]: { name: string; chapter: string; section: 'Math' | 'Reading' | 'Writing' } } = {
-    'MATH-ALG': { name: 'Linear Equations & Algebra', chapter: 'Heart of Algebra', section: 'Math' },
-    'MATH-GEOM': { name: 'Geometry & Trigonometry', chapter: 'Additional Topics', section: 'Math' },
-    'MATH-PROB': { name: 'Problem Solving & Data', chapter: 'Problem Solving', section: 'Math' },
-    'READ-COMP': { name: 'Reading Comprehension', chapter: 'Reading', section: 'Reading' },
-    'WRITE-LANG': { name: 'Language & Grammar', chapter: 'Writing & Language', section: 'Writing' },
-    // Add more mappings as needed
+    'Heart of Algebra': { name: 'Algebra Skills', chapter: 'Algebra', section: 'Math' },
+    'Problem Solving & Data Analysis': { name: 'Data Analysis Skills', chapter: 'Problem-Solving and Data Analysis', section: 'Math' },
+    'Advanced Math': { name: 'Advanced Math Skills', chapter: 'Advanced Math', section: 'Math' },
+    'Reading Comprehension': { name: 'Reading Skills', chapter: 'Information and Ideas', section: 'Reading' },
+    'Grammar & Usage': { name: 'Grammar Skills', chapter: 'Standard English Conventions', section: 'Writing' },
+    'Rhetorical Skills': { name: 'Rhetorical Skills', chapter: 'Expression of Ideas', section: 'Writing' }
   };
 
   return mappings[topicName] || { 
     name: topicName.replace(/-/g, ' '), 
     chapter: 'General', 
-    section: topicName.startsWith('MATH') ? 'Math' : topicName.startsWith('READ') ? 'Reading' : 'Writing'
+    section: topicName.toLowerCase().includes('math') ? 'Math' : topicName.toLowerCase().includes('read') ? 'Reading' : 'Writing'
   };
 }
 

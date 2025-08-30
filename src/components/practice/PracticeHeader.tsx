@@ -14,6 +14,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useTheme } from "@/contexts/ThemeContext";
 import FormattingToolbar from "./FormattingToolbar";
+import { SAT_SKILLS_STRUCTURE } from "@/data/satSkills";
 
 interface PracticeHeaderProps {
   onToggleSidebar: () => void;
@@ -66,11 +67,12 @@ export const PracticeHeader = ({
     { name: "About us", path: "/about" },
   ];
 
+  // Generate chapters from SAT skills structure
   const chapters = [
     "All Chapters",
-    "Chapter 1",
-    "Chapter 2", 
-    "Chapter 3"
+    ...Object.values(SAT_SKILLS_STRUCTURE).flatMap(section => 
+      section.domains.map(domain => domain.title)
+    )
   ];
 
   const exams = [
