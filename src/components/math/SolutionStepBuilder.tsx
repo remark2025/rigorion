@@ -580,7 +580,14 @@ export const SolutionStepBuilder: React.FC<SolutionStepBuilderProps> = ({
                       size="sm"
                       onClick={() => currentlySpeaking === step.id ? stopSpeech() : speakStep(step)}
                       disabled={!voiceEnabled}
-                      className={`h-8 w-8 p-0 disabled:opacity-50 transition-all duration-200 ${\n                        currentlySpeaking === step.id \n                          ? 'text-green-600 bg-green-50 hover:bg-green-100' \n                          : isCompleted \n                          ? 'text-white hover:text-green-100'\n                          : 'text-gray-500 hover:text-gray-700'\n                      }`}\n                      title={currentlySpeaking === step.id ? 'Stop Reading' : 'Read Step Aloud'}
+                      className={`h-8 w-8 p-0 disabled:opacity-50 transition-all duration-200 ${
+                        currentlySpeaking === step.id 
+                          ? 'text-green-600 bg-green-50 hover:bg-green-100' 
+                          : isCompleted 
+                          ? 'text-white hover:text-green-100'
+                          : 'text-gray-500 hover:text-gray-700'
+                      }`}
+                      title={currentlySpeaking === step.id ? 'Stop Reading' : 'Read Step Aloud'}
                     >
                       {currentlySpeaking === step.id ? (
                         <Square className="h-4 w-4" />
@@ -595,32 +602,101 @@ export const SolutionStepBuilder: React.FC<SolutionStepBuilderProps> = ({
                   {step.description}
                 </p>
 
-                {/* Compact Math Content - Single Line Preview */}
-                <div className="space-y-2">
-                  {/* Expression and Interactive in One Line */}
-                  <div className="flex items-center gap-3 bg-gray-50 p-2 rounded border border-gray-200">
-                    {/* Expression */}
-                    <div className="flex-shrink-0">
+                {/* Interactive Collaboration Area */}
+                <div className="space-y-3">
+                  {/* Step Expression with Fill-in */}
+                  <div className="bg-gray-50 p-3 rounded border border-gray-200">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-sm font-medium text-gray-700">Work through this step:</span>
+                    </div>
+                    <div className="flex items-center gap-2">
                       {renderMathExpression(step.fromExpression, step.id)}
                     </div>
-                    
-                    {/* Interactive Element Inline */}
-                    {step.interactive && !isCompleted && isCurrent && (
-                      <div className="flex-1 min-w-0">
-                        {renderInteractiveElement(step, index)}
-                      </div>
-                    )}
-                    
-                    {/* Arrow and Result */}
-                    {isCompleted && (
-                      <>
-                        <ArrowRight className="h-4 w-4 text-green-600 flex-shrink-0" />
-                        <div className="flex-shrink-0">
-                          {renderMathExpression(step.toExpression)}
-                        </div>
-                      </>
-                    )}
                   </div>
+
+                  {/* User Collaboration Required */}
+                  {!isCompleted && isCurrent && (
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.4 }}
+                      className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 p-4 rounded-lg shadow-sm"
+                    >
+                      <div className="flex items-center gap-2 mb-3">
+                        <motion.div
+                          animate={{ rotate: [0, 15, -15, 0] }}
+                          transition={{ duration: 2, repeat: Infinity }}
+                        >
+                          <Lightbulb className="h-5 w-5 text-blue-600" />
+                        </motion.div>
+                        <span className="text-sm font-semibold text-blue-800">Your collaboration needed:</span>
+                      </div>
+                      {step.interactive ? (
+                        <div className="space-y-3">
+                          <div className="text-sm text-blue-700 mb-2 font-medium">
+                            Complete this step to proceed:
+                          </div>
+                          {renderInteractiveElement(step, index)}
+                        </div>
+                      ) : (
+                        <div className="flex flex-col gap-3">
+                          <span className="text-sm text-blue-700 font-medium">
+                            Work through this step and click when you're ready to continue
+                          </span>
+                          <Button
+                            onClick={() => completeStep(step.id, index)}
+                            size="sm"
+                            className="self-start flex items-center gap-2 transition-all duration-300 hover:scale-105 active:scale-95"
+                            style={{ backgroundColor: PROFESSIONAL_MATH_COLORS.primary }}
+                          >
+                            <Sparkles className="h-4 w-4" />
+                            I understand this step
+                            <ArrowRight className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      )}
+                    </motion.div>
+                  )}
+
+                  {/* Completed Result */}
+                  {isCompleted && (
+                    <motion.div 
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      transition={{ duration: 0.5, type: "spring", stiffness: 300, damping: 25 }}
+                      className="bg-gradient-to-r from-green-50 via-emerald-50 to-green-50 border border-green-300 p-4 rounded-lg shadow-md"
+                      style={{
+                        background: 'linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 50%, #BBF7D0 100%)',
+                        boxShadow: '0 4px 12px rgba(34, 197, 94, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.5)'
+                      }}
+                    >
+                      <div className="flex items-center gap-3 mb-3">
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          transition={{ delay: 0.2, type: "spring", stiffness: 500 }}
+                        >
+                          <CheckCircle className="h-6 w-6 text-green-600" />
+                        </motion.div>
+                        <motion.span 
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.3, duration: 0.4 }}
+                          className="text-sm font-bold text-green-800"
+                        >
+                          ✨ Excellent work! Step completed:
+                        </motion.span>
+                      </div>
+                      <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ delay: 0.4, duration: 0.3 }}
+                        className="bg-white/80 p-3 rounded border border-green-200 flex items-center gap-2"
+                      >
+                        {renderMathExpression(step.toExpression)}
+                      </motion.div>
+                    </motion.div>
+                  )}
                 </div>
 
                 {/* Simple Explanation */}
@@ -665,20 +741,6 @@ export const SolutionStepBuilder: React.FC<SolutionStepBuilderProps> = ({
                   </div>
                 )}
 
-                {/* Continue Button */}
-                {!step.interactive && isCurrent && (
-                  <div className="mt-3 flex justify-end">
-                    <Button
-                      onClick={() => completeStep(step.id, index)}
-                      size="sm"
-                      style={{ backgroundColor: PROFESSIONAL_MATH_COLORS.primary }}
-                      className="text-white hover:opacity-90"
-                    >
-                      Continue
-                      <ArrowRight className="h-4 w-4 ml-1" />
-                    </Button>
-                  </div>
-                )}
               </motion.div>
             </React.Fragment>
             );
