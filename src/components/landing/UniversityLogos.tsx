@@ -34,46 +34,11 @@ const TOP_UNIVERSITIES: University[] = [
 ];
 
 export const UniversityLogos = () => {
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
-  // Same background images as the Hero section for unified design
-  const backgroundImages = [
-    '/resources/4k-white-two-skyscrapers-j25128ysdyqlmeo6.jpg',
-    '/resources/corner-building-for-4k-white-background-tsx7c82luhg36ygy.jpg',
-    '/resources/white-abstract-fading-horse-os2b11l2drnjvlqz.jpg'
-  ];
-
-  // Cycle through background images every 30 seconds (synchronized with Hero section)
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentImageIndex((prevIndex) => 
-        (prevIndex + 1) % backgroundImages.length
-      );
-    }, 30000);
-
-    return () => clearInterval(interval);
-  }, [backgroundImages.length]);
 
   return (
     <section className="relative py-4 border-b border-gray-200 overflow-hidden">
-      {/* Animated Background Images with Soft Fading Effect */}
-      {backgroundImages.map((image, index) => (
-        <div
-          key={index}
-          className={`absolute inset-0 transition-opacity duration-[8000ms] ease-in-out ${
-            index === currentImageIndex ? 'opacity-100' : 'opacity-0'
-          }`}
-          style={{
-            backgroundImage: `url('${image}')`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat'
-          }}
-        />
-      ))}
-      
       {/* Soft overlay for unified design and text readability */}
-      <div className="absolute inset-0 bg-white/85"></div>
+      <div className="absolute inset-0 bg-white/40"></div>
       
       {/* Comprehensive soft edge gradients for seamless section blending */}
       <div className="absolute top-0 left-0 right-0 h-12 bg-gradient-to-b from-white via-white/60 to-transparent z-10"></div>

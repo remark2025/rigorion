@@ -4,49 +4,12 @@ import { FinalPaymentModal } from "@/components/payment/FinalPaymentModal";
 
 export const Hero = () => {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-
-  // Array of background images to cycle through (using all available images in resources)
-  const backgroundImages = [
-    '/resources/4k-white-two-skyscrapers-j25128ysdyqlmeo6.jpg',
-    '/resources/corner-building-for-4k-white-background-tsx7c82luhg36ygy.jpg',
-    '/resources/white-abstract-fading-horse-os2b11l2drnjvlqz.jpg'
-  ];
-
-  // Cycle through images every 8 seconds
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentImageIndex((prevIndex) => 
-        (prevIndex + 1) % backgroundImages.length
-      );
-    }, 30000); // Change image every 30 seconds
-
-    return () => clearInterval(interval);
-  }, [backgroundImages.length]);
 
   
   return (
-    <section className="relative pt-16 pb-32 overflow-hidden">
-      {/* Animated Background Images with Fade Effect */}
-      {backgroundImages.map((image, index) => (
-        <div
-          key={index}
-          className={`absolute inset-0 bg-gradient-to-br from-gray-50 to-blue-50 animate-fade-in-out ${
-            index === currentImageIndex ? 'animate-fade-in' : 'animate-fade-out'
-          }`}
-          style={{
-            backgroundImage: `url('${image}')`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-            animationDuration: '8s',
-            animationFillMode: 'forwards'
-          }}
-        />
-      ))}
-      
-      {/* Overlay for better text readability */}
-      <div className="absolute inset-0 bg-white/70"></div>
+    <section className="relative pt-20 pb-48 overflow-hidden">
+      {/* Clean White Overlay */}
+      <div className="absolute inset-0 bg-white/40"></div>
       <div className="container mx-auto px-4 relative z-10">
         <div className="flex flex-col items-center justify-center text-center">
           {/* Welcome Message */}

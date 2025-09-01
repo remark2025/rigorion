@@ -19,7 +19,15 @@ export const Header = () => {
   }, []);
   
   return (
-    <header className={`sticky top-0 z-50 bg-white py-4 transition-all duration-300 shadow-sm`}>
+    <header 
+      className={`sticky top-0 z-50 py-4 transition-all duration-300 shadow-sm`}
+      style={{
+        background: 'linear-gradient(45deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.1) 45%, rgba(59, 130, 246, 0.2) 60%, rgba(29, 78, 216, 0.3) 100%)',
+        backdropFilter: 'blur(20px) saturate(180%)',
+        WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+        border: '1px solid rgba(255, 255, 255, 0.2)',
+        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)'
+      }}>
       <div className="container mx-auto px-4 flex items-center justify-between">
         <div className="flex items-center">
           <button 
@@ -28,15 +36,42 @@ export const Header = () => {
           >
             <Navigation className="h-5 w-5 text-blue-500" />
           </button>
-          <Link to="/" className="font-semibold text-xl md:text-2xl text-blue-600 tracking-wide" style={{fontFamily: 'Inter, system-ui, -apple-system, sans-serif', letterSpacing: '0.025em'}}>SAT Premium<sup className="text-xs font-normal">®</sup></Link>
+          <Link to="/" className="font-semibold text-xl md:text-2xl tracking-wide" style={{fontFamily: 'Inter, system-ui, -apple-system, sans-serif', letterSpacing: '0.025em'}}>
+            <span className="text-slate-300 font-bold" style={{
+              fontFamily: 'serif',
+              textShadow: `
+                1px 0 0 #3B82F6, -1px 0 0 #3B82F6, 0 1px 0 #3B82F6, 0 -1px 0 #3B82F6,
+                0 2px 4px rgba(0,0,0,0.3),
+                0 4px 8px rgba(148,163,184,0.2),
+                inset 0 1px 0 rgba(255,255,255,0.8)
+              `,
+              background: 'linear-gradient(145deg, #E2E8F0, #CBD5E1, #94A3B8)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.1))'
+            }}>SAT</span>
+            <span className="text-blue-600 ml-1 font-bold" style={{
+              textShadow: `
+                0 2px 4px rgba(0,0,0,0.3),
+                0 4px 8px rgba(59,130,246,0.3),
+                0 1px 0 rgba(255,255,255,0.8),
+                0 -1px 0 rgba(29,78,216,0.8)
+              `,
+              background: 'linear-gradient(145deg, #3B82F6, #2563EB, #1D4ED8)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))'
+            }}>Elite</span>
+            <sup className="text-xs font-normal text-slate-300">®</sup>
+          </Link>
         </div>
         
         <div className="flex items-center">
           <nav className="hidden md:flex space-x-6 mr-6">
-            <Link to="/account" className="text-gray-600 hover:text-blue-600 transition-colors">Account</Link>
-            <Link to="/about" className="text-gray-600 hover:text-blue-600 transition-colors">About us</Link>
-            <Link to="/practice" className="text-gray-600 hover:text-blue-600 transition-colors">Practice</Link>
-            <Link to="/analytics" className="text-gray-600 hover:text-blue-600 transition-colors">Analytics</Link>
+            <Link to="/account" className="text-white hover:text-blue-100 transition-colors">Account</Link>
+            <Link to="/about" className="text-white hover:text-blue-100 transition-colors">About us</Link>
+            <Link to="/practice" className="text-white hover:text-blue-100 transition-colors">Practice</Link>
+            <Link to="/analytics" className="text-white hover:text-blue-100 transition-colors">Analytics</Link>
           </nav>
           <Button 
             onClick={() => setIsAuthModalOpen(true)}
