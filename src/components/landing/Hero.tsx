@@ -24,7 +24,12 @@ export const Hero = () => {
           <div className="flex items-center justify-center mb-8">
             <Button 
               onClick={() => setShowPaymentModal(true)}
-              className="bg-orange-500 hover:bg-orange-600 text-white font-medium px-8 py-3 rounded-full shadow-lg transform hover:scale-105 transition-all duration-200"
+              className="text-white font-medium px-8 py-3 rounded-full shadow-lg transform hover:scale-105 transition-all duration-200"
+              style={{
+                background: 'linear-gradient(135deg, #ff6b35 0%, #ff8c42 50%, #ffa726 100%)',
+                backgroundSize: '200% 200%',
+                animation: 'gradientShift 3s ease-in-out infinite'
+              }}
             >
               Start Now
             </Button>
@@ -65,6 +70,18 @@ export const Hero = () => {
         
         .animate-fade-out {
           animation: fade-out 8s ease-in-out forwards;
+        }
+        
+        @keyframes gradientShift {
+          0% {
+            background-position: 0% 50%;
+          }
+          50% {
+            background-position: 100% 50%;
+          }
+          100% {
+            background-position: 0% 50%;
+          }
         }
       `}</style>
     </section>

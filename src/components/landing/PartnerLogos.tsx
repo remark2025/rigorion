@@ -104,9 +104,19 @@ export const PartnerLogos = () => {
     if (index === (activeProject - 1 + PROMOTIONAL_ITEMS.length) % PROMOTIONAL_ITEMS.length) return "translate-x-[-60%] scale-95 opacity-60 z-10";
     return "scale-90 opacity-0";
   };
-  return <section id="products" ref={projectsRef} className="py-[50px] w-full h-[600px] overflow-hidden relative" style={{background: 'linear-gradient(135deg, #2d2d2d 0%, #2d2d2d 80%, rgba(255, 107, 53, 0.15) 90%, rgba(255, 140, 66, 0.1) 100%)', backgroundSize: '200% 200%', animation: 'gradientShift 15s ease-in-out infinite'}}>
-      {/* Glass effect overlay */}
-      <div className="absolute inset-0 bg-white/5 backdrop-blur-sm border-t border-b border-white/10" style={{backdropFilter: 'blur(8px) saturate(120%)', WebkitBackdropFilter: 'blur(8px) saturate(120%)'}}></div>
+  
+  const getCardBorderClass = (index: number) => {
+    if (index === activeProject) return "border-2 border-orange-400 shadow-orange-400/30";
+    return "border border-gray-600";
+  };
+  return <section id="products" ref={projectsRef} className="py-[50px] w-full h-[600px] overflow-hidden relative bg-gray-900">
+      {/* Glass effect overlay - matching Header */}
+      <div className="absolute inset-0" style={{
+        backdropFilter: 'blur(20px) saturate(180%)',
+        WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+        border: '1px solid rgba(192, 192, 192, 0.2)',
+        boxShadow: '0 8px 32px rgba(45, 45, 45, 0.3)'
+      }}></div>
       <div className="w-full px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto relative z-10">
         <div className={`text-center mb-10 max-w-3xl mx-auto transition-all duration-1200 ease-out ${isInView ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-16 scale-95'}`}>
           <h2 className="text-3xl font-bold mb-3">
@@ -148,7 +158,7 @@ export const PartnerLogos = () => {
               {PROMOTIONAL_ITEMS.map((item, index) => <div key={item.id} className={`absolute top-0 w-full max-w-2xl transform transition-all duration-500 ${getCardAnimationClass(index)}`} style={{
               transitionDelay: `${index * 50}ms`
             }}>
-                  <Card className="overflow-hidden h-[460px] border border-gray-600 rounded-xl shadow-lg hover:shadow-xl flex flex-col bg-gray-800">
+                  <Card className={`overflow-hidden h-[460px] rounded-xl shadow-lg hover:shadow-xl flex flex-col bg-gray-800 ${getCardBorderClass(index % PROMOTIONAL_ITEMS.length)}`} style={{boxShadow: index % PROMOTIONAL_ITEMS.length === activeProject ? '0 0 30px rgba(255, 107, 53, 0.4), 0 0 60px rgba(255, 140, 66, 0.2)' : undefined}}>
                     <div className="relative bg-black flex items-center justify-center overflow-hidden" style={{
                   height: '90%',
                   backgroundImage: `url(${item.imageUrl})`,
@@ -191,18 +201,5 @@ export const PartnerLogos = () => {
         </div>
       </div>
       
-      <style>{`
-        @keyframes gradientShift {
-          0% {
-            background-position: 0% 50%;
-          }
-          50% {
-            background-position: 100% 50%;
-          }
-          100% {
-            background-position: 0% 50%;
-          }
-        }
-      `}</style>
     </section>;
 };
