@@ -104,8 +104,10 @@ export const PartnerLogos = () => {
     if (index === (activeProject - 1 + PROMOTIONAL_ITEMS.length) % PROMOTIONAL_ITEMS.length) return "translate-x-[-60%] scale-95 opacity-60 z-10";
     return "scale-90 opacity-0";
   };
-  return <section id="products" ref={projectsRef} className="bg-gradient-to-br from-gray-800 to-gray-700 py-[50px] w-full h-[600px] overflow-hidden">
-      <div className="w-full px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+  return <section id="products" ref={projectsRef} className="py-[50px] w-full h-[600px] overflow-hidden relative" style={{background: 'linear-gradient(135deg, #2d2d2d 0%, #2d2d2d 80%, rgba(255, 107, 53, 0.15) 90%, rgba(255, 140, 66, 0.1) 100%)', backgroundSize: '200% 200%', animation: 'gradientShift 15s ease-in-out infinite'}}>
+      {/* Glass effect overlay */}
+      <div className="absolute inset-0 bg-white/5 backdrop-blur-sm border-t border-b border-white/10" style={{backdropFilter: 'blur(8px) saturate(120%)', WebkitBackdropFilter: 'blur(8px) saturate(120%)'}}></div>
+      <div className="w-full px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto relative z-10">
         <div className={`text-center mb-10 max-w-3xl mx-auto transition-all duration-1200 ease-out ${isInView ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-16 scale-95'}`}>
           <h2 className="text-3xl font-bold mb-3">
             <span className="italic font-script text-orange-400" style={{ fontFamily: 'Dancing Script, cursive' }}>
@@ -188,5 +190,19 @@ export const PartnerLogos = () => {
           </div>
         </div>
       </div>
+      
+      <style>{`
+        @keyframes gradientShift {
+          0% {
+            background-position: 0% 50%;
+          }
+          50% {
+            background-position: 100% 50%;
+          }
+          100% {
+            background-position: 0% 50%;
+          }
+        }
+      `}</style>
     </section>;
 };
