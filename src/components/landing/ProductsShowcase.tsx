@@ -16,28 +16,28 @@ const PRODUCTS: ProductType[] = [{
   id: 1,
   name: "SAT Math",
   description: "Master mathematical concepts with comprehensive practice and detailed explanations",
-  icon: <Calculator className="h-8 w-8 text-blue-600" />,
+  icon: <Calculator className="h-8 w-8 text-orange-500" />,
   badge: "AVAILABLE NOW",
   features: ["Algebra & Functions", "Geometry", "Statistics", "Advanced Topics"]
 }, {
   id: 2,
   name: "SAT Reading",
   description: "Enhance reading comprehension skills with diverse passages and strategic approaches",
-  icon: <BookOpen className="h-8 w-8 text-blue-600" />,
+  icon: <BookOpen className="h-8 w-8 text-orange-500" />,
   badge: "AVAILABLE NOW",
   features: ["Literature Analysis", "Social Studies", "Science Passages", "Critical Reading"]
 }, {
   id: 3,
   name: "SAT Writing",
   description: "Perfect your writing skills with grammar rules, essay techniques, and language usage",
-  icon: <PenTool className="h-8 w-8 text-blue-600" />,
+  icon: <PenTool className="h-8 w-8 text-orange-500" />,
   badge: "AVAILABLE NOW",
   features: ["Grammar Rules", "Essay Writing", "Language Usage", "Rhetoric"]
 }, {
   id: 4,
   name: "12 SAT Full Tests",
   description: "Complete practice tests with detailed scoring and performance analytics",
-  icon: <FileText className="h-8 w-8 text-blue-600" />,
+  icon: <FileText className="h-8 w-8 text-orange-500" />,
   badge: "AVAILABLE NOW",
   features: ["Full-Length Tests", "Detailed Analytics", "Time Management", "Score Prediction"]
 }];
@@ -58,10 +58,10 @@ export const ProductsShowcase = () => {
           {PRODUCTS.map(product => (
             <div key={product.id} className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 p-6 group hover:-translate-y-1 border border-gray-100">
               <div className="flex items-center justify-between mb-4">
-                <div className="p-3 rounded-lg transition-colors duration-300 bg-blue-50 group-hover:bg-blue-100">
+                <div className="p-3 rounded-lg transition-colors duration-300 bg-orange-50 group-hover:bg-orange-100">
                   {product.icon}
                 </div>
-                <Badge className="font-medium px-3 py-1 text-xs bg-blue-600 hover:bg-blue-700 text-white">
+                <Badge className="font-medium px-3 py-1 text-xs bg-orange-500 hover:bg-orange-600 text-white">
                   {product.badge}
                 </Badge>
               </div>
@@ -76,7 +76,7 @@ export const ProductsShowcase = () => {
               <div className="space-y-2">
                 {product.features.map((feature, index) => (
                   <div key={index} className="flex items-center text-sm text-gray-500">
-                    <div className="w-1.5 h-1.5 rounded-full mr-3 bg-blue-600"></div>
+                    <div className="w-1.5 h-1.5 rounded-full mr-3 bg-orange-500"></div>
                     {feature}
                   </div>
                 ))}
@@ -86,7 +86,7 @@ export const ProductsShowcase = () => {
               <div className="mt-6 pt-4 border-t border-gray-100">
                 <button 
                   onClick={() => setShowPaymentModal(true)}
-                  className="w-full font-medium py-2 px-4 rounded-lg transition-colors duration-300 bg-blue-600 hover:bg-blue-700 text-white"
+                  className="w-full font-medium py-2 px-4 rounded-lg transition-colors duration-300 bg-orange-500 hover:bg-orange-600 text-white shadow-lg"
                 >
                   Get Started
                 </button>

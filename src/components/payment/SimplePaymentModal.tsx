@@ -61,49 +61,49 @@ export const SimplePaymentModal = ({ isOpen, onClose, planType = 'monthly', amou
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md bg-white">
+      <DialogContent className="max-w-md bg-gray-800 border border-gray-600 shadow-lg">
         <DialogHeader className="text-center pb-6">
-          <DialogTitle className="text-2xl font-medium text-gray-900">
+          <DialogTitle className="text-2xl font-medium text-gray-100">
             Subscribe to Premium
           </DialogTitle>
           <div className="flex items-center justify-center gap-2 mt-3">
-            <span className="text-sm text-gray-600">Powered by</span>
-            <div className="flex items-center gap-1 bg-blue-600 text-white px-2 py-1 rounded text-sm font-medium">
+            <span className="text-sm text-gray-300">Powered by</span>
+            <div className="flex items-center gap-1 bg-orange-500 text-white px-2 py-1 rounded text-sm font-medium">
               <Shield className="h-3 w-3" />
               <span>Stripe</span>
             </div>
-            <span className="text-xs text-gray-500">Secure Payment</span>
+            <span className="text-xs text-gray-400">Secure Payment</span>
           </div>
         </DialogHeader>
 
         {/* Plan Summary */}
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6 mb-6">
+        <div className="bg-gray-700 border border-gray-600 rounded-lg p-6 mb-6">
           <div className="text-center">
-            <div className="text-3xl font-bold text-gray-900 mb-2">${amount}</div>
-            <div className="text-lg font-medium text-gray-800 mb-1">
+            <div className="text-3xl font-bold text-gray-100 mb-2">${amount}</div>
+            <div className="text-lg font-medium text-gray-200 mb-1">
               {planType === 'yearly' ? 'Annual Subscription' : 'Monthly Subscription'}
             </div>
-            <div className="text-sm text-gray-600 mb-4">
+            <div className="text-sm text-gray-300 mb-4">
               Recurring billing • Cancel anytime
             </div>
             
             {/* Features */}
             <div className="space-y-2 text-sm text-left">
               <div className="flex items-center gap-2">
-                <Check className="h-4 w-4 text-green-600" />
-                <span>Unlimited practice questions</span>
+                <Check className="h-4 w-4 text-orange-500" />
+                <span className="text-gray-200">Unlimited practice questions</span>
               </div>
               <div className="flex items-center gap-2">
-                <Check className="h-4 w-4 text-green-600" />
-                <span>Detailed analytics & progress tracking</span>
+                <Check className="h-4 w-4 text-orange-500" />
+                <span className="text-gray-200">Detailed analytics & progress tracking</span>
               </div>
               <div className="flex items-center gap-2">
-                <Check className="h-4 w-4 text-green-600" />
-                <span>AI-powered explanations</span>
+                <Check className="h-4 w-4 text-orange-500" />
+                <span className="text-gray-200">AI-powered explanations</span>
               </div>
               <div className="flex items-center gap-2">
-                <Check className="h-4 w-4 text-green-600" />
-                <span>Priority customer support</span>
+                <Check className="h-4 w-4 text-orange-500" />
+                <span className="text-gray-200">Priority customer support</span>
               </div>
             </div>
           </div>
@@ -113,7 +113,7 @@ export const SimplePaymentModal = ({ isOpen, onClose, planType = 'monthly', amou
         <Button 
           onClick={handleStripePayment}
           disabled={loading}
-          className="w-full h-12 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-medium text-lg"
+          className="w-full h-12 bg-orange-500 hover:bg-orange-600 text-white font-medium text-lg shadow-lg"
         >
           {loading ? (
             <div className="flex items-center gap-2">
@@ -130,22 +130,22 @@ export const SimplePaymentModal = ({ isOpen, onClose, planType = 'monthly', amou
         </Button>
 
         {/* Security */}
-        <div className="mt-6 pt-4 border-t border-gray-200">
+        <div className="mt-6 pt-4 border-t border-gray-600">
           <div className="text-center mb-3">
-            <p className="text-sm text-gray-600 font-medium">Secured by Stripe</p>
-            <p className="text-xs text-gray-500">Industry-leading payment security</p>
+            <p className="text-sm text-gray-300 font-medium">Secured by Stripe</p>
+            <p className="text-xs text-gray-400">Industry-leading payment security</p>
           </div>
-          <div className="flex items-center justify-center gap-6 text-xs text-gray-500">
+          <div className="flex items-center justify-center gap-6 text-xs text-gray-400">
             <div className="flex items-center gap-1">
-              <Shield className="h-3 w-3 text-green-600" />
+              <Shield className="h-3 w-3 text-orange-500" />
               <span>256-bit SSL</span>
             </div>
             <div className="flex items-center gap-1">
-              <Lock className="h-3 w-3 text-blue-600" />
+              <Lock className="h-3 w-3 text-orange-500" />
               <span>PCI Compliant</span>
             </div>
             <div className="flex items-center gap-1">
-              <Check className="h-3 w-3 text-purple-600" />
+              <Check className="h-3 w-3 text-orange-500" />
               <span>Cancel Anytime</span>
             </div>
           </div>
@@ -153,8 +153,8 @@ export const SimplePaymentModal = ({ isOpen, onClose, planType = 'monthly', amou
 
         {/* User Info */}
         {session?.user?.email && (
-          <div className="text-center text-sm text-gray-600 mt-4">
-            Subscribing as: <span className="font-medium">{session.user.email}</span>
+          <div className="text-center text-sm text-gray-400 mt-4">
+            Subscribing as: <span className="font-medium text-gray-200">{session.user.email}</span>
           </div>
         )}
       </DialogContent>

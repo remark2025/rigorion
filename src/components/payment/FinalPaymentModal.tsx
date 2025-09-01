@@ -72,25 +72,25 @@ export const FinalPaymentModal = ({ isOpen, onClose, planType = 'monthly', amoun
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md bg-white border border-gray-200 shadow-lg">
+      <DialogContent className="max-w-md bg-gray-800 border border-gray-600 shadow-lg">
         <DialogHeader className="text-center pb-2">
-          <DialogTitle className="text-xl font-bold text-gray-800 mb-1">
+          <DialogTitle className="text-xl font-bold text-gray-100 mb-1">
             Upgrade to Premium
           </DialogTitle>
           <div className="flex items-center justify-center gap-2">
-            <Shield className="h-4 w-4 text-blue-500" />
-            <span className="text-sm text-gray-600">Secured by Stripe</span>
+            <Shield className="h-4 w-4 text-orange-500" />
+            <span className="text-sm text-gray-300">Secured by Stripe</span>
           </div>
         </DialogHeader>
 
         {/* Plan Summary */}
-        <div className="bg-gray-50 rounded-lg p-4 mb-4">
+        <div className="bg-gray-700 rounded-lg p-4 mb-4 border border-gray-600">
           <div className="text-center mb-3">
-            <div className="text-3xl font-bold text-gray-800 mb-1">${amount}</div>
-            <div className="text-sm font-medium text-gray-700">
+            <div className="text-3xl font-bold text-gray-100 mb-1">${amount}</div>
+            <div className="text-sm font-medium text-gray-200">
               {planType === 'yearly' ? 'Annual Plan' : 'Monthly Plan'}
             </div>
-            <div className="text-xs text-gray-500 mt-1">
+            <div className="text-xs text-gray-400 mt-1">
               Cancel anytime • 30-day guarantee
             </div>
           </div>
@@ -98,20 +98,20 @@ export const FinalPaymentModal = ({ isOpen, onClose, planType = 'monthly', amoun
           {/* Features */}
           <div className="space-y-2 text-sm">
             <div className="flex items-center gap-2">
-              <Check className="h-4 w-4 text-blue-600" />
-              <span className="text-gray-700">Unlimited practice questions</span>
+              <Check className="h-4 w-4 text-orange-500" />
+              <span className="text-gray-200">Unlimited practice questions</span>
             </div>
             <div className="flex items-center gap-2">
-              <Check className="h-4 w-4 text-blue-600" />
-              <span className="text-gray-700">AI-powered analytics</span>
+              <Check className="h-4 w-4 text-orange-500" />
+              <span className="text-gray-200">AI-powered analytics</span>
             </div>
             <div className="flex items-center gap-2">
-              <Check className="h-4 w-4 text-blue-600" />
-              <span className="text-gray-700">Personalized recommendations</span>
+              <Check className="h-4 w-4 text-orange-500" />
+              <span className="text-gray-200">Personalized recommendations</span>
             </div>
             <div className="flex items-center gap-2">
-              <Check className="h-4 w-4 text-blue-600" />
-              <span className="text-gray-700">Priority support</span>
+              <Check className="h-4 w-4 text-orange-500" />
+              <span className="text-gray-200">Priority support</span>
             </div>
           </div>
         </div>
@@ -120,7 +120,7 @@ export const FinalPaymentModal = ({ isOpen, onClose, planType = 'monthly', amoun
         <Button 
           onClick={handleStripePayment}
           disabled={loading}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium"
+          className="w-full bg-orange-500 hover:bg-orange-600 text-white font-medium shadow-lg"
         >
           {loading ? (
             <div className="flex items-center gap-2">
@@ -136,18 +136,18 @@ export const FinalPaymentModal = ({ isOpen, onClose, planType = 'monthly', amoun
         </Button>
 
         {/* Security & Trust */}
-        <div className="mt-3 pt-3 border-t border-gray-200">
-          <div className="flex items-center justify-center gap-4 text-xs text-gray-500">
+        <div className="mt-3 pt-3 border-t border-gray-600">
+          <div className="flex items-center justify-center gap-4 text-xs text-gray-400">
             <div className="flex items-center gap-1">
-              <Shield className="h-3 w-3 text-green-500" />
+              <Shield className="h-3 w-3 text-orange-500" />
               <span>Secure</span>
             </div>
             <div className="flex items-center gap-1">
-              <Check className="h-3 w-3 text-blue-500" />
+              <Check className="h-3 w-3 text-orange-500" />
               <span>30-Day Guarantee</span>
             </div>
             <div className="flex items-center gap-1">
-              <CreditCard className="h-3 w-3 text-purple-500" />
+              <CreditCard className="h-3 w-3 text-orange-500" />
               <span>Safe Checkout</span>
             </div>
           </div>
@@ -155,8 +155,8 @@ export const FinalPaymentModal = ({ isOpen, onClose, planType = 'monthly', amoun
 
         {/* User Info */}
         {session?.user?.email && (
-          <div className="text-center text-xs text-gray-500 mt-2">
-            Subscribing as: <span className="font-medium text-gray-700">{session.user.email}</span>
+          <div className="text-center text-xs text-gray-400 mt-2">
+            Subscribing as: <span className="font-medium text-gray-200">{session.user.email}</span>
           </div>
         )}
       </DialogContent>

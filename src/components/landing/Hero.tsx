@@ -8,13 +8,13 @@ export const Hero = () => {
   
   return (
     <section className="relative pt-20 pb-48 overflow-hidden">
-      {/* Clean White Overlay */}
-      <div className="absolute inset-0 bg-white/40"></div>
+      {/* Charcoal and Silver Overlay */}
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-800/60 via-gray-600/40 to-gray-300/30"></div>
       <div className="container mx-auto px-4 relative z-10">
         <div className="flex flex-col items-center justify-center text-center">
           {/* Welcome Message */}
           <div className="mb-12 max-w-3xl w-full">
-            <p className="text-xl text-gray-700 leading-relaxed mb-8 font-light">
+            <p className="text-xl text-gray-200 leading-relaxed mb-8 font-light">
               Master the SAT with our comprehensive preparation platform. 
               Achieve your target score with personalized practice and expert guidance.
             </p>
@@ -24,7 +24,7 @@ export const Hero = () => {
           <div className="flex items-center justify-center mb-8">
             <Button 
               onClick={() => setShowPaymentModal(true)}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-medium px-8 py-3 rounded-full shadow-sm"
+              className="bg-orange-500 hover:bg-orange-600 text-white font-medium px-8 py-3 rounded-full shadow-lg transform hover:scale-105 transition-all duration-200"
             >
               Start Now
             </Button>

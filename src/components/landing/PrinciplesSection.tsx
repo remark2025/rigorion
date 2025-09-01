@@ -103,9 +103,8 @@ export const PrinciplesSection = () => {
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   const [showPaymentModal, setShowPaymentModal] = useState(false);
 
-  // Split features into two rows of 6
-  const firstRow = FEATURES.slice(0, 6);
-  const secondRow = FEATURES.slice(6, 12);
+  // Use single row of features
+  const displayFeatures = FEATURES.slice(0, 6);
 
   return (
     <section className="py-20 bg-white overflow-hidden">
@@ -129,12 +128,12 @@ export const PrinciplesSection = () => {
             style={{ width: 'calc(300px * 12)' }}
           >
             {/* Duplicate the row for infinite scroll effect */}
-            {[...firstRow, ...firstRow].map((feature, index) => (
+            {[...displayFeatures, ...displayFeatures].map((feature, index) => (
               <div
                 key={`row1-${feature.id}-${index}`}
                 className={`flex-shrink-0 w-72 bg-white rounded-xl p-5 transition-all duration-500 cursor-pointer ${
                   hoveredCard === feature.id 
-                    ? 'shadow-2xl scale-105 bg-gradient-to-br from-white to-blue-50 border-2 border-[#3B82F6]/20' 
+                    ? 'shadow-2xl scale-105 bg-gradient-to-br from-white to-orange-50 border-2 border-orange-500/20' 
                     : 'shadow-lg hover:shadow-xl'
                 }`}
                 onMouseEnter={() => {
@@ -162,15 +161,15 @@ export const PrinciplesSection = () => {
                   {/* Icon */}
                   <div className={`inline-flex items-center justify-center w-12 h-12 rounded-lg mb-3 transition-all duration-300 ${
                     hoveredCard === feature.id 
-                      ? 'bg-[#3B82F6] text-white shadow-lg' 
-                      : 'bg-gray-50 text-[#3B82F6]'
+                      ? 'bg-orange-500 text-white shadow-lg' 
+                      : 'bg-orange-50 text-orange-500'
                   }`}>
                     {feature.icon}
                   </div>
                   
                   {/* Title */}
                   <h3 className={`text-lg font-semibold mb-2 transition-colors duration-300 ${
-                    hoveredCard === feature.id ? 'text-[#3B82F6]' : 'text-gray-800'
+                    hoveredCard === feature.id ? 'text-orange-500' : 'text-gray-800'
                   }`}>
                     {feature.title}
                   </h3>
@@ -185,68 +184,6 @@ export const PrinciplesSection = () => {
           </div>
         </div>
 
-        {/* Second Row - Moving Right */}
-        <div className="mb-16 overflow-hidden">
-          <div 
-            className={`flex gap-4 ${!isPaused ? 'animate-slide-right' : ''}`}
-            style={{ width: 'calc(300px * 12)' }}
-          >
-            {/* Duplicate the row for infinite scroll effect */}
-            {[...secondRow, ...secondRow].map((feature, index) => (
-              <div
-                key={`row2-${feature.id}-${index}`}
-                className={`flex-shrink-0 w-72 bg-white rounded-xl p-5 transition-all duration-500 cursor-pointer ${
-                  hoveredCard === feature.id 
-                    ? 'shadow-2xl scale-105 bg-gradient-to-br from-white to-blue-50 border-2 border-[#3B82F6]/20' 
-                    : 'shadow-lg hover:shadow-xl'
-                }`}
-                onMouseEnter={() => {
-                  setHoveredCard(feature.id);
-                  setIsPaused(true);
-                }}
-                onMouseLeave={() => {
-                  setHoveredCard(null);
-                  setIsPaused(false);
-                }}
-              >
-                {/* Image */}
-                <div className="mb-4 overflow-hidden rounded-lg">
-                  <img
-                    src={feature.image}
-                    alt={feature.title}
-                    className={`w-full h-40 object-cover transition-all duration-500 ${
-                      hoveredCard === feature.id ? 'scale-110 brightness-110' : ''
-                    }`}
-                  />
-                </div>
-                
-                {/* Content */}
-                <div className="text-center">
-                  {/* Icon */}
-                  <div className={`inline-flex items-center justify-center w-12 h-12 rounded-lg mb-3 transition-all duration-300 ${
-                    hoveredCard === feature.id 
-                      ? 'bg-[#3B82F6] text-white shadow-lg' 
-                      : 'bg-gray-50 text-[#3B82F6]'
-                  }`}>
-                    {feature.icon}
-                  </div>
-                  
-                  {/* Title */}
-                  <h3 className={`text-lg font-semibold mb-2 transition-colors duration-300 ${
-                    hoveredCard === feature.id ? 'text-[#3B82F6]' : 'text-gray-800'
-                  }`}>
-                    {feature.title}
-                  </h3>
-                  
-                  {/* Description */}
-                  <p className="text-sm text-gray-600 leading-relaxed">
-                    {feature.description}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
 
         {/* Bottom CTA */}
         <div className="text-center">
@@ -255,7 +192,7 @@ export const PrinciplesSection = () => {
           </p>
           <button 
             onClick={() => setShowPaymentModal(true)}
-            className="bg-white hover:bg-gray-50 text-[#3B82F6] border border-[#3B82F6] hover:border-[#1D4ED8] font-medium px-8 py-3 rounded-full transition-all duration-300 hover:scale-105"
+            className="bg-orange-500 hover:bg-orange-600 text-white font-medium px-8 py-3 rounded-full transition-all duration-300 hover:scale-105 shadow-lg"
           >
             Start Your Free Trial
           </button>

@@ -17,7 +17,7 @@ export const SubscribeSection = () => {
   };
   return <section className="bg-gray-50 py-[16px]">
       <div className="container mx-auto px-4 max-w-xl text-center">
-        <h2 className="text-xl md:text-2xl font-light text-black mb-6 text-center tracking-wide uppercase" style={{ fontFamily: 'Times New Roman, serif' }}>BE THE ONE WE CONTACT WHEN WE HAVE NEW PRODUCTS & SERVICES</h2>
+        <h2 className="text-lg md:text-xl font-light text-black mb-6 text-center tracking-wide uppercase whitespace-nowrap" style={{ fontFamily: 'Times New Roman, serif' }}>BE THE ONE WE CONTACT WHEN WE HAVE NEW PRODUCTS & SERVICES</h2>
         
         <form onSubmit={handleSubmit} className="max-w-md mx-auto">
           <div className="relative flex items-center h-12 rounded-full border border-gray-300 bg-white transition-all duration-300 focus-within:border-gray-900">
@@ -36,7 +36,7 @@ export const SubscribeSection = () => {
             {/* Integrated Subscribe Button */}
             <Button 
               type="submit" 
-              className="bg-gray-900 hover:bg-gray-800 rounded-full px-4 py-1 mr-2 text-sm h-8"
+              className="bg-orange-500 hover:bg-orange-600 rounded-full px-4 py-1 mr-2 text-sm h-8 text-white font-medium"
             >
               SUBSCRIBE
             </Button>

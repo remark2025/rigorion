@@ -123,7 +123,13 @@ export const StatsCounter = () => {
         <div className="container mx-auto px-6">
           <div className="text-center mb-12">
             <h2 className="text-2xl font-bold mb-2">
-              <span className="italic font-script text-black" style={{ fontFamily: 'Dancing Script, cursive' }}>
+              <span className="italic font-script" style={{ 
+                fontFamily: 'Dancing Script, cursive',
+                background: 'linear-gradient(145deg, #2D2D2D, #FF6B35)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text'
+              }}>
                 Academic Arc by the Numbers
               </span>
             </h2>
@@ -133,7 +139,7 @@ export const StatsCounter = () => {
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
           {STATS.map((stat) => (
             <div key={stat.id} className="text-center group">
-              <div className="bg-white border border-gray-300 rounded-full w-48 h-48 mx-auto flex flex-col items-center justify-center p-6 transition-all duration-300 group-hover:border-gray-400 group-hover:scale-105 shadow-lg">
+              <div className="bg-white border-2 border-gray-900 rounded-full w-48 h-48 mx-auto flex flex-col items-center justify-center p-6 transition-all duration-300 group-hover:border-orange-500 group-hover:scale-105 shadow-lg">
                 <div className="inline-flex items-center justify-center w-12 h-12 bg-gray-50 rounded-full mb-3 group-hover:bg-gray-100 transition-all duration-300">
                   <div className="text-gray-400 group-hover:text-gray-500">
                     {React.cloneElement(stat.icon as React.ReactElement, {
@@ -141,7 +147,12 @@ export const StatsCounter = () => {
                     })}
                   </div>
                 </div>
-                <div className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-blue-600 bg-clip-text text-transparent mb-1">
+                <div className="text-2xl font-bold mb-1" style={{
+                  background: 'linear-gradient(145deg, #2D2D2D, #FF6B35)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text'
+                }}>
                   {counts[stat.id].toLocaleString()}{stat.suffix || ''}
                 </div>
                 <p className="text-xs text-gray-400 font-medium text-center leading-tight">{stat.label}</p>

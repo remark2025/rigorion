@@ -104,19 +104,19 @@ export const PartnerLogos = () => {
     if (index === (activeProject - 1 + PROMOTIONAL_ITEMS.length) % PROMOTIONAL_ITEMS.length) return "translate-x-[-60%] scale-95 opacity-60 z-10";
     return "scale-90 opacity-0";
   };
-  return <section id="products" ref={projectsRef} className="bg-gray-50 py-[50px] w-full h-[600px] overflow-hidden">
+  return <section id="products" ref={projectsRef} className="bg-gradient-to-br from-gray-800 to-gray-700 py-[50px] w-full h-[600px] overflow-hidden">
       <div className="w-full px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
         <div className={`text-center mb-10 max-w-3xl mx-auto transition-all duration-1200 ease-out ${isInView ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-16 scale-95'}`}>
           <h2 className="text-3xl font-bold mb-3">
-            <span className="italic font-script text-[#3B82F6]" style={{ fontFamily: 'Dancing Script, cursive' }}>
+            <span className="italic font-script text-orange-400" style={{ fontFamily: 'Dancing Script, cursive' }}>
               Academic Arc transforms SAT uncertainty into inevitability.
             </span>
           </h2>
-          <p className="text-gray-600 text-lg">
+          <p className="text-gray-300 text-lg">
             Strategic preparation with personalized analytics and proven results.
           </p>
           {isMobile && <div className="flex items-center justify-center mt-4 animate-pulse-slow">
-              <div className="flex items-center text-[#3B82F6]">
+              <div className="flex items-center text-orange-400">
                 <ChevronLeft size={16} />
                 <p className="text-sm mx-1">Swipe to navigate</p>
                 <ChevronRight size={16} />
@@ -128,12 +128,12 @@ export const PartnerLogos = () => {
           {/* Text Column - Only visible on desktop */}
           {!isMobile && <div className="w-1/4 pr-8 hidden lg:block">
               <div className={`transition-all duration-500 ${isInView ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-[-20px]'}`}>
-                <h3 className="text-2xl font-bold mb-4 text-gray-800">{PROMOTIONAL_ITEMS[activeProject].title}</h3>
-                <p className="text-gray-600 mb-6">{PROMOTIONAL_ITEMS[activeProject].description}</p>
+                <h3 className="text-2xl font-bold mb-4 text-gray-100">{PROMOTIONAL_ITEMS[activeProject].title}</h3>
+                <p className="text-gray-300 mb-6">{PROMOTIONAL_ITEMS[activeProject].description}</p>
                 <div className="flex flex-col space-y-2 mb-6">
-                  {PROMOTIONAL_ITEMS[activeProject].tags.map((tag, idx) => <span key={idx} className="text-sm text-gray-600">• {tag}</span>)}
+                  {PROMOTIONAL_ITEMS[activeProject].tags.map((tag, idx) => <span key={idx} className="text-sm text-gray-300">• {tag}</span>)}
                 </div>
-                <Link to={PROMOTIONAL_ITEMS[activeProject].link} className="text-[#3B82F6] inline-flex items-center font-medium hover:underline group">
+                <Link to={PROMOTIONAL_ITEMS[activeProject].link} className="text-orange-400 inline-flex items-center font-medium hover:underline group">
                   <span>Explore {PROMOTIONAL_ITEMS[activeProject].title}</span>
                   <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
                 </Link>
@@ -146,7 +146,7 @@ export const PartnerLogos = () => {
               {PROMOTIONAL_ITEMS.map((item, index) => <div key={item.id} className={`absolute top-0 w-full max-w-2xl transform transition-all duration-500 ${getCardAnimationClass(index)}`} style={{
               transitionDelay: `${index * 50}ms`
             }}>
-                  <Card className="overflow-hidden h-[460px] border-none rounded-xl shadow-lg hover:shadow-xl flex flex-col bg-white">
+                  <Card className="overflow-hidden h-[460px] border border-gray-600 rounded-xl shadow-lg hover:shadow-xl flex flex-col bg-gray-800">
                     <div className="relative bg-black flex items-center justify-center overflow-hidden" style={{
                   height: '90%',
                   backgroundImage: `url(${item.imageUrl})`,
@@ -163,7 +163,7 @@ export const PartnerLogos = () => {
                     
                     <CardContent className="p-3 flex items-center justify-center" style={{ height: '10%' }}>
                       <div className="flex flex-wrap gap-1 justify-center">
-                        {item.tags.slice(0, 2).map((tag, idx) => <span key={idx} className="px-2 py-1 bg-gray-50 text-gray-600 rounded-full text-xs font-medium">
+                        {item.tags.slice(0, 2).map((tag, idx) => <span key={idx} className="px-2 py-1 bg-gray-700 text-gray-200 rounded-full text-xs font-medium">
                             {tag}
                           </span>)}
                       </div>
@@ -173,17 +173,17 @@ export const PartnerLogos = () => {
             </div>
             
             {!isMobile && <>
-                <button className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full flex items-center justify-center text-gray-500 hover:bg-gray-50 z-30 shadow-md transition-all duration-300 hover:scale-110" onClick={() => setActiveProject(prev => (prev - 1 + PROMOTIONAL_ITEMS.length) % PROMOTIONAL_ITEMS.length)} aria-label="Previous product">
+                <button className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-gray-700 border border-gray-600 rounded-full flex items-center justify-center text-gray-300 hover:bg-gray-600 z-30 shadow-md transition-all duration-300 hover:scale-110" onClick={() => setActiveProject(prev => (prev - 1 + PROMOTIONAL_ITEMS.length) % PROMOTIONAL_ITEMS.length)} aria-label="Previous product">
                   <ChevronLeft className="w-6 h-6" />
                 </button>
                 
-                <button className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full flex items-center justify-center text-gray-500 hover:bg-gray-50 z-30 shadow-md transition-all duration-300 hover:scale-110" onClick={() => setActiveProject(prev => (prev + 1) % PROMOTIONAL_ITEMS.length)} aria-label="Next product">
+                <button className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-gray-700 border border-gray-600 rounded-full flex items-center justify-center text-gray-300 hover:bg-gray-600 z-30 shadow-md transition-all duration-300 hover:scale-110" onClick={() => setActiveProject(prev => (prev + 1) % PROMOTIONAL_ITEMS.length)} aria-label="Next product">
                   <ChevronRight className="w-6 h-6" />
                 </button>
               </>}
             
             <div className="absolute bottom-6 left-0 right-0 flex justify-center items-center space-x-3 z-30">
-              {PROMOTIONAL_ITEMS.map((_, idx) => <button key={idx} className={`w-2 h-2 rounded-full transition-all duration-300 ${activeProject === idx ? 'bg-[#3B82F6] w-6' : 'bg-gray-200 hover:bg-gray-300'}`} onClick={() => setActiveProject(idx)} aria-label={`Go to product ${idx + 1}`} />)}
+              {PROMOTIONAL_ITEMS.map((_, idx) => <button key={idx} className={`w-2 h-2 rounded-full transition-all duration-300 ${activeProject === idx ? 'bg-orange-500 w-6' : 'bg-gray-400 hover:bg-gray-300'}`} onClick={() => setActiveProject(idx)} aria-label={`Go to product ${idx + 1}`} />)}
             </div>
           </div>
         </div>
