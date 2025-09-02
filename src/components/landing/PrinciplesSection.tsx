@@ -125,18 +125,23 @@ export const PrinciplesSection = () => {
         {/* Single Row - Moving Left */}
         <div className="mb-8 overflow-hidden relative">
           <div 
-            className={`flex gap-4 transition-all duration-500 ease-in-out ${!isPaused ? 'animate-slide-left' : ''}`}
-            style={{ width: 'calc(300px * 12)' }}
+            className="flex gap-4 transition-all duration-500 ease-in-out"
+            style={{ width: 'calc(300px * 12)', transform: `translateX(-${currentIndex * 300}px)` }}
           >
             {/* Duplicate the row for infinite scroll effect */}
             {[...displayFeatures, ...displayFeatures].map((feature, index) => (
               <div
                 key={`row1-${feature.id}-${index}`}
-                className={`flex-shrink-0 w-72 bg-white/90 backdrop-blur-lg rounded-xl p-5 transition-all duration-500 cursor-pointer border border-gray-200/50 ${
+                className={`flex-shrink-0 w-72 bg-gray-100/90 backdrop-blur-lg rounded-xl p-5 transition-all duration-500 cursor-pointer border border-gray-300/50 ${
                   hoveredCard === feature.id 
-                    ? 'shadow-2xl scale-105 bg-gradient-to-br from-white/95 to-orange-50/80 border-2 border-orange-500/30' 
+                    ? 'shadow-2xl scale-105 bg-gradient-to-br from-gray-200/95 to-gray-100/80 border-2 border-orange-500/30' 
                     : 'shadow-lg hover:shadow-xl hover:border-orange-200/50'
                 }`}
+                style={{
+                  boxShadow: hoveredCard === feature.id 
+                    ? '0 0 15px rgba(255, 107, 53, 0.3), 0 0 30px rgba(255, 140, 66, 0.2), 0 0 45px rgba(255, 165, 0, 0.1)' 
+                    : undefined
+                }}
                 onMouseEnter={() => {
                   setHoveredCard(feature.id);
                   setIsPaused(true);
@@ -189,8 +194,6 @@ export const PrinciplesSection = () => {
             className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-orange-500 hover:bg-orange-600 rounded-full flex items-center justify-center text-white z-30 shadow-lg transition-all duration-300 hover:scale-110"
             onClick={() => {
               setCurrentIndex(prev => (prev - 1 + displayFeatures.length) % displayFeatures.length);
-              setIsPaused(true);
-              setTimeout(() => setIsPaused(false), 3000);
             }}
             aria-label="Previous feature"
           >
@@ -203,8 +206,6 @@ export const PrinciplesSection = () => {
             className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-orange-500 hover:bg-orange-600 rounded-full flex items-center justify-center text-white z-30 shadow-lg transition-all duration-300 hover:scale-110"
             onClick={() => {
               setCurrentIndex(prev => (prev + 1) % displayFeatures.length);
-              setIsPaused(true);
-              setTimeout(() => setIsPaused(false), 3000);
             }}
             aria-label="Next feature"
           >
@@ -222,7 +223,7 @@ export const PrinciplesSection = () => {
           </p>
           <button 
             onClick={() => setShowPaymentModal(true)}
-            className="text-white font-medium px-8 py-3 rounded-full transition-all duration-300 hover:scale-105 shadow-lg"
+            className="text-gray-900 font-medium px-8 py-3 rounded-full transition-all duration-300 hover:scale-105 shadow-lg"
             style={{
               background: 'linear-gradient(135deg, #ff6b35 0%, #ff8c42 50%, #ffa726 100%)',
               backgroundSize: '200% 200%',

@@ -109,13 +109,17 @@ export const PartnerLogos = () => {
     if (index === activeProject) return "border-2 border-orange-400 shadow-orange-400/30";
     return "border border-gray-600";
   };
-  return <section id="products" ref={projectsRef} className="py-[50px] w-full h-[600px] overflow-hidden relative bg-gray-900">
-      {/* Glass effect overlay - matching Header */}
+  return <section id="products" ref={projectsRef} className="py-[50px] w-full h-[650px] overflow-visible relative" style={{
+    backgroundImage: 'url(/resources/carbonwallpaper.jpg)',
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat'
+  }}>
+      {/* Subtle glass effect overlay */}
       <div className="absolute inset-0" style={{
-        backdropFilter: 'blur(20px) saturate(180%)',
-        WebkitBackdropFilter: 'blur(20px) saturate(180%)',
-        border: '1px solid rgba(192, 192, 192, 0.2)',
-        boxShadow: '0 8px 32px rgba(45, 45, 45, 0.3)'
+        backdropFilter: 'blur(2px) saturate(120%)',
+        WebkitBackdropFilter: 'blur(2px) saturate(120%)',
+        backgroundColor: 'rgba(0, 0, 0, 0.2)'
       }}></div>
       <div className="w-full px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto relative z-10">
         <div className={`text-center mb-10 max-w-3xl mx-auto transition-all duration-1200 ease-out ${isInView ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-16 scale-95'}`}>
@@ -136,29 +140,14 @@ export const PartnerLogos = () => {
             </div>}
         </div>
         
-        <div className="flex">
-          {/* Text Column - Only visible on desktop */}
-          {!isMobile && <div className="w-1/4 pr-8 hidden lg:block">
-              <div className={`transition-all duration-500 ${isInView ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-[-20px]'}`}>
-                <h3 className="text-2xl font-bold mb-4 text-gray-100">{PROMOTIONAL_ITEMS[activeProject].title}</h3>
-                <p className="text-gray-300 mb-6">{PROMOTIONAL_ITEMS[activeProject].description}</p>
-                <div className="flex flex-col space-y-2 mb-6">
-                  {PROMOTIONAL_ITEMS[activeProject].tags.map((tag, idx) => <span key={idx} className="text-sm text-gray-300">• {tag}</span>)}
-                </div>
-                <Link to={PROMOTIONAL_ITEMS[activeProject].link} className="text-orange-400 inline-flex items-center font-medium hover:underline group">
-                  <span>Explore {PROMOTIONAL_ITEMS[activeProject].title}</span>
-                  <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
-                </Link>
-              </div>
-            </div>}
-          
-          {/* Carousel */}
-          <div className={`relative ${!isMobile ? 'w-3/4' : 'w-full'} h-[500px] overflow-hidden`} onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd} ref={carouselRef}>
+        <div className="flex justify-center">
+          {/* Centered Carousel */}
+          <div className="relative w-full h-[580px] overflow-visible" onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd} ref={carouselRef}>
             <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
-              {PROMOTIONAL_ITEMS.map((item, index) => <div key={item.id} className={`absolute top-0 w-full max-w-2xl transform transition-all duration-500 ${getCardAnimationClass(index)}`} style={{
+              {PROMOTIONAL_ITEMS.map((item, index) => <div key={item.id} className={`absolute ${index === activeProject ? 'top-[-20px]' : 'top-0'} w-full ${index === activeProject ? 'max-w-4xl' : 'max-w-2xl'} transform transition-all duration-500 ${getCardAnimationClass(index)}`} style={{
               transitionDelay: `${index * 50}ms`
             }}>
-                  <Card className={`overflow-hidden h-[460px] rounded-xl shadow-lg hover:shadow-xl flex flex-col bg-gray-800 ${getCardBorderClass(index % PROMOTIONAL_ITEMS.length)}`} style={{boxShadow: index % PROMOTIONAL_ITEMS.length === activeProject ? '0 0 30px rgba(255, 107, 53, 0.4), 0 0 60px rgba(255, 140, 66, 0.2)' : undefined}}>
+                  <Card className={`overflow-visible h-[500px] rounded-xl shadow-lg hover:shadow-xl flex flex-col bg-gray-800 ${getCardBorderClass(index % PROMOTIONAL_ITEMS.length)}`} style={{boxShadow: index % PROMOTIONAL_ITEMS.length === activeProject ? '0 0 30px rgba(255, 107, 53, 0.4), 0 0 60px rgba(255, 140, 66, 0.2)' : undefined}}>
                     <div className="relative bg-black flex items-center justify-center overflow-hidden" style={{
                   height: '90%',
                   backgroundImage: `url(${item.imageUrl})`,
@@ -174,10 +163,11 @@ export const PartnerLogos = () => {
                     </div>
                     
                     <CardContent className="p-3 flex items-center justify-center" style={{ height: '10%' }}>
-                      <div className="flex flex-wrap gap-1 justify-center">
-                        {item.tags.slice(0, 2).map((tag, idx) => <span key={idx} className="px-2 py-1 bg-gray-700 text-gray-200 rounded-full text-xs font-medium">
-                            {tag}
-                          </span>)}
+                      <div className="w-full h-full bg-cover bg-center rounded-b-xl" style={{
+                        backgroundImage: `url(${item.imageUrl})`,
+                        backgroundSize: 'cover',
+                        backgroundPosition: 'center'
+                      }}>
                       </div>
                     </CardContent>
                   </Card>

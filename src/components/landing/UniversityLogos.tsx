@@ -7,32 +7,23 @@ interface University {
 }
 
 const TOP_UNIVERSITIES: University[] = [
-  { name: "Harvard University", logo: "https://logos-world.net/wp-content/uploads/2021/09/Harvard-Logo.png", ranking: 1 },
-  { name: "Stanford University", logo: "https://logos-world.net/wp-content/uploads/2020/06/Stanford-Logo.png", ranking: 2 },
-  { name: "MIT", logo: "https://logos-world.net/wp-content/uploads/2020/06/MIT-Logo.png", ranking: 3 },
-  { name: "Yale University", logo: "https://logos-world.net/wp-content/uploads/2020/06/Yale-Logo.png", ranking: 4 },
-  { name: "Princeton University", logo: "https://logos-world.net/wp-content/uploads/2020/06/Princeton-Logo.png", ranking: 5 },
-  { name: "Columbia University", logo: "https://logos-world.net/wp-content/uploads/2020/06/Columbia-Logo.png", ranking: 7 },
-  { name: "University of Pennsylvania", logo: "https://logos-world.net/wp-content/uploads/2020/06/University-of-Pennsylvania-Logo.png", ranking: 8 },
-  { name: "Duke University", logo: "https://logos-world.net/wp-content/uploads/2020/06/Duke-Logo.png", ranking: 10 },
-  { name: "Northwestern University", logo: "https://logos-world.net/wp-content/uploads/2020/06/Northwestern-Logo.png", ranking: 11 },
-  { name: "Brown University", logo: "https://logos-world.net/wp-content/uploads/2020/06/Brown-Logo.png", ranking: 13 },
-  { name: "UC Berkeley", logo: "https://logos-world.net/wp-content/uploads/2020/06/UC-Berkeley-Logo.png", ranking: 16 },
-  { name: "UCLA", logo: "https://logos-world.net/wp-content/uploads/2020/06/UCLA-Logo.png", ranking: 17 }
+  { name: "Logo 1", logo: "/resources/62796f8f53c8a73e766a78eb.png", ranking: 1 },
+  { name: "Logo 2", logo: "/resources/6279702453c8a73e766a78ef.png", ranking: 2 },
+  { name: "Logo 3", logo: "/resources/62796e3153c8a73e766a78e0.png", ranking: 3 },
+  { name: "Logo 4", logo: "/resources/6279708b53c8a73e766a78f2.png", ranking: 4 },
+  { name: "Logo 5", logo: "/resources/627970eb53c8a73e766a78f4.png", ranking: 5 },
+  { name: "Logo 6", logo: "/resources/62796e6c53c8a73e766a78e2.png", ranking: 6 },
+  { name: "Logo 7", logo: "/resources/62796f3253c8a73e766a78e8.png", ranking: 7 },
+  { name: "Logo 8", logo: "/resources/62796e8453c8a73e766a78e3.png", ranking: 8 },
+  { name: "Logo 9", logo: "/resources/62796eaf53c8a73e766a78e4.png", ranking: 9 }
 ];
 
 export const UniversityLogos = () => {
 
   return (
-    <section className="relative py-4 border-b border-gray-200 overflow-hidden">
-      {/* Soft overlay for unified design and text readability */}
-      <div className="absolute inset-0 bg-white/40"></div>
-      
-      {/* Comprehensive soft edge gradients for seamless section blending */}
-      <div className="absolute top-0 left-0 right-0 h-12 bg-gradient-to-b from-white via-white/60 to-transparent z-10"></div>
-      <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-white via-white/60 to-transparent z-10"></div>
-      <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-white/80 to-transparent z-10"></div>
-      <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-white/80 to-transparent z-10"></div>
+    <section className="relative py-4 overflow-hidden">
+      {/* Charcoal and Silver Overlay - matching Hero */}
+      <div className="absolute inset-0 bg-gradient-to-br from-gray-800/60 via-gray-600/40 to-gray-300/30"></div>
       
       <div className="container mx-auto px-6 relative z-20">
         <div className="text-center">
@@ -40,8 +31,8 @@ export const UniversityLogos = () => {
           {/* Animated University Logos - Horizontal Sliding */}
           <div className="relative h-16 overflow-hidden">
             {/* Enhanced gradient masks for soft edges that blend with background */}
-            <div className="absolute left-0 top-0 w-24 h-full bg-gradient-to-r from-white/95 via-white/70 to-transparent z-30 pointer-events-none"></div>
-            <div className="absolute right-0 top-0 w-24 h-full bg-gradient-to-l from-white/95 via-white/70 to-transparent z-30 pointer-events-none"></div>
+            <div className="absolute left-0 top-0 w-24 h-full bg-gradient-to-r from-gray-800/60 via-gray-600/40 to-transparent z-30 pointer-events-none"></div>
+            <div className="absolute right-0 top-0 w-24 h-full bg-gradient-to-l from-gray-800/60 via-gray-600/40 to-transparent z-30 pointer-events-none"></div>
             
             {/* Sliding container */}
             <div 

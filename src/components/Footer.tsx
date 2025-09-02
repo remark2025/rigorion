@@ -54,7 +54,12 @@ export const Footer = () => {
   const { isDarkMode } = useTheme();
   
   return (
-    <footer className="bg-gray-900">
+    <footer style={{
+      backgroundImage: 'url(/resources/carbonwallpaper.jpg)',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat'
+    }}>
       {/* Full width footer sections */}
       <div className="w-full">
         <div className="container mx-auto px-4 py-4">
