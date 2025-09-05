@@ -436,6 +436,8 @@ const Progress = () => {
   ]);
   const [selectedCourse, setSelectedCourse] = useState<string>('1');
   const [selectedView, setSelectedView] = useState<'analytics' | 'exam-results' | 'leaderboard'>('analytics');
+  const [timeAnalyticsView, setTimeAnalyticsView] = useState<'daily' | 'skills'>('daily');
+  const [selectedSkillForAnalytics, setSelectedSkillForAnalytics] = useState<string>('all');
   const queryClient = useQueryClient();
   
   // Get real analytics data
@@ -816,6 +818,7 @@ const Progress = () => {
                     </div>
                   </div>
 
+
                   {/* Minimalistic Separator */}
                   <div className={`border-t ${isDarkMode ? 'border-gray-700/50' : 'border-gray-200/50'}`}></div>
 
@@ -1074,6 +1077,144 @@ const Progress = () => {
                         <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Global Average</span>
                       </div>
                     </div>
+                  </div>
+
+                  {/* Time Analytics Section */}
+                  <div className={`p-8 rounded-xl ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm border-0 mt-8`}>
+                    <div className="flex items-center justify-between mb-6">
+                      <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>Time Analytics</h3>
+                      <div className="flex items-center space-x-4">
+                        <div className="flex rounded-lg bg-gray-100 p-1">
+                          <button 
+                            onClick={() => setTimeAnalyticsView('skills')}
+                            className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${
+                              timeAnalyticsView === 'skills' 
+                                ? 'bg-orange-500 text-white shadow-sm' 
+                                : 'text-gray-600 hover:text-orange-500'
+                            }`}
+                          >
+                            Skill Practice
+                          </button>
+                          <button 
+                            onClick={() => setTimeAnalyticsView('daily')}
+                            className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${
+                              timeAnalyticsView === 'daily' 
+                                ? 'bg-orange-500 text-white shadow-sm' 
+                                : 'text-gray-600 hover:text-orange-500'
+                            }`}
+                          >
+                            Daily Performance Trend
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Skill Practice View */}
+                    {timeAnalyticsView === 'skills' && (
+                      <div className="space-y-4">
+                        <div className="flex items-center justify-between mb-4">
+                          <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                            Questions practiced per skill over the last 15 days
+                          </p>
+                          <select 
+                            value={selectedSkillForAnalytics}
+                            onChange={(e) => setSelectedSkillForAnalytics(e.target.value)}
+                            className={`px-3 py-2 rounded-lg border text-sm ${isDarkMode ? 'bg-gray-700 border-gray-600 text-gray-200' : 'bg-white border-gray-300 text-gray-700'}`}
+                          >
+                            <option value="all">All Skills</option>
+                            {currentProgressData.skillAnalytics.slice(0, 10).map((skill) => (
+                              <option key={skill.skillId} value={skill.skillId}>
+                                {skill.skillName}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        {currentProgressData.performanceGraph.slice(-15).map((day, index) => {
+                          const questionsForSkill = selectedSkillForAnalytics === 'all' 
+                            ? day.attempted 
+                            : Math.floor(day.attempted * (Math.random() * 0.3 + 0.1)); // Mock skill-specific data
+                          return (
+                            <div key={day.date} className={`flex items-center justify-between p-3 rounded-lg ${isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                              <div className="flex items-center space-x-4 min-w-[120px]">
+                                <div className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                                  {new Date(day.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                                </div>
+                                <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                  {day.dayName}
+                                </div>
+                              </div>
+                              <div className="flex items-center space-x-4 flex-1">
+                                <div className="flex items-center space-x-2 flex-1">
+                                  <div className="w-full max-w-[300px] bg-gray-200 rounded-full h-4 overflow-hidden">
+                                    <div 
+                                      className="bg-orange-500 h-4 rounded-full transition-all duration-700 ease-out"
+                                      style={{ width: `${Math.min(100, (questionsForSkill / 30) * 100)}%` }}
+                                    ></div>
+                                  </div>
+                                  <span className={`text-sm font-semibold ${isDarkMode ? 'text-orange-400' : 'text-orange-600'} min-w-[35px]`}>
+                                    {questionsForSkill}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+
+                    {/* Daily Performance Trend View */}
+                    {timeAnalyticsView === 'daily' && (
+                      <div className="space-y-4">
+                        <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mb-4`}>
+                          Hourly practice distribution over the last 15 days
+                        </p>
+                        {currentProgressData.performanceGraph.slice(-15).map((day, index) => {
+                          // Mock hourly data - distribute questions across hours
+                          const hourlyData = Array.from({length: 24}, (_, hour) => {
+                            const studyHours = [9, 10, 14, 15, 16, 19, 20, 21]; // Common study hours
+                            const isStudyHour = studyHours.includes(hour);
+                            const questions = isStudyHour ? Math.floor(day.attempted / studyHours.length) + Math.floor(Math.random() * 3) : 0;
+                            return { hour, questions };
+                          });
+                          
+                          const maxQuestions = Math.max(...hourlyData.map(h => h.questions));
+                          
+                          return (
+                            <div key={day.date} className={`p-4 rounded-lg ${isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                              <div className="flex items-center justify-between mb-3">
+                                <div className="flex items-center space-x-2">
+                                  <div className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                                    {new Date(day.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', weekday: 'short' })}
+                                  </div>
+                                </div>
+                                <div className={`text-sm font-semibold ${isDarkMode ? 'text-orange-400' : 'text-orange-600'}`}>
+                                  Total: {day.attempted} questions
+                                </div>
+                              </div>
+                              <div className="flex items-end space-x-1 h-12">
+                                {hourlyData.map((hourData, hourIndex) => (
+                                  <div key={hourIndex} className="flex flex-col items-center flex-1">
+                                    <div 
+                                      className={`w-full bg-orange-500 rounded-t transition-all duration-500 ease-out ${hourData.questions > 0 ? '' : 'opacity-20'}`}
+                                      style={{ 
+                                        height: hourData.questions > 0 ? `${(hourData.questions / Math.max(maxQuestions, 1)) * 100}%` : '2px',
+                                        minHeight: '2px'
+                                      }}
+                                      title={`${hourData.hour}:00 - ${hourData.questions} questions`}
+                                    ></div>
+                                    {hourData.questions > 0 && (
+                                      <span className={`text-xs mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                        {hourData.hour}h
+                                      </span>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
 
                   {/* Exam Tests Summary & Key Insights */}
@@ -1388,61 +1529,6 @@ const Progress = () => {
                             </div>
                           </div>
 
-                          {/* Emotional Analytics */}
-                          <div className="mt-6">
-                            <h4 className={`font-semibold text-sm mb-3 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Emotional Analytics</h4>
-                            
-                            {/* Emotional Distribution */}
-                            <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-yellow-900/30' : 'bg-yellow-50'} border-l-4 border-yellow-500 mb-3`}>
-                              <div className="flex justify-between items-center">
-                                <div>
-                                  <p className={`text-sm font-medium ${isDarkMode ? 'text-yellow-300' : 'text-yellow-700'}`}>Emotional Balance</p>
-                                  <p className={`text-xs ${isDarkMode ? 'text-yellow-400' : 'text-yellow-600'}`}>😊 65% • 😐 25% • 😰 10%</p>
-                                </div>
-                                <span className={`text-lg font-bold ${isDarkMode ? 'text-yellow-400' : 'text-yellow-600'}`}>Positive</span>
-                              </div>
-                            </div>
-
-                            {/* Confidence vs Performance */}
-                            <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-indigo-900/30' : 'bg-indigo-50'} border-l-4 border-indigo-500 mb-3`}>
-                              <div className="flex justify-between items-center">
-                                <div>
-                                  <p className={`text-sm font-medium ${isDarkMode ? 'text-indigo-300' : 'text-indigo-700'}`}>Confidence Calibration</p>
-                                  <p className={`text-xs ${isDarkMode ? 'text-indigo-400' : 'text-indigo-600'}`}>Avg confidence: 3.8/5 • Accuracy: 72%</p>
-                                </div>
-                                <span className={`text-lg font-bold ${isDarkMode ? 'text-indigo-400' : 'text-indigo-600'}`}>Well-calibrated</span>
-                              </div>
-                            </div>
-
-                            {/* Stress Impact */}
-                            <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-pink-900/30' : 'bg-pink-50'} border-l-4 border-pink-500`}>
-                              <div className="flex justify-between items-center">
-                                <div>
-                                  <p className={`text-sm font-medium ${isDarkMode ? 'text-pink-300' : 'text-pink-700'}`}>Stress Impact</p>
-                                  <p className={`text-xs ${isDarkMode ? 'text-pink-400' : 'text-pink-600'}`}>When stressed: -15% accuracy</p>
-                                </div>
-                                <span className={`text-lg font-bold ${isDarkMode ? 'text-pink-400' : 'text-pink-600'}`}>Moderate</span>
-                              </div>
-                            </div>
-
-                            {/* Key Insight */}
-                            <div className={`mt-4 p-4 rounded-lg border-2 border-dashed ${
-                              isDarkMode ? 'border-gray-600 bg-gray-800/50' : 'border-gray-300 bg-gray-50'
-                            }`}>
-                              <div className="flex items-start gap-3">
-                                <div className="text-2xl">💡</div>
-                                <div>
-                                  <h5 className={`font-semibold text-sm ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>
-                                    Emotional Intelligence Insight
-                                  </h5>
-                                  <p className={`text-xs mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                                    You perform best when confident (😊) with 85% accuracy. Try stress management 
-                                    techniques during practice to improve performance when feeling anxious.
-                                  </p>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
                         </div>
                       </div>
                     </div>

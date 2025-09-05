@@ -239,17 +239,17 @@ export const PracticeHeader = ({
   const getModeIcon = (currentMode: string) => {
     switch (currentMode) {
       case "timer":
-        return <Timer className={`h-4 w-4 mr-1 ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`} />;
+        return <Timer className={`h-4 w-4 mr-1 ${isDarkMode ? 'text-orange-400' : 'text-orange-600'}`} />;
       case "level":
-        return <TrendingUp className={`h-4 w-4 mr-1 ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`} />;
+        return <TrendingUp className={`h-4 w-4 mr-1 ${isDarkMode ? 'text-orange-400' : 'text-orange-600'}`} />;
       case "manual":
-        return <Hand className={`h-4 w-4 mr-1 ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`} />;
+        return <Hand className={`h-4 w-4 mr-1 ${isDarkMode ? 'text-orange-400' : 'text-orange-600'}`} />;
       case "pomodoro":
-        return <Coffee className={`h-4 w-4 mr-1 ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`} />;
+        return <Coffee className={`h-4 w-4 mr-1 ${isDarkMode ? 'text-orange-400' : 'text-orange-600'}`} />;
       case "exam":
-        return <GraduationCap className={`h-4 w-4 mr-1 ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`} />;
+        return <GraduationCap className={`h-4 w-4 mr-1 ${isDarkMode ? 'text-orange-400' : 'text-orange-600'}`} />;
       default:
-        return <Clock className={`h-4 w-4 mr-1 ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`} />;
+        return <Clock className={`h-4 w-4 mr-1 ${isDarkMode ? 'text-orange-400' : 'text-orange-600'}`} />;
     }
   };
 
@@ -257,22 +257,20 @@ export const PracticeHeader = ({
     <header 
       className="fixed top-0 left-0 right-0 w-full z-50 border-b shadow-lg transition-all duration-300 animate-header-shiver"
       style={{
-        background: isDarkMode 
-          ? 'linear-gradient(135deg, rgba(168, 85, 247, 0.85) 0%, rgba(139, 92, 246, 0.8) 20%, rgba(99, 102, 241, 0.85) 40%, rgba(79, 70, 229, 0.9) 60%, rgba(55, 65, 81, 0.8) 80%, rgba(31, 41, 55, 0.85) 100%)'
-          : 'linear-gradient(135deg, rgba(248, 250, 252, 0.9) 0%, rgba(226, 232, 240, 0.85) 15%, rgba(203, 213, 225, 0.9) 30%, rgba(148, 163, 184, 0.85) 45%, rgba(59, 130, 246, 0.9) 65%, rgba(37, 99, 235, 0.8) 85%, rgba(29, 78, 216, 0.85) 100%)',
-        borderColor: isDarkMode ? 'rgba(139, 92, 246, 0.4)' : 'rgba(37, 99, 235, 0.3)',
-        backdropFilter: 'blur(20px) saturate(180%)',
-        WebkitBackdropFilter: 'blur(20px) saturate(180%)',
-        boxShadow: isDarkMode 
-          ? '0 8px 32px rgba(139, 92, 246, 0.2), 0 0 40px rgba(59, 130, 246, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
-          : '0 8px 32px rgba(37, 99, 235, 0.2), 0 0 40px rgba(148, 163, 184, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
+        backgroundImage: 'url(/resources/mywall.jpg)',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        borderColor: 'rgba(255, 107, 53, 0.3)',
+        backdropFilter: 'blur(2px) saturate(120%)',
+        WebkitBackdropFilter: 'blur(2px) saturate(120%)',
+        boxShadow: '0 8px 32px rgba(255, 107, 53, 0.2), 0 0 40px rgba(255, 140, 66, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
         animation: 'header-shiver 60s ease-in-out infinite',
         border: '1px solid rgba(255, 255, 255, 0.18)'
       }}
     >
-      
       {/* Main Header Content */}
-      <div className="px-1 sm:px-2 md:px-4 py-2 sm:py-3 flex items-center justify-between min-h-[48px]">
+      <div className="px-1 sm:px-2 md:px-4 py-2 sm:py-3 flex items-center justify-between min-h-[48px] relative z-10">
       <div className="flex items-center gap-1 sm:gap-2 min-w-0 flex-1">
         {/* Mobile Hamburger Menu */}
         <Button
@@ -481,11 +479,11 @@ export const PracticeHeader = ({
                 size="sm"
                 className={`rounded-full bg-transparent transition-colors flex w-[100px] min-w-[100px] max-w-[100px] justify-center overflow-hidden hover:bg-white/20 text-white ${selectedModule !== "All Modules" ? 'bg-white/30' : ''}`}
               >
-                <BookOpen className="h-4 w-4 mr-1 flex-shrink-0 text-white" />
+                <BookOpen className="h-4 w-4 mr-1 flex-shrink-0 text-orange-500" />
                 <span className="font-thin text-xs truncate max-w-[50px] text-white">
                   {selectedModule === "All Modules" ? "All" : selectedModule}
                 </span>
-                <ChevronDown className={`ml-1 h-3 w-3 flex-shrink-0 transition-transform ${isModuleDropdownOpen ? "rotate-180" : ""} text-white/80`} />
+                <ChevronDown className={`ml-1 h-3 w-3 flex-shrink-0 text-orange-500`} />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className={`w-56 shadow-lg rounded-lg p-2 z-50 ${
@@ -516,11 +514,11 @@ export const PracticeHeader = ({
                 size="sm"
                 className={`rounded-full bg-transparent transition-colors flex w-[80px] min-w-[80px] max-w-[80px] justify-center overflow-hidden hover:bg-white/20 text-white ${selectedExam !== null ? 'bg-white/30' : ''}`}
               >
-                <Target className="h-4 w-4 mr-1 flex-shrink-0 text-white" />
+                <Target className="h-4 w-4 mr-1 flex-shrink-0 text-orange-500" />
                 <span className="font-thin text-xs truncate max-w-[40px] text-white">
                   {selectedExam !== null ? `E${selectedExam}` : "All"}
                 </span>
-                <ChevronDown className={`ml-1 h-3 w-3 flex-shrink-0 transition-transform ${isExamDropdownOpen ? "rotate-180" : ""} text-white/80`} />
+                <ChevronDown className={`ml-1 h-3 w-3 flex-shrink-0 text-orange-500`} />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className={`w-56 shadow-lg rounded-lg p-2 z-50 ${
@@ -592,8 +590,8 @@ export const PracticeHeader = ({
               isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
             }`}
           >
-            <Target className={`h-4 w-4 mr-1 ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`} />
-            <span className={`font-thin text-xs ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Objectives</span>
+            <Target className="h-4 w-4 mr-1 text-orange-500" />
+            <span className="font-thin text-xs text-white">Objectives</span>
           </Button>
           
           <button
@@ -602,7 +600,7 @@ export const PracticeHeader = ({
               mode !== "manual" 
                 ? (isDarkMode ? "text-green-300 bg-green-900/20" : "text-blue-600 bg-blue-50") 
                 : ""
-            } hover:bg-white/20 text-white`}
+            } hover:bg-white/20 text-orange-400`}
           >
             {getModeIcon(mode)}
             <span>{mode === "manual" ? "Manual" : mode.charAt(0).toUpperCase() + mode.slice(1)}</span>

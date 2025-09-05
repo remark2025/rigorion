@@ -107,16 +107,16 @@ export const FormattingToolbar = ({ settings, onSettingsChange, timerEnabled = t
     <div className="flex items-center gap-2">
       {/* Timer Component */}
       {timerEnabled && timerVisible && (
-        <div className="flex items-center gap-1 bg-gray-100 px-2 py-1 rounded-full">
-          <Timer className="h-3 w-3 text-gray-600" />
-          <span className="text-xs font-mono text-gray-700 min-w-[35px]">
+        <div className="flex items-center gap-1 bg-transparent border border-orange-400 px-2 py-1 rounded-full">
+          <Timer className="h-3 w-3 text-orange-400" />
+          <span className="text-xs font-mono text-orange-400 min-w-[35px]">
             {formatTime(elapsedTime)}
           </span>
           <Button
             variant="ghost"
             size="sm"
             onClick={() => setTimerPaused(!timerPaused)}
-            className="h-5 w-5 p-0 text-gray-500 hover:text-gray-700"
+            className="h-5 w-5 p-0 text-orange-400 hover:text-orange-300"
           >
             {timerPaused ? <Play className="h-2 w-2" /> : <Pause className="h-2 w-2" />}
           </Button>
@@ -129,7 +129,7 @@ export const FormattingToolbar = ({ settings, onSettingsChange, timerEnabled = t
           variant="ghost"
           size="sm"
           onClick={() => setTimerVisible(!timerVisible)}
-          className="h-6 w-6 p-0 text-gray-500 hover:text-gray-700"
+          className="h-6 w-6 p-0 text-orange-400 hover:text-orange-300"
         >
           {timerVisible ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
         </Button>
@@ -143,7 +143,7 @@ export const FormattingToolbar = ({ settings, onSettingsChange, timerEnabled = t
             size="sm" 
             className="h-8 w-8 p-0 bg-white rounded-full hover:bg-gray-100"
           >
-            <Type className="h-4 w-4 text-blue-600" />
+            <Type className="h-4 w-4 text-orange-600" />
           </Button>
         </PopoverTrigger>
       <PopoverContent 
@@ -276,7 +276,7 @@ export const FormattingToolbar = ({ settings, onSettingsChange, timerEnabled = t
                     }}
                     className={`h-8 w-8 p-0 ${
                       isActive 
-                        ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                        ? 'bg-orange-600 text-white hover:bg-orange-700' 
                         : 'border-gray-300 hover:bg-gray-50 text-gray-600'
                     }`}
                     title={option.label}

@@ -7,7 +7,7 @@ export const Hero = () => {
 
   
   return (
-    <section className="relative pt-20 pb-48 overflow-hidden">
+    <section className="relative pt-20 pb-64 overflow-hidden">
       {/* Charcoal and Silver Overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-gray-800/60 via-gray-600/40 to-gray-300/30"></div>
       <div className="container mx-auto px-4 relative z-10">
