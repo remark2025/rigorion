@@ -765,6 +765,73 @@ However, the situation is not entirely without hope. Innovative technologies, su
       text: "A graph is worth a thousand words.",
       source: "Mathematical Wisdom"
     }
+  },
+
+  // SAT Writing Questions
+  {
+    id: "writing-essay-1",
+    number: 24,
+    content: "Some educators argue that social media use among teenagers should be strictly limited during school hours to improve mental health and academic focus. Others contend that social media is an important tool for communication and learning that should not be restricted. Write an essay in which you develop a position on whether schools should limit students' social media use during school hours. Use appropriate evidence and examples to support your argument.",
+    choices: [], // Writing questions don't have multiple choice answers
+    correctAnswer: "", // Essays are evaluated differently
+    solution: "This is an argumentative essay prompt. Students should choose a clear position (for or against limiting social media), provide strong evidence, address counterarguments, and maintain a logical structure throughout their response.",
+    difficulty: "intermediate" as const,
+    chapter: "Writing and Language",
+    module: "writing" as const,
+    examNumber: 1,
+    hint: "Choose a clear position early and stick to it. Use specific examples and evidence to support your argument. Don't forget to address the opposing viewpoint.",
+    explanation: "SAT Essay questions require students to take a position on an issue and defend it with evidence and reasoning. The key is to have a clear thesis, organize your thoughts logically, and use specific examples.",
+    calculatorAllowed: false,
+    type: "essay" as const,
+    topics: ["Social Media", "Education", "Youth Policy"],
+    estimatedTime: 50,
+    topic: "Education and Technology",
+    bookmarked: false,
+    level: "medium" as const
+  },
+
+  {
+    id: "writing-essay-2", 
+    number: 25,
+    content: "Artificial intelligence and automation are rapidly changing the job market. While some argue that AI will create new opportunities and increase productivity, others worry about widespread unemployment and economic inequality. Write an essay in which you argue whether the benefits of AI advancement outweigh the potential risks to employment. Use specific examples and evidence to support your position.",
+    choices: [],
+    correctAnswer: "",
+    solution: "This argumentative essay requires students to weigh benefits against risks of AI technology. Strong essays will include specific examples, consider economic implications, and address counterarguments while maintaining a clear position.",
+    difficulty: "advanced" as const,
+    chapter: "Writing and Language",
+    module: "writing" as const,
+    examNumber: 1,
+    hint: "Consider both immediate and long-term effects of AI on employment. Use specific examples from industries already affected by automation.",
+    explanation: "Advanced essay prompts like this require sophisticated analysis of complex issues. Students must demonstrate understanding of economic concepts while constructing a persuasive argument.",
+    calculatorAllowed: false,
+    type: "essay" as const,
+    topics: ["Technology", "Economics", "Future of Work"],
+    estimatedTime: 50,
+    topic: "Technology and Society",
+    bookmarked: false,
+    level: "hard" as const
+  },
+
+  {
+    id: "writing-narrative-1",
+    number: 26,
+    content: "Write a narrative essay about a time when you experienced a significant failure, setback, or disappointment. Focus not just on what happened, but on how the experience changed your perspective, approach, or understanding of yourself. Your essay should include vivid details about the experience, your emotional journey through it, and the lasting impact it has had on your life.",
+    choices: [],
+    correctAnswer: "",
+    solution: "This personal narrative essay should include: engaging opening, background context, detailed main event, challenges faced, personal growth, and reflection on lasting impact. Focus on storytelling with meaningful reflection.",
+    difficulty: "intermediate" as const,
+    chapter: "Writing and Language", 
+    module: "writing" as const,
+    examNumber: 1,
+    hint: "Use sensory details and show your emotions throughout the experience. The key is to demonstrate personal growth and learning from the setback.",
+    explanation: "Narrative essays require students to tell a compelling personal story while reflecting on its significance. Good narratives balance storytelling with introspection.",
+    calculatorAllowed: false,
+    type: "essay" as const,
+    topics: ["Personal Growth", "Resilience", "Life Lessons"],
+    estimatedTime: 50,
+    topic: "Personal Experience",
+    bookmarked: false,
+    level: "medium" as const
   }
 ];
 

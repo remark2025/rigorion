@@ -11,13 +11,13 @@ export interface TemplateSection {
 export interface WritingTemplate {
   id: string;
   name: string;
-  category: 'argumentative' | 'analysis' | 'compare-contrast' | 'narrative' | 'persuasive';
+  category: 'argumentative' | 'analysis' | 'compare-contrast' | 'narrative' | 'persuasive' | 'problem-solution' | 'cause-effect' | 'expository';
   description: string;
-  difficulty: 'beginner' | 'intermediate' | 'advanced';
+  difficulty: 'easy' | 'beginner' | 'intermediate' | 'advanced' | 'hard';
   estimatedLength: string; // e.g., "300-400 words"
   timeLimit: number; // in minutes
   sections: TemplateSection[];
-  transitionPhrases: {
+  transitionPhrases?: {
     [key: string]: string[]; // key is transition type, value is array of phrases
   };
   scoringCriteria: {
@@ -56,8 +56,11 @@ export interface StudentEssay {
       customContent: string[];
     };
   };
-  submittedAt: Date;
+  submittedAt?: Date;
+  createdAt: string;
+  timeSpent: number;
   wordCount: number;
+  status: 'draft' | 'completed' | 'submitted';
 }
 
 export interface AIEvaluation {
@@ -122,5 +125,23 @@ export const TEMPLATE_COLORS = {
     text: 'text-orange-800',
     border: 'border-orange-300',
     hex: '#EA580C'
+  },
+  'problem-solution': {
+    bg: 'bg-yellow-100',
+    text: 'text-yellow-800',
+    border: 'border-yellow-300',
+    hex: '#EAB308'
+  },
+  'cause-effect': {
+    bg: 'bg-indigo-100',
+    text: 'text-indigo-800',
+    border: 'border-indigo-300',
+    hex: '#4F46E5'
+  },
+  expository: {
+    bg: 'bg-teal-100',
+    text: 'text-teal-800',
+    border: 'border-teal-300',
+    hex: '#14B8A6'
   }
 } as const;

@@ -374,17 +374,14 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
       className={className}
     >
       <Card 
-        className="w-full border shadow-2xl overflow-hidden"
+        className="w-full overflow-hidden"
         style={{
-          borderColor: PROFESSIONAL_COLORS.accents.steel,
-          background: PROFESSIONAL_THEME.background.surface,
-          boxShadow: '0 25px 50px -12px rgba(15, 23, 42, 0.15)'
+          background: PROFESSIONAL_THEME.background.surface
         }}
       >
         <CardHeader 
-          className="border-b p-2"
+          className="p-2"
           style={{
-            borderColor: PROFESSIONAL_COLORS.accents.steel,
             background: `linear-gradient(90deg, ${PROFESSIONAL_THEME.background.deep} 0%, ${PROFESSIONAL_THEME.background.medium} 100%)`
           }}
         >
@@ -437,100 +434,92 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
             </motion.div>
           </CardTitle>
         </CardHeader>
-      <CardContent className="space-y-6">
-        {/* Interactive Graph with Trademark Styling */}
-        <motion.div 
-          className="w-full h-[600px] border rounded-xl shadow-2xl overflow-hidden"
-          style={{
-            borderColor: PROFESSIONAL_COLORS.accents.steel,
-            background: PROFESSIONAL_THEME.background.surface,
-            boxShadow: '0 25px 50px -12px rgba(15, 23, 42, 0.25)'
-          }}
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
-        >
-          <Plot
-            data={plotData}
-            layout={layout}
-            config={{
-              displayModeBar: true,
-              displaylogo: false,
-              modeBarButtonsToRemove: ['pan2d', 'lasso2d', 'select2d'],
-              toImageButtonOptions: {
-                format: 'png',
-                filename: 'sat_math_graph',
-                height: 500,
-                width: 700,
-                scale: 2
-              }
-            }}
-            style={{ width: '100%', height: '100%' }}
-            useResizeHandler={true}
-          />
-        </motion.div>
+      <CardContent className="p-0">
+        {/* Side-by-side layout: Controls on left, Graph on right */}
+        <div className="flex gap-4">
+          {/* Control Panel - Left Side */}
+          <motion.div 
+            className="w-80 p-4 space-y-4 bg-gray-50"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <h4 className="font-semibold text-gray-700 mb-4">Interactive Controls</h4>
+            {initialParameters.map((param, index) => (
+              <motion.div 
+                key={param.name} 
+                className="space-y-2 p-3 bg-white"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.4, delay: index * 0.1 }}
+              >
+                {/* First Line: Label and Value */}
+                <div className="flex items-center justify-between">
+                  <Label 
+                    htmlFor={param.name} 
+                    className="text-sm font-semibold text-gray-700"
+                  >
+                    {param.label}
+                  </Label>
+                  <Input
+                    id={param.name}
+                    type="number"
+                    value={parameters[param.name]?.toFixed(3) || param.value}
+                    onChange={(e) => handleParameterChange(param.name, parseFloat(e.target.value) || param.value)}
+                    className="w-16 h-6 text-center font-mono text-sm bg-white"
+                    step={param.step}
+                    min={param.min}
+                    max={param.max}
+                  />
+                </div>
+                
+                {/* Second Line: Slider and Description */}
+                <div className="space-y-1">
+                  <Slider
+                    value={[parameters[param.name] || param.value]}
+                    onValueChange={(values) => handleParameterChange(param.name, values[0])}
+                    min={param.min}
+                    max={param.max}
+                    step={param.step}
+                    className="w-full"
+                  />
+                  {param.description && (
+                    <p className="text-xs text-gray-600">
+                      {param.description}
+                    </p>
+                  )}
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
 
-        {/* Compact Coefficient Controls - 2 Lines */}
-        <motion.div 
-          className="grid grid-cols-2 md:grid-cols-3 gap-3"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-        >
-          {initialParameters.map((param, index) => (
-            <motion.div 
-              key={param.name} 
-              className="space-y-2 p-3 rounded bg-gray-50 border"
-              style={{ borderColor: '#E5E7EB' }}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.4, delay: index * 0.1 }}
-            >
-              {/* First Line: Label and Value */}
-              <div className="flex items-center justify-between">
-                <Label 
-                  htmlFor={param.name} 
-                  className="text-sm font-semibold"
-                  style={{ color: '#374151' }}
-                >
-                  {param.label}
-                </Label>
-                <Input
-                  id={param.name}
-                  type="number"
-                  value={parameters[param.name]?.toFixed(3) || param.value}
-                  onChange={(e) => handleParameterChange(param.name, parseFloat(e.target.value) || param.value)}
-                  className="w-16 h-6 text-center font-mono text-sm border"
-                  style={{
-                    borderColor: '#D1D5DB',
-                    backgroundColor: 'white',
-                    color: '#111827'
-                  }}
-                  step={param.step}
-                  min={param.min}
-                  max={param.max}
-                />
-              </div>
-              
-              {/* Second Line: Slider and Description */}
-              <div className="space-y-1">
-                <Slider
-                  value={[parameters[param.name] || param.value]}
-                  onValueChange={(values) => handleParameterChange(param.name, values[0])}
-                  min={param.min}
-                  max={param.max}
-                  step={param.step}
-                  className="w-full"
-                />
-                {param.description && (
-                  <p className="text-xs text-gray-600">
-                    {param.description}
-                  </p>
-                )}
-              </div>
-            </motion.div>
-          ))}
-        </motion.div>
+          {/* Graph Area - Right Side */}
+          <motion.div 
+            className="flex-1 h-[600px] bg-white"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Plot
+              data={plotData}
+              layout={layout}
+              config={{
+                displayModeBar: true,
+                displaylogo: false,
+                modeBarButtonsToRemove: ['pan2d', 'lasso2d', 'select2d'],
+                toImageButtonOptions: {
+                  format: 'png',
+                  filename: 'sat_math_graph',
+                  height: 500,
+                  width: 700,
+                  scale: 2
+                }
+              }}
+              style={{ width: '100%', height: '100%' }}
+              useResizeHandler={true}
+            />
+          </motion.div>
+        </div>
 
       </CardContent>
     </Card>

@@ -480,6 +480,725 @@ export const writingTemplates: WritingTemplate[] = [
         "Varied sentence structures for engaging prose"
       ]
     }
+  },
+
+  // Template 4: Problem-Solution Essay
+  {
+    id: "problem-solution-structured",
+    name: "Problem-Solution Essay",
+    category: "problem-solution",
+    description: "Systematic approach to identifying problems and proposing practical solutions.",
+    difficulty: "intermediate",
+    estimatedLength: "400-500 words",
+    timeLimit: 25,
+    sections: [
+      {
+        id: "introduction",
+        name: "Introduction",
+        description: "Present the problem and preview your solution",
+        fixedSentences: [
+          "In today's world, [PROBLEM AREA] has become a serious concern that affects [WHO IS AFFECTED].",
+          "The issue of [SPECIFIC PROBLEM] continues to worsen despite [CURRENT EFFORTS].",
+          "However, there is a viable solution: [YOUR PROPOSED SOLUTION] can effectively address this problem through [APPROACH]."
+        ],
+        customSentences: 2,
+        guidelines: [
+          "Clearly define the problem and its scope",
+          "Establish why this problem needs solving now",
+          "Preview your solution without going into detail yet",
+          "Make the problem relevant to your audience"
+        ],
+        examples: [
+          "In today's world, food waste has become a serious concern that affects both our environment and economy.",
+          "The issue of students throwing away uneaten cafeteria food continues to worsen despite awareness campaigns.",
+          "However, there is a viable solution: implementing a food donation program can effectively address this problem through systematic redistribution."
+        ]
+      },
+      {
+        id: "problem-analysis",
+        name: "Problem Analysis",
+        description: "Analyze the problem's causes and effects in detail",
+        fixedSentences: [
+          "The root causes of [PROBLEM] stem from [PRIMARY CAUSE] and [SECONDARY CAUSE].",
+          "This problem manifests itself through [SPECIFIC EXAMPLES/EVIDENCE].",
+          "The consequences of ignoring this issue include [NEGATIVE EFFECTS].",
+          "If left unaddressed, [PROBLEM] will likely result in [FUTURE CONSEQUENCES]."
+        ],
+        customSentences: 4,
+        guidelines: [
+          "Identify the main causes behind the problem",
+          "Provide concrete evidence and examples",
+          "Explain both current and potential future impacts",
+          "Help readers understand the urgency of the situation"
+        ],
+        examples: [
+          "The root causes of food waste stem from overordering by cafeteria staff and students taking more than they can eat.",
+          "This problem manifests itself through daily observations of full trash cans and uneaten meals.",
+          "The consequences of ignoring this issue include environmental damage from landfill waste and financial losses for schools.",
+          "If left unaddressed, food waste will likely result in increased costs for taxpayers and continued environmental harm."
+        ]
+      },
+      {
+        id: "solution-proposal",
+        name: "Solution Proposal",
+        description: "Present your detailed solution with implementation steps",
+        fixedSentences: [
+          "The most effective approach to solving [PROBLEM] involves [MAIN SOLUTION STRATEGY].",
+          "Specifically, [STEP 1] would [EXPLANATION OF FIRST STEP].",
+          "Additionally, [STEP 2] would ensure [EXPLANATION OF SECOND STEP].",
+          "This comprehensive approach addresses the problem by [HOW SOLUTION TARGETS CAUSES]."
+        ],
+        customSentences: 4,
+        guidelines: [
+          "Present a clear, actionable solution",
+          "Break down implementation into specific steps",
+          "Show how your solution addresses the root causes",
+          "Make the solution realistic and feasible"
+        ],
+        examples: [
+          "The most effective approach to solving food waste involves establishing partnerships with local food banks and shelters.",
+          "Specifically, daily collection of unopened food items would redirect surplus to those in need.",
+          "Additionally, student volunteer programs would ensure proper sorting and timely distribution of donated food.",
+          "This comprehensive approach addresses the problem by creating value from waste while helping the community."
+        ]
+      },
+      {
+        id: "benefits-implementation",
+        name: "Benefits & Implementation",
+        description: "Explain benefits and address potential challenges",
+        fixedSentences: [
+          "Implementing this solution would provide several significant benefits, including [BENEFIT 1] and [BENEFIT 2].",
+          "Critics might argue that [POTENTIAL OBJECTION], but this concern can be addressed by [COUNTER-RESPONSE].",
+          "The implementation process requires [RESOURCES/REQUIREMENTS] but offers [LONG-TERM VALUE].",
+          "Success can be measured through [MEASURABLE OUTCOMES] that demonstrate [EVIDENCE OF SUCCESS]."
+        ],
+        customSentences: 3,
+        guidelines: [
+          "Highlight multiple benefits of your solution",
+          "Anticipate and address potential objections",
+          "Discuss implementation requirements honestly",
+          "Provide ways to measure success"
+        ],
+        examples: [
+          "Implementing this solution would provide several significant benefits, including reduced environmental impact and improved community relations.",
+          "Critics might argue that food safety regulations make donation complicated, but this concern can be addressed by following established FDA guidelines for food donation.",
+          "The implementation process requires initial training and coordination but offers long-term cost savings and positive publicity."
+        ]
+      },
+      {
+        id: "conclusion",
+        name: "Conclusion",
+        description: "Call for action and reinforce the solution's importance",
+        fixedSentences: [
+          "The problem of [PROBLEM] demands immediate action through [PROPOSED SOLUTION].",
+          "By implementing [KEY ASPECTS OF SOLUTION], we can achieve [POSITIVE OUTCOMES].",
+          "The time to act is now, before [PROBLEM] becomes even more [CONSEQUENCE OF INACTION]."
+        ],
+        customSentences: 2,
+        guidelines: [
+          "Create urgency for implementing your solution",
+          "Summarize the key benefits concisely",
+          "End with a strong call to action",
+          "Paint a picture of positive change"
+        ],
+        examples: [
+          "The problem of food waste demands immediate action through establishing systematic donation programs.",
+          "By implementing partnerships with local charities and volunteer coordination, we can achieve both environmental protection and community support.",
+          "The time to act is now, before food waste becomes even more costly and environmentally damaging."
+        ]
+      }
+    ],
+    transitionPhrases: {
+      problem_analysis: ["The issue arises from", "This problem occurs because", "The underlying cause is", "Evidence shows that"],
+      solution_introduction: ["The solution lies in", "An effective approach involves", "This problem can be solved by", "The best strategy is to"],
+      implementation: ["The first step requires", "Next, it is essential to", "Furthermore, implementation needs", "Additionally, success depends on"],
+      benefits: ["This approach offers", "The advantages include", "Benefits of this solution", "Positive outcomes include"],
+      conclusion: ["In summary", "Therefore, action is needed", "The solution requires", "Moving forward"]
+    },
+    scoringCriteria: {
+      structure: [
+        "Clear problem identification and definition",
+        "Logical progression from problem to solution",
+        "Well-organized implementation steps",
+        "Strong conclusion with call to action"
+      ],
+      coherence: [
+        "Solution directly addresses identified problems",
+        "Clear connections between causes and proposed remedies",
+        "Smooth transitions between problem analysis and solution",
+        "Consistent focus throughout essay"
+      ],
+      development: [
+        "Detailed analysis of problem causes and effects",
+        "Specific, actionable solution with clear steps",
+        "Consideration of potential challenges and objections",
+        "Evidence and examples support main points"
+      ],
+      language: [
+        "Clear, persuasive language appropriate for problem-solving",
+        "Specific terminology related to the problem area",
+        "Varied sentence structures for engagement",
+        "Professional tone that inspires confidence"
+      ]
+    }
+  },
+
+  // Template 5: Cause and Effect Essay
+  {
+    id: "cause-effect-analytical",
+    name: "Cause and Effect Essay", 
+    category: "cause-effect",
+    description: "Systematic analysis of causes and effects with clear causal relationships.",
+    difficulty: "intermediate",
+    estimatedLength: "400-450 words",
+    timeLimit: 25,
+    sections: [
+      {
+        id: "introduction",
+        name: "Introduction",
+        description: "Introduce the phenomenon and establish causal relationships",
+        fixedSentences: [
+          "The phenomenon of [MAIN TOPIC] has become increasingly significant in [CONTEXT/TIME PERIOD].",
+          "Understanding [TOPIC] requires careful examination of both its underlying causes and wide-ranging effects.",
+          "Analysis reveals that [TOPIC] results from [PREVIEW OF CAUSES] and leads to [PREVIEW OF EFFECTS]."
+        ],
+        customSentences: 2,
+        guidelines: [
+          "Introduce the phenomenon without bias",
+          "Establish that you'll examine both causes and effects",
+          "Preview the main causal relationships",
+          "Make clear why this analysis matters"
+        ],
+        examples: [
+          "The phenomenon of increasing student stress levels has become increasingly significant in modern educational environments.",
+          "Understanding student stress requires careful examination of both its underlying causes and wide-ranging effects on academic performance.",
+          "Analysis reveals that student stress results from academic pressure and social expectations and leads to both psychological and academic consequences."
+        ]
+      },
+      {
+        id: "primary-causes",
+        name: "Primary Causes",
+        description: "Analyze the main causes behind the phenomenon",
+        fixedSentences: [
+          "The primary cause of [PHENOMENON] can be traced to [MAIN CAUSE].",
+          "This factor contributes to [PHENOMENON] because [EXPLANATION OF CAUSAL MECHANISM].",
+          "Evidence supporting this causal relationship includes [SPECIFIC EVIDENCE].",
+          "The significance of [MAIN CAUSE] becomes apparent when considering [IMPACT OR SCOPE]."
+        ],
+        customSentences: 4,
+        guidelines: [
+          "Focus on the most significant cause",
+          "Explain HOW this cause creates the effect",
+          "Provide concrete evidence for the causal relationship",
+          "Show the scope or importance of this cause"
+        ],
+        examples: [
+          "The primary cause of student stress can be traced to excessive academic workload and competition.",
+          "This factor contributes to stress because students feel constantly pressured to achieve perfect grades while managing multiple demanding courses.",
+          "Evidence supporting this causal relationship includes surveys showing that 75% of students report feeling overwhelmed by their academic responsibilities.",
+          "The significance of academic pressure becomes apparent when considering that it affects students across all grade levels and social backgrounds."
+        ]
+      },
+      {
+        id: "secondary-causes",
+        name: "Secondary Causes",
+        description: "Examine additional contributing causes",
+        fixedSentences: [
+          "Additionally, [PHENOMENON] stems from [SECONDARY CAUSE], which [EXPLANATION].",
+          "This contributing factor works by [MECHANISM OF CAUSATION].",
+          "The interaction between [PRIMARY CAUSE] and [SECONDARY CAUSE] creates [COMBINED EFFECT].",
+          "Together, these causes establish a pattern where [OVERALL CAUSAL PATTERN]."
+        ],
+        customSentences: 3,
+        guidelines: [
+          "Identify important secondary or contributing causes",
+          "Explain how secondary causes work differently from primary ones",
+          "Show how causes might interact or compound each other",
+          "Build toward understanding the complete causal picture"
+        ],
+        examples: [
+          "Additionally, student stress stems from social media pressure, which creates unrealistic expectations about success and lifestyle.",
+          "This contributing factor works by exposing students to carefully curated images of others' achievements and happiness.",
+          "The interaction between academic pressure and social media pressure creates a cycle where students feel inadequate both in school and social contexts.",
+          "Together, these causes establish a pattern where students face constant comparison and evaluation from multiple sources."
+        ]
+      },
+      {
+        id: "immediate-effects",
+        name: "Immediate Effects",
+        description: "Analyze the direct, short-term effects",
+        fixedSentences: [
+          "The immediate effects of [PHENOMENON] manifest in [PRIMARY EFFECT AREA].",
+          "Most notably, [SPECIFIC IMMEDIATE EFFECT] occurs because [CONNECTION TO CAUSES].",
+          "This direct impact can be observed through [OBSERVABLE EVIDENCE].",
+          "The short-term consequences particularly affect [WHO/WHAT IS MOST IMPACTED]."
+        ],
+        customSentences: 4,
+        guidelines: [
+          "Focus on effects that happen quickly or directly",
+          "Show clear connections between causes and these effects",
+          "Provide observable or measurable evidence",
+          "Identify who or what experiences these effects most"
+        ],
+        examples: [
+          "The immediate effects of student stress manifest in declining mental health and academic performance.",
+          "Most notably, anxiety and depression symptoms occur because constant pressure overwhelms students' coping mechanisms.",
+          "This direct impact can be observed through increased visits to school counselors and declining test scores.",
+          "The short-term consequences particularly affect high-achieving students who put the most pressure on themselves."
+        ]
+      },
+      {
+        id: "long-term-effects",
+        name: "Long-term Effects",
+        description: "Examine broader, long-term consequences",
+        fixedSentences: [
+          "The long-term effects of [PHENOMENON] extend far beyond immediate concerns.",
+          "Over time, [LONG-TERM EFFECT] develops as a result of [PROGRESSION FROM IMMEDIATE EFFECTS].",
+          "These lasting consequences include [BROADER IMPACT] that affects [WIDER SCOPE].",
+          "Unless addressed, [PHENOMENON] will continue to generate [FUTURE IMPLICATIONS]."
+        ],
+        customSentences: 3,
+        guidelines: [
+          "Focus on effects that develop over time",
+          "Show how immediate effects lead to long-term ones",
+          "Consider broader societal or systemic impacts",
+          "Discuss implications for the future"
+        ],
+        examples: [
+          "The long-term effects of student stress extend far beyond immediate academic concerns.",
+          "Over time, chronic anxiety and burnout develop as a result of sustained exposure to high-pressure environments.",
+          "These lasting consequences include reduced creativity, fear of risk-taking, and mental health issues that affect students well into adulthood.",
+          "Unless addressed, student stress will continue to generate a generation of adults who struggle with work-life balance and self-worth."
+        ]
+      },
+      {
+        id: "conclusion",
+        name: "Conclusion", 
+        description: "Synthesize the causal analysis and discuss implications",
+        fixedSentences: [
+          "The analysis of [PHENOMENON] reveals a complex web of [SUMMARY OF CAUSAL RELATIONSHIPS].",
+          "Understanding these cause-and-effect relationships is crucial because [IMPORTANCE OF UNDERSTANDING].",
+          "Moving forward, addressing [PHENOMENON] requires [IMPLICATIONS FOR ACTION/POLICY]."
+        ],
+        customSentences: 2,
+        guidelines: [
+          "Summarize the key causal relationships discovered",
+          "Explain why understanding these relationships matters",
+          "Suggest what should be done based on this analysis",
+          "End with broader significance or implications"
+        ],
+        examples: [
+          "The analysis of student stress reveals a complex web of academic, social, and technological pressures that create both immediate and long-lasting effects.",
+          "Understanding these cause-and-effect relationships is crucial because they affect not only individual students but also the future health of our society.",
+          "Moving forward, addressing student stress requires systemic changes in education policy, social media regulation, and mental health support systems."
+        ]
+      }
+    ],
+    transitionPhrases: {
+      causation: ["Results from", "Stems from", "Is caused by", "Arises due to", "Originates in"],
+      effect: ["Leads to", "Results in", "Causes", "Produces", "Generates", "Creates"],
+      sequence: ["Initially", "Subsequently", "Eventually", "Over time", "In the long run"],
+      analysis: ["Evidence shows", "This demonstrates", "Analysis reveals", "Research indicates"],
+      synthesis: ["The relationship between", "These connections show", "The pattern suggests", "Overall, the analysis"]
+    },
+    scoringCriteria: {
+      structure: [
+        "Clear introduction establishing causal analysis focus",
+        "Logical organization of causes and effects",
+        "Appropriate balance between causes and effects sections",
+        "Synthesis conclusion that ties analysis together"
+      ],
+      coherence: [
+        "Clear causal relationships throughout",
+        "Logical progression from causes to effects",
+        "Effective transitions showing causal connections",
+        "Consistent analytical focus"
+      ],
+      development: [
+        "Detailed analysis of both causes and effects",
+        "Specific evidence supporting causal relationships",
+        "Clear explanations of HOW causes create effects",
+        "Consideration of both immediate and long-term impacts"
+      ],
+      language: [
+        "Precise causal language and transitions",
+        "Analytical tone appropriate for examination",
+        "Clear explanations of complex relationships",
+        "Varied sentence structures for clarity"
+      ]
+    }
+  },
+
+  // Template 6: Narrative Personal Essay
+  {
+    id: "narrative-personal-reflective",
+    name: "Narrative Personal Essay",
+    category: "narrative",
+    description: "Personal storytelling with reflection on growth, learning, or significant experiences.",
+    difficulty: "intermediate", 
+    estimatedLength: "450-550 words",
+    timeLimit: 30,
+    sections: [
+      {
+        id: "engaging-opening",
+        name: "Engaging Opening",
+        description: "Hook the reader with a compelling scene or moment",
+        fixedSentences: [
+          "The moment I [ACTION/REALIZATION] changed everything I thought I knew about [TOPIC/CONCEPT].",
+          "Standing there [SETTING DETAILS], I never expected that [UNEXPECTED ELEMENT] would teach me [LESSON].",
+          "It wasn't until [SPECIFIC MOMENT/TIME] that I realized [IMPORTANT INSIGHT] about [SUBJECT]."
+        ],
+        customSentences: 3,
+        guidelines: [
+          "Start in the middle of action or a crucial moment",
+          "Use sensory details to create a vivid scene",
+          "Hint at the significance without explaining it yet",
+          "Make the reader want to know what happens next"
+        ],
+        examples: [
+          "The moment I stepped onto the debate stage for the first time changed everything I thought I knew about my own voice.",
+          "Standing there in the bright lights with hundreds of eyes watching, I never expected that my trembling hands would teach me about courage.",
+          "It wasn't until I opened my mouth to speak that I realized how much I had grown since the shy kid who hated presenting in class."
+        ]
+      },
+      {
+        id: "background-context",
+        name: "Background & Context",
+        description: "Provide necessary background information",
+        fixedSentences: [
+          "To understand this moment, it's important to know that [BACKGROUND INFORMATION].",
+          "For years, I had been [PREVIOUS STATE/BEHAVIOR] because [REASONING/FEAR].",
+          "My perspective on [TOPIC] was shaped by [PREVIOUS EXPERIENCES] that made me believe [OLD BELIEF].",
+          "This all began when [INITIATING EVENT] forced me to [INITIAL RESPONSE/DECISION]."
+        ],
+        customSentences: 3,
+        guidelines: [
+          "Provide only essential background information",
+          "Explain your previous mindset or situation",
+          "Set up the contrast with what will happen later",
+          "Keep the focus on details relevant to your main story"
+        ],
+        examples: [
+          "To understand this moment, it's important to know that I had always been the student who sat in the back corner, hoping not to be called on.",
+          "For years, I had been avoiding public speaking because I believed my ideas weren't worth sharing.",
+          "My perspective on leadership was shaped by watching confident classmates dominate discussions while I remained silent.",
+          "This all began when my English teacher assigned mandatory participation in the school debate tournament, forcing me to confront my greatest fear."
+        ]
+      },
+      {
+        id: "main-narrative-event",
+        name: "Main Narrative Event",
+        description: "Tell the central story with vivid details",
+        fixedSentences: [
+          "When [KEY EVENT] happened, I felt [EMOTIONAL RESPONSE] because [REASON].",
+          "The details of that [TIME PERIOD] remain vivid: [SENSORY DETAILS].",
+          "As [PROGRESSION OF EVENTS] unfolded, I began to [REALIZATION/CHANGE].",
+          "The turning point came when [PIVOTAL MOMENT] made me understand [NEW INSIGHT]."
+        ],
+        customSentences: 5,
+        guidelines: [
+          "Use chronological order to tell your story",
+          "Include specific, concrete details and sensory information",
+          "Show your thoughts and feelings during the experience",
+          "Focus on the most important moments in detail"
+        ],
+        examples: [
+          "When my name was called to give my opening statement, I felt my heart hammering against my ribs because this was the moment I'd been dreading for weeks.",
+          "The details of that three-minute speech remain vivid: the bright stage lights making everything beyond them disappear, the microphone feeling heavy in my sweaty palm, my voice starting as barely more than a whisper.",
+          "As I progressed through my carefully practiced arguments about environmental policy, I began to notice something unexpected—my voice was getting stronger, not weaker.",
+          "The turning point came when I saw several judges nodding along with my points, making me understand that my ideas actually did have value and impact."
+        ]
+      },
+      {
+        id: "challenge-conflict",
+        name: "Challenge & Conflict", 
+        description: "Describe obstacles faced and how you dealt with them",
+        fixedSentences: [
+          "However, [COMPLICATION/CHALLENGE] threatened to [POTENTIAL NEGATIVE OUTCOME].",
+          "I struggled with [INTERNAL CONFLICT] while simultaneously dealing with [EXTERNAL CHALLENGE].",
+          "The most difficult moment was when [SPECIFIC DIFFICULTY] forced me to [DIFFICULT DECISION/ACTION].",
+          "Despite [OBSTACLE], I chose to [RESPONSE] because [MOTIVATION/REASONING]."
+        ],
+        customSentences: 4,
+        guidelines: [
+          "Include both internal struggles and external challenges",
+          "Show how you responded to difficulties",
+          "Make the conflict meaningful to your overall story",
+          "Demonstrate growth through handling challenges"
+        ],
+        examples: [
+          "However, my opponent's aggressive rebuttal threatened to shatter my newfound confidence and send me back into my shell.",
+          "I struggled with self-doubt whispering that I didn't belong there while simultaneously dealing with complex policy questions I hadn't fully prepared for.",
+          "The most difficult moment was when I stumbled over statistics, forcing me to abandon my script and speak from genuine understanding instead.",
+          "Despite my racing heart and the urge to give up, I chose to trust my preparation and speak authentically because I realized this moment was bigger than my fear."
+        ]
+      },
+      {
+        id: "resolution-growth",
+        name: "Resolution & Growth",
+        description: "Show how you changed and what you learned",
+        fixedSentences: [
+          "By the end of [EXPERIENCE], I had transformed from [OLD SELF] into [NEW SELF].",
+          "This experience taught me that [KEY LESSON] and changed how I approach [RELEVANT SITUATIONS].",
+          "The most important realization was [MAJOR INSIGHT] which now influences [CURRENT BEHAVIOR/THINKING].",
+          "Looking back, I can see that [EXPERIENCE] was really about [DEEPER MEANING] rather than just [SURFACE LEVEL]."
+        ],
+        customSentences: 3,
+        guidelines: [
+          "Clearly articulate what changed about you",
+          "Connect the lesson to broader life applications",
+          "Show ongoing impact of this experience",
+          "Avoid cliché lessons—be specific and personal"
+        ],
+        examples: [
+          "By the end of the tournament, I had transformed from someone who feared sharing ideas into someone who understood the power of authentic communication.",
+          "This experience taught me that confidence isn't about never feeling afraid, but about speaking up despite the fear, and changed how I approach challenging conversations.",
+          "The most important realization was that my perspective as an introvert actually brought unique value to discussions, which now influences how I contribute to group projects and leadership roles.",
+          "Looking back, I can see that the debate tournament was really about finding my voice rather than just winning arguments."
+        ]
+      },
+      {
+        id: "reflective-conclusion",
+        name: "Reflective Conclusion",
+        description: "Connect your story to broader themes or future goals",
+        fixedSentences: [
+          "Today, when I encounter [SIMILAR SITUATIONS], I remember [KEY MOMENT FROM STORY] and [CURRENT RESPONSE].",
+          "This experience continues to influence my [CURRENT ACTIVITIES/GOALS] because [CONNECTION].",
+          "Most importantly, I learned that [UNIVERSAL TRUTH/PRINCIPLE] applies not just to [ORIGINAL SITUATION] but to [BROADER APPLICATIONS]."
+        ],
+        customSentences: 2,
+        guidelines: [
+          "Connect your personal story to universal themes",
+          "Show how this experience continues to affect you",
+          "End with insight that resonates beyond your specific situation",
+          "Leave the reader with something meaningful to consider"
+        ],
+        examples: [
+          "Today, when I encounter situations that intimidate me, I remember that moment when my voice found its strength and I choose courage over comfort.",
+          "This experience continues to influence my involvement in student government and peer mentoring because I understand how transformative it can be when someone finds their voice.",
+          "Most importantly, I learned that growth happens not in our comfort zones but in those moments when we're terrified and do it anyway—applies not just to public speaking but to every meaningful challenge we face."
+        ]
+      }
+    ],
+    transitionPhrases: {
+      time: ["Initially", "At first", "Then", "Meanwhile", "Eventually", "Finally", "Now"],
+      reflection: ["Looking back", "In hindsight", "I now realize", "This taught me", "I learned that"],
+      contrast: ["However", "Despite this", "On the other hand", "Yet", "Nevertheless"],
+      emotion: ["I felt", "The feeling was", "Emotionally", "In that moment", "My reaction was"],
+      growth: ["I grew to understand", "This experience showed me", "I came to realize", "Now I know"]
+    },
+    scoringCriteria: {
+      structure: [
+        "Engaging opening that hooks the reader",
+        "Clear narrative progression with logical flow",
+        "Appropriate balance of story and reflection",
+        "Meaningful conclusion that ties themes together"
+      ],
+      coherence: [
+        "Consistent narrative voice and point of view",
+        "Clear connections between events and insights",
+        "Smooth transitions between narrative and reflection",
+        "Focused theme throughout the essay"
+      ],
+      development: [
+        "Vivid, specific details that bring the story to life",
+        "Clear character development and growth",
+        "Meaningful conflict and resolution",
+        "Insightful reflection on experiences and lessons"
+      ],
+      language: [
+        "Engaging, personal voice appropriate for storytelling",
+        "Varied sentence structures for narrative flow",
+        "Descriptive language that creates vivid scenes",
+        "Authentic tone that connects with readers"
+      ]
+    }
+  },
+
+  // Template 7: Expository/Informative Essay
+  {
+    id: "expository-informative-structured",
+    name: "Expository/Informative Essay",
+    category: "expository", 
+    description: "Clear, organized explanation of complex topics with objective information and analysis.",
+    difficulty: "intermediate",
+    estimatedLength: "400-500 words",
+    timeLimit: 25,
+    sections: [
+      {
+        id: "introduction",
+        name: "Introduction",
+        description: "Introduce the topic and establish the scope of explanation",
+        fixedSentences: [
+          "[TOPIC] is a complex subject that affects [RELEVANT AUDIENCE/CONTEXT] in significant ways.",
+          "Understanding [TOPIC] requires examining [KEY ASPECTS] that contribute to its importance.",
+          "This analysis will explore [SPECIFIC FOCUS AREAS] to provide a comprehensive understanding of [TOPIC]."
+        ],
+        customSentences: 2,
+        guidelines: [
+          "Define or introduce your topic clearly",
+          "Establish why this information is important",
+          "Preview the main areas you'll cover",
+          "Maintain an objective, informative tone"
+        ],
+        examples: [
+          "Renewable energy is a complex subject that affects both environmental sustainability and economic policy in significant ways.",
+          "Understanding renewable energy requires examining technological advances, economic implications, and environmental benefits that contribute to its growing importance.",
+          "This analysis will explore solar, wind, and hydroelectric power sources to provide a comprehensive understanding of modern renewable energy options."
+        ]
+      },
+      {
+        id: "background-overview",
+        name: "Background Overview",
+        description: "Provide essential background information and context",
+        fixedSentences: [
+          "To fully grasp [TOPIC], it is essential to understand [BACKGROUND INFORMATION].",
+          "Historically, [TOPIC] has evolved from [PAST STATE] to [CURRENT STATE] due to [DRIVING FACTORS].",
+          "The current significance of [TOPIC] stems from [RECENT DEVELOPMENTS/CHANGES].",
+          "Key terminology includes [IMPORTANT TERMS] which refer to [DEFINITIONS/EXPLANATIONS]."
+        ],
+        customSentences: 3,
+        guidelines: [
+          "Provide necessary historical context",
+          "Define important terms and concepts",
+          "Explain how the topic has developed or changed",
+          "Set up the foundation for detailed discussion"
+        ],
+        examples: [
+          "To fully grasp renewable energy, it is essential to understand the difference between renewable and non-renewable energy sources.",
+          "Historically, renewable energy has evolved from simple windmills and water wheels to sophisticated solar panels and wind turbines due to technological advances and environmental concerns.",
+          "The current significance of renewable energy stems from climate change research and decreasing costs of renewable technology.",
+          "Key terminology includes 'grid parity,' which refers to the point where renewable energy costs equal traditional energy costs without subsidies."
+        ]
+      },
+      {
+        id: "main-category-1",
+        name: "Main Category 1",
+        description: "Explain the first major aspect of your topic",
+        fixedSentences: [
+          "One of the most important aspects of [TOPIC] is [FIRST MAIN CATEGORY].",
+          "This component functions by [EXPLANATION OF HOW IT WORKS].",
+          "The significance of [FIRST CATEGORY] can be seen through [EXAMPLES/EVIDENCE].",
+          "Current developments in [FIRST CATEGORY] include [RECENT ADVANCES/TRENDS]."
+        ],
+        customSentences: 4,
+        guidelines: [
+          "Focus on one specific aspect of your topic",
+          "Explain how this aspect works or functions",
+          "Provide concrete examples or evidence",
+          "Include current information or recent developments"
+        ],
+        examples: [
+          "One of the most important aspects of renewable energy is solar power technology.",
+          "This component functions by converting sunlight directly into electricity through photovoltaic cells that create electrical current when exposed to light.",
+          "The significance of solar power can be seen through its rapid adoption, with global solar capacity increasing by over 20% annually in recent years.",
+          "Current developments in solar technology include improved efficiency rates and decreased manufacturing costs making it competitive with fossil fuels."
+        ]
+      },
+      {
+        id: "main-category-2",
+        name: "Main Category 2",
+        description: "Explain the second major aspect of your topic",
+        fixedSentences: [
+          "Another crucial element of [TOPIC] is [SECOND MAIN CATEGORY].",
+          "Unlike [FIRST CATEGORY], [SECOND CATEGORY] operates through [DIFFERENT MECHANISM/APPROACH].",
+          "The advantages of [SECOND CATEGORY] include [SPECIFIC BENEFITS].",
+          "However, [SECOND CATEGORY] also faces challenges such as [LIMITATIONS/OBSTACLES]."
+        ],
+        customSentences: 4,
+        guidelines: [
+          "Focus on a different but related aspect",
+          "Compare/contrast with the previous category when relevant",
+          "Explain both advantages and limitations objectively",
+          "Maintain balance in your presentation"
+        ],
+        examples: [
+          "Another crucial element of renewable energy is wind power generation.",
+          "Unlike solar power, wind energy operates through turbines that convert kinetic energy from moving air into electrical energy.",
+          "The advantages of wind power include consistent energy generation in windy areas and minimal environmental impact once installed.",
+          "However, wind power also faces challenges such as dependence on weather conditions and concerns about noise and visual impact."
+        ]
+      },
+      {
+        id: "main-category-3",
+        name: "Main Category 3",
+        description: "Explain the third major aspect of your topic", 
+        fixedSentences: [
+          "The third significant component of [TOPIC] involves [THIRD MAIN CATEGORY].",
+          "This aspect is particularly important because [UNIQUE IMPORTANCE/ROLE].",
+          "Research shows that [THIRD CATEGORY] [STATISTICAL EVIDENCE/RESEARCH FINDINGS].",
+          "The future of [THIRD CATEGORY] appears [PROMISING/CHALLENGING] due to [SUPPORTING REASONS]."
+        ],
+        customSentences: 3,
+        guidelines: [
+          "Present your third main point with supporting evidence",
+          "Include research, statistics, or expert opinions when possible",
+          "Discuss future implications or trends",
+          "Maintain objective tone while being informative"
+        ],
+        examples: [
+          "The third significant component of renewable energy involves hydroelectric power generation.",
+          "This aspect is particularly important because it provides reliable, consistent power generation that can be adjusted to meet demand fluctuations.",
+          "Research shows that hydroelectric power currently supplies about 16% of global electricity and has the potential for significant expansion in developing regions.",
+          "The future of hydroelectric power appears promising due to advances in small-scale and run-of-river systems that minimize environmental impact."
+        ]
+      },
+      {
+        id: "conclusion-synthesis",
+        name: "Conclusion & Synthesis",
+        description: "Summarize key points and discuss broader implications",
+        fixedSentences: [
+          "In summary, [TOPIC] encompasses [SUMMARY OF MAIN CATEGORIES] that work together to [OVERALL FUNCTION/PURPOSE].",
+          "The examination of [MAIN ASPECTS] reveals that [KEY INSIGHT/PATTERN].",
+          "Looking forward, [TOPIC] will likely [FUTURE IMPLICATIONS/DEVELOPMENTS] as [DRIVING FORCES] continue to influence its evolution."
+        ],
+        customSentences: 2,
+        guidelines: [
+          "Synthesize the main points rather than just listing them",
+          "Identify patterns or connections between the aspects discussed",
+          "Discuss implications for the future",
+          "End with the broader significance of understanding this topic"
+        ],
+        examples: [
+          "In summary, renewable energy encompasses solar, wind, and hydroelectric technologies that work together to provide clean alternatives to fossil fuel dependence.",
+          "The examination of these energy sources reveals that diversification across multiple renewable technologies creates the most reliable and sustainable energy portfolio.",
+          "Looking forward, renewable energy will likely dominate new power generation as costs continue to decrease and environmental concerns drive policy changes worldwide."
+        ]
+      }
+    ],
+    transitionPhrases: {
+      introduction: ["To begin", "First, it is important to understand", "The topic of", "This subject involves"],
+      explanation: ["This means that", "In other words", "Specifically", "For example", "To illustrate"],
+      categories: ["Another important aspect", "Additionally", "Furthermore", "A second element", "In contrast"],
+      evidence: ["Research indicates", "Studies show", "Evidence suggests", "Data reveals", "Experts agree"],
+      conclusion: ["In conclusion", "To summarize", "Overall", "In reviewing these points", "The analysis shows"]
+    },
+    scoringCriteria: {
+      structure: [
+        "Clear introduction that establishes topic and scope",
+        "Logical organization of information into categories",
+        "Each section focuses on one main aspect",
+        "Conclusion synthesizes information effectively"
+      ],
+      coherence: [
+        "Smooth transitions between different aspects",
+        "Clear relationships between ideas and evidence",
+        "Consistent informative purpose throughout",
+        "Ideas build upon each other logically"
+      ],
+      development: [
+        "Thorough explanation of each main aspect",
+        "Specific examples and evidence support main points",
+        "Appropriate depth for the target audience",
+        "Balance between different aspects of the topic"
+      ],
+      language: [
+        "Objective, informative tone throughout",
+        "Clear explanations of complex concepts",
+        "Appropriate vocabulary for the subject matter",
+        "Varied sentence structures for readability"
+      ]
+    }
   }
 ];
 
@@ -561,6 +1280,134 @@ export const writingPrompts: WritingPrompt[] = [
       good: "Shows good understanding with clear analysis and adequate textual support",
       fair: "Basic character analysis with some evidence but limited depth",
       poor: "Superficial analysis with little evidence or understanding"
+    }
+  },
+
+  // Problem-Solution Prompts
+  {
+    id: "campus-sustainability",
+    title: "Campus Environmental Solutions",
+    prompt: "Many schools face challenges in reducing their environmental impact while maintaining educational quality and managing budgets. Identify a specific environmental problem at schools (such as energy waste, food waste, transportation emissions, or plastic use) and propose a comprehensive solution. Your essay should clearly define the problem, explain why it needs immediate attention, and present a detailed, realistic solution that addresses the root causes. Consider potential objections and explain how your solution can be successfully implemented.",
+    templateIds: ["problem-solution-structured"],
+    difficulty: "medium",
+    topic: "Environment and Education",
+    keywords: ["sustainability", "environment", "schools", "waste reduction", "green solutions"],
+    rubric: {
+      excellent: "Identifies clear problem with comprehensive, actionable solution and addresses implementation challenges",
+      good: "Presents clear problem and reasonable solution with adequate detail",
+      fair: "Basic problem identification with simple solution but limited development",
+      poor: "Unclear problem definition with unrealistic or poorly developed solution"
+    }
+  },
+  {
+    id: "digital-divide-education",
+    title: "Addressing the Digital Divide in Education",
+    prompt: "The digital divide—the gap between students who have access to technology and internet resources and those who don't—has become a critical issue in modern education, especially highlighted during remote learning periods. Write an essay that identifies the specific challenges this divide creates for student success and proposes a practical solution that schools, communities, or governments could implement. Your solution should address both access issues and support systems needed for effective technology use in education.",
+    templateIds: ["problem-solution-structured"],
+    difficulty: "hard",
+    topic: "Education and Technology",
+    keywords: ["digital divide", "technology access", "education equity", "remote learning", "student success"],
+    rubric: {
+      excellent: "Demonstrates deep understanding of complex issues with innovative, well-reasoned solutions",
+      good: "Clear analysis of the problem with practical, feasible solution proposals",
+      fair: "Basic understanding with adequate solution but limited consideration of complexities",
+      poor: "Superficial analysis with unrealistic solutions and poor understanding of issues"
+    }
+  },
+
+  // Cause and Effect Prompts
+  {
+    id: "social-media-behavior-change",
+    title: "Social Media's Impact on Social Behavior",
+    prompt: "Social media platforms have fundamentally changed how people interact, form relationships, and perceive themselves and others. Write an essay analyzing the causes behind the widespread adoption of social media and examining both the immediate and long-term effects on social behavior, communication patterns, and relationship formation. Consider both positive and negative effects, and support your analysis with specific examples and evidence.",
+    templateIds: ["cause-effect-analytical"],
+    difficulty: "medium",
+    topic: "Social Media and Psychology",
+    keywords: ["social media", "behavior change", "relationships", "communication", "psychological effects"],
+    rubric: {
+      excellent: "Sophisticated analysis of complex causal relationships with nuanced understanding of effects",
+      good: "Clear identification of causes and effects with adequate supporting evidence",
+      fair: "Basic cause-effect analysis with some evidence but limited depth",
+      poor: "Weak analysis with unclear causal relationships and insufficient evidence"
+    }
+  },
+  {
+    id: "climate-change-youth-activism",
+    title: "Rise of Youth Climate Activism",
+    prompt: "In recent years, young people worldwide have become increasingly involved in climate activism, from school strikes to global protests to policy advocacy. Analyze what factors have caused this surge in youth environmental activism and examine the effects this movement has had on environmental policy, public awareness, and youth culture itself. Consider both the immediate impacts and potential long-term consequences of this phenomenon.",
+    templateIds: ["cause-effect-analytical"],
+    difficulty: "hard",
+    topic: "Climate Change and Social Movements",
+    keywords: ["youth activism", "climate change", "environmental movement", "policy change", "social movements"],
+    rubric: {
+      excellent: "Demonstrates comprehensive understanding of complex social and political factors with insightful analysis",
+      good: "Clear analysis of causes and effects with good supporting evidence and examples",
+      fair: "Basic understanding with adequate analysis but limited consideration of complexities",
+      poor: "Superficial analysis with weak evidence and poor understanding of causal relationships"
+    }
+  },
+
+  // Narrative Prompts
+  {
+    id: "overcoming-failure-experience",
+    title: "Learning from Failure",
+    prompt: "Write a narrative essay about a time when you experienced a significant failure, setback, or disappointment. Focus not just on what happened, but on how the experience changed your perspective, approach, or understanding of yourself. Your essay should include vivid details about the experience, your emotional journey through it, and the lasting impact it has had on your life. Reflect on what this experience taught you and how it continues to influence your decisions and attitudes today.",
+    templateIds: ["narrative-personal-reflective"],
+    difficulty: "medium",
+    topic: "Personal Growth and Resilience",
+    keywords: ["failure", "personal growth", "resilience", "self-discovery", "life lessons"],
+    rubric: {
+      excellent: "Compelling narrative with deep reflection and meaningful insights about personal growth",
+      good: "Engaging story with clear reflection on lessons learned and personal development",
+      fair: "Basic narrative with some reflection but limited insight or development",
+      poor: "Weak storytelling with little reflection or meaningful connection to growth"
+    }
+  },
+  {
+    id: "cultural-identity-discovery",
+    title: "Discovering Cultural Identity",
+    prompt: "Write a narrative essay about a moment or experience when you gained a deeper understanding of your cultural identity or heritage. This might involve a family tradition, a visit to a significant place, an encounter with discrimination, or a realization about your place in a community. Focus on the specific details of the experience and reflect on how it shaped your understanding of yourself and your place in the world.",
+    templateIds: ["narrative-personal-reflective"],
+    difficulty: "medium",
+    topic: "Cultural Identity and Belonging",
+    keywords: ["cultural identity", "heritage", "belonging", "self-discovery", "community"],
+    rubric: {
+      excellent: "Powerful narrative that explores cultural identity with depth, insight, and universal appeal",
+      good: "Engaging story with meaningful reflection on cultural identity and personal growth",
+      fair: "Clear narrative with adequate reflection but limited depth or insight",
+      poor: "Basic story with little reflection on cultural significance or personal impact"
+    }
+  },
+
+  // Expository/Informative Prompts
+  {
+    id: "renewable-energy-technologies",
+    title: "Modern Renewable Energy Solutions",
+    prompt: "Write an informative essay explaining the current state of renewable energy technology and its role in addressing climate change and energy needs. Focus on three major types of renewable energy (such as solar, wind, hydroelectric, geothermal, or biomass), explaining how each technology works, its advantages and limitations, and current developments in the field. Conclude by discussing the future outlook for renewable energy and its potential impact on society and the environment.",
+    templateIds: ["expository-informative-structured"],
+    difficulty: "medium",
+    topic: "Energy and Environment",
+    keywords: ["renewable energy", "solar power", "wind energy", "sustainability", "climate change"],
+    rubric: {
+      excellent: "Comprehensive, well-organized explanation with accurate information and clear synthesis",
+      good: "Clear explanation of renewable energy with adequate detail and organization",
+      fair: "Basic information presented with some organization but limited depth",
+      poor: "Unclear or inaccurate information with poor organization and development"
+    }
+  },
+  {
+    id: "mental-health-awareness",
+    title: "Understanding Mental Health in Adolescents",
+    prompt: "Write an informative essay explaining the current understanding of mental health challenges among teenagers and young adults. Discuss the most common mental health conditions affecting this age group, the factors that contribute to mental health struggles, and the resources and treatments available. Include information about how to recognize signs of mental health issues and the importance of seeking help. Your essay should be informative and supportive, aimed at increasing understanding and reducing stigma.",
+    templateIds: ["expository-informative-structured"],
+    difficulty: "medium",
+    topic: "Mental Health and Wellness",
+    keywords: ["mental health", "adolescents", "depression", "anxiety", "wellness", "treatment"],
+    rubric: {
+      excellent: "Sensitive, comprehensive explanation with accurate information and helpful insights",
+      good: "Clear, informative discussion with adequate detail and appropriate tone",
+      fair: "Basic information presented clearly but with limited depth or insight",
+      poor: "Unclear or potentially harmful information with poor organization"
     }
   },
 

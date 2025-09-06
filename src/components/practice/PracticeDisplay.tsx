@@ -781,7 +781,7 @@ Keep the evaluation constructive and educational.`;
 
           {/* Answer Section */}
           <div className="space-y-3 pb-4" style={{ borderBottom: '2px solid #CFCFCF' }}>
-            {/* SAT Writing Mode */}
+            {/* SAT Writing Mode - Simple Input */}
             {isSATWriting && (
               <div className="space-y-4">
                 <Textarea
@@ -1097,36 +1097,187 @@ Keep the evaluation constructive and educational.`;
                     </TabsContent>
                     
                     <TabsContent value="step-by-step" className="mt-0 pt-0">
-                      {currentQuestion.solutionSteps && currentQuestion.solutionSteps.length > 0 ? (
-                        <SolutionStepBuilder
-                          steps={currentQuestion.solutionSteps.map((step, index) => ({
-                            id: `step-${index + 1}`,
-                            title: `Step ${index + 1}`,
-                            description: '',
-                            fromExpression: { latex: '', display: step },
-                            toExpression: { latex: '', display: '' },
-                            explanation: step,
-                            hint: `This is step ${index + 1} of the solution`
-                          }))}
-                          title="Step-by-Step Solution"
-                          onStepComplete={(stepId, isCorrect) => console.log('Step completed:', stepId, isCorrect)}
-                          onAllStepsComplete={() => console.log('All steps completed!')}
-                          showHints={true}
-                        />
-                      ) : (
-                        <div className="space-y-4">
-                          <TypingAnimation
-                            text={formatSolution(currentQuestion)}
-                            speed={8}
-                            isHTML={true}
-                            className="whitespace-pre-wrap text-sm leading-relaxed"
-                            style={{
-                              ...contentTextStyle,
-                              fontSize: `${displaySettings.fontSize - 1}px`,
-                              color: isDarkMode ? '#ffffff' : contentTextStyle.color
-                            }}
-                          />
+                      {isSATWriting ? (
+                        <div className="w-full space-y-6 bg-white">
+                          {/* Sample Essay Solutions */}
+                          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                            {/* Solution 1 - High Score Essay */}
+                            <div className="space-y-4">
+                              <h3 className="text-lg font-semibold text-blue-600">Sample Essay - High Score (4/4)</h3>
+                              <div className="prose prose-sm max-w-none">
+                                <div className="space-y-3 text-sm leading-relaxed">
+                                  <p className="p-3 bg-green-50 border-l-4 border-green-400">
+                                    <span className="font-semibold text-green-700">[Introduction]</span> Social media has fundamentally transformed how teenagers communicate and learn, making it an integral part of modern education rather than a distraction to be eliminated during school hours.
+                                  </p>
+                                  <p className="p-3 bg-blue-50 border-l-4 border-blue-400">
+                                    <span className="font-semibold text-blue-700">[Body 1 - Educational Benefits]</span> Schools that embrace social media platforms like Twitter and Instagram for educational purposes report increased student engagement and collaborative learning opportunities.
+                                  </p>
+                                  <p className="p-3 bg-purple-50 border-l-4 border-purple-400">
+                                    <span className="font-semibold text-purple-700">[Body 2 - Real-world Skills]</span> Furthermore, digital literacy and online communication skills are essential for students' future careers, making social media restriction counterproductive to their professional development.
+                                  </p>
+                                  <p className="p-3 bg-orange-50 border-l-4 border-orange-400">
+                                    <span className="font-semibold text-orange-700">[Counterargument]</span> While critics argue that social media causes distraction, proper guidance and structured use can transform these platforms into powerful educational tools.
+                                  </p>
+                                  <p className="p-3 bg-gray-50 border-l-4 border-gray-400">
+                                    <span className="font-semibold text-gray-700">[Conclusion]</span> Rather than restricting social media, schools should integrate it meaningfully into their curriculum to prepare students for a digitally connected world.
+                                  </p>
+                                </div>
+                              </div>
+                              
+                              {/* Structure Analysis */}
+                              <div className="space-y-2 text-xs">
+                                <div className="flex items-center gap-2">
+                                  <div className="w-4 h-4 bg-green-400 rounded"></div>
+                                  <span>Clear thesis statement</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <div className="w-4 h-4 bg-blue-400 rounded"></div>
+                                  <span>Evidence-based arguments</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <div className="w-4 h-4 bg-purple-400 rounded"></div>
+                                  <span>Smooth transitions</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <div className="w-4 h-4 bg-orange-400 rounded"></div>
+                                  <span>Addresses opposition</span>
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Solution 2 - Medium Score Essay */}
+                            <div className="space-y-4">
+                              <h3 className="text-lg font-semibold text-yellow-600">Sample Essay - Good Score (3/4)</h3>
+                              <div className="prose prose-sm max-w-none">
+                                <div className="space-y-3 text-sm leading-relaxed">
+                                  <p className="p-3 bg-yellow-50 border-l-4 border-yellow-400">
+                                    <span className="font-semibold text-yellow-700">[Introduction]</span> I think social media should not be limited in schools because students need to learn how to use it properly.
+                                  </p>
+                                  <p className="p-3 bg-red-50 border-l-4 border-red-400">
+                                    <span className="font-semibold text-red-700">[Body 1 - Basic Point]</span> Social media helps students communicate with each other about homework and projects.
+                                  </p>
+                                  <p className="p-3 bg-red-50 border-l-4 border-red-400">
+                                    <span className="font-semibold text-red-700">[Body 2 - Weak Development]</span> Many students use social media every day so they are already good at it.
+                                  </p>
+                                  <p className="p-3 bg-yellow-50 border-l-4 border-yellow-400">
+                                    <span className="font-semibold text-yellow-700">[Conclusion]</span> In conclusion, social media should be allowed in schools because it can be helpful for learning.
+                                  </p>
+                                </div>
+                              </div>
+                              
+                              {/* Issues Analysis */}
+                              <div className="space-y-2 text-xs">
+                                <div className="flex items-center gap-2">
+                                  <div className="w-4 h-4 bg-red-400 rounded"></div>
+                                  <span>Weak thesis statement</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <div className="w-4 h-4 bg-red-400 rounded"></div>
+                                  <span>Lacks specific evidence</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <div className="w-4 h-4 bg-yellow-400 rounded"></div>
+                                  <span>Basic organization</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <div className="w-4 h-4 bg-red-400 rounded"></div>
+                                  <span>No counterarguments</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Structure Visualization */}
+                          <div className="mt-8 p-6 bg-gray-50">
+                            <h4 className="text-lg font-semibold mb-4">Essay Structure Comparison</h4>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                              <div>
+                                <h5 className="font-semibold text-green-600 mb-2">Strong Essay Structure</h5>
+                                <div className="space-y-1">
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-8 h-6 bg-green-400 text-white text-xs flex items-center justify-center font-semibold">I</div>
+                                    <span className="text-sm">Hook + Clear Thesis</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-8 h-6 bg-blue-400 text-white text-xs flex items-center justify-center font-semibold">B1</div>
+                                    <span className="text-sm">Evidence + Analysis</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-8 h-6 bg-purple-400 text-white text-xs flex items-center justify-center font-semibold">B2</div>
+                                    <span className="text-sm">Different Evidence + Analysis</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-8 h-6 bg-orange-400 text-white text-xs flex items-center justify-center font-semibold">CA</div>
+                                    <span className="text-sm">Counterargument + Refutation</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-8 h-6 bg-gray-400 text-white text-xs flex items-center justify-center font-semibold">C</div>
+                                    <span className="text-sm">Restate + Broader Impact</span>
+                                  </div>
+                                </div>
+                              </div>
+                              <div>
+                                <h5 className="font-semibold text-red-600 mb-2">Weak Essay Issues</h5>
+                                <div className="space-y-1">
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-8 h-6 bg-red-400 text-white text-xs flex items-center justify-center font-semibold">X</div>
+                                    <span className="text-sm">Vague thesis statement</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-8 h-6 bg-red-400 text-white text-xs flex items-center justify-center font-semibold">X</div>
+                                    <span className="text-sm">No specific evidence</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-8 h-6 bg-red-400 text-white text-xs flex items-center justify-center font-semibold">X</div>
+                                    <span className="text-sm">Weak transitions</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-8 h-6 bg-red-400 text-white text-xs flex items-center justify-center font-semibold">X</div>
+                                    <span className="text-sm">Missing counterarguments</span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <div className="w-8 h-6 bg-red-400 text-white text-xs flex items-center justify-center font-semibold">X</div>
+                                    <span className="text-sm">Repetitive conclusion</span>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
                         </div>
+                      ) : (
+                        <>
+                          {currentQuestion.solutionSteps && currentQuestion.solutionSteps.length > 0 ? (
+                            <SolutionStepBuilder
+                              steps={currentQuestion.solutionSteps.map((step, index) => ({
+                                id: `step-${index + 1}`,
+                                title: `Step ${index + 1}`,
+                                description: '',
+                                fromExpression: { latex: '', display: step },
+                                toExpression: { latex: '', display: '' },
+                                explanation: step,
+                                hint: `This is step ${index + 1} of the solution`
+                              }))}
+                              title="Step-by-Step Solution"
+                              onStepComplete={(stepId, isCorrect) => console.log('Step completed:', stepId, isCorrect)}
+                              onAllStepsComplete={() => console.log('All steps completed!')}
+                              showHints={true}
+                            />
+                          ) : (
+                            <div className="space-y-4">
+                              <TypingAnimation
+                                text={formatSolution(currentQuestion)}
+                                speed={8}
+                                isHTML={true}
+                                className="whitespace-pre-wrap text-sm leading-relaxed"
+                                style={{
+                                  ...contentTextStyle,
+                                  fontSize: `${displaySettings.fontSize - 1}px`,
+                                  color: isDarkMode ? '#ffffff' : contentTextStyle.color
+                                }}
+                              />
+                            </div>
+                          )}
+                        </>
                       )}
                     </TabsContent>
                     
@@ -1256,60 +1407,12 @@ Keep the evaluation constructive and educational.`;
 
               <div className="space-y-3 pb-4" style={{ borderBottom: '2px solid #CFCFCF' }}>
                 {isSATWriting ? (
-                  <div className="space-y-4">
-                    <Textarea
-                      value={writingAnswer}
-                      onChange={(e) => setWritingAnswer(e.target.value)}
-                      placeholder="Write your response here..."
-                      className={`w-full min-h-[200px] p-4 border rounded-lg resize-none transition-colors ${
-                        isDarkMode 
-                          ? 'bg-gray-800 border-green-500/30 text-green-400 placeholder-green-600' 
-                          : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
-                      }`}
-                      style={contentTextStyle}
-                    />
-                    <div className="flex justify-between items-center">
-                      <span className={`text-sm ${isDarkMode ? 'text-green-500' : 'text-gray-500'}`}>
-                        {writingAnswer.length} characters
-                      </span>
-                      <Button
-                        onClick={handleAIEvaluation}
-                        disabled={!writingAnswer.trim() || isEvaluating}
-                        className={`transition-colors ${
-                          isDarkMode 
-                            ? 'bg-green-600 hover:bg-green-700 text-white border-green-500/30' 
-                            : 'bg-blue-600 hover:bg-blue-700 text-white'
-                        }`}
-                      >
-                        {isEvaluating ? (
-                          <>
-                            <Bot className="h-4 w-4 mr-2 animate-spin" />
-                            Evaluating...
-                          </>
-                        ) : (
-                          <>
-                            <Bot className="h-4 w-4 mr-2" />
-                            Get AI Feedback
-                          </>
-                        )}
-                      </Button>
+                  <div className="w-full bg-white rounded-lg">
+                    <div className="text-center py-6 text-gray-600">
+                      <FileText className="h-8 w-8 mx-auto mb-2" />
+                      <p>Writing interface is available in the main question area above.</p>
+                      <p className="text-sm mt-1">Use the comprehensive template system to build your essay.</p>
                     </div>
-                    {aiEvaluation && (
-                      <div className={`mt-4 p-4 border rounded-lg transition-colors ${
-                        isDarkMode 
-                          ? 'bg-gray-800 border-green-500/30 text-green-400' 
-                          : 'bg-blue-50 border-blue-200 text-gray-800'
-                      }`}>
-                        <h4 className={`font-semibold mb-2 ${
-                          isDarkMode ? 'text-green-400' : 'text-blue-800'
-                        }`}>
-                          AI Evaluation:
-                        </h4>
-                        <div className="whitespace-pre-wrap text-sm">
-                          {aiEvaluation}
-                        </div>
-                      </div>
-                    )}
                   </div>
                 ) : (
                   <>
@@ -1708,60 +1811,12 @@ Keep the evaluation constructive and educational.`;
           }`} style={{ backgroundColor: isDarkMode ? undefined : boardColor }}>
             <div className="space-y-3 pb-4" style={{ borderBottom: '2px solid #CFCFCF' }}>
               {isSATWriting ? (
-                <div className="space-y-4">
-                  <Textarea
-                    value={writingAnswer}
-                    onChange={(e) => setWritingAnswer(e.target.value)}
-                    placeholder="Write your response here..."
-                    className={`w-full min-h-[200px] p-4 border rounded-lg resize-none transition-colors ${
-                      isDarkMode 
-                        ? 'bg-gray-800 border-green-500/30 text-green-400 placeholder-green-600' 
-                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
-                    }`}
-                    style={contentTextStyle}
-                  />
-                  <div className="flex justify-between items-center">
-                    <span className={`text-sm ${isDarkMode ? 'text-green-500' : 'text-gray-500'}`}>
-                      {writingAnswer.length} characters
-                    </span>
-                    <Button
-                      onClick={handleAIEvaluation}
-                      disabled={!writingAnswer.trim() || isEvaluating}
-                      className={`transition-colors ${
-                        isDarkMode 
-                          ? 'bg-green-600 hover:bg-green-700 text-white border-green-500/30' 
-                          : 'bg-blue-600 hover:bg-blue-700 text-white'
-                      }`}
-                    >
-                      {isEvaluating ? (
-                        <>
-                          <Bot className="h-4 w-4 mr-2 animate-spin" />
-                          Evaluating...
-                        </>
-                      ) : (
-                        <>
-                          <Bot className="h-4 w-4 mr-2" />
-                          Get AI Feedback
-                        </>
-                      )}
-                    </Button>
+                <div className="w-full bg-white rounded-lg">
+                  <div className="text-center py-6 text-gray-600">
+                    <FileText className="h-8 w-8 mx-auto mb-2" />
+                    <p>Writing interface is available in the main question area above.</p>
+                    <p className="text-sm mt-1">Use the comprehensive template system to build your essay.</p>
                   </div>
-                  {aiEvaluation && (
-                    <div className={`mt-4 p-4 border rounded-lg transition-colors ${
-                      isDarkMode 
-                        ? 'bg-gray-800 border-green-500/30 text-green-400' 
-                        : 'bg-blue-50 border-blue-200 text-gray-800'
-                    }`}>
-                      <h4 className={`font-semibold mb-2 ${
-                        isDarkMode ? 'text-green-400' : 'text-blue-800'
-                      }`}>
-                        AI Evaluation:
-                      </h4>
-                      <div className="whitespace-pre-wrap text-sm">
-                        {aiEvaluation}
-                      </div>
-                    </div>
-                  )}
                 </div>
               ) : (
                 <>
