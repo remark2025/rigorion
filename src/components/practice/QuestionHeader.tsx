@@ -63,7 +63,7 @@ const QuestionHeader: React.FC<QuestionHeaderProps> = ({
             }}
           >
             {chapter && (
-              <span className="text-sm font-semibold text-blue-700">
+              <span className="text-sm font-semibold text-gray-800">
                 {chapter}
               </span>
             )}

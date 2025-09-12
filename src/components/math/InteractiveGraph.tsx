@@ -1,11 +1,11 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import Plot from 'react-plotly.js';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { RefreshCw, Play, Pause, RotateCcw, Sparkles } from 'lucide-react';
+import { RefreshCw, Play, Pause, RotateCcw, Sparkles, ChevronDown, ChevronUp } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { COMPONENT_THEMES, PROFESSIONAL_COLORS } from '@/utils/professionalColors';
 
@@ -68,6 +68,8 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
   );
   const [isAnimating, setIsAnimating] = useState(false);
   const [animationSpeed, setAnimationSpeed] = useState(1);
+  const [showLegend, setShowLegend] = useState(false);
+  const animationRef = useRef<NodeJS.Timeout | null>(null);
 
   // Generate graph data based on parameters
   const generateGraphData = useCallback(() => {
@@ -126,30 +128,31 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
         y: [vertexY],
         mode: 'markers+text',
         marker: {
-          color: PROFESSIONAL_THEME.warning,
+          color: '#dc2626',
           size: 16,
-          symbol: 'diamond',
+          symbol: 'circle',
           line: {
-            color: 'white',
-            width: 3
+            color: '#dc2626',
+            width: 2
           }
         },
         text: ['V'],
         textposition: 'middle center',
         textfont: {
-          color: 'white',
+          color: '#000000',
           size: 10,
-          family: 'Arial, sans-serif'
+          family: 'Inter, sans-serif',
+          weight: 'bold'
         },
-        name: `🔶 Vertex (${vertexX.toFixed(3)}, ${vertexY.toFixed(3)})`,
-        hovertemplate: '<b>🔶 Vertex Point</b><br>' +
+        name: `Vertex (${vertexX.toFixed(2)}, ${vertexY.toFixed(2)})`,
+        hovertemplate: '<b>Vertex Point</b><br>' +
                        'x: %{x:.3f}<br>' +
                        'y: %{y:.3f}<br>' +
                        '<i>Turning point of parabola</i><extra></extra>',
         hoverlabel: {
-          bgcolor: PROFESSIONAL_THEME.warning,
-          bordercolor: 'white',
-          font: { color: 'white', size: 14 }
+          bgcolor: 'white',
+          bordercolor: '#dc2626',
+          font: { color: '#dc2626', size: 14 }
         }
       });
 
@@ -159,30 +162,31 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
         y: [c],
         mode: 'markers+text',
         marker: {
-          color: PROFESSIONAL_THEME.success,
+          color: '#16a34a',
           size: 14,
           symbol: 'circle',
           line: {
-            color: 'white',
+            color: '#16a34a',
             width: 2
           }
         },
         text: ['Y'],
         textposition: 'middle center',
         textfont: {
-          color: 'white',
+          color: '#000000',
           size: 9,
-          family: 'Arial, sans-serif'
+          family: 'Inter, sans-serif',
+          weight: 'bold'
         },
-        name: `🟢 Y-intercept (0, ${c.toFixed(3)})`,
-        hovertemplate: '<b>🟢 Y-Intercept</b><br>' +
+        name: `Y-intercept (0, ${c.toFixed(2)})`,
+        hovertemplate: '<b>Y-Intercept</b><br>' +
                        'x: %{x}<br>' +
                        'y: %{y:.3f}<br>' +
                        '<i>Where curve crosses y-axis</i><extra></extra>',
         hoverlabel: {
-          bgcolor: PROFESSIONAL_THEME.success,
-          bordercolor: 'white',
-          font: { color: 'white', size: 14 }
+          bgcolor: 'white',
+          bordercolor: '#16a34a',
+          font: { color: '#16a34a', size: 14 }
         }
       });
 
@@ -197,32 +201,33 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
           y: discriminant === 0 ? [0] : [0, 0],
           mode: 'markers+text',
           marker: {
-            color: PROFESSIONAL_THEME.secondary,
+            color: '#2563eb',
             size: 14,
-            symbol: 'square',
+            symbol: 'circle',
             line: {
-              color: 'white',
+              color: '#2563eb',
               width: 2
             }
           },
           text: discriminant === 0 ? ['X'] : ['X₁', 'X₂'],
           textposition: 'middle center',
           textfont: {
-            color: 'white',
+            color: '#000000',
             size: 9,
-            family: 'Arial, sans-serif'
+            family: 'Inter, sans-serif',
+            weight: 'bold'
           },
           name: discriminant === 0 ? 
-            `🟪 X-intercept (${x1.toFixed(3)}, 0)` : 
-            `🟪 X-intercepts (${x1.toFixed(3)}, 0) & (${x2.toFixed(3)}, 0)`,
-          hovertemplate: '<b>🟪 X-Intercept</b><br>' +
+            `X-intercept (${x1.toFixed(2)}, 0)` : 
+            `X-intercepts (${x1.toFixed(2)}, 0) & (${x2.toFixed(2)}, 0)`,
+          hovertemplate: '<b>X-Intercept</b><br>' +
                          'x: %{x:.3f}<br>' +
                          'y: %{y}<br>' +
                          '<i>Where curve crosses x-axis</i><extra></extra>',
           hoverlabel: {
-            bgcolor: PROFESSIONAL_THEME.secondary,
-            bordercolor: 'white',
-            font: { color: 'white', size: 14 }
+            bgcolor: 'white',
+            bordercolor: '#2563eb',
+            font: { color: '#2563eb', size: 14 }
           }
         });
       }
@@ -245,6 +250,10 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
 
   const startAnimation = () => {
     if (isAnimating) {
+      if (animationRef.current) {
+        clearInterval(animationRef.current);
+        animationRef.current = null;
+      }
       setIsAnimating(false);
       return;
     }
@@ -254,26 +263,36 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
     if (!param) return;
 
     let value = param.min;
-    const interval = setInterval(() => {
-      if (!isAnimating) {
-        clearInterval(interval);
-        return;
-      }
-      
+    let cycles = 0;
+    const maxCycles = 2; // Complete 2 full cycles
+    
+    animationRef.current = setInterval(() => {
       value += (param.max - param.min) / 100 * animationSpeed;
       if (value > param.max) {
         value = param.min;
+        cycles++;
+        if (cycles >= maxCycles) {
+          if (animationRef.current) {
+            clearInterval(animationRef.current);
+            animationRef.current = null;
+          }
+          setIsAnimating(false);
+          return;
+        }
       }
       
       handleParameterChange(param.name, value);
-    }, 100);
-
-    // Store interval reference for cleanup
-    setTimeout(() => {
-      clearInterval(interval);
-      setIsAnimating(false);
-    }, 5000); // Reduced to 5 seconds
+    }, 50); // Faster animation - 50ms intervals
   };
+
+  // Cleanup animation on unmount
+  useEffect(() => {
+    return () => {
+      if (animationRef.current) {
+        clearInterval(animationRef.current);
+      }
+    };
+  }, []);
 
   const graphData = generateGraphData();
   const visualElements = generateVisualElements();
@@ -286,7 +305,7 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
       type: 'scatter',
       mode: 'lines',
       line: {
-        color: PROFESSIONAL_THEME.primary,
+        color: '#22c55e',
         width: 4,
         shape: 'spline',
         smoothing: 0.3
@@ -308,59 +327,50 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
   // Enhanced layout with trademark styling
   const layout = {
     title: {
-      text: `🎨 ${config.title}`,
+      text: `Note: ${config.title}`,
       font: { 
-        size: 20, 
-        color: PROFESSIONAL_THEME.primary,
+        size: 14, 
+        color: '#000000',
         family: 'Inter, Arial, sans-serif'
       },
-      x: 0.5,
-      xanchor: 'center'
+      x: 0.02,
+      y: 1.02,
+      xanchor: 'left',
+      yanchor: 'bottom'
     },
     xaxis: {
       title: {
         text: 'x-axis',
-        font: { color: PROFESSIONAL_THEME.primary, size: 14 }
+        font: { color: '#000000', size: 14, family: 'Inter, sans-serif' }
       },
       range: config.xRange,
       zeroline: config.showAxis,
-      zerolinecolor: PROFESSIONAL_THEME.primary,
+      zerolinecolor: '#000000',
       zerolinewidth: 2,
       showgrid: config.showGrid,
-      gridcolor: 'rgba(99, 102, 241, 0.2)',
+      gridcolor: 'rgba(0, 0, 0, 0.1)',
       gridwidth: 1,
-      tickcolor: PROFESSIONAL_THEME.primary,
-      tickfont: { color: PROFESSIONAL_THEME.primary }
+      tickcolor: '#000000',
+      tickfont: { color: '#000000', family: 'Inter, sans-serif' }
     },
     yaxis: {
       title: {
         text: 'y-axis',
-        font: { color: PROFESSIONAL_THEME.primary, size: 14 }
+        font: { color: '#000000', size: 14, family: 'Inter, sans-serif' }
       },
       range: config.yRange,
       zeroline: config.showAxis,
-      zerolinecolor: PROFESSIONAL_THEME.primary,
+      zerolinecolor: '#000000',
       zerolinewidth: 2,
       showgrid: config.showGrid,
-      gridcolor: 'rgba(99, 102, 241, 0.2)',
+      gridcolor: 'rgba(0, 0, 0, 0.1)',
       gridwidth: 1,
-      tickcolor: PROFESSIONAL_THEME.primary,
-      tickfont: { color: PROFESSIONAL_THEME.primary }
+      tickcolor: '#000000',
+      tickfont: { color: '#000000', family: 'Inter, sans-serif' }
     },
-    plot_bgcolor: PROFESSIONAL_THEME.background.light,
-    paper_bgcolor: 'rgba(255, 255, 255, 0.95)',
-    showlegend: true,
-    legend: {
-      x: 0.02,
-      y: 0.98,
-      bgcolor: 'rgba(255, 255, 255, 0.9)',
-      bordercolor: PROFESSIONAL_THEME.primary,
-      borderwidth: 1,
-      font: {
-        color: PROFESSIONAL_THEME.primary,
-        size: 12
-      }
-    },
+    plot_bgcolor: 'transparent',
+    paper_bgcolor: 'transparent',
+    showlegend: false,
     margin: { t: 60, r: 30, b: 60, l: 60 },
     hovermode: 'closest',
     dragmode: 'pan'
@@ -376,126 +386,15 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
       <Card 
         className="w-full overflow-hidden"
         style={{
-          background: PROFESSIONAL_THEME.background.surface
+          background: 'repeating-linear-gradient(0deg, transparent, transparent 9px, rgba(229, 231, 235, 0.3) 9px, rgba(229, 231, 235, 0.3) 10px), repeating-linear-gradient(90deg, transparent, transparent 9px, rgba(229, 231, 235, 0.3) 9px, rgba(229, 231, 235, 0.3) 10px), white'
         }}
       >
-        <CardHeader 
-          className="p-2"
-          style={{
-            background: `linear-gradient(90deg, ${PROFESSIONAL_THEME.background.deep} 0%, ${PROFESSIONAL_THEME.background.medium} 100%)`
-          }}
-        >
-          <CardTitle className="flex items-center justify-between text-sm" style={{ color: PROFESSIONAL_COLORS.highlights.white }}>
-            <motion.div 
-              className="flex items-center gap-2"
-              initial={{ x: -20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
-              <Sparkles className="h-4 w-4" />
-              <span className="text-sm font-semibold">
-                {config.type === 'quadratic' && 
-                  `y = ${parameters.a?.toFixed(3) || 1}x² ${parameters.b >= 0 ? '+' : ''}${parameters.b?.toFixed(3) || 0}x ${parameters.c >= 0 ? '+' : ''}${parameters.c?.toFixed(3) || 0}`}
-                {config.type === 'linear' && 
-                  `y = ${parameters.m?.toFixed(3) || 1}x ${parameters.b >= 0 ? '+' : ''}${parameters.b?.toFixed(3) || 0}`}
-                {config.type === 'exponential' && 
-                  `y = ${parameters.a?.toFixed(3) || 1} × ${parameters.b?.toFixed(3) || 2}^x`}
-                {config.type === 'absolute' && 
-                  `y = ${parameters.a?.toFixed(3) || 1}|x ${parameters.h >= 0 ? '-' : '+'}${Math.abs(parameters.h?.toFixed(3)) || 0}| ${parameters.k >= 0 ? '+' : ''}${parameters.k?.toFixed(3) || 0}`}
-                {config.type === 'polynomial' && 
-                  `y = ${parameters.a?.toFixed(3) || 1}x³ ${parameters.b >= 0 ? '+' : ''}${parameters.b?.toFixed(3) || 0}x² ${parameters.c >= 0 ? '+' : ''}${parameters.c?.toFixed(3) || 0}x ${parameters.d >= 0 ? '+' : ''}${parameters.d?.toFixed(3) || 0}`}
-              </span>
-            </motion.div>
-            <motion.div 
-              className="flex gap-2"
-              initial={{ x: 20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-            >
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={resetParameters}
-                className="flex items-center gap-1 bg-white/10 border-white/30 text-white hover:bg-white/20 transition-all duration-300 h-6 px-2 text-xs"
-              >
-                <RotateCcw className="h-3 w-3" />
-                Reset
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={startAnimation}
-                disabled={isAnimating}
-                className="flex items-center gap-1 bg-white/10 border-white/30 text-white hover:bg-white/20 transition-all duration-300 disabled:opacity-50 h-6 px-2 text-xs"
-              >
-                {isAnimating ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
-                {isAnimating ? 'Playing...' : 'Animate'}
-              </Button>
-            </motion.div>
-          </CardTitle>
-        </CardHeader>
       <CardContent className="p-0">
-        {/* Side-by-side layout: Controls on left, Graph on right */}
+        {/* Side-by-side layout: Graph on left, Controls on right */}
         <div className="flex gap-4">
-          {/* Control Panel - Left Side */}
+          {/* Graph Area - Left Side */}
           <motion.div 
-            className="w-80 p-4 space-y-4 bg-gray-50"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            <h4 className="font-semibold text-gray-700 mb-4">Interactive Controls</h4>
-            {initialParameters.map((param, index) => (
-              <motion.div 
-                key={param.name} 
-                className="space-y-2 p-3 bg-white"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.4, delay: index * 0.1 }}
-              >
-                {/* First Line: Label and Value */}
-                <div className="flex items-center justify-between">
-                  <Label 
-                    htmlFor={param.name} 
-                    className="text-sm font-semibold text-gray-700"
-                  >
-                    {param.label}
-                  </Label>
-                  <Input
-                    id={param.name}
-                    type="number"
-                    value={parameters[param.name]?.toFixed(3) || param.value}
-                    onChange={(e) => handleParameterChange(param.name, parseFloat(e.target.value) || param.value)}
-                    className="w-16 h-6 text-center font-mono text-sm bg-white"
-                    step={param.step}
-                    min={param.min}
-                    max={param.max}
-                  />
-                </div>
-                
-                {/* Second Line: Slider and Description */}
-                <div className="space-y-1">
-                  <Slider
-                    value={[parameters[param.name] || param.value]}
-                    onValueChange={(values) => handleParameterChange(param.name, values[0])}
-                    min={param.min}
-                    max={param.max}
-                    step={param.step}
-                    className="w-full"
-                  />
-                  {param.description && (
-                    <p className="text-xs text-gray-600">
-                      {param.description}
-                    </p>
-                  )}
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-
-          {/* Graph Area - Right Side */}
-          <motion.div 
-            className="flex-1 h-[600px] bg-white"
+            className="flex-1 h-[600px]"
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5 }}
@@ -518,6 +417,147 @@ export const InteractiveGraph: React.FC<InteractiveGraphProps> = ({
               style={{ width: '100%', height: '100%' }}
               useResizeHandler={true}
             />
+          </motion.div>
+
+          {/* Control Panel - Right Side */}
+          <motion.div 
+            className="w-80 p-4 space-y-4"
+            style={{ background: 'rgba(255, 255, 255, 0.95)' }}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            {/* Reset and Animate buttons at top */}
+            <div className="flex gap-2 mb-6">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={resetParameters}
+                className="flex items-center gap-1 bg-white border-gray-300 text-gray-700 hover:bg-gray-50 transition-all duration-300 h-8 px-3 text-sm"
+              >
+                <RotateCcw className="h-3 w-3" />
+                Reset
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={startAnimation}
+                disabled={isAnimating}
+                className="flex items-center gap-1 bg-white border-gray-300 text-gray-700 hover:bg-gray-50 transition-all duration-300 disabled:opacity-50 h-8 px-3 text-sm"
+              >
+                {isAnimating ? <Pause className="h-3 w-3" /> : <Play className="h-3 w-3" />}
+                {isAnimating ? 'Playing...' : 'Animate'}
+              </Button>
+            </div>
+
+            {/* Graph Legend - Above Interactive Controls */}
+            <div className="mb-6">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowLegend(!showLegend)}
+                className="flex items-center gap-2 w-full justify-between bg-white border-gray-300 text-gray-700 hover:bg-gray-50 h-8 px-3 text-sm"
+              >
+                <span>Graph Legend</span>
+                {showLegend ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+              </Button>
+              
+              {showLegend && (
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.2 }}
+                  className="mt-2 p-3 bg-white border border-gray-200 rounded-lg text-xs space-y-2"
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="w-4 h-1 bg-green-500 rounded"></div>
+                    <span className="text-gray-700">Function curve - mathematical relationship</span>
+                  </div>
+                  
+                  {config.type === 'quadratic' && (
+                    <>
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded-full bg-red-600 flex items-center justify-center">
+                          <span className="text-black text-[8px] font-bold">V</span>
+                        </div>
+                        <span className="text-gray-700">Vertex - turning point of parabola</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded-full bg-green-600 flex items-center justify-center">
+                          <span className="text-black text-[8px] font-bold">Y</span>
+                        </div>
+                        <span className="text-gray-700">Y-intercept - where curve crosses y-axis</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 rounded-full bg-blue-600 flex items-center justify-center">
+                          <span className="text-black text-[8px] font-bold">X</span>
+                        </div>
+                        <span className="text-gray-700">X-intercepts - where curve crosses x-axis</span>
+                      </div>
+                    </>
+                  )}
+
+                  {(config.type === 'linear' || config.type === 'exponential' || config.type === 'absolute' || config.type === 'polynomial') && (
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-green-600 flex items-center justify-center">
+                        <span className="text-black text-[8px] font-bold">Y</span>
+                      </div>
+                      <span className="text-gray-700">Y-intercept - where curve crosses y-axis</span>
+                    </div>
+                  )}
+                </motion.div>
+              )}
+            </div>
+
+            <h4 className="font-semibold text-gray-700 mb-4">Interactive Controls</h4>
+            {initialParameters.map((param, index) => (
+              <motion.div 
+                key={param.name} 
+                className="space-y-2 p-3 bg-white border border-gray-100 rounded-lg"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.4, delay: index * 0.1 }}
+              >
+                {/* First Line: Label and Value */}
+                <div className="flex items-center justify-between">
+                  <Label 
+                    htmlFor={param.name} 
+                    className="text-sm font-semibold text-gray-700"
+                  >
+                    {param.label}
+                  </Label>
+                  <Input
+                    id={param.name}
+                    type="number"
+                    value={parameters[param.name]?.toFixed(3) || param.value}
+                    onChange={(e) => handleParameterChange(param.name, parseFloat(e.target.value) || param.value)}
+                    className="w-20 h-8 text-center font-mono text-sm bg-gray-100 border-gray-300 text-black focus:border-gray-600 focus:ring-1 focus:ring-gray-600 focus:bg-gray-50"
+                    step={param.step}
+                    min={param.min}
+                    max={param.max}
+                  />
+                </div>
+                
+                {/* Second Line: Slider and Description */}
+                <div className="space-y-1">
+                  <div className="px-2 py-3">
+                    <Slider
+                    value={[parameters[param.name] || param.value]}
+                    onValueChange={(values) => handleParameterChange(param.name, values[0])}
+                    min={param.min}
+                    max={param.max}
+                    step={param.step}
+                    className="w-full [&>span[role=slider]]:bg-black [&>span[role=slider]]:border-black [&>span[role=slider]]:w-5 [&>span[role=slider]]:h-5 [&>span[role=slider]]:hover:bg-gray-800 [&_[data-orientation=horizontal]]:bg-gray-300 [&_[data-orientation=horizontal]]:h-2 [&_span.bg-primary]:!bg-green-600 [&_span.bg-primary]:h-2"
+                    />
+                  </div>
+                  {param.description && (
+                    <p className="text-xs text-gray-600">
+                      {param.description}
+                    </p>
+                  )}
+                </div>
+              </motion.div>
+            ))}
           </motion.div>
         </div>
 

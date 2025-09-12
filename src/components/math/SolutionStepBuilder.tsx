@@ -52,12 +52,15 @@ interface SolutionStep {
   id: string;
   title: string;
   description: string;
+  workout: string; // The mathematical work/calculation
   fromExpression: MathExpression;
   toExpression: MathExpression;
   explanation: string;
   hint?: string;
   userInput?: string;
   isCorrect?: boolean;
+  hasGraph?: boolean; // Whether this step includes a graph
+  graphData?: any; // Graph configuration if hasGraph is true
   interactive?: {
     type: 'fill-blank' | 'drag-drop' | 'multiple-choice' | 'input';
     options?: string[];
@@ -69,6 +72,7 @@ interface SolutionStep {
 interface SolutionStepBuilderProps {
   steps: SolutionStep[];
   title: string;
+  keyExplanation?: string; // Overall explanation before steps
   onStepComplete?: (stepId: string, isCorrect: boolean, userAnswer?: string) => void;
   onAllStepsComplete?: () => void;
   showHints?: boolean;
@@ -95,6 +99,7 @@ if (typeof document !== 'undefined' && !document.getElementById('gradient-animat
 export const SolutionStepBuilder: React.FC<SolutionStepBuilderProps> = ({
   steps,
   title,
+  keyExplanation,
   onStepComplete,
   onAllStepsComplete,
   showHints = true,
@@ -290,12 +295,7 @@ export const SolutionStepBuilder: React.FC<SolutionStepBuilderProps> = ({
             value={stepInputs[stepId] || ''}
             onChange={(e) => handleStepInput(stepId, e.target.value)}
             placeholder={expression.placeholder || '?'}
-            className="w-16 text-center font-mono text-sm font-bold border"
-            style={{
-              borderColor: PROFESSIONAL_MATH_COLORS.accent,
-              backgroundColor: 'white',
-              color: PROFESSIONAL_MATH_COLORS.primary
-            }}
+            className="w-20 h-8 text-center font-mono text-sm font-bold bg-gray-100 border-gray-300 text-black focus:border-gray-600 focus:ring-1 focus:ring-gray-600 focus:bg-gray-50"
           />
           <span className="font-mono text-sm font-semibold" style={{ color: PROFESSIONAL_MATH_COLORS.primary }}>
             {expression.display.split('___')[1] || ''}
@@ -330,7 +330,11 @@ export const SolutionStepBuilder: React.FC<SolutionStepBuilderProps> = ({
                 variant={stepInputs[step.id] === option ? 'default' : 'outline'}
                 onClick={() => handleStepInput(step.id, option)}
                 disabled={isCompleted}
-                className="w-full justify-start"
+                className={`w-full justify-start h-8 ${
+                  stepInputs[step.id] === option 
+                    ? 'bg-gray-800 text-white hover:bg-gray-700' 
+                    : 'bg-gray-100 text-black border-gray-300 hover:bg-gray-50'
+                }`}
               >
                 {option}
               </Button>
@@ -347,15 +351,14 @@ export const SolutionStepBuilder: React.FC<SolutionStepBuilderProps> = ({
               onChange={(e) => handleStepInput(step.id, e.target.value)}
               placeholder="Enter answer..."
               disabled={isCompleted}
-              className="w-24 text-center text-sm"
+              className="w-28 h-8 text-center text-sm bg-gray-100 border-gray-300 text-black focus:border-gray-600 focus:ring-1 focus:ring-gray-600 focus:bg-gray-50 disabled:bg-gray-200 disabled:text-gray-500"
             />
             {isCurrentStep && (
               <Button
                 onClick={() => completeStep(step.id, stepIndex)}
                 disabled={!stepInputs[step.id]?.trim()}
                 size="sm"
-                style={{ backgroundColor: PROFESSIONAL_MATH_COLORS.primary }}
-                className="text-white hover:opacity-90 text-xs px-3"
+                className="bg-gray-800 text-white hover:bg-gray-700 text-xs px-3 h-8"
               >
                 Check
               </Button>
@@ -376,122 +379,33 @@ export const SolutionStepBuilder: React.FC<SolutionStepBuilderProps> = ({
       className={className}
     >
       <Card 
-        className="w-full shadow-lg overflow-hidden"
+        className="w-full overflow-hidden"
         style={{
-          border: `1px solid ${PROFESSIONAL_MATH_COLORS.secondary}`,
-          background: 'white'
+          background: 'repeating-linear-gradient(0deg, transparent, transparent 9px, rgba(229, 231, 235, 0.3) 9px, rgba(229, 231, 235, 0.3) 10px), repeating-linear-gradient(90deg, transparent, transparent 9px, rgba(229, 231, 235, 0.3) 9px, rgba(229, 231, 235, 0.3) 10px), white'
         }}
       >
-        <CardHeader 
-          className="border-b p-2"
-          style={{
-            borderColor: PROFESSIONAL_MATH_COLORS.secondary,
-            background: 'white'
-          }}
-        >
-          <CardTitle className="flex items-center justify-between" style={{ color: PROFESSIONAL_MATH_COLORS.primary }}>
-            <motion.div 
-              className="flex items-center gap-3"
-              initial={{ x: -20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
-              <Zap className="h-6 w-6" />
-              <span className="text-xl font-bold">
-                ⚡ {title}
-              </span>
-            </motion.div>
-            <motion.div 
-              className="flex gap-2 items-center"
-              initial={{ x: 20, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-            >
-              {/* Timer */}
-              {timerVisible && (
-                <div className="flex items-center gap-2 text-gray-400 text-sm bg-white/10 px-3 py-1 rounded border border-white/20">
-                  <span>{formatTime(elapsedTime)}</span>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setTimerPaused(!timerPaused)}
-                    className="h-6 w-6 p-0 text-gray-400 hover:text-white"
-                  >
-                    {timerPaused ? <Play className="h-3 w-3" /> : <Pause className="h-3 w-3" />}
-                  </Button>
-                </div>
-              )}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setTimerVisible(!timerVisible)}
-                className="h-8 w-8 p-0 text-gray-400 hover:text-white"
-              >
-                {timerVisible ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setSoundEnabled(!soundEnabled)}
-                className="flex items-center gap-1 bg-white/10 border-white/30 text-white hover:bg-white/20 transition-all duration-300"
-              >
-                {soundEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setVoiceEnabled(!voiceEnabled)}
-                className="flex items-center gap-1 bg-white/10 border-white/30 text-white hover:bg-white/20 transition-all duration-300"
-              >
-                {voiceEnabled ? <VolumeOff className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
-              </Button>
-              {isReading && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={stopSpeech}
-                  className="flex items-center gap-1 bg-white/10 border-white/30 text-white hover:bg-white/20 transition-all duration-300"
-                >
-                  <Square className="h-4 w-4" />
-                </Button>
-              )}
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={resetSolution}
-                className="flex items-center gap-1 bg-white/10 border-white/30 text-white hover:bg-white/20 transition-all duration-300"
-              >
-                <RotateCcw className="h-4 w-4" />
-              </Button>
-            </motion.div>
-          </CardTitle>
-        
-          {/* Enhanced Progress Bar */}
-          <motion.div className="mt-4">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-white flex items-center gap-2">
-                <Sparkles className="h-4 w-4" />
-                Progress: {completedSteps.size} of {steps.length} steps
-              </span>
-              <span className="text-sm text-white/80">
-                {Math.round((completedSteps.size / steps.length) * 100)}% Complete
-              </span>
-            </div>
-            <div className="w-full bg-white/20 rounded-full h-3 overflow-hidden">
-              <motion.div 
-                className="h-3 rounded-full transition-all duration-1000"
-                style={{
-                  background: `linear-gradient(90deg, ${PROFESSIONAL_MATH_COLORS.success} 0%, ${PROFESSIONAL_MATH_COLORS.accent} 100%)`,
-                  width: `${(completedSteps.size / steps.length) * 100}%`
-                }}
-                initial={{ width: '0%' }}
-                animate={{ width: `${(completedSteps.size / steps.length) * 100}%` }}
-              />
-            </div>
-          </motion.div>
-      </CardHeader>
 
-      <CardContent className="p-3">
+      <CardContent className="p-4">
+        {/* Key Explanation Section */}
+        {keyExplanation && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="mb-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border border-blue-200"
+          >
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center">
+                <Lightbulb className="h-4 w-4 text-white" />
+              </div>
+              <h3 className="text-lg font-semibold text-blue-900">Key Strategy</h3>
+            </div>
+            <p className="text-sm text-blue-800 leading-relaxed">
+              {keyExplanation}
+            </p>
+          </motion.div>
+        )}
+
         <div className="relative">
           <AnimatePresence>
             {steps.map((step, index) => {
@@ -504,213 +418,239 @@ export const SolutionStepBuilder: React.FC<SolutionStepBuilderProps> = ({
 
               return (
                 <React.Fragment key={step.id}>
-                  {/* Enhanced Connecting Line */}
+                  {/* Down Arrow Connector */}
                   {index > 0 && (
                     <motion.div
-                      initial={{ scaleY: 0, opacity: 0 }}
+                      initial={{ scale: 0, opacity: 0 }}
                       animate={{ 
-                        scaleY: isCompleted || isCurrent ? 1 : 0.3, 
-                        opacity: isCompleted || isCurrent ? 1 : 0.3 
+                        scale: isCompleted || isCurrent ? 1 : 0.7, 
+                        opacity: isCompleted || isCurrent ? 1 : 0.4 
                       }}
-                      transition={{ duration: 0.8, delay: 0.1 }}
-                      className="w-2 h-6 mx-auto -mb-1 -mt-1 relative z-10 rounded-full"
-                      style={{
-                        background: isCompleted 
-                          ? `linear-gradient(180deg, ${PROFESSIONAL_MATH_COLORS.connecting} 0%, #22C55E 50%, ${PROFESSIONAL_MATH_COLORS.connecting} 100%)`
-                          : 'linear-gradient(180deg, #F3F4F6 0%, #E5E7EB 100%)',
-                        boxShadow: isCompleted ? `0 0 12px ${PROFESSIONAL_MATH_COLORS.connecting}40, inset 0 0 8px rgba(255,255,255,0.3)` : 'none'
-                      }}
-                    />
+                      transition={{ duration: 0.6, delay: 0.1 }}
+                      className="flex justify-center my-4 relative z-10"
+                      style={{ backgroundColor: 'white' }}
+                    >
+                      <ArrowDown 
+                        className="h-8 w-8 transition-all duration-500"
+                        style={{
+                          color: isCompleted 
+                            ? '#22C55E'
+                            : isCurrent
+                            ? '#22C55E'
+                            : '#9CA3AF',
+                          filter: isCompleted ? 'drop-shadow(0 2px 4px rgba(34, 197, 94, 0.3))' : 'none'
+                        }}
+                      />
+                    </motion.div>
                   )}
                   
-                  {/* Step Rectangle */}
+                  {/* Step Card - New Collaborative Format */}
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -20 }}
                     transition={{ duration: 0.5 }}
-                    className="relative mb-3 p-3 rounded-lg transition-all duration-500"
+                    className="relative mb-3 p-4 rounded-lg transition-all duration-500"
                     style={{
                       backgroundColor: 'white',
                       border: `2px solid ${
-                        isCurrent 
-                          ? '#D1D5DB'
-                          : isCompleted 
-                          ? 'transparent'
-                          : '#F3F4F6'
+                        isCompleted
+                          ? '#22C55E' // Green for correct
+                          : stepInputs[step.id] && !validateStep(step, stepInputs[step.id])
+                          ? '#FB923C' // Orange for wrong
+                          : '#D1D5DB' // Grey for default
                       }`,
-                      background: isCompleted 
-                        ? `linear-gradient(135deg, #10B981 0%, #22C55E 50%, #16A34A 100%)`
-                        : isCurrent
-                        ? `linear-gradient(135deg, #F9FAFB 0%, #F3F4F6 100%)`
-                        : 'white',
                       boxShadow: isCurrent 
                         ? '0 2px 8px rgba(0, 0, 0, 0.1)'
                         : isCompleted
-                        ? '0 4px 15px rgba(16, 185, 129, 0.3), inset 0 0 20px rgba(255,255,255,0.2)'
-                        : '0 1px 3px rgba(0, 0, 0, 0.05)',
-                      backgroundSize: isCompleted ? '200% 200%' : 'auto',
-                      animation: isCompleted ? 'gradient-move 3s ease infinite' : 'none'
+                        ? '0 4px 15px rgba(34, 197, 94, 0.2)'
+                        : '0 1px 3px rgba(0, 0, 0, 0.05)'
                     }}
                   >
-                {/* Simple Step Header */}
-                <div className="flex items-center justify-between mb-3">
+                {/* New Collaborative Step Header */}
+                <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center space-x-3">
                     <div 
-                      className="h-6 w-6 rounded flex items-center justify-center text-white text-sm font-bold"
+                      className="h-8 w-8 rounded-full flex items-center justify-center text-white text-sm font-bold"
                       style={{ 
                         backgroundColor: isCompleted 
-                          ? PROFESSIONAL_MATH_COLORS.success 
-                          : isCurrent 
-                          ? PROFESSIONAL_MATH_COLORS.primary 
-                          : PROFESSIONAL_MATH_COLORS.secondary 
+                          ? '#22C55E'
+                          : stepInputs[step.id] && !validateStep(step, stepInputs[step.id])
+                          ? '#FB923C'
+                          : '#6B7280'
                       }}
                     >
-                      {isCompleted ? '✓' : index + 1}
+                      {isCompleted ? '✓' : `${index + 1}/${steps.length}`}
                     </div>
-                    <h3 
-                      className="font-semibold text-lg flex-1"
-                      style={{ color: isCompleted ? 'white' : PROFESSIONAL_MATH_COLORS.primary }}
-                    >
-                      {step.title}
+                    <h3 className="font-semibold text-lg text-gray-800">
+                      Step {index + 1}/{steps.length}
                     </h3>
-                    {/* Voice Control for Step */}
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => currentlySpeaking === step.id ? stopSpeech() : speakStep(step)}
-                      disabled={!voiceEnabled}
-                      className={`h-8 w-8 p-0 disabled:opacity-50 transition-all duration-200 ${
-                        currentlySpeaking === step.id 
-                          ? 'text-green-600 bg-green-50 hover:bg-green-100' 
-                          : isCompleted 
-                          ? 'text-white hover:text-green-100'
-                          : 'text-gray-500 hover:text-gray-700'
-                      }`}
-                      title={currentlySpeaking === step.id ? 'Stop Reading' : 'Read Step Aloud'}
-                    >
-                      {currentlySpeaking === step.id ? (
-                        <Square className="h-4 w-4" />
-                      ) : (
-                        <Volume2 className="h-4 w-4" />
-                      )}
-                    </Button>
                   </div>
-                </div>
-                
-                <p className="text-sm mb-4" style={{ color: isCompleted ? 'rgba(255,255,255,0.9)' : PROFESSIONAL_COLORS.text.secondary }}>
-                  {step.description}
-                </p>
-
-                {/* Interactive Collaboration Area */}
-                <div className="space-y-3">
-                  {/* Step Expression with Fill-in */}
-                  <div className="bg-gray-50 p-3 rounded border border-gray-200">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-sm font-medium text-gray-700">Work through this step:</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      {renderMathExpression(step.fromExpression, step.id)}
-                    </div>
-                  </div>
-
-                  {/* User Collaboration Required */}
-                  {!isCompleted && isCurrent && (
-                    <motion.div 
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.4 }}
-                      className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 p-4 rounded-lg shadow-sm"
-                    >
-                      <div className="flex items-center gap-2 mb-3">
-                        <motion.div
-                          animate={{ rotate: [0, 15, -15, 0] }}
-                          transition={{ duration: 2, repeat: Infinity }}
-                        >
-                          <Lightbulb className="h-5 w-5 text-blue-600" />
-                        </motion.div>
-                        <span className="text-sm font-semibold text-blue-800">Your collaboration needed:</span>
-                      </div>
-                      {step.interactive ? (
-                        <div className="space-y-3">
-                          <div className="text-sm text-blue-700 mb-2 font-medium">
-                            Complete this step to proceed:
-                          </div>
-                          {renderInteractiveElement(step, index)}
-                        </div>
-                      ) : (
-                        <div className="flex flex-col gap-3">
-                          <span className="text-sm text-blue-700 font-medium">
-                            Work through this step and click when you're ready to continue
-                          </span>
-                          <Button
-                            onClick={() => completeStep(step.id, index)}
-                            size="sm"
-                            className="self-start flex items-center gap-2 transition-all duration-300 hover:scale-105 active:scale-95"
-                            style={{ backgroundColor: PROFESSIONAL_MATH_COLORS.primary }}
-                          >
-                            <Sparkles className="h-4 w-4" />
-                            I understand this step
-                            <ArrowRight className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      )}
-                    </motion.div>
-                  )}
-
-                  {/* Completed Result */}
+                  
+                  {/* Success Message - Top Right Corner */}
                   {isCompleted && (
-                    <motion.div 
-                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      transition={{ duration: 0.5, type: "spring", stiffness: 300, damping: 25 }}
-                      className="bg-gradient-to-r from-green-50 via-emerald-50 to-green-50 border border-green-300 p-4 rounded-lg shadow-md"
-                      style={{
-                        background: 'linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 50%, #BBF7D0 100%)',
-                        boxShadow: '0 4px 12px rgba(34, 197, 94, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.5)'
-                      }}
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.8, y: 10 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      transition={{ duration: 0.6, delay: 0.2 }}
+                      className="text-green-600 font-semibold text-sm"
                     >
-                      <div className="flex items-center gap-3 mb-3">
-                        <motion.div
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          transition={{ delay: 0.2, type: "spring", stiffness: 500 }}
-                        >
-                          <CheckCircle className="h-6 w-6 text-green-600" />
-                        </motion.div>
-                        <motion.span 
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 0.3, duration: 0.4 }}
-                          className="text-sm font-bold text-green-800"
-                        >
-                          ✨ Excellent work! Step completed:
-                        </motion.span>
-                      </div>
-                      <motion.div 
+                      <motion.span
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        transition={{ delay: 0.4, duration: 0.3 }}
-                        className="bg-white/80 p-3 rounded border border-green-200 flex items-center gap-2"
+                        transition={{ duration: 0.05, delay: 0.4 }}
+                        className="inline-block"
                       >
-                        {renderMathExpression(step.toExpression)}
-                      </motion.div>
+                        {['Perfect! Well done! 🌟', 'Excellent work! 💫', 'Outstanding! ⭐', 'Brilliant! ✨'][Math.floor(Math.random() * 4)]}
+                      </motion.span>
+                    </motion.div>
+                  )}
+                </div>
+                
+                {/* Enhanced Step Layout */}
+                <div className="mb-4">
+                  {/* Step Title and Description */}
+                  <div className="mb-4">
+                    <h4 className="text-lg font-semibold text-gray-900 mb-2">
+                      Step {index + 1}: {step.title}
+                    </h4>
+                    <p className="text-sm text-gray-700 leading-relaxed mb-3">
+                      {step.description}
+                    </p>
+                  </div>
+
+                  {/* Mathematical Workout */}
+                  <div className="bg-gradient-to-r from-gray-50 to-slate-50 p-4 rounded-lg border border-gray-200 mb-4">
+                    <h5 className="text-sm font-semibold text-gray-800 mb-2">Workout:</h5>
+                    <div className="bg-white p-3 rounded border border-gray-100">
+                      <p className="text-sm font-mono text-gray-800 leading-relaxed">{step.workout || step.explanation}</p>
+                    </div>
+                  </div>
+
+                  {/* Optional Graph */}
+                  {step.hasGraph && (
+                    <motion.div 
+                      initial={{ opacity: 0, scale: 0.95 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.4 }}
+                      className="bg-white p-4 rounded-lg border border-gray-200 mb-4"
+                    >
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="w-6 h-6 rounded bg-green-600 flex items-center justify-center">
+                          <span className="text-white text-xs font-bold">G</span>
+                        </div>
+                        <h5 className="text-sm font-semibold text-gray-800">Visual Representation</h5>
+                      </div>
+                      <div className="h-32 bg-gray-100 rounded flex items-center justify-center text-gray-500">
+                        <span className="text-sm">Graph for Step {index + 1}</span>
+                      </div>
                     </motion.div>
                   )}
                 </div>
 
-                {/* Simple Explanation */}
-                {isCompleted && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
+                {/* Interactive Question for Student */}
+                {!isCompleted && isCurrent && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4 }}
-                    className="mt-3 p-3 bg-gray-50 rounded border-l-4"
-                    style={{ borderLeftColor: PROFESSIONAL_MATH_COLORS.success }}
+                    className="bg-white border border-gray-200 p-4 rounded-lg"
                   >
-                    <p className="text-sm" style={{ color: PROFESSIONAL_COLORS.text.secondary }}>
-                      {step.explanation}
-                    </p>
+                    <div className="flex items-center gap-2 mb-3">
+                      <motion.div
+                        animate={{ rotate: [0, 15, -15, 0] }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                      >
+                        <Lightbulb 
+                          className="h-5 w-5" 
+                          style={{
+                            color: '#F97316',
+                            filter: 'drop-shadow(0 0 2px rgba(249, 115, 22, 0.3))'
+                          }}
+                        />
+                      </motion.div>
+                      <span 
+                        className="text-sm font-semibold"
+                        style={{
+                          background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)',
+                          WebkitBackgroundClip: 'text',
+                          WebkitTextFillColor: 'transparent',
+                          backgroundClip: 'text'
+                        }}
+                      >
+                        Now it's your turn:
+                      </span>
+                    </div>
+                    
+                    {/* Question for Student */}
+                    <div className="mb-4">
+                      <p className="text-sm text-gray-800 font-semibold mb-2">
+                        {step.interactive?.type === 'input' 
+                          ? `What value did we find for the variable in this step?`
+                          : `What's the result of this calculation?`}
+                      </p>
+                      
+                      {/* Input Field for Student Answer */}
+                      <div className="flex items-center gap-3">
+                        <Input
+                          value={stepInputs[step.id] || ''}
+                          onChange={(e) => handleStepInput(step.id, e.target.value)}
+                          placeholder="Enter your answer..."
+                          className={`h-10 text-center font-mono text-sm border-2 transition-all duration-300 ${
+                            stepInputs[step.id] && !validateStep(step, stepInputs[step.id])
+                              ? 'border-orange-400 bg-orange-50 text-orange-800 focus:border-orange-500 focus:ring-orange-200'
+                              : 'border-gray-300 bg-white text-gray-800 focus:border-blue-500 focus:ring-blue-200'
+                          }`}
+                          onKeyPress={(e) => e.key === 'Enter' && completeStep(step.id, index)}
+                        />
+                        <Button
+                          onClick={() => completeStep(step.id, index)}
+                          disabled={!stepInputs[step.id]?.trim()}
+                          className="bg-blue-600 hover:bg-blue-700 text-white px-4 h-10 transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:scale-100"
+                        >
+                          Check Answer
+                        </Button>
+                      </div>
+                      
+                      {/* Feedback for Wrong Answer */}
+                      {stepInputs[step.id] && !validateStep(step, stepInputs[step.id]) && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 5 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="mt-3 p-3 bg-orange-100 border border-orange-200 rounded-lg"
+                        >
+                          <p className="text-sm text-orange-800">
+                            Not quite right. Review the explanation above and try again! 💪
+                          </p>
+                        </motion.div>
+                      )}
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* Completed Result - Clean Success State */}
+                {isCompleted && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    transition={{ duration: 0.5, type: "spring", stiffness: 300, damping: 25 }}
+                    className="mb-4"
+                  >
+                    <div className="flex items-center gap-3 mb-3">
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ delay: 0.2, type: "spring", stiffness: 500 }}
+                      >
+                        <CheckCircle className="h-5 w-5 text-green-600" />
+                      </motion.div>
+                      <span className="text-sm font-semibold text-green-700">
+                        Perfect! You got it right:
+                      </span>
+                    </div>
+                    <div className="flex items-center">
+                      {renderMathExpression(step.toExpression)}
+                    </div>
                   </motion.div>
                 )}
 

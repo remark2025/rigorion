@@ -692,7 +692,7 @@ Keep the evaluation constructive and educational.`;
           {/* Column 1: Question + Answer Choices */}
           <div className={`${
             activeTab === 'problem' && !hasPassage ? 'w-full' : 'w-2/5'
-          } bg-white p-4`}>
+          } bg-white p-8`}>
           
           {/* SAT Question Header with Timer and Navigation */}
           <QuestionHeader 
@@ -707,7 +707,7 @@ Keep the evaluation constructive and educational.`;
           />
           
           {/* Question Tracking and Action Icons Row */}
-          <div className="mb-1 flex items-center justify-between">
+          <div className="mb-8 flex items-center justify-between">
             {/* Left: Question Tracking */}
             <QuestionTracking
               questionId={currentQuestion.id || `q_${currentQuestionIndex}`}
@@ -862,14 +862,14 @@ Keep the evaluation constructive and educational.`;
                       
                       if (selectedAnswer && isSelected) {
                         if (isCorrect) {
-                          buttonStyle = 'bg-green-700 border-green-800 text-black shadow-md';
+                          buttonStyle = 'bg-green-500 border-green-600 text-white';
                           animationClass = 'transition-all duration-300 scale-105';
                         } else {
-                          buttonStyle = 'bg-red-500 border-red-600 text-white shadow-md';
+                          buttonStyle = 'bg-red-500 border-red-600 text-white';
                           animationClass = 'transition-all duration-300 scale-105';
                         }
                       } else if (selectedAnswer && isCorrectChoice) {
-                        buttonStyle = 'bg-green-700 border-green-800 text-black shadow-md';
+                        buttonStyle = 'bg-green-500 border-green-600 text-white';
                         animationClass = 'transition-all duration-300 scale-105';
                       } else {
                         buttonStyle = isDarkMode 
@@ -882,26 +882,30 @@ Keep the evaluation constructive and educational.`;
                           key={index}
                           variant="outline"
                           className={`w-full h-auto min-h-[30px] rounded-full px-2 py-1.5 text-center justify-center transition-all duration-300 ease-out hover:scale-105 active:scale-95 ${buttonStyle} ${animationClass}`}
-                          onClick={() => checkAnswer(choiceKey)}
-                          disabled={!!selectedAnswer}
                           style={{ 
                             fontFamily: getFontFamily(),
                             fontSize: '12px',
                             fontWeight: '500',
-                            color: selectedAnswer && isSelected && !isCorrect ? '#ffffff' : 
-                                   selectedAnswer && (isSelected && isCorrect || isCorrectChoice) ? '#ffffff' : 
-                                   isDarkMode ? '#ffffff' : '#374151'
+                            boxShadow: selectedAnswer && isSelected && isCorrect 
+                              ? '0 0 20px rgba(34, 197, 94, 0.4), 0 0 40px rgba(34, 197, 94, 0.2)'
+                              : selectedAnswer && (isSelected && !isCorrect)
+                              ? '0 0 20px rgba(239, 68, 68, 0.4), 0 0 40px rgba(239, 68, 68, 0.2)'
+                              : selectedAnswer && isCorrectChoice
+                              ? '0 0 20px rgba(34, 197, 94, 0.4), 0 0 40px rgba(34, 197, 94, 0.2)'
+                              : undefined
                           }}
+                          onClick={() => checkAnswer(choiceKey)}
+                          disabled={!!selectedAnswer}
                         >
                           <div className="flex items-center justify-between w-full">
-                            <div className="flex flex-col items-center text-center flex-1">
-                              <span className={`text-xs mb-0.5 ${
+                            <div className="flex items-center gap-3 flex-1">
+                              <span className={`text-sm font-bold flex-shrink-0 ${
                                 selectedAnswer && isSelected && !isCorrect ? 'text-white' : 
                                 selectedAnswer && (isSelected && isCorrect || isCorrectChoice) ? 'text-white' : 
-                                isDarkMode ? 'text-gray-300' : 'text-gray-500'
-                              }`}>Option {choiceKey}</span>
+                                isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                              }`}>{choiceKey}</span>
                               <span 
-                                className="text-xs leading-tight"
+                                className="text-xs leading-tight text-left flex-1"
                                 dangerouslySetInnerHTML={{ __html: choice }}
                               />
                             </div>
@@ -939,8 +943,8 @@ Keep the evaluation constructive and educational.`;
                   className="w-full"
                   style={{
                     height: '2px',
-                    background: 'linear-gradient(90deg, rgba(59, 130, 246, 0.8) 0%, rgba(99, 102, 241, 0.6) 25%, rgba(139, 92, 246, 0.5) 50%, rgba(148, 163, 184, 0.6) 75%, rgba(203, 213, 225, 0.8) 100%)',
-                    boxShadow: '0 0 4px rgba(59, 130, 246, 0.3)'
+                    background: 'transparent',
+                    boxShadow: 'none'
                   }}
                 ></div>
               </div>
@@ -968,19 +972,14 @@ Keep the evaluation constructive and educational.`;
         {(hasPassage || activeTab !== 'problem') && (
           <div className={`${
             hasGraph ? 'w-1/2' : 'w-3/5'
-          } p-8 relative overflow-y-auto max-h-[calc(100vh-120px)]`}
-            style={{
-              background: 'linear-gradient(to bottom, rgba(255, 255, 255, 1) 0%, rgba(248, 250, 252, 0.95) 50%, rgba(241, 245, 249, 0.9) 100%)'
-            }}>
+          } p-8 relative overflow-y-auto max-h-[calc(100vh-120px)] bg-white`}>
             
             {/* Vertical Spacer for side-by-side layout */}
             <div className="absolute left-0 top-4 bottom-4 flex items-center">
               <div 
-                className="h-full"
+                className="h-full bg-gray-200"
                 style={{
-                  width: '2px',
-                  background: 'linear-gradient(180deg, rgba(59, 130, 246, 0.8) 0%, rgba(99, 102, 241, 0.6) 25%, rgba(139, 92, 246, 0.5) 50%, rgba(148, 163, 184, 0.6) 75%, rgba(203, 213, 225, 0.8) 100%)',
-                  boxShadow: '0 0 4px rgba(59, 130, 246, 0.3)'
+                  width: '1px'
                 }}
               ></div>
             </div>
@@ -1037,29 +1036,30 @@ Keep the evaluation constructive and educational.`;
                       <TabsList 
                         className="grid w-full grid-cols-3 mb-1 rounded-sm"
                         style={{
-                          background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, rgba(99, 102, 241, 0.85) 25%, rgba(139, 92, 246, 0.8) 50%, rgba(148, 163, 184, 0.85) 75%, rgba(203, 213, 225, 0.9) 100%)',
+                          background: '#CFCFCF',
                           height: '28px',
                           padding: '2px',
-                          boxShadow: '0 2px 8px rgba(59, 130, 246, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
-                          border: '1px solid rgba(255, 255, 255, 0.15)'
+                          borderRadius: '2px',
+                          marginTop: '4px',
+                          marginBottom: '4px'
                         }}
                       >
                         <TabsTrigger 
                           value="interactive" 
                           disabled={!currentQuestion.interactiveSolution}
-                          className="text-xs font-semibold text-white data-[state=active]:bg-white data-[state=active]:text-blue-700 rounded-sm h-6"
+                          className="text-xs font-semibold text-gray-700 data-[state=active]:bg-white data-[state=active]:text-gray-900 rounded-sm h-6"
                         >
                           Interactive
                         </TabsTrigger>
                         <TabsTrigger 
                           value="step-by-step" 
-                          className="text-xs font-semibold text-white data-[state=active]:bg-white data-[state=active]:text-blue-700 rounded-sm h-6"
+                          className="text-xs font-semibold text-gray-700 data-[state=active]:bg-white data-[state=active]:text-gray-900 rounded-sm h-6"
                         >
                           Step-by-Step
                         </TabsTrigger>
                         <TabsTrigger 
                           value="raw" 
-                          className="text-xs font-semibold text-white data-[state=active]:bg-white data-[state=active]:text-blue-700 rounded-sm h-6"
+                          className="text-xs font-semibold text-gray-700 data-[state=active]:bg-white data-[state=active]:text-gray-900 rounded-sm h-6"
                         >
                           Raw Solution
                         </TabsTrigger>
@@ -1103,22 +1103,22 @@ Keep the evaluation constructive and educational.`;
                           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                             {/* Solution 1 - High Score Essay */}
                             <div className="space-y-4">
-                              <h3 className="text-lg font-semibold text-blue-600">Sample Essay - High Score (4/4)</h3>
+                              <h3 className="text-lg font-semibold text-gray-800">Sample Essay - High Score (4/4)</h3>
                               <div className="prose prose-sm max-w-none">
                                 <div className="space-y-3 text-sm leading-relaxed">
-                                  <p className="p-3 bg-green-50 border-l-4 border-green-400">
-                                    <span className="font-semibold text-green-700">[Introduction]</span> Social media has fundamentally transformed how teenagers communicate and learn, making it an integral part of modern education rather than a distraction to be eliminated during school hours.
+                                  <p className="p-3 bg-white border-l-4 border-gray-300">
+                                    <span className="font-semibold text-gray-700">[Introduction]</span> Social media has fundamentally transformed how teenagers communicate and learn, making it an integral part of modern education rather than a distraction to be eliminated during school hours.
                                   </p>
-                                  <p className="p-3 bg-blue-50 border-l-4 border-blue-400">
-                                    <span className="font-semibold text-blue-700">[Body 1 - Educational Benefits]</span> Schools that embrace social media platforms like Twitter and Instagram for educational purposes report increased student engagement and collaborative learning opportunities.
+                                  <p className="p-3 bg-white border-l-4 border-gray-300">
+                                    <span className="font-semibold text-gray-700">[Body 1 - Educational Benefits]</span> Schools that embrace social media platforms like Twitter and Instagram for educational purposes report increased student engagement and collaborative learning opportunities.
                                   </p>
-                                  <p className="p-3 bg-purple-50 border-l-4 border-purple-400">
-                                    <span className="font-semibold text-purple-700">[Body 2 - Real-world Skills]</span> Furthermore, digital literacy and online communication skills are essential for students' future careers, making social media restriction counterproductive to their professional development.
+                                  <p className="p-3 bg-white border-l-4 border-gray-300">
+                                    <span className="font-semibold text-gray-700">[Body 2 - Real-world Skills]</span> Furthermore, digital literacy and online communication skills are essential for students' future careers, making social media restriction counterproductive to their professional development.
                                   </p>
-                                  <p className="p-3 bg-orange-50 border-l-4 border-orange-400">
-                                    <span className="font-semibold text-orange-700">[Counterargument]</span> While critics argue that social media causes distraction, proper guidance and structured use can transform these platforms into powerful educational tools.
+                                  <p className="p-3 bg-white border-l-4 border-gray-300">
+                                    <span className="font-semibold text-gray-700">[Counterargument]</span> While critics argue that social media causes distraction, proper guidance and structured use can transform these platforms into powerful educational tools.
                                   </p>
-                                  <p className="p-3 bg-gray-50 border-l-4 border-gray-400">
+                                  <p className="p-3 bg-white border-l-4 border-gray-300">
                                     <span className="font-semibold text-gray-700">[Conclusion]</span> Rather than restricting social media, schools should integrate it meaningfully into their curriculum to prepare students for a digitally connected world.
                                   </p>
                                 </div>
@@ -1127,19 +1127,19 @@ Keep the evaluation constructive and educational.`;
                               {/* Structure Analysis */}
                               <div className="space-y-2 text-xs">
                                 <div className="flex items-center gap-2">
-                                  <div className="w-4 h-4 bg-green-400 rounded"></div>
+                                  <div className="w-4 h-4 bg-gray-400 rounded"></div>
                                   <span>Clear thesis statement</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                  <div className="w-4 h-4 bg-blue-400 rounded"></div>
+                                  <div className="w-4 h-4 bg-gray-400 rounded"></div>
                                   <span>Evidence-based arguments</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                  <div className="w-4 h-4 bg-purple-400 rounded"></div>
+                                  <div className="w-4 h-4 bg-gray-400 rounded"></div>
                                   <span>Smooth transitions</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                  <div className="w-4 h-4 bg-orange-400 rounded"></div>
+                                  <div className="w-4 h-4 bg-gray-400 rounded"></div>
                                   <span>Addresses opposition</span>
                                 </div>
                               </div>
@@ -1147,20 +1147,20 @@ Keep the evaluation constructive and educational.`;
 
                             {/* Solution 2 - Medium Score Essay */}
                             <div className="space-y-4">
-                              <h3 className="text-lg font-semibold text-yellow-600">Sample Essay - Good Score (3/4)</h3>
+                              <h3 className="text-lg font-semibold text-gray-800">Sample Essay - Good Score (3/4)</h3>
                               <div className="prose prose-sm max-w-none">
                                 <div className="space-y-3 text-sm leading-relaxed">
-                                  <p className="p-3 bg-yellow-50 border-l-4 border-yellow-400">
-                                    <span className="font-semibold text-yellow-700">[Introduction]</span> I think social media should not be limited in schools because students need to learn how to use it properly.
+                                  <p className="p-3 bg-white border-l-4 border-gray-300">
+                                    <span className="font-semibold text-gray-700">[Introduction]</span> I think social media should not be limited in schools because students need to learn how to use it properly.
                                   </p>
-                                  <p className="p-3 bg-red-50 border-l-4 border-red-400">
-                                    <span className="font-semibold text-red-700">[Body 1 - Basic Point]</span> Social media helps students communicate with each other about homework and projects.
+                                  <p className="p-3 bg-white border-l-4 border-gray-300">
+                                    <span className="font-semibold text-gray-700">[Body 1 - Basic Point]</span> Social media helps students communicate with each other about homework and projects.
                                   </p>
-                                  <p className="p-3 bg-red-50 border-l-4 border-red-400">
-                                    <span className="font-semibold text-red-700">[Body 2 - Weak Development]</span> Many students use social media every day so they are already good at it.
+                                  <p className="p-3 bg-white border-l-4 border-gray-300">
+                                    <span className="font-semibold text-gray-700">[Body 2 - Weak Development]</span> Many students use social media every day so they are already good at it.
                                   </p>
-                                  <p className="p-3 bg-yellow-50 border-l-4 border-yellow-400">
-                                    <span className="font-semibold text-yellow-700">[Conclusion]</span> In conclusion, social media should be allowed in schools because it can be helpful for learning.
+                                  <p className="p-3 bg-white border-l-4 border-gray-300">
+                                    <span className="font-semibold text-gray-700">[Conclusion]</span> In conclusion, social media should be allowed in schools because it can be helpful for learning.
                                   </p>
                                 </div>
                               </div>
@@ -1168,19 +1168,19 @@ Keep the evaluation constructive and educational.`;
                               {/* Issues Analysis */}
                               <div className="space-y-2 text-xs">
                                 <div className="flex items-center gap-2">
-                                  <div className="w-4 h-4 bg-red-400 rounded"></div>
+                                  <div className="w-4 h-4 bg-gray-400 rounded"></div>
                                   <span>Weak thesis statement</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                  <div className="w-4 h-4 bg-red-400 rounded"></div>
+                                  <div className="w-4 h-4 bg-gray-400 rounded"></div>
                                   <span>Lacks specific evidence</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                  <div className="w-4 h-4 bg-yellow-400 rounded"></div>
+                                  <div className="w-4 h-4 bg-gray-400 rounded"></div>
                                   <span>Basic organization</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                  <div className="w-4 h-4 bg-red-400 rounded"></div>
+                                  <div className="w-4 h-4 bg-gray-400 rounded"></div>
                                   <span>No counterarguments</span>
                                 </div>
                               </div>
@@ -1188,26 +1188,26 @@ Keep the evaluation constructive and educational.`;
                           </div>
 
                           {/* Structure Visualization */}
-                          <div className="mt-8 p-6 bg-gray-50">
+                          <div className="mt-8 p-6 bg-white border border-gray-200 rounded-lg">
                             <h4 className="text-lg font-semibold mb-4">Essay Structure Comparison</h4>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                               <div>
-                                <h5 className="font-semibold text-green-600 mb-2">Strong Essay Structure</h5>
+                                <h5 className="font-semibold text-gray-800 mb-2">Strong Essay Structure</h5>
                                 <div className="space-y-1">
                                   <div className="flex items-center gap-2">
-                                    <div className="w-8 h-6 bg-green-400 text-white text-xs flex items-center justify-center font-semibold">I</div>
+                                    <div className="w-8 h-6 bg-gray-400 text-white text-xs flex items-center justify-center font-semibold">I</div>
                                     <span className="text-sm">Hook + Clear Thesis</span>
                                   </div>
                                   <div className="flex items-center gap-2">
-                                    <div className="w-8 h-6 bg-blue-400 text-white text-xs flex items-center justify-center font-semibold">B1</div>
+                                    <div className="w-8 h-6 bg-gray-400 text-white text-xs flex items-center justify-center font-semibold">B1</div>
                                     <span className="text-sm">Evidence + Analysis</span>
                                   </div>
                                   <div className="flex items-center gap-2">
-                                    <div className="w-8 h-6 bg-purple-400 text-white text-xs flex items-center justify-center font-semibold">B2</div>
+                                    <div className="w-8 h-6 bg-gray-400 text-white text-xs flex items-center justify-center font-semibold">B2</div>
                                     <span className="text-sm">Different Evidence + Analysis</span>
                                   </div>
                                   <div className="flex items-center gap-2">
-                                    <div className="w-8 h-6 bg-orange-400 text-white text-xs flex items-center justify-center font-semibold">CA</div>
+                                    <div className="w-8 h-6 bg-gray-400 text-white text-xs flex items-center justify-center font-semibold">CA</div>
                                     <span className="text-sm">Counterargument + Refutation</span>
                                   </div>
                                   <div className="flex items-center gap-2">
@@ -1217,26 +1217,26 @@ Keep the evaluation constructive and educational.`;
                                 </div>
                               </div>
                               <div>
-                                <h5 className="font-semibold text-red-600 mb-2">Weak Essay Issues</h5>
+                                <h5 className="font-semibold text-gray-800 mb-2">Weak Essay Issues</h5>
                                 <div className="space-y-1">
                                   <div className="flex items-center gap-2">
-                                    <div className="w-8 h-6 bg-red-400 text-white text-xs flex items-center justify-center font-semibold">X</div>
+                                    <div className="w-8 h-6 bg-gray-400 text-white text-xs flex items-center justify-center font-semibold">X</div>
                                     <span className="text-sm">Vague thesis statement</span>
                                   </div>
                                   <div className="flex items-center gap-2">
-                                    <div className="w-8 h-6 bg-red-400 text-white text-xs flex items-center justify-center font-semibold">X</div>
+                                    <div className="w-8 h-6 bg-gray-400 text-white text-xs flex items-center justify-center font-semibold">X</div>
                                     <span className="text-sm">No specific evidence</span>
                                   </div>
                                   <div className="flex items-center gap-2">
-                                    <div className="w-8 h-6 bg-red-400 text-white text-xs flex items-center justify-center font-semibold">X</div>
+                                    <div className="w-8 h-6 bg-gray-400 text-white text-xs flex items-center justify-center font-semibold">X</div>
                                     <span className="text-sm">Weak transitions</span>
                                   </div>
                                   <div className="flex items-center gap-2">
-                                    <div className="w-8 h-6 bg-red-400 text-white text-xs flex items-center justify-center font-semibold">X</div>
+                                    <div className="w-8 h-6 bg-gray-400 text-white text-xs flex items-center justify-center font-semibold">X</div>
                                     <span className="text-sm">Missing counterarguments</span>
                                   </div>
                                   <div className="flex items-center gap-2">
-                                    <div className="w-8 h-6 bg-red-400 text-white text-xs flex items-center justify-center font-semibold">X</div>
+                                    <div className="w-8 h-6 bg-gray-400 text-white text-xs flex items-center justify-center font-semibold">X</div>
                                     <span className="text-sm">Repetitive conclusion</span>
                                   </div>
                                 </div>
@@ -1336,7 +1336,7 @@ Keep the evaluation constructive and educational.`;
             {/* Question + Answer Choices */}
             <div className={`${
               hasGraph ? 'w-3/5' : 'w-full'
-            } rounded-xl p-6 transition-colors ${
+            } rounded-xl p-8 transition-colors ${
               isDarkMode ? 'bg-gray-900' : 'bg-white'
             }`} style={{ backgroundColor: isDarkMode ? undefined : boardColor }}>
               
@@ -1353,7 +1353,7 @@ Keep the evaluation constructive and educational.`;
               />
               
               {/* Question Tracking and Action Icons Row */}
-              <div className="mb-1 flex items-center justify-between">
+              <div className="mb-8 flex items-center justify-between">
                 {/* Left: Question Tracking */}
                 <QuestionTracking
                   questionId={currentQuestion.id || `q_${currentQuestionIndex}`}
@@ -1428,12 +1428,12 @@ Keep the evaluation constructive and educational.`;
                           
                           if (selectedAnswer && isSelected) {
                             if (isCorrect) {
-                              buttonStyle = 'bg-green-700 border-green-800 text-black';
+                              buttonStyle = 'bg-green-500 border-green-600 text-white';
                             } else {
                               buttonStyle = 'bg-red-500 border-red-600 text-white';
                             }
                           } else if (selectedAnswer && isCorrectChoice) {
-                            buttonStyle = 'bg-green-700 border-green-800 text-black';
+                            buttonStyle = 'bg-green-500 border-green-600 text-white';
                           } else {
                             buttonStyle = 'bg-white border-gray-300 text-gray-900 hover:bg-gray-50';
                           }
@@ -1449,7 +1449,14 @@ Keep the evaluation constructive and educational.`;
                                 ...contentTextStyle,
                                 color: selectedAnswer && isSelected && !isCorrect ? '#ffffff' : 
                                        selectedAnswer && (isSelected && isCorrect || isCorrectChoice) ? '#ffffff' : 
-                                       contentTextStyle.color
+                                       contentTextStyle.color,
+                                boxShadow: selectedAnswer && isSelected && isCorrect 
+                                  ? '0 0 20px rgba(34, 197, 94, 0.4), 0 0 40px rgba(34, 197, 94, 0.2)'
+                                  : selectedAnswer && (isSelected && !isCorrect)
+                                  ? '0 0 20px rgba(239, 68, 68, 0.4), 0 0 40px rgba(239, 68, 68, 0.2)'
+                                  : selectedAnswer && isCorrectChoice
+                                  ? '0 0 20px rgba(34, 197, 94, 0.4), 0 0 40px rgba(34, 197, 94, 0.2)'
+                                  : undefined
                               }}
                             >
                               <div className="flex items-start justify-between w-full">
@@ -1483,8 +1490,8 @@ Keep the evaluation constructive and educational.`;
 
                     {/* SAT-style separator - shows after answer is selected */}
                     {activeTab === 'solution' && (
-                      <div className="mt-6 pt-4 border-t border-gray-300" style={{ borderWidth: '0.5px' }}>
-                        <div className="text-center text-xs text-gray-500 font-medium tracking-wide">
+                      <div className="mt-6 pt-4 border-t border-gray-200" style={{ borderWidth: '1px' }}>
+                        <div className="text-center text-xs text-gray-400 font-medium tracking-wide">
                           • • •
                         </div>
                       </div>
@@ -1507,8 +1514,8 @@ Keep the evaluation constructive and educational.`;
                   className="w-full"
                   style={{
                     height: '2px',
-                    background: 'linear-gradient(90deg, rgba(59, 130, 246, 0.8) 0%, rgba(99, 102, 241, 0.6) 25%, rgba(139, 92, 246, 0.5) 50%, rgba(148, 163, 184, 0.6) 75%, rgba(203, 213, 225, 0.8) 100%)',
-                    boxShadow: '0 0 4px rgba(59, 130, 246, 0.3)'
+                    background: 'transparent',
+                    boxShadow: 'none'
                   }}
                 ></div>
               </div>
@@ -1518,7 +1525,7 @@ Keep the evaluation constructive and educational.`;
                 <div 
                   className="w-full mr-3 flex items-center justify-center"
                   style={{
-                    background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, rgba(99, 102, 241, 0.85) 25%, rgba(139, 92, 246, 0.8) 50%, rgba(148, 163, 184, 0.85) 75%, rgba(203, 213, 225, 0.9) 100%)',
+                    background: 'white',
                     height: '24px',
                     borderRadius: '2px',
                     boxShadow: '0 2px 8px rgba(59, 130, 246, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
@@ -1581,7 +1588,7 @@ Keep the evaluation constructive and educational.`;
                       <TabsList 
                       className="grid w-full grid-cols-3 mb-1 rounded-sm"
                       style={{
-                        background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, rgba(99, 102, 241, 0.85) 25%, rgba(139, 92, 246, 0.8) 50%, rgba(148, 163, 184, 0.85) 75%, rgba(203, 213, 225, 0.9) 100%)',
+                        background: 'white',
                         height: '28px',
                         padding: '2px',
                         boxShadow: '0 2px 8px rgba(59, 130, 246, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
@@ -1591,19 +1598,19 @@ Keep the evaluation constructive and educational.`;
                         <TabsTrigger 
                           value="interactive" 
                           disabled={!currentQuestion.interactiveSolution}
-                          className="text-xs font-semibold text-blue-700 data-[state=active]:bg-white data-[state=active]:text-blue-700 rounded-sm h-6"
+                          className="text-xs font-semibold text-gray-700 data-[state=active]:bg-white data-[state=active]:text-gray-700 rounded-sm h-6"
                         >
                           Interactive
                         </TabsTrigger>
                         <TabsTrigger 
                           value="step-by-step" 
-                          className="text-xs font-semibold text-blue-700 data-[state=active]:bg-white data-[state=active]:text-blue-700 rounded-sm h-6"
+                          className="text-xs font-semibold text-gray-700 data-[state=active]:bg-white data-[state=active]:text-gray-700 rounded-sm h-6"
                         >
                           Step-by-Step
                         </TabsTrigger>
                         <TabsTrigger 
                           value="raw" 
-                          className="text-xs font-semibold text-blue-700 data-[state=active]:bg-white data-[state=active]:text-blue-700 rounded-sm h-6"
+                          className="text-xs font-semibold text-gray-700 data-[state=active]:bg-white data-[state=active]:text-gray-700 rounded-sm h-6"
                         >
                           Raw Solution
                         </TabsTrigger>
@@ -1722,7 +1729,7 @@ Keep the evaluation constructive and educational.`;
         {/* Small Screens: Vertical Stack with Graph Between Question and Choices */}
         <div className="block md:hidden space-y-3">
           {/* Question Section */}
-          <div className={`rounded-lg p-4 transition-colors ${
+          <div className={`rounded-lg p-8 transition-colors ${
             isDarkMode ? 'bg-gray-900' : 'bg-white'
           }`} style={{ backgroundColor: isDarkMode ? undefined : boardColor }}>
             {/* SAT Question Header with Timer and Navigation */}
@@ -1738,7 +1745,7 @@ Keep the evaluation constructive and educational.`;
             />
             
             {/* Question Tracking and Action Icons Row */}
-            <div className="mb-1 flex items-center justify-between">
+            <div className="mb-8 flex items-center justify-between">
               {/* Left: Question Tracking */}
               <QuestionTracking
                 questionId={currentQuestion.id || `q_${currentQuestionIndex}`}
@@ -1832,12 +1839,12 @@ Keep the evaluation constructive and educational.`;
                         
                         if (selectedAnswer && isSelected) {
                           if (isCorrect) {
-                            buttonStyle = 'bg-green-700 border-green-800 text-black';
+                            buttonStyle = 'bg-green-500 border-green-600 text-white';
                           } else {
                             buttonStyle = 'bg-red-500 border-red-600 text-white';
                           }
                         } else if (selectedAnswer && isCorrectChoice) {
-                          buttonStyle = 'bg-green-700 border-green-800 text-black';
+                          buttonStyle = 'bg-green-500 border-green-600 text-white';
                         } else {
                           buttonStyle = 'bg-white border-gray-300 text-gray-900 hover:bg-gray-50';
                         }
@@ -1853,7 +1860,14 @@ Keep the evaluation constructive and educational.`;
                               ...contentTextStyle,
                               color: selectedAnswer && isSelected && !isCorrect ? '#ffffff' : 
                                      selectedAnswer && (isSelected && isCorrect || isCorrectChoice) ? '#ffffff' : 
-                                     contentTextStyle.color
+                                     contentTextStyle.color,
+                              boxShadow: selectedAnswer && isSelected && isCorrect 
+                                ? '0 0 20px rgba(34, 197, 94, 0.4), 0 0 40px rgba(34, 197, 94, 0.2)'
+                                : selectedAnswer && (isSelected && !isCorrect)
+                                ? '0 0 20px rgba(239, 68, 68, 0.4), 0 0 40px rgba(239, 68, 68, 0.2)'
+                                : selectedAnswer && isCorrectChoice
+                                ? '0 0 20px rgba(34, 197, 94, 0.4), 0 0 40px rgba(34, 197, 94, 0.2)'
+                                : undefined
                             }}
                           >
                             <div className="flex items-start justify-between w-full">
@@ -1887,8 +1901,8 @@ Keep the evaluation constructive and educational.`;
 
                     {/* SAT-style separator - shows after answer is selected (Mobile) */}
                     {activeTab === 'solution' && (
-                      <div className="mt-6 pt-4 border-t border-gray-300" style={{ borderWidth: '0.5px' }}>
-                        <div className="text-center text-xs text-gray-500 font-medium tracking-wide">
+                      <div className="mt-6 pt-4 border-t border-gray-200" style={{ borderWidth: '1px' }}>
+                        <div className="text-center text-xs text-gray-400 font-medium tracking-wide">
                           • • •
                         </div>
                       </div>
@@ -1909,8 +1923,8 @@ Keep the evaluation constructive and educational.`;
                   className="w-full"
                   style={{
                     height: '2px',
-                    background: 'linear-gradient(90deg, rgba(59, 130, 246, 0.8) 0%, rgba(99, 102, 241, 0.6) 25%, rgba(139, 92, 246, 0.5) 50%, rgba(148, 163, 184, 0.6) 75%, rgba(203, 213, 225, 0.8) 100%)',
-                    boxShadow: '0 0 4px rgba(59, 130, 246, 0.3)'
+                    background: 'transparent',
+                    boxShadow: 'none'
                   }}
                 ></div>
               </div>
@@ -1920,7 +1934,7 @@ Keep the evaluation constructive and educational.`;
                 <div 
                   className="w-full mr-3 flex items-center justify-center"
                   style={{
-                    background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, rgba(99, 102, 241, 0.85) 25%, rgba(139, 92, 246, 0.8) 50%, rgba(148, 163, 184, 0.85) 75%, rgba(203, 213, 225, 0.9) 100%)',
+                    background: 'white',
                     height: '24px',
                     borderRadius: '2px',
                     boxShadow: '0 2px 8px rgba(59, 130, 246, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
@@ -1983,7 +1997,7 @@ Keep the evaluation constructive and educational.`;
                       <TabsList 
                       className="grid w-full grid-cols-3 mb-1 rounded-sm"
                       style={{
-                        background: 'linear-gradient(135deg, rgba(59, 130, 246, 0.9) 0%, rgba(99, 102, 241, 0.85) 25%, rgba(139, 92, 246, 0.8) 50%, rgba(148, 163, 184, 0.85) 75%, rgba(203, 213, 225, 0.9) 100%)',
+                        background: 'white',
                         height: '28px',
                         padding: '2px',
                         boxShadow: '0 2px 8px rgba(59, 130, 246, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
@@ -1993,19 +2007,19 @@ Keep the evaluation constructive and educational.`;
                         <TabsTrigger 
                           value="interactive" 
                           disabled={!currentQuestion.interactiveSolution}
-                          className="text-xs font-semibold text-blue-700 data-[state=active]:bg-white data-[state=active]:text-blue-700 rounded-sm h-6"
+                          className="text-xs font-semibold text-gray-700 data-[state=active]:bg-white data-[state=active]:text-gray-700 rounded-sm h-6"
                         >
                           Interactive
                         </TabsTrigger>
                         <TabsTrigger 
                           value="step-by-step" 
-                          className="text-xs font-semibold text-blue-700 data-[state=active]:bg-white data-[state=active]:text-blue-700 rounded-sm h-6"
+                          className="text-xs font-semibold text-gray-700 data-[state=active]:bg-white data-[state=active]:text-gray-700 rounded-sm h-6"
                         >
                           Step-by-Step
                         </TabsTrigger>
                         <TabsTrigger 
                           value="raw" 
-                          className="text-xs font-semibold text-blue-700 data-[state=active]:bg-white data-[state=active]:text-blue-700 rounded-sm h-6"
+                          className="text-xs font-semibold text-gray-700 data-[state=active]:bg-white data-[state=active]:text-gray-700 rounded-sm h-6"
                         >
                           Raw Solution
                         </TabsTrigger>

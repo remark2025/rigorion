@@ -260,7 +260,7 @@ export const PracticeHeader = ({
     <header 
       className="fixed top-0 left-0 right-0 w-full z-50 border-b shadow-lg transition-all duration-300 animate-header-shiver"
       style={{
-        backgroundImage: 'url(/resources/mywall.jpg)',
+        backgroundImage: 'url(/resources/whaiteone.jpg)',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
@@ -383,11 +383,13 @@ export const PracticeHeader = ({
             <Button
               variant="ghost"
               size="sm"
-              className={`md:hidden rounded-full transition-colors ${
-                isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
-              } ${hasActiveFilters() ? (isDarkMode ? 'text-green-300 bg-green-900/20' : 'text-blue-600 bg-blue-50') : ''}`}
+              className="md:hidden rounded-full transition-colors hover:scale-105 text-black font-semibold"
+              style={{
+                background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)',
+                boxShadow: '0 2px 4px rgba(251, 146, 60, 0.3)'
+              }}
             >
-              <Filter className={`h-4 w-4 ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`} />
+              <Filter className="h-4 w-4 text-black" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className={`w-64 shadow-lg rounded-lg p-2 z-50 ${
@@ -399,60 +401,48 @@ export const PracticeHeader = ({
               Filters
             </div>
             
-            {/* Mobile Module Selection */}
+            {/* Mobile Module Selection - Horizontal */}
             <div className="mb-3">
-              <div className={`text-xs font-medium mb-1 px-3 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Module</div>
-              {modules.map((module) => (
-                <DropdownMenuItem 
-                  key={module}
-                  className={`cursor-pointer py-2 px-3 rounded-md transition-colors ${
-                    isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-50'
-                  } ${selectedModule === module ? (isDarkMode ? 'bg-gray-800' : 'bg-gray-100') : ''}`}
-                  onClick={() => handleModuleFilter(module)}
-                >
-                  <BookOpen className={`h-4 w-4 mr-2 ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`} />
-                  <span className={`font-source-sans text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{module}</span>
-                  {selectedModule === module && <span className="ml-auto text-xs">✓</span>}
-                </DropdownMenuItem>
-              ))}
-            </div>
-
-            {/* Mobile Exam Selection */}
-            <div className="mb-3">
-              <div className={`text-xs font-medium mb-1 px-3 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Exams</div>
-              <ScrollArea className="h-[120px]">
-                {exams.slice(0, 8).map((exam, index) => (
-                  <DropdownMenuItem 
-                    key={index}
-                    className={`cursor-pointer py-2 px-3 rounded-md transition-colors ${
-                      isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-50'
-                    } ${(selectedExam === null && exam === "All Exams") || (selectedExam !== null && exam === `Exam ${selectedExam}`) ? (isDarkMode ? 'bg-gray-800' : 'bg-gray-100') : ''}`}
-                    onClick={() => handleExamFilter(exam)}
+              <div className={`text-xs font-medium mb-2 px-3 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Module</div>
+              <div className="flex gap-1 px-3 overflow-x-auto pb-2">
+                {modules.map((module) => (
+                  <Button
+                    key={module}
+                    variant="outline"
+                    size="sm"
+                    className={`flex-shrink-0 text-xs px-3 py-1 h-7 rounded-full transition-colors ${
+                      selectedModule === module ? 'bg-orange-100 border-orange-300 text-orange-800' : 'bg-white border-gray-300 text-gray-600 hover:bg-gray-50'
+                    }`}
+                    onClick={() => handleModuleFilter(module)}
                   >
-                    <Target className={`h-4 w-4 mr-2 ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`} />
-                    <span className={`font-source-sans text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{exam}</span>
-                    {((selectedExam === null && exam === "All Exams") || (selectedExam !== null && exam === `Exam ${selectedExam}`)) && <span className="ml-auto text-xs">✓</span>}
-                  </DropdownMenuItem>
+                    {module}
+                  </Button>
                 ))}
-              </ScrollArea>
+              </div>
             </div>
 
-            {/* Mobile Chapter Selection */}
-            <div>
-              <div className={`text-xs font-medium mb-1 px-3 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Chapters</div>
-              {chapters.map((chapter, index) => (
-                <DropdownMenuItem 
-                  key={index}
-                  className={`cursor-pointer py-2 px-3 rounded-md transition-colors ${
-                    isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-50'
-                  } ${selectedChapter === chapter ? (isDarkMode ? 'bg-gray-800' : 'bg-gray-100') : ''}`}
-                  onClick={() => handleChapterFilter(chapter)}
-                >
-                  <BookOpen className={`h-4 w-4 mr-2 ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`} />
-                  <span className={`font-source-sans text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{chapter}</span>
-                  {selectedChapter === chapter && <span className="ml-auto text-xs">✓</span>}
-                </DropdownMenuItem>
-              ))}
+            {/* Mobile Chapter Selection - Horizontal with Scrolling */}
+            <div className="mb-3">
+              <div className={`text-xs font-medium mb-2 px-3 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Chapter</div>
+              <div className="px-3">
+                <ScrollArea className="w-full">
+                  <div className="flex gap-1 pb-2 min-w-max">
+                    {chapters.map((chapter, index) => (
+                      <Button
+                        key={index}
+                        variant="outline"
+                        size="sm"
+                        className={`flex-shrink-0 text-xs px-3 py-1 h-7 rounded-full transition-colors whitespace-nowrap ${
+                          selectedChapter === chapter ? 'bg-orange-100 border-orange-300 text-orange-800' : 'bg-white border-gray-300 text-gray-600 hover:bg-gray-50'
+                        }`}
+                        onClick={() => handleChapterFilter(chapter)}
+                      >
+                        {chapter}
+                      </Button>
+                    ))}
+                  </div>
+                </ScrollArea>
+              </div>
             </div>
 
             <DropdownMenuSeparator className={isDarkMode ? 'bg-green-500/30' : ''} />
@@ -472,56 +462,25 @@ export const PracticeHeader = ({
         </DropdownMenu>
 
 
-        {/* Desktop Individual Filter Buttons */}
-        <div className="hidden md:flex items-center gap-1 flex-shrink-0">
-          {/* Module Filter - Desktop */}
-          <DropdownMenu open={isModuleDropdownOpen} onOpenChange={setIsModuleDropdownOpen}>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className={`rounded-full bg-transparent transition-colors flex w-[100px] min-w-[100px] max-w-[100px] justify-center overflow-hidden hover:bg-white/20 text-white ${selectedModule !== "All Modules" ? 'bg-white/30' : ''}`}
-              >
-                <BookOpen className="h-4 w-4 mr-1 flex-shrink-0 text-orange-500" />
-                <span className="font-thin text-xs truncate max-w-[50px] text-white">
-                  {selectedModule === "All Modules" ? "All" : selectedModule}
-                </span>
-                <ChevronDown className={`ml-1 h-3 w-3 flex-shrink-0 text-orange-500`} />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className={`w-56 shadow-lg rounded-lg p-2 z-50 ${
-              isDarkMode ? 'bg-gray-900 border-green-500/30' : 'bg-white border-gray-200'
-            }`} sideOffset={5} avoidCollisions={true}>
-              <ScrollArea className="h-[150px]">
-                {modules.map((module) => (
-                  <DropdownMenuItem 
-                    key={module}
-                    className={`cursor-pointer py-2 px-3 rounded-md transition-colors ${
-                      isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-50'
-                    } ${selectedModule === module ? (isDarkMode ? 'bg-gray-800' : 'bg-gray-100') : ''}`}
-                    onClick={() => handleModuleFilter(module)}
-                  >
-                    <span className={`font-source-sans text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{module}</span>
-                    {selectedModule === module && <span className="ml-auto text-xs">✓</span>}
-                  </DropdownMenuItem>
-                ))}
-              </ScrollArea>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
+        {/* Desktop Individual Filter Buttons - Just Exam */}
+        <div className="hidden md:flex items-center gap-2 flex-shrink-0">
           {/* Exams Filter - Desktop */}
           <DropdownMenu open={isExamDropdownOpen} onOpenChange={setIsExamDropdownOpen}>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
                 size="sm"
-                className={`rounded-full bg-transparent transition-colors flex w-[80px] min-w-[80px] max-w-[80px] justify-center overflow-hidden hover:bg-white/20 text-white ${selectedExam !== null ? 'bg-white/30' : ''}`}
+                className="rounded-full transition-colors flex w-[80px] min-w-[80px] max-w-[80px] justify-center overflow-hidden hover:scale-105 text-black font-semibold"
+                style={{
+                  background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)',
+                  boxShadow: '0 2px 4px rgba(251, 146, 60, 0.3)'
+                }}
               >
-                <Target className="h-4 w-4 mr-1 flex-shrink-0 text-orange-500" />
-                <span className="font-thin text-xs truncate max-w-[40px] text-white">
+                <Target className="h-4 w-4 mr-1 flex-shrink-0 text-black" />
+                <span className="font-semibold text-xs truncate max-w-[40px] text-black">
                   {selectedExam !== null ? `E${selectedExam}` : "All"}
                 </span>
-                <ChevronDown className={`ml-1 h-3 w-3 flex-shrink-0 text-orange-500`} />
+                <ChevronDown className="ml-1 h-3 w-3 flex-shrink-0 text-black" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className={`w-56 shadow-lg rounded-lg p-2 z-50 ${
@@ -543,71 +502,153 @@ export const PracticeHeader = ({
               </ScrollArea>
             </DropdownMenuContent>
           </DropdownMenu>
+        </div>
 
-          {/* Chapters Filter - Desktop */}
-          <DropdownMenu open={isChapterDropdownOpen} onOpenChange={setIsChapterDropdownOpen}>
+        
+        {/* Desktop Action Buttons - 3 Main Icons */}
+        <div className="hidden md:flex items-center gap-3">
+          {/* Icon 1: Filters (Chapter, Module only) */}
+          <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
                 size="sm"
-                className={`rounded-full bg-transparent transition-colors flex w-[120px] min-w-[120px] max-w-[120px] justify-center overflow-hidden ${
-                  isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
-                } ${selectedChapter !== "All Chapters" ? (isDarkMode ? 'text-green-300 bg-green-900/20' : 'text-blue-600 bg-blue-50') : ''}`}
+                className="rounded-full transition-colors hover:scale-105 text-black font-semibold"
+                style={{
+                  background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)',
+                  boxShadow: '0 2px 4px rgba(251, 146, 60, 0.3)'
+                }}
               >
-                <BookOpen className={`h-4 w-4 mr-1 flex-shrink-0 ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`} />
-                <span className={`font-thin text-xs truncate max-w-[70px] ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                  {selectedChapter === "All Chapters" ? "All" : selectedChapter}
-                </span>
-                <ChevronDown className={`ml-1 h-3 w-3 flex-shrink-0 transition-transform ${isChapterDropdownOpen ? "rotate-180" : ""} ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                <Filter className="h-5 w-5 text-black" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className={`w-64 shadow-lg rounded-lg p-2 z-50 ${
-              isDarkMode ? 'bg-gray-900 border-green-500/30' : 'bg-white border-gray-200'
-            }`} sideOffset={5} avoidCollisions={true}>
-              <ScrollArea className="h-[300px]">
-                {chapters.map((chapter, index) => (
-                  <DropdownMenuItem 
-                    key={index}
-                    className={`cursor-pointer py-2 px-3 rounded-md transition-colors ${
-                      isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-50'
-                    } ${selectedChapter === chapter ? (isDarkMode ? 'bg-gray-800' : 'bg-gray-100') : ''}`}
-                    onClick={() => handleChapterFilter(chapter)}
-                  >
-                    <span className={`font-source-sans text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{chapter}</span>
-                    {selectedChapter === chapter && <span className="ml-auto text-xs">✓</span>}
-                  </DropdownMenuItem>
-                ))}
-              </ScrollArea>
+            <DropdownMenuContent align="end" className="w-80 shadow-lg rounded-lg p-4 z-50">
+              <div className="space-y-4">
+                <div className="text-sm font-semibold text-gray-700 mb-3">Filters</div>
+                
+                {/* Module Filter - Horizontal */}
+                <div>
+                  <div className="text-xs font-medium mb-2 text-gray-600">Module</div>
+                  <div className="flex gap-1 overflow-x-auto pb-1">
+                    {modules.map((module) => (
+                      <Button
+                        key={module}
+                        variant="outline"
+                        size="sm"
+                        className={`flex-shrink-0 text-xs px-3 py-1 h-7 rounded-full transition-colors ${
+                          selectedModule === module ? 'bg-orange-100 border-orange-300 text-orange-800' : 'bg-white border-gray-300 text-gray-600 hover:bg-gray-50'
+                        }`}
+                        onClick={() => handleModuleFilter(module)}
+                      >
+                        {module}
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+                
+                {/* Chapter Filter - Horizontal with Scrolling */}
+                <div>
+                  <div className="text-xs font-medium mb-2 text-gray-600">Chapter</div>
+                  <ScrollArea className="w-full">
+                    <div className="flex gap-1 pb-2 min-w-max">
+                      {chapters.map((chapter, index) => (
+                        <Button
+                          key={index}
+                          variant="outline"
+                          size="sm"
+                          className={`flex-shrink-0 text-xs px-3 py-1 h-7 rounded-full transition-colors whitespace-nowrap ${
+                            selectedChapter === chapter ? 'bg-orange-100 border-orange-300 text-orange-800' : 'bg-white border-gray-300 text-gray-600 hover:bg-gray-50'
+                          }`}
+                          onClick={() => handleChapterFilter(chapter)}
+                        >
+                          {chapter}
+                        </Button>
+                      ))}
+                    </div>
+                  </ScrollArea>
+                </div>
+              </div>
             </DropdownMenuContent>
           </DropdownMenu>
-        </div>
 
-        
-        {/* Desktop Action Buttons */}
-        <div className="hidden md:flex items-center gap-1">
+          {/* Icon 2: Settings (Font, Sound) */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="rounded-full transition-colors hover:scale-105 text-black font-semibold"
+                style={{
+                  background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)',
+                  boxShadow: '0 2px 4px rgba(251, 146, 60, 0.3)'
+                }}
+              >
+                <Settings className="h-5 w-5 text-black" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-56 shadow-lg rounded-lg p-2 z-50">
+              <div className="space-y-3">
+                <div className="px-3 py-2 text-sm font-semibold border-b">Settings</div>
+                
+                <DropdownMenuItem>
+                  <Type className="h-4 w-4 mr-2 text-orange-500" />
+                  <span className="text-sm">Font Settings</span>
+                </DropdownMenuItem>
+                
+                <DropdownMenuItem>
+                  <BookOpen className="h-4 w-4 mr-2 text-orange-500" />
+                  <span className="text-sm">Sound Settings</span>
+                </DropdownMenuItem>
+              </div>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Icon 3: Practice Mode & Objectives */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="rounded-full transition-colors hover:scale-105 text-black font-semibold"
+                style={{
+                  background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)',
+                  boxShadow: '0 2px 4px rgba(251, 146, 60, 0.3)'
+                }}
+              >
+                <div className="flex items-center">
+                  {React.cloneElement(getModeIcon(mode), { className: "h-4 w-4 mr-1 text-black" })}
+                </div>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48 shadow-lg rounded-lg p-2 z-50">
+              <div className="space-y-2">
+                <div className="px-3 py-2 text-sm font-semibold border-b">Practice</div>
+                
+                <DropdownMenuItem onClick={onOpenMode}>
+                  <Timer className="h-4 w-4 mr-2 text-orange-500" />
+                  <span className="text-sm">Change Mode</span>
+                </DropdownMenuItem>
+                
+                <DropdownMenuItem onClick={onOpenObjective}>
+                  <Target className="h-4 w-4 mr-2 text-orange-500" />
+                  <span className="text-sm">Objectives</span>
+                </DropdownMenuItem>
+              </div>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
+          {/* Community Stats (replaces calculator) */}
           <Button
             variant="ghost"
             size="sm"
-            onClick={onOpenObjective}
-            className={`rounded-full bg-transparent transition-colors ${
-              isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
-            }`}
+            className="rounded-full transition-colors hover:scale-105 text-black font-semibold"
+            style={{
+              background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)',
+              boxShadow: '0 2px 4px rgba(251, 146, 60, 0.3)'
+            }}
           >
-            <Target className="h-4 w-4 mr-1 text-orange-500" />
-            <span className="font-thin text-xs text-white">Objectives</span>
+            <BarChart className="h-5 w-5 text-black" />
           </Button>
-          
-          <button
-            onClick={onOpenMode}
-            className={`px-2 py-1 rounded-full bg-transparent transition-colors text-xs font-thin flex items-center ${
-              mode !== "manual" 
-                ? (isDarkMode ? "text-green-300 bg-green-900/20" : "text-blue-600 bg-blue-50") 
-                : ""
-            } hover:bg-white/20 text-orange-400`}
-          >
-            {getModeIcon(mode)}
-            <span>{mode === "manual" ? "Manual" : mode.charAt(0).toUpperCase() + mode.slice(1)}</span>
-          </button>
         </div>
 
         <div className="ml-2 flex items-center flex-shrink-0">
