@@ -172,28 +172,28 @@ const ObjectiveDialog = ({ open, onOpenChange, onSetObjective, maxQuestions = 30
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className={`sm:max-w-md p-0 overflow-hidden rounded-xl transition-colors ${
-        isDarkMode ? 'bg-gray-900 border border-green-500/30' : 'bg-white border border-gray-200'
+        isDarkMode ? 'bg-gray-900 border border-green-500/30' : 'bg-orange-50 border border-orange-200'
       }`}>
         <div className="p-6">
           <div className="mb-3">
             <DialogTitle className={`text-xl font-medium ${
-              isDarkMode ? 'text-green-400' : 'text-gray-900'
+              isDarkMode ? 'text-green-400' : 'text-orange-800'
             }`}>Set Your Practice Objective</DialogTitle>
           </div>
           
           <Tabs defaultValue="questions" onValueChange={(value) => setObjectiveType(value as "questions" | "time")} className="mb-6">
             <TabsList className={`grid w-full grid-cols-2 rounded-lg p-1 ${
-              isDarkMode ? 'bg-gray-800' : 'bg-gray-100'
+              isDarkMode ? 'bg-gray-800' : 'bg-orange-100'
             }`}>
               <TabsTrigger value="questions" className={`rounded-md ${
                 isDarkMode 
                   ? 'data-[state=active]:bg-gray-900 data-[state=active]:text-green-400 text-gray-400' 
-                  : 'data-[state=active]:bg-white data-[state=active]:text-gray-900 text-gray-600'
+                  : 'data-[state=active]:bg-orange-200 data-[state=active]:text-orange-800 text-orange-600'
               }`}>Questions</TabsTrigger>
               <TabsTrigger value="time" className={`rounded-md ${
                 isDarkMode 
                   ? 'data-[state=active]:bg-gray-900 data-[state=active]:text-green-400 text-gray-400' 
-                  : 'data-[state=active]:bg-white data-[state=active]:text-gray-900 text-gray-600'
+                  : 'data-[state=active]:bg-orange-200 data-[state=active]:text-orange-800 text-orange-600'
               }`}>Time</TabsTrigger>
             </TabsList>
             
@@ -210,7 +210,7 @@ const ObjectiveDialog = ({ open, onOpenChange, onSetObjective, maxQuestions = 30
                       ? 'border-blue-500 focus:border-blue-500' 
                       : isDarkMode 
                         ? 'bg-gray-800 border-green-500/30 text-green-400 placeholder-green-600' 
-                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
+                        : 'bg-orange-50 border-orange-200 text-orange-800 placeholder-orange-500'
                   }`}
                 />
                 {questionError && (
@@ -232,7 +232,7 @@ const ObjectiveDialog = ({ open, onOpenChange, onSetObjective, maxQuestions = 30
                       ? 'border-blue-500 focus:border-blue-500' 
                       : isDarkMode 
                         ? 'bg-gray-800 border-green-500/30 text-green-400 placeholder-green-600' 
-                        : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
+                        : 'bg-orange-50 border-orange-200 text-orange-800 placeholder-orange-500'
                   }`}
                 />
                 {timeError && (
@@ -245,11 +245,10 @@ const ObjectiveDialog = ({ open, onOpenChange, onSetObjective, maxQuestions = 30
           <div className="flex justify-end">
             <Button 
               onClick={handleSetObjective}
-              className={`rounded-xl px-16 py-2 transition-colors ${
-                isDarkMode 
-                  ? 'bg-green-600 hover:bg-green-700 text-white' 
-                  : 'bg-blue-600 hover:bg-blue-700 text-white'
-              }`}
+              className="rounded-xl px-16 py-2 transition-colors text-black font-semibold"
+              style={{
+                background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)'
+              }}
             >
               Set Objective
             </Button>

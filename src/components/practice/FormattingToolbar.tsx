@@ -147,7 +147,7 @@ export const FormattingToolbar = ({ settings, onSettingsChange, timerEnabled = t
           </Button>
         </PopoverTrigger>
       <PopoverContent 
-        className="w-80 p-4 bg-white border-gray-200"
+        className="w-80 p-4 bg-orange-50 border-orange-200"
         side="bottom"
         align="start"
       >
@@ -173,7 +173,7 @@ export const FormattingToolbar = ({ settings, onSettingsChange, timerEnabled = t
                   <ChevronDown className="h-3 w-3" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent className="w-48 bg-white border-gray-200">
+              <DropdownMenuContent className="w-48 bg-orange-50 border-orange-200">
                 {FONT_OPTIONS.map((font) => (
                   <DropdownMenuItem
                     key={font.value}
@@ -220,7 +220,7 @@ export const FormattingToolbar = ({ settings, onSettingsChange, timerEnabled = t
                     {settings.fontSize}px
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent className="bg-white border-gray-200">
+                <DropdownMenuContent className="bg-orange-50 border-orange-200">
                   {FONT_SIZES.map((size) => (
                     <DropdownMenuItem
                       key={size}

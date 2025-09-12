@@ -89,10 +89,10 @@ export const SoundsModal = ({ open, onOpenChange }: SoundsModalProps) => {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className={`max-w-md w-full transition-colors ${
-        isDarkMode ? 'bg-gray-900 border-green-500/30' : 'bg-white border-gray-200'
+        isDarkMode ? 'bg-gray-900 border-green-500/30' : 'bg-orange-50 border-orange-200'
       }`}>
         <DialogHeader>
-          <DialogTitle className={`${isDarkMode ? 'text-green-400' : 'text-gray-900'}`}>
+          <DialogTitle className={`${isDarkMode ? 'text-green-400' : 'text-orange-800'}`}>
             Concentration Sounds
           </DialogTitle>
         </DialogHeader>
@@ -103,7 +103,7 @@ export const SoundsModal = ({ open, onOpenChange }: SoundsModalProps) => {
             variant="ghost"
             size="sm"
             onClick={handleToggleMute}
-            className={`p-2 ${isDarkMode ? 'text-green-400 hover:bg-gray-800' : 'text-gray-600 hover:bg-gray-100'}`}
+            className={`p-2 ${isDarkMode ? 'text-green-400 hover:bg-gray-800' : 'text-orange-600 hover:bg-orange-100'}`}
           >
             {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
           </Button>
@@ -120,10 +120,10 @@ export const SoundsModal = ({ open, onOpenChange }: SoundsModalProps) => {
             style={{
               background: isDarkMode 
                 ? `linear-gradient(to right, #10b981 0%, #10b981 ${volume * 100}%, #374151 ${volume * 100}%, #374151 100%)`
-                : `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${volume * 100}%, #e5e7eb ${volume * 100}%, #e5e7eb 100%)`
+                : `linear-gradient(to right, #f97316 0%, #f97316 ${volume * 100}%, #e5e7eb ${volume * 100}%, #e5e7eb 100%)`
             }}
           />
-          <span className={`text-xs ${isDarkMode ? 'text-green-500' : 'text-gray-500'}`}>
+          <span className={`text-xs ${isDarkMode ? 'text-green-500' : 'text-orange-600'}`}>
             {Math.round(volume * 100)}%
           </span>
         </div>
@@ -147,7 +147,7 @@ export const SoundsModal = ({ open, onOpenChange }: SoundsModalProps) => {
                   className={`flex items-center justify-between p-3 rounded-lg border transition-colors ${
                     isDarkMode 
                       ? 'border-green-500/30 bg-gray-800/30 hover:bg-gray-800/50' 
-                      : 'border-gray-200 bg-white hover:bg-gray-50'
+                      : 'border-orange-200 bg-orange-50 hover:bg-orange-100'
                   }`}
                 >
                   <div className="flex items-center gap-3 flex-1">
@@ -156,7 +156,7 @@ export const SoundsModal = ({ open, onOpenChange }: SoundsModalProps) => {
                       size="sm"
                       onClick={() => handlePlay(sound)}
                       className={`p-2 ${
-                        isDarkMode ? 'text-green-400 hover:bg-gray-700' : 'text-blue-600 hover:bg-gray-100'
+                        isDarkMode ? 'text-green-400 hover:bg-gray-700' : 'text-orange-600 hover:bg-orange-100'
                       }`}
                     >
                       {currentSound?.id === sound.id && isPlaying ? (
@@ -166,10 +166,10 @@ export const SoundsModal = ({ open, onOpenChange }: SoundsModalProps) => {
                       )}
                     </Button>
                     <div className="flex-1">
-                      <p className={`text-sm font-medium ${isDarkMode ? 'text-green-400' : 'text-gray-900'}`}>
+                      <p className={`text-sm font-medium ${isDarkMode ? 'text-green-400' : 'text-orange-800'}`}>
                         {sound.name}
                       </p>
-                      <p className={`text-xs ${isDarkMode ? 'text-green-500' : 'text-gray-500'}`}>
+                      <p className={`text-xs ${isDarkMode ? 'text-green-500' : 'text-orange-600'}`}>
                         Sample sound
                         {sound.duration && ` • ${Math.floor(sound.duration / 60)}:${(sound.duration % 60).toString().padStart(2, '0')}`}
                       </p>
@@ -183,7 +183,7 @@ export const SoundsModal = ({ open, onOpenChange }: SoundsModalProps) => {
 
         {/* Footer */}
         <div className={`text-xs text-center pt-2 border-t ${
-          isDarkMode ? 'text-green-500 border-green-500/30' : 'text-gray-500 border-gray-200'
+          isDarkMode ? 'text-green-500 border-green-500/30' : 'text-orange-600 border-orange-200'
         }`}>
           Sounds will loop continuously for better concentration
         </div>

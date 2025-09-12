@@ -37,18 +37,17 @@ const PracticeFooter = ({
       <div 
         className="fixed bottom-0 left-0 right-0 border-t transition-colors duration-300 z-10"
         style={{
-          backgroundImage: 'url(/resources/mywall.jpg)',
+          backgroundImage: 'url(/resources/whaiteone.jpg)',
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
-          borderColor: 'rgba(255, 107, 53, 0.3)',
+          borderTop: '2px solid transparent',
+          borderImage: 'linear-gradient(90deg, #FB923C 0%, #000000 50%, #EA580C 100%) 1',
           backdropFilter: 'blur(2px) saturate(120%)',
-          WebkitBackdropFilter: 'blur(2px) saturate(120%)',
-          boxShadow: '0 -8px 32px rgba(255, 107, 53, 0.2), 0 0 40px rgba(255, 140, 66, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
-          border: '1px solid rgba(255, 255, 255, 0.18)'
+          WebkitBackdropFilter: 'blur(2px) saturate(120%)'
         }}
       >
-        <div className="flex items-center justify-center px-4 sm:px-6 py-3 relative z-10">
+        <div className="flex items-center justify-center px-4 sm:px-6 py-2 relative z-10">
           {/* Navigation Controls Only */}
           <div className="flex items-center gap-4">
             {/* Previous Button */}
@@ -57,24 +56,33 @@ const PracticeFooter = ({
               size="sm"
               onClick={onPrevious}
               disabled={currentQuestionIndex === 0}
-              className="flex items-center gap-2 transition-colors rounded-full bg-white/20 text-white hover:bg-white/30 disabled:bg-white/10 disabled:text-white/50"
+              className="flex items-center gap-2 transition-colors rounded-full hover:scale-105 text-black font-semibold px-4 h-8 disabled:opacity-50"
+              style={{
+                background: currentQuestionIndex === 0 ? '#E5E7EB' : 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)'
+              }}
             >
               <ChevronLeft className="h-4 w-4" />
-              Previous
+              <span className="text-sm">Previous</span>
             </Button>
 
             {/* Question Counter & Go To */}
             <div className="flex items-center gap-2">
-              <span className="text-sm font-medium px-3 py-1 rounded-full bg-white/20 text-white border border-white/30">
+              <span className="text-sm font-medium px-3 py-1 rounded-full text-black border h-8 flex items-center" style={{
+                background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)',
+                borderColor: '#EA580C'
+              }}>
                 {currentQuestionIndex + 1} of {totalQuestions}
               </span>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setShowGoToInput(!showGoToInput)}
-                className="p-2 transition-colors text-white hover:bg-white/20"
+                className="p-2 transition-colors hover:scale-105 text-black font-semibold rounded-full h-8 w-8"
+                style={{
+                  background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)'
+                }}
               >
-                <Search className="h-4 w-4 text-orange-500" />
+                <Search className="h-4 w-4 text-black" />
               </Button>
             </div>
 
@@ -84,9 +92,12 @@ const PracticeFooter = ({
               size="sm"
               onClick={onNext}
               disabled={currentQuestionIndex === totalQuestions - 1}
-              className="flex items-center gap-2 transition-colors rounded-full bg-white/20 text-white hover:bg-white/30 disabled:bg-white/10 disabled:text-white/50"
+              className="flex items-center gap-2 transition-colors rounded-full hover:scale-105 text-black font-semibold px-4 h-8 disabled:opacity-50"
+              style={{
+                background: currentQuestionIndex === totalQuestions - 1 ? '#E5E7EB' : 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)'
+              }}
             >
-              Next
+              <span className="text-sm">Next</span>
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
@@ -96,13 +107,13 @@ const PracticeFooter = ({
       {/* Floating Feedback Icon - Left Bottom Corner */}
       <div className="fixed bottom-6 left-6 z-30">
         <Button
-          size="lg"
-          className="h-14 w-14 rounded-full shadow-2xl transition-all duration-300 hover:scale-110 bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white border-2 border-white/20"
+          size="sm"
+          className="h-8 w-8 rounded-full transition-all duration-300 hover:scale-110 text-black font-semibold"
           style={{
-            boxShadow: '0 8px 32px rgba(59, 130, 246, 0.4), 0 0 20px rgba(59, 130, 246, 0.2)'
+            background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)'
           }}
         >
-          <MessageCircle className="h-6 w-6" />
+          <MessageCircle className="h-4 w-4 text-black" />
         </Button>
       </div>
 

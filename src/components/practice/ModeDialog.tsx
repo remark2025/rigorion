@@ -46,30 +46,35 @@ const ModeDialog = ({ open, onOpenChange, onSetMode }: ModeDialogProps) => {
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent 
         className={`sm:max-w-xl p-0 overflow-hidden rounded-xl transition-colors ${
-          isDarkMode ? 'bg-gray-900 border border-green-500/30' : 'bg-white border border-gray-200'
+          isDarkMode ? 'bg-gray-900 border border-green-500/30' : 'bg-orange-50 border border-orange-200'
         }`}
       >
         <div className="p-6">
           <div className="mb-3">
             <DialogTitle className={`text-xl font-medium ${
-              isDarkMode ? 'text-green-400' : 'text-gray-900'
+              isDarkMode ? 'text-green-400' : 'text-orange-800'
             }`}>Select Practice Mode</DialogTitle>
           </div>
           
           <div className="mb-6">
             <Tabs defaultValue={selectedMode} className="w-full" onValueChange={(value) => setSelectedMode(value as any)}>
               <TabsList className={`flex w-full rounded-lg p-1 ${
-                isDarkMode ? 'bg-gray-800' : 'bg-gray-100'
+                isDarkMode ? 'bg-gray-800' : 'bg-orange-100'
               }`}>
                 <TabsTrigger 
                   value="timer" 
                   className={`flex-1 rounded-md ${
                     isDarkMode 
                       ? 'data-[state=active]:bg-gray-900 data-[state=active]:text-green-400 text-gray-400' 
-                      : 'data-[state=active]:bg-white data-[state=active]:text-gray-900 text-gray-600'
+                      : 'data-[state=active]:bg-orange-200 data-[state=active]:text-orange-800 text-orange-600'
                   }`}
                 >
-                  <Zap className="h-4 w-4 mr-1" />
+                  <Zap className="h-4 w-4 mr-1" style={{
+                    background: isDarkMode ? '' : 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)',
+                    WebkitBackgroundClip: isDarkMode ? 'unset' : 'text',
+                    WebkitTextFillColor: isDarkMode ? 'inherit' : 'transparent',
+                    backgroundClip: isDarkMode ? 'unset' : 'text'
+                  }} />
                   Timer
                 </TabsTrigger>
                 <TabsTrigger 
@@ -77,10 +82,15 @@ const ModeDialog = ({ open, onOpenChange, onSetMode }: ModeDialogProps) => {
                   className={`flex-1 rounded-md ${
                     isDarkMode 
                       ? 'data-[state=active]:bg-gray-900 data-[state=active]:text-green-400 text-gray-400' 
-                      : 'data-[state=active]:bg-white data-[state=active]:text-gray-900 text-gray-600'
+                      : 'data-[state=active]:bg-orange-200 data-[state=active]:text-orange-800 text-orange-600'
                   }`}
                 >
-                  <Layers className="h-4 w-4 mr-1" />
+                  <Layers className="h-4 w-4 mr-1" style={{
+                    background: isDarkMode ? '' : 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)',
+                    WebkitBackgroundClip: isDarkMode ? 'unset' : 'text',
+                    WebkitTextFillColor: isDarkMode ? 'inherit' : 'transparent',
+                    backgroundClip: isDarkMode ? 'unset' : 'text'
+                  }} />
                   Level
                 </TabsTrigger>
                 <TabsTrigger 
@@ -88,10 +98,15 @@ const ModeDialog = ({ open, onOpenChange, onSetMode }: ModeDialogProps) => {
                   className={`flex-1 rounded-md ${
                     isDarkMode 
                       ? 'data-[state=active]:bg-gray-900 data-[state=active]:text-green-400 text-gray-400' 
-                      : 'data-[state=active]:bg-white data-[state=active]:text-gray-900 text-gray-600'
+                      : 'data-[state=active]:bg-orange-200 data-[state=active]:text-orange-800 text-orange-600'
                   }`}
                 >
-                  <Hand className="h-4 w-4 mr-1" />
+                  <Hand className="h-4 w-4 mr-1" style={{
+                    background: isDarkMode ? '' : 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)',
+                    WebkitBackgroundClip: isDarkMode ? 'unset' : 'text',
+                    WebkitTextFillColor: isDarkMode ? 'inherit' : 'transparent',
+                    backgroundClip: isDarkMode ? 'unset' : 'text'
+                  }} />
                   Manual
                 </TabsTrigger>
                 <TabsTrigger 
@@ -99,10 +114,15 @@ const ModeDialog = ({ open, onOpenChange, onSetMode }: ModeDialogProps) => {
                   className={`flex-1 rounded-md ${
                     isDarkMode 
                       ? 'data-[state=active]:bg-gray-900 data-[state=active]:text-green-400 text-gray-400' 
-                      : 'data-[state=active]:bg-white data-[state=active]:text-gray-900 text-gray-600'
+                      : 'data-[state=active]:bg-orange-200 data-[state=active]:text-orange-800 text-orange-600'
                   }`}
                 >
-                  <Clock className="h-4 w-4 mr-1" />
+                  <Clock className="h-4 w-4 mr-1" style={{
+                    background: isDarkMode ? '' : 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)',
+                    WebkitBackgroundClip: isDarkMode ? 'unset' : 'text',
+                    WebkitTextFillColor: isDarkMode ? 'inherit' : 'transparent',
+                    backgroundClip: isDarkMode ? 'unset' : 'text'
+                  }} />
                   Pomodoro
                 </TabsTrigger>
                 <TabsTrigger 
@@ -110,10 +130,15 @@ const ModeDialog = ({ open, onOpenChange, onSetMode }: ModeDialogProps) => {
                   className={`flex-1 rounded-md ${
                     isDarkMode 
                       ? 'data-[state=active]:bg-gray-900 data-[state=active]:text-green-400 text-gray-400' 
-                      : 'data-[state=active]:bg-white data-[state=active]:text-gray-900 text-gray-600'
+                      : 'data-[state=active]:bg-orange-200 data-[state=active]:text-orange-800 text-orange-600'
                   }`}
                 >
-                  <FileText className="h-4 w-4 mr-1" />
+                  <FileText className="h-4 w-4 mr-1" style={{
+                    background: isDarkMode ? '' : 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)',
+                    WebkitBackgroundClip: isDarkMode ? 'unset' : 'text',
+                    WebkitTextFillColor: isDarkMode ? 'inherit' : 'transparent',
+                    backgroundClip: isDarkMode ? 'unset' : 'text'
+                  }} />
                   Exam
                 </TabsTrigger>
               </TabsList>
@@ -124,7 +149,7 @@ const ModeDialog = ({ open, onOpenChange, onSetMode }: ModeDialogProps) => {
             {selectedMode === "timer" && (
               <div>
                 <Label className={`mb-2 block ${
-                  isDarkMode ? 'text-green-400' : 'text-gray-700'
+                  isDarkMode ? 'text-green-400' : 'text-orange-700'
                 }`}>Set Timer (Minutes)</Label>
                 <Input
                   type="number"
@@ -135,11 +160,11 @@ const ModeDialog = ({ open, onOpenChange, onSetMode }: ModeDialogProps) => {
                   className={`w-full rounded-xl ${
                     isDarkMode 
                       ? 'bg-gray-800 border-green-500/30 text-green-400 placeholder-green-600' 
-                      : 'bg-white border-gray-300 text-gray-900 placeholder-gray-500'
+                      : 'bg-orange-50 border-orange-200 text-orange-800 placeholder-orange-500'
                   }`}
                 />
                 <p className={`text-sm mt-2 ${
-                  isDarkMode ? 'text-green-500' : 'text-gray-500'
+                  isDarkMode ? 'text-green-500' : 'text-orange-600'
                 }`}>Auto-advances to next question when timer expires</p>
               </div>
             )}
@@ -147,7 +172,7 @@ const ModeDialog = ({ open, onOpenChange, onSetMode }: ModeDialogProps) => {
             {selectedMode === "level" && (
               <div>
                 <Label className={`mb-3 block ${
-                  isDarkMode ? 'text-green-400' : 'text-gray-700'
+                  isDarkMode ? 'text-green-400' : 'text-orange-700'
                 }`}>Select Difficulty Level</Label>
                 <RadioGroup 
                   value={selectedLevel} 
@@ -156,15 +181,15 @@ const ModeDialog = ({ open, onOpenChange, onSetMode }: ModeDialogProps) => {
                 >
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="easy" id="easy" />
-                    <Label htmlFor="easy" className={isDarkMode ? 'text-green-400' : 'text-gray-700'}>Easy - Beginner level questions</Label>
+                    <Label htmlFor="easy" className={isDarkMode ? 'text-green-400' : 'text-orange-700'}>Easy - Beginner level questions</Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="medium" id="medium" />
-                    <Label htmlFor="medium" className={isDarkMode ? 'text-green-400' : 'text-gray-700'}>Medium - Intermediate level questions</Label>
+                    <Label htmlFor="medium" className={isDarkMode ? 'text-green-400' : 'text-orange-700'}>Medium - Intermediate level questions</Label>
                   </div>
                   <div className="flex items-center space-x-2">
                     <RadioGroupItem value="hard" id="hard" />
-                    <Label htmlFor="hard" className={isDarkMode ? 'text-green-400' : 'text-gray-700'}>Hard - Advanced level questions</Label>
+                    <Label htmlFor="hard" className={isDarkMode ? 'text-green-400' : 'text-orange-700'}>Hard - Advanced level questions</Label>
                   </div>
                 </RadioGroup>
               </div>
@@ -173,10 +198,10 @@ const ModeDialog = ({ open, onOpenChange, onSetMode }: ModeDialogProps) => {
             {selectedMode === "pomodoro" && (
               <div>
                 <Label className={`mb-2 block ${
-                  isDarkMode ? 'text-green-400' : 'text-gray-700'
+                  isDarkMode ? 'text-green-400' : 'text-orange-700'
                 }`}>Pomodoro Session</Label>
                 <p className={`text-sm ${
-                  isDarkMode ? 'text-green-500' : 'text-gray-600'
+                  isDarkMode ? 'text-green-500' : 'text-orange-600'
                 }`}>25-minute focused study sessions with 5-minute breaks</p>
               </div>
             )}
@@ -184,10 +209,10 @@ const ModeDialog = ({ open, onOpenChange, onSetMode }: ModeDialogProps) => {
             {selectedMode === "exam" && (
               <div>
                 <Label className={`mb-2 block ${
-                  isDarkMode ? 'text-green-400' : 'text-gray-700'
+                  isDarkMode ? 'text-green-400' : 'text-orange-700'
                 }`}>Exam Mode</Label>
                 <p className={`text-sm ${
-                  isDarkMode ? 'text-green-500' : 'text-gray-600'
+                  isDarkMode ? 'text-green-500' : 'text-orange-600'
                 }`}>1-hour timed practice session</p>
               </div>
             )}
@@ -195,10 +220,10 @@ const ModeDialog = ({ open, onOpenChange, onSetMode }: ModeDialogProps) => {
             {selectedMode === "manual" && (
               <div>
                 <Label className={`mb-2 block ${
-                  isDarkMode ? 'text-green-400' : 'text-gray-700'
+                  isDarkMode ? 'text-green-400' : 'text-orange-700'
                 }`}>Manual Mode</Label>
                 <p className={`text-sm ${
-                  isDarkMode ? 'text-green-500' : 'text-gray-600'
+                  isDarkMode ? 'text-green-500' : 'text-orange-600'
                 }`}>Navigate questions at your own pace</p>
               </div>
             )}
@@ -207,11 +232,10 @@ const ModeDialog = ({ open, onOpenChange, onSetMode }: ModeDialogProps) => {
           <div className="flex justify-end">
             <Button 
               onClick={handleSetMode}
-              className={`rounded-xl px-16 py-2 transition-colors ${
-                isDarkMode 
-                  ? 'bg-green-600 hover:bg-green-700 text-white' 
-                  : 'bg-blue-600 hover:bg-blue-700 text-white'
-              }`}
+              className="rounded-xl px-16 py-2 transition-colors text-black font-semibold"
+              style={{
+                background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)'
+              }}
             >
               Set Mode
             </Button>

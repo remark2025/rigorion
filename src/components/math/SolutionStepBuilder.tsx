@@ -381,7 +381,7 @@ export const SolutionStepBuilder: React.FC<SolutionStepBuilderProps> = ({
       <Card 
         className="w-full overflow-hidden"
         style={{
-          background: 'repeating-linear-gradient(0deg, transparent, transparent 9px, rgba(229, 231, 235, 0.3) 9px, rgba(229, 231, 235, 0.3) 10px), repeating-linear-gradient(90deg, transparent, transparent 9px, rgba(229, 231, 235, 0.3) 9px, rgba(229, 231, 235, 0.3) 10px), white'
+          background: 'white'
         }}
       >
 

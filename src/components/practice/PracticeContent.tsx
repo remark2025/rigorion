@@ -16,6 +16,7 @@ import PracticeFooter from "@/components/practice/PracticeFooter";
 import ContentSection from "@/components/practice/ContentSection";
 import ModeDialog from "@/components/practice/ModeDialog";
 import ObjectiveDialog from "@/components/practice/ObjectiveDialogue";
+import { SoundsModal } from "@/components/practice/SoundsModal";
 import { Sidebar } from "@/components/practice/Sidebar";
 
 interface TextSettings {
@@ -92,6 +93,7 @@ export default function PracticeContent({
   const [progress, setProgress] = useState(0);
   const [modeDialogOpen, setModeDialogOpen] = useState(false);
   const [objectiveDialogOpen, setObjectiveDialogOpen] = useState(false);
+  const [soundsModalOpen, setSoundsModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<"problem" | "solution" | "quote">("problem");
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
@@ -568,7 +570,8 @@ export default function PracticeContent({
       <PracticeHeader 
         onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} 
         onOpenObjective={() => setObjectiveDialogOpen(true)} 
-        onOpenMode={() => setModeDialogOpen(true)} 
+        onOpenMode={() => setModeDialogOpen(true)}
+        onOpenSounds={() => setSoundsModalOpen(true)} 
         mode={mode} 
         sidebarOpen={sidebarOpen} 
         setSidebarOpen={setSidebarOpen}
@@ -644,6 +647,11 @@ export default function PracticeContent({
         onOpenChange={setObjectiveDialogOpen} 
         onSetObjective={handleSetObjective}
         maxQuestions={filteredQuestions.length || 300}
+      />
+
+      <SoundsModal 
+        open={soundsModalOpen}
+        onOpenChange={setSoundsModalOpen}
       />
 
 

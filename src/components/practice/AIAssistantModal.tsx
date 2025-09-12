@@ -168,20 +168,20 @@ Keep responses concise but helpful (2-3 paragraphs max).`;
       {/* Sidebar */}
       <div className={`fixed top-20 right-4 bottom-24 w-96 max-w-[90vw] z-50 transform transition-transform duration-300 ease-in-out rounded-2xl flex flex-col ${
         open ? 'translate-x-0' : 'translate-x-full'
-      } ${isDarkMode ? 'bg-gray-900/95 border border-green-500/30' : 'bg-white/95 border border-gray-200'} backdrop-blur-md shadow-2xl`}>
+      } ${isDarkMode ? 'bg-gray-900/95 border border-green-500/30' : 'bg-orange-50/95 border border-orange-200'} backdrop-blur-md shadow-2xl`}>
         
         {/* Header - Collapsible */}
-        <div className={`flex-shrink-0 border-b p-4 rounded-t-2xl ${isDarkMode ? 'border-green-500/30' : 'border-gray-200'}`}>
+        <div className={`flex-shrink-0 border-b p-4 rounded-t-2xl ${isDarkMode ? 'border-green-500/30' : 'border-orange-200'}`}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className={`p-2 rounded-full ${isDarkMode ? 'bg-green-600' : 'bg-blue-600'}`}>
+              <div className={`p-2 rounded-full ${isDarkMode ? 'bg-green-600' : 'bg-orange-600'}`}>
                 <Bot className="h-4 w-4 text-white" />
               </div>
               <div>
-                <div className={`font-semibold ${isDarkMode ? 'text-green-400' : 'text-gray-900'}`}>
+                <div className={`font-semibold ${isDarkMode ? 'text-green-400' : 'text-orange-800'}`}>
                   AI Assistant
                 </div>
-                <div className={`text-xs ${isDarkMode ? 'text-green-400/70' : 'text-gray-500'}`}>
+                <div className={`text-xs ${isDarkMode ? 'text-green-400/70' : 'text-orange-600'}`}>
                   Quick study help
                 </div>
               </div>
@@ -192,7 +192,7 @@ Keep responses concise but helpful (2-3 paragraphs max).`;
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsExpanded(!isExpanded)}
-                className={`p-2 rounded-full ${isDarkMode ? 'hover:bg-gray-800 text-green-400' : 'hover:bg-gray-100 text-gray-600'}`}
+                className={`p-2 rounded-full ${isDarkMode ? 'hover:bg-gray-800 text-green-400' : 'hover:bg-orange-100 text-orange-600'}`}
               >
                 {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
               </Button>
@@ -200,7 +200,7 @@ Keep responses concise but helpful (2-3 paragraphs max).`;
                 variant="ghost"
                 size="sm"
                 onClick={() => onOpenChange(false)}
-                className={`p-2 rounded-full ${isDarkMode ? 'hover:bg-gray-800 text-green-400' : 'hover:bg-gray-100 text-gray-600'}`}
+                className={`p-2 rounded-full ${isDarkMode ? 'hover:bg-gray-800 text-green-400' : 'hover:bg-orange-100 text-orange-600'}`}
               >
                 <X className="h-4 w-4" />
               </Button>
@@ -209,22 +209,22 @@ Keep responses concise but helpful (2-3 paragraphs max).`;
           
           {/* Quick Context - Always Visible */}
           <div className={`mt-3 grid grid-cols-3 gap-2 p-2 rounded-lg ${
-            isDarkMode ? 'bg-gray-800/50' : 'bg-gray-50'
+            isDarkMode ? 'bg-gray-800/50' : 'bg-orange-100'
           }`}>
             <div className="text-center">
-              <div className={`text-xs ${isDarkMode ? 'text-green-400' : 'text-gray-600'}`}>Question</div>
-              <div className={`text-sm font-bold ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`}>
+              <div className={`text-xs ${isDarkMode ? 'text-green-400' : 'text-orange-600'}`}>Question</div>
+              <div className={`text-sm font-bold ${isDarkMode ? 'text-green-400' : 'text-orange-800'}`}>
                 {currentQuestionIndex + 1}/{totalQuestions}
               </div>
             </div>
             <div className="text-center">
-              <div className={`text-xs ${isDarkMode ? 'text-green-400' : 'text-gray-600'}`}>Topic</div>
+              <div className={`text-xs ${isDarkMode ? 'text-green-400' : 'text-orange-600'}`}>Topic</div>
               <div className={`text-sm font-bold ${isDarkMode ? 'text-green-400' : 'text-green-600'}`}>
                 {currentQuestionTopic}
               </div>
             </div>
             <div className="text-center">
-              <div className={`text-xs ${isDarkMode ? 'text-green-400' : 'text-gray-600'}`}>Ready</div>
+              <div className={`text-xs ${isDarkMode ? 'text-green-400' : 'text-orange-600'}`}>Ready</div>
               <div className={`text-sm font-bold ${isDarkMode ? 'text-green-400' : 'text-orange-600'}`}>✓</div>
             </div>
           </div>

@@ -44,85 +44,55 @@ const PomodoroBreakModal = ({ open, onResume, breakTimeRemaining }: PomodoroBrea
 
   return (
     <Dialog open={open} onOpenChange={() => {}}>
-      <DialogContent className="sm:max-w-md p-0 overflow-hidden rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-100 border-0 shadow-2xl">
-        <motion.div 
-          initial={{ scale: 0.95, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.3, ease: "easeOut" }}
-          className="p-8 text-center"
-        >
+      <DialogContent className="sm:max-w-md bg-orange-50 border-orange-200">
+        <div className="p-6 text-center">
           {/* Break Icon */}
-          <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ delay: 0.2, duration: 0.5, type: "spring" }}
-            className="mx-auto mb-6 w-20 h-20 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center shadow-lg"
-          >
-            <Coffee className="h-10 w-10 text-white" />
-          </motion.div>
+          <div className="mx-auto mb-6 w-16 h-16 rounded-full flex items-center justify-center" style={{
+            background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)'
+          }}>
+            <Coffee className="h-8 w-8 text-white" />
+          </div>
 
           {/* Title */}
-          <motion.h2 
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.3, duration: 0.4 }}
-            className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-700 bg-clip-text text-transparent mb-4"
-          >
+          <h2 className="text-2xl font-bold text-black mb-4">
             Break Time!
-          </motion.h2>
+          </h2>
 
           {/* Timer */}
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.4, duration: 0.4 }}
-            className="mb-6"
-          >
-            <div className="inline-flex items-center gap-2 bg-white/70 backdrop-blur-sm rounded-full px-6 py-3 shadow-md">
-              <Clock className="h-5 w-5 text-blue-600" />
-              <span className="text-2xl font-mono font-bold text-gray-800">
+          <div className="mb-6">
+            <div className="inline-flex items-center gap-2 bg-white rounded-full px-6 py-3 border border-orange-200">
+              <Clock className="h-5 w-5 text-orange-600" />
+              <span className="text-xl font-mono font-bold text-black">
                 {formatTime(breakTimeRemaining)}
               </span>
             </div>
-          </motion.div>
+          </div>
 
           {/* Break Tip */}
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.5, duration: 0.4 }}
-            className="mb-8"
-          >
-            <div className="bg-white/60 backdrop-blur-sm rounded-xl p-4 shadow-md">
+          <div className="mb-6">
+            <div className="bg-white rounded-lg p-4 border border-orange-200">
               <div className="flex items-start gap-3">
-                <Lightbulb className="h-5 w-5 text-yellow-500 mt-0.5 flex-shrink-0" />
-                <p className="text-sm text-gray-700 leading-relaxed text-left">
+                <Lightbulb className="h-5 w-5 text-orange-600 mt-0.5 flex-shrink-0" />
+                <p className="text-sm text-black leading-relaxed text-left">
                   {currentTip}
                 </p>
               </div>
             </div>
-          </motion.div>
+          </div>
 
           {/* Resume Button */}
-          <motion.div
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ delay: 0.6, duration: 0.4 }}
+          <Button
+            onClick={onResume}
+            className="text-black font-semibold rounded-xl px-8 py-3 transition-all duration-200 hover:scale-105"
+            style={{
+              background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)'
+            }}
           >
-            <Button
-              onClick={onResume}
-              className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white rounded-full px-8 py-3 shadow-lg transform transition-all duration-200 hover:scale-105"
-            >
-              <Play className="h-5 w-5 mr-2" />
-              Resume Session
-            </Button>
-          </motion.div>
+            <Play className="h-5 w-5 mr-2" />
+            Resume Session
+          </Button>
 
-          {/* Decorative Elements */}
-          <div className="absolute top-4 right-4 w-2 h-2 bg-blue-400 rounded-full opacity-60"></div>
-          <div className="absolute bottom-6 left-6 w-3 h-3 bg-indigo-400 rounded-full opacity-40"></div>
-          <div className="absolute top-1/3 right-8 w-1 h-1 bg-blue-300 rounded-full opacity-80"></div>
-        </motion.div>
+        </div>
       </DialogContent>
     </Dialog>
   );

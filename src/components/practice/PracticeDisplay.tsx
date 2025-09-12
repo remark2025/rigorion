@@ -1282,9 +1282,9 @@ Keep the evaluation constructive and educational.`;
                     </TabsContent>
                     
                     <TabsContent value="raw" className="mt-0 pt-0">
-                      <div className={`p-4 rounded-lg border ${
-                        isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-50 border-gray-200'
-                      }`}>
+                      <div className="p-4 rounded-lg border border-gray-200" style={{
+                        background: 'repeating-linear-gradient(0deg, transparent, transparent 9px, rgba(229, 231, 235, 0.3) 9px, rgba(229, 231, 235, 0.3) 10px), repeating-linear-gradient(90deg, transparent, transparent 9px, rgba(229, 231, 235, 0.3) 9px, rgba(229, 231, 235, 0.3) 10px), white'
+                      }}>
                         <TypingAnimation
                           text={formatSolution(currentQuestion)}
                           speed={8}
@@ -1682,9 +1682,9 @@ Keep the evaluation constructive and educational.`;
                       </TabsContent>
                       
                       <TabsContent value="raw" className="mt-0 pt-0">
-                        <div className={`p-4 rounded-lg border ${
-                          isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-50 border-gray-200'
-                        }`}>
+                        <div className="p-4 rounded-lg border border-gray-200" style={{
+                          background: 'repeating-linear-gradient(0deg, transparent, transparent 9px, rgba(229, 231, 235, 0.3) 9px, rgba(229, 231, 235, 0.3) 10px), repeating-linear-gradient(90deg, transparent, transparent 9px, rgba(229, 231, 235, 0.3) 9px, rgba(229, 231, 235, 0.3) 10px), white'
+                        }}>
                           <TypingAnimation
                             text={formatSolution(currentQuestion)}
                             speed={8}
@@ -2091,9 +2091,9 @@ Keep the evaluation constructive and educational.`;
                       </TabsContent>
                       
                       <TabsContent value="raw" className="mt-0 pt-0">
-                        <div className={`p-4 rounded-lg border ${
-                          isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-50 border-gray-200'
-                        }`}>
+                        <div className="p-4 rounded-lg border border-gray-200" style={{
+                          background: 'repeating-linear-gradient(0deg, transparent, transparent 9px, rgba(229, 231, 235, 0.3) 9px, rgba(229, 231, 235, 0.3) 10px), repeating-linear-gradient(90deg, transparent, transparent 9px, rgba(229, 231, 235, 0.3) 9px, rgba(229, 231, 235, 0.3) 10px), white'
+                        }}>
                           <TypingAnimation
                             text={formatSolution(currentQuestion)}
                             speed={8}

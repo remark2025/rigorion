@@ -20,6 +20,7 @@ interface PracticeHeaderProps {
   onToggleSidebar: () => void;
   onOpenObjective: () => void;
   onOpenMode: () => void;
+  onOpenSounds?: () => void;
   mode: string;
   sidebarOpen: boolean;
   setSidebarOpen: (open: boolean) => void;
@@ -38,7 +39,8 @@ interface PracticeHeaderProps {
 export const PracticeHeader = ({ 
   onToggleSidebar, 
   onOpenObjective, 
-  onOpenMode, 
+  onOpenMode,
+  onOpenSounds, 
   mode,
   sidebarOpen,
   setSidebarOpen,
@@ -242,17 +244,17 @@ export const PracticeHeader = ({
   const getModeIcon = (currentMode: string) => {
     switch (currentMode) {
       case "timer":
-        return <Timer className={`h-4 w-4 mr-1 ${isDarkMode ? 'text-orange-400' : 'text-orange-600'}`} />;
+        return <Timer className="h-4 w-4 mr-1 text-black" />;
       case "level":
-        return <TrendingUp className={`h-4 w-4 mr-1 ${isDarkMode ? 'text-orange-400' : 'text-orange-600'}`} />;
+        return <TrendingUp className="h-4 w-4 mr-1 text-black" />;
       case "manual":
-        return <Hand className={`h-4 w-4 mr-1 ${isDarkMode ? 'text-orange-400' : 'text-orange-600'}`} />;
+        return <Hand className="h-4 w-4 mr-1 text-black" />;
       case "pomodoro":
-        return <Coffee className={`h-4 w-4 mr-1 ${isDarkMode ? 'text-orange-400' : 'text-orange-600'}`} />;
+        return <Coffee className="h-4 w-4 mr-1 text-black" />;
       case "exam":
-        return <GraduationCap className={`h-4 w-4 mr-1 ${isDarkMode ? 'text-orange-400' : 'text-orange-600'}`} />;
+        return <GraduationCap className="h-4 w-4 mr-1 text-black" />;
       default:
-        return <Clock className={`h-4 w-4 mr-1 ${isDarkMode ? 'text-orange-400' : 'text-orange-600'}`} />;
+        return <Clock className="h-4 w-4 mr-1 text-black" />;
     }
   };
 
@@ -264,16 +266,14 @@ export const PracticeHeader = ({
         backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundRepeat: 'no-repeat',
-        borderColor: 'rgba(255, 107, 53, 0.3)',
+        borderBottom: '2px solid transparent',
+        borderImage: 'linear-gradient(90deg, #FB923C 0%, #000000 50%, #EA580C 100%) 1',
         backdropFilter: 'blur(2px) saturate(120%)',
-        WebkitBackdropFilter: 'blur(2px) saturate(120%)',
-        boxShadow: '0 8px 32px rgba(255, 107, 53, 0.2), 0 0 40px rgba(255, 140, 66, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.2)',
-        animation: 'header-shiver 60s ease-in-out infinite',
-        border: '1px solid rgba(255, 255, 255, 0.18)'
+        WebkitBackdropFilter: 'blur(2px) saturate(120%)'
       }}
     >
       {/* Main Header Content */}
-      <div className="px-1 sm:px-2 md:px-4 py-2 sm:py-3 flex items-center justify-between min-h-[48px] relative z-10">
+      <div className="px-1 sm:px-2 md:px-4 py-1 sm:py-2 flex items-center justify-between min-h-[40px] relative z-10">
       <div className="flex items-center gap-1 sm:gap-2 min-w-0 flex-1">
         {/* Mobile Hamburger Menu */}
         <Button
@@ -317,52 +317,68 @@ export const PracticeHeader = ({
         {/* Tab Menu - Centered */}
         {activeTab && setActiveTab && (
           <div className="hidden lg:flex items-center">
-            <div className={`inline-flex items-center rounded-full px-2 py-1 border ${
-              isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-gray-50 border-gray-200'
-            }`}>
+            <div className="inline-flex items-center rounded-full px-2 py-1 border-2" style={{
+              borderColor: '#EA580C',
+              background: 'rgba(255, 255, 255, 0.9)'
+            }}>
               <Button
                 variant="ghost"
                 size="sm"
-                className={`px-3 py-1 rounded-full transition-all duration-200 ease-out hover:scale-105 active:scale-95 h-6 text-xs ${activeTab === "problem" 
-                  ? isDarkMode 
-                    ? "text-green-400 bg-gray-700 shadow-sm" 
-                    : "text-blue-600 bg-blue-100 shadow-sm"
-                  : isDarkMode
-                    ? "text-gray-400 hover:text-green-300 hover:bg-gray-700"
-                    : "text-gray-500 hover:text-blue-600 hover:bg-blue-50"}`}
+                className="px-3 py-1 rounded-full transition-all duration-200 ease-out hover:scale-105 active:scale-95 h-6 text-xs"
+                style={activeTab === "problem" ? {
+                  background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)',
+                  color: '#000000'
+                } : {
+                  color: '#6B7280'
+                }}
                 onClick={() => setActiveTab("problem")}
               >
-                <Target className="h-3 w-3 mr-1" />
+                <Target className="h-3 w-3 mr-1" style={activeTab !== "problem" ? {
+                  background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text'
+                } : {}} />
                 Problem
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
-                className={`px-3 py-1 rounded-full transition-all duration-200 ease-out hover:scale-105 active:scale-95 h-6 text-xs ${activeTab === "solution" 
-                  ? isDarkMode 
-                    ? "text-green-400 bg-gray-700 shadow-sm" 
-                    : "text-blue-600 bg-blue-100 shadow-sm"
-                  : isDarkMode
-                    ? "text-gray-400 hover:text-green-300 hover:bg-gray-700"
-                    : "text-gray-500 hover:text-blue-600 hover:bg-blue-50"}`}
+                className="px-3 py-1 rounded-full transition-all duration-200 ease-out hover:scale-105 active:scale-95 h-6 text-xs"
+                style={activeTab === "solution" ? {
+                  background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)',
+                  color: '#000000'
+                } : {
+                  color: '#6B7280'
+                }}
                 onClick={() => setActiveTab("solution")}
               >
-                <CheckCircle className="h-3 w-3 mr-1" />
+                <CheckCircle className="h-3 w-3 mr-1" style={activeTab !== "solution" ? {
+                  background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text'
+                } : {}} />
                 Solution
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
-                className={`px-3 py-1 rounded-full transition-all duration-200 ease-out hover:scale-105 active:scale-95 h-6 text-xs ${activeTab === "quote" 
-                  ? isDarkMode 
-                    ? "text-green-400 bg-gray-700 shadow-sm" 
-                    : "text-blue-600 bg-blue-100 shadow-sm"
-                  : isDarkMode
-                    ? "text-gray-400 hover:text-green-300 hover:bg-gray-700"
-                    : "text-gray-500 hover:text-blue-600 hover:bg-blue-50"}`}
+                className="px-3 py-1 rounded-full transition-all duration-200 ease-out hover:scale-105 active:scale-95 h-6 text-xs"
+                style={activeTab === "quote" ? {
+                  background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)',
+                  color: '#000000'
+                } : {
+                  color: '#6B7280'
+                }}
                 onClick={() => setActiveTab("quote")}
               >
-                <BookMarked className="h-3 w-3 mr-1" />
+                <BookMarked className="h-3 w-3 mr-1" style={activeTab !== "quote" ? {
+                  background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text'
+                } : {}} />
                 Idea
               </Button>
             </div>
@@ -383,7 +399,7 @@ export const PracticeHeader = ({
             <Button
               variant="ghost"
               size="sm"
-              className="md:hidden rounded-full transition-colors hover:scale-105 text-black font-semibold"
+              className="md:hidden rounded-full transition-colors hover:scale-105 text-black font-semibold h-7 w-7"
               style={{
                 background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)',
                 boxShadow: '0 2px 4px rgba(251, 146, 60, 0.3)'
@@ -392,9 +408,8 @@ export const PracticeHeader = ({
               <Filter className="h-4 w-4 text-black" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className={`w-64 shadow-lg rounded-lg p-2 z-50 ${
-            isDarkMode ? 'bg-gray-900 border-green-500/30' : 'bg-white border-gray-200'
-          }`} sideOffset={5} avoidCollisions={true}>
+          <DropdownMenuContent align="end" className="w-64 shadow-lg rounded-lg p-2 z-50 bg-orange-50 border-orange-200" sideOffset={5} avoidCollisions={true}>
+            <ScrollArea className="h-[350px]">
             <div className={`px-3 py-2 text-sm font-semibold border-b mb-2 ${
               isDarkMode ? 'text-gray-300 border-gray-700' : 'text-gray-700 border-gray-200'
             }`}>
@@ -458,29 +473,28 @@ export const PracticeHeader = ({
                 Clear All Filters
               </DropdownMenuItem>
             )}
+            </ScrollArea>
           </DropdownMenuContent>
         </DropdownMenu>
 
 
         {/* Desktop Individual Filter Buttons - Just Exam */}
         <div className="hidden md:flex items-center gap-2 flex-shrink-0">
-          {/* Exams Filter - Desktop */}
+          {/* Mock Test Button - Desktop */}
           <DropdownMenu open={isExamDropdownOpen} onOpenChange={setIsExamDropdownOpen}>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
                 size="sm"
-                className="rounded-full transition-colors flex w-[80px] min-w-[80px] max-w-[80px] justify-center overflow-hidden hover:scale-105 text-black font-semibold"
+                className="rounded-full transition-colors flex min-w-[120px] justify-center overflow-hidden hover:scale-105 text-black font-semibold px-4 h-7"
                 style={{
-                  background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)',
-                  boxShadow: '0 2px 4px rgba(251, 146, 60, 0.3)'
+                  background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)'
                 }}
               >
-                <Target className="h-4 w-4 mr-1 flex-shrink-0 text-black" />
-                <span className="font-semibold text-xs truncate max-w-[40px] text-black">
-                  {selectedExam !== null ? `E${selectedExam}` : "All"}
+                <Target className="h-4 w-4 mr-2 flex-shrink-0 text-black" />
+                <span className="font-semibold text-sm text-black">
+                  {selectedExam !== null ? `Mock Test E${selectedExam}` : "Mock Test"}
                 </span>
-                <ChevronDown className="ml-1 h-3 w-3 flex-shrink-0 text-black" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className={`w-56 shadow-lg rounded-lg p-2 z-50 ${
@@ -505,50 +519,32 @@ export const PracticeHeader = ({
         </div>
 
         
-        {/* Desktop Action Buttons - 3 Main Icons */}
+        {/* Desktop Action Buttons - 5 Main Buttons */}
         <div className="hidden md:flex items-center gap-3">
-          {/* Icon 1: Filters (Chapter, Module only) */}
+          {/* Button 1: Chapter Filter */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
                 size="sm"
-                className="rounded-full transition-colors hover:scale-105 text-black font-semibold"
+                className="rounded-full transition-colors hover:scale-105 text-black font-semibold px-4 min-w-[100px] h-7"
                 style={{
-                  background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)',
-                  boxShadow: '0 2px 4px rgba(251, 146, 60, 0.3)'
+                  background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)'
                 }}
               >
-                <Filter className="h-5 w-5 text-black" />
+                <BookOpen className="h-4 w-4 mr-2 text-black" />
+                <span className="text-sm text-black truncate max-w-[80px]">
+                  {selectedChapter === "All Chapters" ? "Chapter" : selectedChapter}
+                </span>
+                <ChevronDown className="ml-1 h-3 w-3 text-black" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-80 shadow-lg rounded-lg p-4 z-50">
               <div className="space-y-4">
-                <div className="text-sm font-semibold text-gray-700 mb-3">Filters</div>
-                
-                {/* Module Filter - Horizontal */}
-                <div>
-                  <div className="text-xs font-medium mb-2 text-gray-600">Module</div>
-                  <div className="flex gap-1 overflow-x-auto pb-1">
-                    {modules.map((module) => (
-                      <Button
-                        key={module}
-                        variant="outline"
-                        size="sm"
-                        className={`flex-shrink-0 text-xs px-3 py-1 h-7 rounded-full transition-colors ${
-                          selectedModule === module ? 'bg-orange-100 border-orange-300 text-orange-800' : 'bg-white border-gray-300 text-gray-600 hover:bg-gray-50'
-                        }`}
-                        onClick={() => handleModuleFilter(module)}
-                      >
-                        {module}
-                      </Button>
-                    ))}
-                  </div>
-                </div>
+                <div className="text-sm font-semibold text-gray-700 mb-3">Select Chapter</div>
                 
                 {/* Chapter Filter - Horizontal with Scrolling */}
                 <div>
-                  <div className="text-xs font-medium mb-2 text-gray-600">Chapter</div>
                   <ScrollArea className="w-full">
                     <div className="flex gap-1 pb-2 min-w-max">
                       {chapters.map((chapter, index) => (
@@ -571,19 +567,19 @@ export const PracticeHeader = ({
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Icon 2: Settings (Font, Sound) */}
+          {/* Button 2: Settings */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
                 size="sm"
-                className="rounded-full transition-colors hover:scale-105 text-black font-semibold"
+                className="rounded-full transition-colors hover:scale-105 text-black font-semibold px-4 h-7"
                 style={{
-                  background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)',
-                  boxShadow: '0 2px 4px rgba(251, 146, 60, 0.3)'
+                  background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)'
                 }}
               >
-                <Settings className="h-5 w-5 text-black" />
+                <Settings className="h-4 w-4 mr-2 text-black" />
+                <span className="text-sm text-black">Settings</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56 shadow-lg rounded-lg p-2 z-50">
@@ -595,7 +591,7 @@ export const PracticeHeader = ({
                   <span className="text-sm">Font Settings</span>
                 </DropdownMenuItem>
                 
-                <DropdownMenuItem>
+                <DropdownMenuItem onClick={onOpenSounds}>
                   <BookOpen className="h-4 w-4 mr-2 text-orange-500" />
                   <span className="text-sm">Sound Settings</span>
                 </DropdownMenuItem>
@@ -603,21 +599,19 @@ export const PracticeHeader = ({
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Icon 3: Practice Mode & Objectives */}
+          {/* Button 3: Practice Mode */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button
                 variant="ghost"
                 size="sm"
-                className="rounded-full transition-colors hover:scale-105 text-black font-semibold"
+                className="rounded-full transition-colors hover:scale-105 text-black font-semibold px-4 h-7"
                 style={{
-                  background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)',
-                  boxShadow: '0 2px 4px rgba(251, 146, 60, 0.3)'
+                  background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)'
                 }}
               >
-                <div className="flex items-center">
-                  {React.cloneElement(getModeIcon(mode), { className: "h-4 w-4 mr-1 text-black" })}
-                </div>
+                {getModeIcon(mode)}
+                <span className="text-sm text-black ml-1">Practice Mode</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-48 shadow-lg rounded-lg p-2 z-50">
@@ -637,17 +631,17 @@ export const PracticeHeader = ({
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Community Stats (replaces calculator) */}
+          {/* Button 4: Analytics */}
           <Button
             variant="ghost"
             size="sm"
-            className="rounded-full transition-colors hover:scale-105 text-black font-semibold"
+            className="rounded-full transition-colors hover:scale-105 text-black font-semibold px-4 h-8"
             style={{
-              background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)',
-              boxShadow: '0 2px 4px rgba(251, 146, 60, 0.3)'
+              background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)'
             }}
           >
-            <BarChart className="h-5 w-5 text-black" />
+            <BarChart className="h-4 w-4 mr-2 text-black" />
+            <span className="text-sm text-black">Analytics</span>
           </Button>
         </div>
 
