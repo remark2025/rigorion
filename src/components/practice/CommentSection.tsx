@@ -17,7 +17,7 @@ const CommentSection = () => {
   };
 
   return (
-    <div className="fixed bottom-6 left-6 z-40">
+    <div className="fixed bottom-20 right-6 z-40">
       {/* Trigger Button */}
       {!isOpen && (
         <Button
@@ -30,7 +30,7 @@ const CommentSection = () => {
 
       {/* Comment Input Area (opens upward and fits within viewport) */}
       {isOpen && (
-        <div className="absolute bottom-14 left-0 w-80 max-w-[calc(100vw-3rem)] bg-white rounded-lg shadow-xl border transition-all duration-300 ease-in-out p-4">
+        <div className="absolute bottom-14 right-0 w-80 max-w-[calc(100vw-3rem)] bg-white rounded-lg shadow-xl border transition-all duration-300 ease-in-out p-4">
           <div className="flex items-center justify-between mb-3">
             <h4 className="text-sm font-medium">Write your comment</h4>
             <Button

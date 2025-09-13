@@ -379,7 +379,7 @@ export const SolutionStepBuilder: React.FC<SolutionStepBuilderProps> = ({
       className={className}
     >
       <Card 
-        className="w-full overflow-hidden"
+        className="w-full overflow-hidden border-none"
         style={{
           background: 'white'
         }}

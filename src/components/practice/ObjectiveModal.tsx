@@ -14,9 +14,9 @@ const ObjectiveModal = ({ open, onOpenChange, onSetObjective }: ObjectiveModalPr
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-md bg-orange-50 border-orange-200">
+      <DialogContent className="sm:max-w-md bg-white border-gray-200">
         <DialogHeader>
-          <DialogTitle className="text-orange-800">Set Your Practice Objective</DialogTitle>
+          <DialogTitle className="text-black">Set Your Practice Objective</DialogTitle>
         </DialogHeader>
         {/* Single input for number of questions */}
         <Input

@@ -68,8 +68,13 @@ export const IdeaTracerView: React.FC<IdeaTracerViewProps> = ({
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <GitBranch className="h-5 w-5 text-blue-600" />
-              Idea Tracer
+              <GitBranch className="h-4 w-4" style={{
+                background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text'
+              }} />
+              <span className="text-gray-800 font-semibold">Idea Tracer</span>
             </div>
             <div className="flex gap-2">
               <Button
@@ -107,25 +112,21 @@ export const IdeaTracerView: React.FC<IdeaTracerViewProps> = ({
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {/* Overall Structure Info */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-            <div className="text-center p-3 bg-blue-50 rounded-lg">
-              <div className="text-sm font-semibold text-blue-800">Structure Type</div>
-              <Badge className={`mt-1 ${getStructureColor(solution.ideaTracer.logicalStructure)}`}>
+          {/* Overall Structure Info - Compact */}
+          <div className="flex flex-wrap items-center gap-3 text-sm">
+            <div className="flex items-center gap-2">
+              <span className="text-gray-600">Structure:</span>
+              <Badge className={`${getStructureColor(solution.ideaTracer.logicalStructure)}`}>
                 {getStructureIcon(solution.ideaTracer.logicalStructure)} {solution.ideaTracer.logicalStructure}
               </Badge>
             </div>
-            <div className="text-center p-3 bg-blue-50 rounded-lg">
-              <div className="text-sm font-semibold text-blue-800">Paragraphs</div>
-              <div className="text-lg font-bold text-blue-600">
-                {solution.ideaTracer.paragraphIdeas.length}
-              </div>
+            <div className="flex items-center gap-2">
+              <span className="text-gray-600">Paragraphs:</span>
+              <span className="font-semibold text-gray-800">{solution.ideaTracer.paragraphIdeas.length}</span>
             </div>
-            <div className="text-center p-3 bg-green-50 rounded-lg">
-              <div className="text-sm font-semibold text-green-800">Key Transitions</div>
-              <div className="text-lg font-bold text-green-600">
-                {solution.ideaTracer.keyTransitions.length}
-              </div>
+            <div className="flex items-center gap-2">
+              <span className="text-gray-600">Transitions:</span>
+              <span className="font-semibold text-gray-800">{solution.ideaTracer.keyTransitions.length}</span>
             </div>
           </div>
         </CardContent>
@@ -141,22 +142,27 @@ export const IdeaTracerView: React.FC<IdeaTracerViewProps> = ({
             transition={{ duration: 0.3 }}
           >
             {/* Overall Thesis */}
-            <Card className="border-2 border-blue-200">
-              <CardHeader className="bg-blue-50">
+            <Card className="border-none bg-gray-50">
+              <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Target className="h-5 w-5 text-blue-600" />
-                  Overall Thesis
+                  <Target className="h-4 w-4" style={{
+                    background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text'
+                  }} />
+                  <span className="text-gray-800 font-semibold">Overall Thesis</span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-4">
-                <div className="text-lg font-medium text-blue-900">
+                <div className="text-lg font-medium text-gray-800">
                   {solution.ideaTracer.overallThesis}
                 </div>
               </CardContent>
             </Card>
 
             {/* Paragraph Flow */}
-            <div className="space-y-4">
+            <div className="space-y-6 mt-8">
               {solution.ideaTracer.paragraphIdeas.map((paragraph, index) => (
                 <motion.div
                   key={index}
@@ -179,9 +185,9 @@ export const IdeaTracerView: React.FC<IdeaTracerViewProps> = ({
                             <ChevronDown className="h-4 w-4" /> : 
                             <ChevronRight className="h-4 w-4" />
                           }
-                          <span className="text-sm">Paragraph {index + 1}</span>
-                          {index === 0 && <Badge variant="secondary">Introduction</Badge>}
-                          {index === solution.ideaTracer.paragraphIdeas.length - 1 && <Badge variant="secondary">Conclusion</Badge>}
+                          <span className="text-sm text-gray-700">Paragraph {index + 1}</span>
+                          {index === 0 && <Badge variant="outline" className="text-gray-600 border-gray-300">Introduction</Badge>}
+                          {index === solution.ideaTracer.paragraphIdeas.length - 1 && <Badge variant="outline" className="text-gray-600 border-gray-300">Conclusion</Badge>}
                         </div>
                       </CardTitle>
                     </CardHeader>
@@ -197,11 +203,11 @@ export const IdeaTracerView: React.FC<IdeaTracerViewProps> = ({
                           <CardContent>
                             {/* Main Idea */}
                             <div className="mb-4">
-                              <h4 className="font-semibold text-blue-800 mb-2 flex items-center gap-1">
+                              <h4 className="font-semibold text-gray-700 mb-2 flex items-center gap-1">
                                 <Lightbulb className="h-4 w-4" />
                                 Main Idea
                               </h4>
-                              <p className="text-blue-900 font-medium">
+                              <p className="text-gray-800 font-medium">
                                 {paragraph.mainIdea}
                               </p>
                             </div>
@@ -209,10 +215,10 @@ export const IdeaTracerView: React.FC<IdeaTracerViewProps> = ({
                             {/* Supporting Points */}
                             {paragraph.supportingPoints.length > 0 && (
                               <div className="mb-4">
-                                <h4 className="font-semibold text-green-800 mb-2">Supporting Points</h4>
+                                <h4 className="font-semibold text-gray-700 mb-2">Supporting Points</h4>
                                 <ul className="list-disc list-inside space-y-1">
                                   {paragraph.supportingPoints.map((point, pointIndex) => (
-                                    <li key={pointIndex} className="text-green-700">
+                                    <li key={pointIndex} className="text-gray-700">
                                       {point}
                                     </li>
                                   ))}
@@ -222,8 +228,8 @@ export const IdeaTracerView: React.FC<IdeaTracerViewProps> = ({
 
                             {/* Logical Flow */}
                             <div className="mb-4">
-                              <h4 className="font-semibold text-blue-800 mb-2">Logical Flow</h4>
-                              <p className="text-blue-700">
+                              <h4 className="font-semibold text-gray-700 mb-2">Logical Flow</h4>
+                              <p className="text-gray-700">
                                 {paragraph.logicalFlow}
                               </p>
                             </div>
@@ -259,7 +265,7 @@ export const IdeaTracerView: React.FC<IdeaTracerViewProps> = ({
 
                   {/* Connection Arrow */}
                   {index < solution.ideaTracer.paragraphIdeas.length - 1 && (
-                    <div className="flex justify-center my-2">
+                    <div className="flex justify-center my-6">
                       <ArrowDown className="h-6 w-6 text-gray-400" />
                     </div>
                   )}
@@ -268,15 +274,20 @@ export const IdeaTracerView: React.FC<IdeaTracerViewProps> = ({
             </div>
 
             {/* Main Conclusion */}
-            <Card className="border-2 border-green-200">
-              <CardHeader className="bg-green-50">
+            <Card className="border-none bg-gray-50 mt-8">
+              <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Target className="h-5 w-5 text-green-600" />
-                  Main Conclusion
+                  <Target className="h-4 w-4" style={{
+                    background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text'
+                  }} />
+                  <span className="text-gray-800 font-semibold">Main Conclusion</span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="pt-4">
-                <div className="text-lg font-medium text-green-900">
+                <div className="text-lg font-medium text-gray-800">
                   {solution.ideaTracer.mainConclusion}
                 </div>
               </CardContent>
@@ -289,27 +300,21 @@ export const IdeaTracerView: React.FC<IdeaTracerViewProps> = ({
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.3 }}
+            className="w-full"
           >
-            <Card>
-              <CardHeader>
-                <CardTitle>📝 Rewritten for Logical Clarity</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="prose max-w-none">
-                  <div className="text-base leading-7 p-4 bg-white border rounded-lg">
-                    {solution.ideaTracer.rewrittenVersion ? (
-                      <div className="whitespace-pre-wrap">
-                        {solution.ideaTracer.rewrittenVersion}
-                      </div>
-                    ) : (
-                      <div className="text-gray-500 italic">
-                        Rewritten version not available for this passage.
-                      </div>
-                    )}
+            <div className="w-full">
+              <div className="text-base leading-7 p-6 bg-white rounded-lg text-justify w-full overflow-hidden">
+                {solution.ideaTracer.rewrittenVersion ? (
+                  <div className="whitespace-pre-wrap">
+                    {solution.ideaTracer.rewrittenVersion}
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                ) : (
+                  <div className="text-gray-500 italic">
+                    Rewritten version not available for this passage.
+                  </div>
+                )}
+              </div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

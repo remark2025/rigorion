@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Target, Navigation, ChevronDown, LogOut, Filter, BookOpen, Clock, User, Users, BarChart, Menu, Settings, Timer, TrendingUp, Hand, Coffee, GraduationCap, Type, CheckCircle, BookMarked, Home } from "lucide-react";
+import { Target, Navigation, ChevronDown, LogOut, Filter, BookOpen, Clock, User, Users, Menu, Settings, Timer, TrendingUp, Hand, Coffee, GraduationCap, Type, CheckCircle, BookMarked, Home } from "lucide-react";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -70,7 +70,6 @@ export const PracticeHeader = ({
     { name: "Home", path: "/" },
     { name: "Account", path: "/account" },
     { name: "Practice", path: "/practice" },
-    { name: "Analytics", path: "/analytics" },
     { name: "About us", path: "/about" },
   ];
 
@@ -212,8 +211,6 @@ export const PracticeHeader = ({
         return <User className={`h-4 w-4 mr-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />;
       case "Practice":
         return <BookOpen className={`h-4 w-4 mr-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />;
-      case "Analytics":
-        return <BarChart className={`h-4 w-4 mr-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />;
       case "About us":
         return <Users className={`h-4 w-4 mr-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />;
       default:
@@ -631,18 +628,6 @@ export const PracticeHeader = ({
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Button 4: Analytics */}
-          <Button
-            variant="ghost"
-            size="sm"
-            className="rounded-full transition-colors hover:scale-105 text-black font-semibold px-4 h-8"
-            style={{
-              background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)'
-            }}
-          >
-            <BarChart className="h-4 w-4 mr-2 text-black" />
-            <span className="text-sm text-black">Analytics</span>
-          </Button>
         </div>
 
         <div className="ml-2 flex items-center flex-shrink-0">

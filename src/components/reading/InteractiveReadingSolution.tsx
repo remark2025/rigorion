@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { motion } from 'framer-motion';
 import { BookOpen, Palette, Eye, GitBranch } from 'lucide-react';
 import { ReadingSolution } from '@/types/ReadingInterface';
@@ -26,22 +24,23 @@ export const InteractiveReadingSolution: React.FC<InteractiveReadingSolutionProp
     <div className={`w-full space-y-6 ${className}`}>
       {/* Interactive Reading Tabs */}
       <Tabs value={activeReadingTab} onValueChange={(value) => setActiveReadingTab(value as any)} className="w-full">
-        <TabsList className="grid w-full grid-cols-3 mb-4">
-          <TabsTrigger value="pattern" className="text-xs flex items-center gap-1">
-            <Palette className="h-3 w-3" />
-            🎨 Pattern Recognition
-          </TabsTrigger>
-          <TabsTrigger value="simplifier" className="text-xs flex items-center gap-1">
-            <Eye className="h-3 w-3" />
-            📝 Simplifier
-          </TabsTrigger>
-          <TabsTrigger value="idea-tracer" className="text-xs flex items-center gap-1">
-            <GitBranch className="h-3 w-3" />
-            🧠 Idea Tracer
-          </TabsTrigger>
+        <TabsList 
+          className="grid w-full grid-cols-3 mb-1 rounded-sm"
+          style={{
+            background: '#CFCFCF',
+            height: '28px',
+            padding: '3px',
+            borderRadius: '2px',
+            marginTop: '4px',
+            marginBottom: '4px'
+          }}
+        >
+          <TabsTrigger value="pattern">🎨 Pattern Recognition</TabsTrigger>
+          <TabsTrigger value="simplifier">📝 Simplifier</TabsTrigger>
+          <TabsTrigger value="idea-tracer">🧠 Idea Tracer</TabsTrigger>
         </TabsList>
         
-        <TabsContent value="pattern" className="mt-0">
+        <TabsContent value="pattern" className="mt-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -54,7 +53,7 @@ export const InteractiveReadingSolution: React.FC<InteractiveReadingSolutionProp
           </motion.div>
         </TabsContent>
         
-        <TabsContent value="simplifier" className="mt-0">
+        <TabsContent value="simplifier" className="mt-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -67,7 +66,7 @@ export const InteractiveReadingSolution: React.FC<InteractiveReadingSolutionProp
           </motion.div>
         </TabsContent>
         
-        <TabsContent value="idea-tracer" className="mt-0">
+        <TabsContent value="idea-tracer" className="mt-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}

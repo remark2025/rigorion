@@ -358,6 +358,9 @@ const Practice = () => {
             </div>
           )}
         </div>
+        
+        {/* Comment Section - Positioned above footer on right corner */}
+        <CommentSection />
       </div>
     </ThemeProvider>
   );

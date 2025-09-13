@@ -1038,7 +1038,7 @@ Keep the evaluation constructive and educational.`;
                         style={{
                           background: '#CFCFCF',
                           height: '28px',
-                          padding: '2px',
+                          padding: '3px',
                           borderRadius: '2px',
                           marginTop: '4px',
                           marginBottom: '4px'

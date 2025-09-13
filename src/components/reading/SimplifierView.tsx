@@ -125,88 +125,69 @@ export const SimplifierView: React.FC<SimplifierViewProps> = ({
 
   return (
     <div className={`space-y-6 ${className}`}>
-      {/* Controls */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <BookOpen className="h-5 w-5 text-green-600" />
-              Text Simplifier
-            </div>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowSimplifications(!showSimplifications)}
-                className="flex items-center gap-1"
-              >
-                {showSimplifications ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                Synonyms
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowExplanations(!showExplanations)}
-                className="flex items-center gap-1"
-              >
-                {showExplanations ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                Explanations
-              </Button>
-            </div>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {/* Reading Level Info */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-            <div className="text-center p-3 bg-red-50 rounded-lg">
-              <div className="text-lg font-bold text-red-600">
-                Grade {solution.simplifier.readingLevel.original}
-              </div>
-              <div className="text-sm text-red-700">Original Level</div>
-            </div>
-            <div className="flex items-center justify-center">
-              <div className="text-2xl">→</div>
-            </div>
-            <div className="text-center p-3 bg-green-50 rounded-lg">
-              <div className="text-lg font-bold text-green-600">
-                Grade {solution.simplifier.readingLevel.simplified}
-              </div>
-              <div className="text-sm text-green-700">Simplified Level</div>
-            </div>
+      {/* Compact Controls */}
+      <div className="bg-white p-4 rounded-lg border border-gray-200 mb-4">
+        {/* Header with Toggle Controls */}
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+          <div className="flex items-center gap-2">
+            <BookOpen className="h-4 w-4" style={{
+              background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text'
+            }} />
+            <span className="font-semibold text-sm text-gray-800">Text Simplifier</span>
           </div>
+          <div className="flex gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowSimplifications(!showSimplifications)}
+              className="h-7 px-2 text-xs"
+            >
+              {showSimplifications ? <EyeOff className="h-3 w-3 mr-1" /> : <Eye className="h-3 w-3 mr-1" />}
+              Synonyms
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowExplanations(!showExplanations)}
+              className="h-7 px-2 text-xs"
+            >
+              {showExplanations ? <EyeOff className="h-3 w-3 mr-1" /> : <Eye className="h-3 w-3 mr-1" />}
+              Explanations
+            </Button>
+          </div>
+        </div>
 
-          {/* Legend */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-green-100 border border-green-300 rounded"></div>
+        {/* Compact Legend */}
+        <div className="border-t pt-3">
+          <div className="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:gap-3">
+            <div className="flex items-center gap-2 text-sm">
+              <div className="w-3 h-3 bg-green-400 rounded-full"></div>
               <span>Simplified words with [synonyms]</span>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-blue-100 border-b-2 border-blue-300 rounded"></div>
+            <div className="flex items-center gap-2 text-sm">
+              <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
               <span>Key sentences explained</span>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-4 h-4 bg-red-100 border-b-2 border-red-300 rounded"></div>
+            <div className="flex items-center gap-2 text-sm">
+              <div className="w-3 h-3 bg-red-400 rounded-full"></div>
               <span>Difficult sentences explained</span>
             </div>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
-      {/* Simplified Passage */}
-      <Card>
-        <CardHeader>
-          <CardTitle>📖 Simplified Reading Passage</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="prose max-w-none">
-            <motion.div
-              key={`${showSimplifications}-${showExplanations}`}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.3 }}
-              className="text-base leading-7 p-4 bg-white border rounded-lg"
-            >
+      {/* Reading Passage - No Card Wrapper */}
+      <div className="w-full">
+        <motion.div
+          key={`${showSimplifications}-${showExplanations}`}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+          className="text-base leading-7 p-6 bg-white rounded-lg text-justify w-full overflow-hidden"
+        >
               <div className="whitespace-pre-wrap">
                 {combineSimplifications().map((segment, index) => (
                   <span key={index}>
@@ -233,40 +214,8 @@ export const SimplifierView: React.FC<SimplifierViewProps> = ({
                   </span>
                 ))}
               </div>
-            </motion.div>
-          </div>
-
-          {/* Simplification Stats */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="mt-6 p-4 bg-green-50 rounded-lg"
-          >
-            <h4 className="font-semibold text-green-800 mb-2">📊 Simplification Summary</h4>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="text-center p-3 border border-green-200 rounded-lg bg-white">
-                <div className="text-lg font-bold text-green-600">
-                  {solution.simplifier.wordSimplifications.length}
-                </div>
-                <div className="text-sm text-green-700">Words Simplified</div>
-              </div>
-              <div className="text-center p-3 border border-green-200 rounded-lg bg-white">
-                <div className="text-lg font-bold text-green-600">
-                  {solution.simplifier.sentenceExplanations.length}
-                </div>
-                <div className="text-sm text-green-700">Sentences Explained</div>
-              </div>
-              <div className="text-center p-3 border border-green-200 rounded-lg bg-white">
-                <div className="text-lg font-bold text-green-600">
-                  {solution.simplifier.readingLevel.original - solution.simplifier.readingLevel.simplified}
-                </div>
-                <div className="text-sm text-green-700">Grade Levels Reduced</div>
-              </div>
-            </div>
-          </motion.div>
-        </CardContent>
-      </Card>
+        </motion.div>
+      </div>
     </div>
   );
 };

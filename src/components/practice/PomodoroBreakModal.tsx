@@ -44,7 +44,7 @@ const PomodoroBreakModal = ({ open, onResume, breakTimeRemaining }: PomodoroBrea
 
   return (
     <Dialog open={open} onOpenChange={() => {}}>
-      <DialogContent className="sm:max-w-md bg-orange-50 border-orange-200">
+      <DialogContent className="sm:max-w-md bg-white border-gray-200">
         <div className="p-6 text-center">
           {/* Break Icon */}
           <div className="mx-auto mb-6 w-16 h-16 rounded-full flex items-center justify-center" style={{
@@ -60,8 +60,8 @@ const PomodoroBreakModal = ({ open, onResume, breakTimeRemaining }: PomodoroBrea
 
           {/* Timer */}
           <div className="mb-6">
-            <div className="inline-flex items-center gap-2 bg-white rounded-full px-6 py-3 border border-orange-200">
-              <Clock className="h-5 w-5 text-orange-600" />
+            <div className="inline-flex items-center gap-2 bg-gray-50 rounded-full px-6 py-3 border border-gray-200">
+              <Clock className="h-5 w-5 text-gray-600" />
               <span className="text-xl font-mono font-bold text-black">
                 {formatTime(breakTimeRemaining)}
               </span>
@@ -70,9 +70,9 @@ const PomodoroBreakModal = ({ open, onResume, breakTimeRemaining }: PomodoroBrea
 
           {/* Break Tip */}
           <div className="mb-6">
-            <div className="bg-white rounded-lg p-4 border border-orange-200">
+            <div className="bg-gray-50 rounded-lg p-4 border border-gray-200">
               <div className="flex items-start gap-3">
-                <Lightbulb className="h-5 w-5 text-orange-600 mt-0.5 flex-shrink-0" />
+                <Lightbulb className="h-5 w-5 text-yellow-500 mt-0.5 flex-shrink-0" />
                 <p className="text-sm text-black leading-relaxed text-left">
                   {currentTip}
                 </p>

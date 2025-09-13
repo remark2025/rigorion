@@ -108,134 +108,87 @@ export const PatternRecognitionView: React.FC<PatternRecognitionViewProps> = ({
 
   return (
     <div className={`space-y-6 ${className}`}>
-      {/* Controls */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Palette className="h-5 w-5 text-blue-600" />
-              Pattern Recognition
-            </div>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowLegend(!showLegend)}
-                className="flex items-center gap-1"
-              >
-                <Info className="h-4 w-4" />
-                Legend
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setHighlightingEnabled(!highlightingEnabled)}
-                className="flex items-center gap-1"
-              >
-                {highlightingEnabled ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                {highlightingEnabled ? 'Hide' : 'Show'} Highlights
-              </Button>
-            </div>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {/* Legend */}
-          <AnimatePresence>
-            {showLegend && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                className="mb-4 p-4 bg-gray-50 rounded-lg"
-              >
-                <h4 className="font-semibold mb-3 text-sm">Click to toggle highlighting:</h4>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                  {solution.patternRecognition.legend.map((item) => (
-                    <motion.div
-                      key={item.type}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      <Button
-                        variant={selectedTypes.has(item.type) ? 'default' : 'outline'}
-                        size="sm"
-                        onClick={() => toggleHighlightType(item.type)}
-                        className="w-full justify-start text-xs h-auto py-2"
-                        style={{
-                          backgroundColor: selectedTypes.has(item.type) ? item.color : 'transparent',
-                          borderColor: item.color
-                        }}
-                      >
-                        <div>
-                          <div className="font-semibold">{item.label}</div>
-                          <div className="text-xs opacity-80">{item.description}</div>
-                        </div>
-                      </Button>
-                    </motion.div>
-                  ))}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* Statistics */}
-          <div className="mb-4 grid grid-cols-2 md:grid-cols-4 gap-3">
-            {solution.patternRecognition.legend.map((item) => {
-              const count = solution.patternRecognition.keyPhrases.filter(p => p.type === item.type).length;
-              return (
-                <div key={item.type} className="text-center p-2 border rounded-lg">
-                  <div className="text-lg font-bold" style={{ color: item.color }}>{count}</div>
-                  <div className="text-xs text-gray-600">{item.label}</div>
-                </div>
-              );
-            })}
+      {/* Compact Controls */}
+      <div className="bg-white p-4 rounded-lg border border-gray-200 mb-4">
+        {/* Header with Toggle Controls */}
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+          <div className="flex items-center gap-2">
+            <Palette className="h-4 w-4" style={{
+              background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text'
+            }} />
+            <span className="font-semibold text-sm text-gray-800">Pattern Recognition</span>
           </div>
-        </CardContent>
-      </Card>
-
-      {/* Highlighted Passage */}
-      <Card>
-        <CardHeader>
-          <CardTitle>📖 Reading Passage with Pattern Analysis</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="prose max-w-none">
-            <motion.div
-              key={highlightingEnabled ? 'highlighted' : 'plain'}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.3 }}
-              className="text-base leading-7 p-4 bg-white border rounded-lg"
+          <div className="flex gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowLegend(!showLegend)}
+              className="h-7 px-2 text-xs"
             >
-              {renderHighlightedText()}
-            </motion.div>
+              <Info className="h-3 w-3 mr-1" />
+              Legend
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setHighlightingEnabled(!highlightingEnabled)}
+              className="h-7 px-2 text-xs"
+            >
+              {highlightingEnabled ? <EyeOff className="h-3 w-3 mr-1" /> : <Eye className="h-3 w-3 mr-1" />}
+              {highlightingEnabled ? 'Hide' : 'Show'}
+            </Button>
           </div>
+        </div>
 
-          {/* Analysis Summary */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="mt-6 p-4 bg-blue-50 rounded-lg"
-          >
-            <h4 className="font-semibold text-blue-800 mb-2">🔍 Pattern Analysis Summary</h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-              <div>
-                <strong>Key Phrases:</strong> Help identify main arguments and central themes
+        {/* Compact Legend & Statistics Combined */}
+        <AnimatePresence>
+          {showLegend && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="border-t pt-3"
+            >
+              <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:gap-2">
+                {solution.patternRecognition.legend.map((item) => {
+                  const count = solution.patternRecognition.keyPhrases.filter(p => p.type === item.type).length;
+                  return (
+                    <Button
+                      key={item.type}
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => toggleHighlightType(item.type)}
+                      className="h-auto py-1.5 px-2 text-xs flex-1 sm:flex-none border border-gray-200 hover:bg-gray-50"
+                    >
+                      <div className="flex items-center gap-1">
+                        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color }}></div>
+                        <span className="font-medium">{item.label}</span>
+                        <Badge variant="secondary" className="text-xs px-1 py-0">{count}</Badge>
+                      </div>
+                    </Button>
+                  );
+                })}
               </div>
-              <div>
-                <strong>Evidence:</strong> Facts, statistics, and examples that support claims
-              </div>
-              <div>
-                <strong>Tone Shifters:</strong> Words that change the direction or mood of the argument
-              </div>
-              <div>
-                <strong>Key Vocabulary:</strong> Important terms crucial for understanding the passage
-              </div>
-            </div>
-          </motion.div>
-        </CardContent>
-      </Card>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
+      {/* Reading Passage - No Card Wrapper */}
+      <div className="w-full">
+        <motion.div
+          key={highlightingEnabled ? 'highlighted' : 'plain'}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+          className="text-base leading-7 p-6 bg-white rounded-lg text-justify w-full overflow-hidden"
+        >
+          {renderHighlightedText()}
+        </motion.div>
+      </div>
     </div>
   );
 };
