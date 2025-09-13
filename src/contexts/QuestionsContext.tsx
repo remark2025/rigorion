@@ -6,6 +6,8 @@ import { useToast } from "@/components/ui/use-toast";
 import { mapQuestions, validateQuestion } from "@/utils/mapQuestion";
 import { sampleQuestions } from "@/components/practice/sampleQuestion";
 import { databaseQuestionService } from "@/services/databaseQuestionService";
+import { functionQuestionService } from "@/services/functionQuestionService";
+import { edgeFunctionQuestionService } from "@/services/edgeFunctionService";
 
 interface QuestionsContextType {
   questions: Question[];
@@ -38,8 +40,48 @@ export const QuestionsProvider: React.FC<QuestionsProviderProps> = ({ children }
       setIsLoading(true);
       setError(null);
       
-      // Method 1: Try new database first
-      console.log("🚀 Attempting to load questions from new database schema...");
+      // Method 1: Try Edge Function first (bypasses PostgREST entirely)
+      console.log("🚀 Attempting to load questions using Edge Function...");
+      try {
+        const edgeFunctionAvailable = await edgeFunctionQuestionService.testFunction();
+        console.log("Edge Function test result:", edgeFunctionAvailable);
+        
+        if (edgeFunctionAvailable) {
+          const edgeQuestions = await edgeFunctionQuestionService.fetchQuestions();
+          
+          if (edgeQuestions.length > 0) {
+            console.log(`🎯 Loaded ${edgeQuestions.length} questions from Edge Function!`);
+            console.log("First question:", edgeQuestions[0]);
+            setQuestions(edgeQuestions);
+            return; // Success! Exit early
+          }
+        }
+      } catch (edgeFunctionError) {
+        console.log("Edge Function service failed:", edgeFunctionError);
+      }
+
+      // Method 2: Try function-based access (bypasses schema cache)
+      console.log("🚀 Attempting to load questions using function-based access...");
+      try {
+        const functionAvailable = await functionQuestionService.testFunction();
+        console.log("Function test result:", functionAvailable);
+        
+        if (functionAvailable) {
+          const sampleQuestion = await functionQuestionService.getSampleQuestion();
+          
+          if (sampleQuestion) {
+            console.log(`🎯 Loaded interactive question from function!`);
+            console.log("Question data:", sampleQuestion);
+            setQuestions([sampleQuestion]);
+            return; // Success! Exit early
+          }
+        }
+      } catch (functionError) {
+        console.log("Function service failed:", functionError);
+      }
+
+      // Method 3: Try new database direct access
+      console.log("⚡ Attempting direct database access...");
       try {
         const connectionTest = await databaseQuestionService.testConnection();
         console.log("Database connection test:", connectionTest);
@@ -59,7 +101,7 @@ export const QuestionsProvider: React.FC<QuestionsProviderProps> = ({ children }
         console.log("Database service failed:", dbError);
       }
       
-      // Method 2: Try legacy secure data service
+      // Method 4: Try legacy secure data service
       console.log("⚡ Trying legacy secure data service...");
       try {
         const record = await getSecureLatestFunctionData('content');
@@ -77,7 +119,7 @@ export const QuestionsProvider: React.FC<QuestionsProviderProps> = ({ children }
         console.log("Secure data service failed:", secureErr);
       }
       
-      // Method 3: Fallback to sample questions
+      // Method 5: Fallback to sample questions
       console.log("🔄 Using fallback sample questions (25 questions)");
       setQuestions(sampleQuestions);
       

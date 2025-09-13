@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { toast } from "@/hooks/use-toast";
 import { SUPABASE_URL } from '@/integrations/supabase/client';
 import { supabase } from '@/integrations/supabase/client';
+import { Question } from '@/types/QuestionInterface';
 
 // Base URL for Supabase Edge Functions
 const EDGE_FUNCTION_BASE_URL = "https://eantvimmgdmxzwrjwrop.supabase.co";
@@ -313,3 +314,49 @@ export function useLogInteraction() {
 
   return { submitInteraction, data, loading, error };
 }
+
+/**
+ * Specialized service for fetching questions via the get-questions Edge Function
+ */
+export class EdgeFunctionQuestionService {
+  /**
+   * Fetch questions using the get-questions Edge Function
+   */
+  async fetchQuestions(): Promise<Question[]> {
+    try {
+      console.log('🚀 Calling get-questions Edge Function...');
+      
+      const result = await callEdgeFunction<{ questions: Question[]; success: boolean; count: number }>('get-questions');
+      
+      if (result.error) {
+        throw result.error;
+      }
+
+      if (!result.data?.success) {
+        throw new Error('Edge Function returned unsuccessful response');
+      }
+
+      console.log(`✅ Edge Function returned ${result.data.count} questions`);
+      return result.data.questions || [];
+
+    } catch (error) {
+      console.error('💥 Edge Function question service error:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Test if the get-questions Edge Function is available
+   */
+  async testFunction(): Promise<boolean> {
+    try {
+      const questions = await this.fetchQuestions();
+      return questions.length > 0;
+    } catch (error) {
+      console.error('Edge Function test failed:', error);
+      return false;
+    }
+  }
+}
+
+export const edgeFunctionQuestionService = new EdgeFunctionQuestionService();

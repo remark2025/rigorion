@@ -2,6 +2,9 @@
 import { supabase } from '@/integrations/supabase/client';
 import { Question } from '@/types/QuestionInterface';
 
+// Test if we need to create a fresh client
+console.log('🔧 Database service loaded, Supabase client URL:', supabase.supabaseUrl);
+
 export interface DatabaseQuestion {
   id: string;
   public_id: string;
@@ -238,23 +241,47 @@ export class DatabaseQuestionService {
    */
   async testConnection(): Promise<{ success: boolean; questionCount: number; sampleQuestion?: any }> {
     try {
+      console.log('🔌 Testing database connection...');
+      console.log('🌐 Supabase URL:', supabase.supabaseUrl);
+      console.log('🔑 Using client from integrations/supabase/client');
+      
+      // First, try a very simple query
+      console.log('🧪 Step 1: Testing basic table access...');
+      const { data: simpleTest, error: simpleError } = await supabase
+        .from('questions')
+        .select('*')
+        .limit(1);
+      
+      console.log('📊 Simple test results:', { data: simpleTest, error: simpleError });
+      
+      if (simpleError) {
+        console.error('❌ Basic table access failed:', simpleError);
+        return { success: false, questionCount: 0 };
+      }
+      
+      // Now try the filtered query
+      console.log('🧪 Step 2: Testing filtered query...');
       const { data: questions, error, count } = await supabase
         .from('questions')
         .select('public_id, content, has_interactive', { count: 'exact' })
         .eq('status', 'published')
         .limit(1);
 
+      console.log('📊 Filtered query results:', { data: questions, error, count });
+
       if (error) {
+        console.error('❌ Filtered query failed:', error);
         return { success: false, questionCount: 0 };
       }
 
+      console.log(`✅ Database connection successful! Found ${count || 0} questions`);
       return {
         success: true,
         questionCount: count || 0,
         sampleQuestion: questions?.[0] || null
       };
     } catch (error) {
-      console.error('Connection test failed:', error);
+      console.error('💥 Connection test exception:', error);
       return { success: false, questionCount: 0 };
     }
   }
