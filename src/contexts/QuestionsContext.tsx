@@ -5,6 +5,7 @@ import { getSecureLatestFunctionData } from "@/services/secureIndexedDbService";
 import { useToast } from "@/components/ui/use-toast";
 import { mapQuestions, validateQuestion } from "@/utils/mapQuestion";
 import { sampleQuestions } from "@/components/practice/sampleQuestion";
+import { databaseQuestionService } from "@/services/databaseQuestionService";
 
 interface QuestionsContextType {
   questions: Question[];
@@ -35,28 +36,56 @@ export const QuestionsProvider: React.FC<QuestionsProviderProps> = ({ children }
   const fetchSecureQuestions = async () => {
     try {
       setIsLoading(true);
+      setError(null);
       
-      // Always use comprehensive sample questions to ensure all filters work
-      console.log("Loading comprehensive sample questions with 23 questions");
-      setQuestions(sampleQuestions);
-      
-      // Optional: Try to get secure data and merge with sample questions
+      // Method 1: Try new database first
+      console.log("🚀 Attempting to load questions from new database schema...");
       try {
-        const record = await getSecureLatestFunctionData('my-function');
+        const connectionTest = await databaseQuestionService.testConnection();
+        console.log("Database connection test:", connectionTest);
+        
+        if (connectionTest.success && connectionTest.questionCount > 0) {
+          console.log(`✅ Database available with ${connectionTest.questionCount} questions`);
+          const databaseQuestions = await databaseQuestionService.fetchQuestions();
+          
+          if (databaseQuestions.length > 0) {
+            console.log(`🎯 Loaded ${databaseQuestions.length} questions from database!`);
+            console.log("First question:", databaseQuestions[0]);
+            setQuestions(databaseQuestions);
+            return; // Success! Exit early
+          }
+        }
+      } catch (dbError) {
+        console.log("Database service failed:", dbError);
+      }
+      
+      // Method 2: Try legacy secure data service
+      console.log("⚡ Trying legacy secure data service...");
+      try {
+        const record = await getSecureLatestFunctionData('content');
         
         if (record && record.data) {
-          console.log("Found secure question data, but using sample questions for complete coverage");
-          // We could merge here if needed, but for now use sample questions for guaranteed coverage
+          console.log("Found secure question data, processing...");
+          const mappedQuestions = mapQuestions(record.data);
+          if (mappedQuestions.length > 0) {
+            console.log(`📦 Loaded ${mappedQuestions.length} questions from secure service`);
+            setQuestions(mappedQuestions);
+            return;
+          }
         }
       } catch (secureErr) {
-        console.log("Secure data unavailable, using sample questions:", secureErr);
+        console.log("Secure data service failed:", secureErr);
       }
+      
+      // Method 3: Fallback to sample questions
+      console.log("🔄 Using fallback sample questions (25 questions)");
+      setQuestions(sampleQuestions);
       
     } catch (err) {
       console.error("Error in fetchSecureQuestions:", err);
       // Ensure we always have questions
       setQuestions(sampleQuestions);
-      setError(err instanceof Error ? err : new Error("Using sample questions"));
+      setError(err instanceof Error ? err : new Error("Using fallback questions"));
     } finally {
       setIsLoading(false);
     }
