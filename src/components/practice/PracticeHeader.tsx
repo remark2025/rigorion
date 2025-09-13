@@ -32,8 +32,9 @@ interface PracticeHeaderProps {
     textColor: string;
   };
   onSettingsChange?: (key: string, value: string | number) => void;
-  activeTab?: "problem" | "solution" | "quote";
-  setActiveTab?: (tab: "problem" | "solution" | "quote") => void;
+  activeTab?: "problem" | "solution" | "quote" | "grid";
+  setActiveTab?: (tab: "problem" | "solution" | "quote" | "grid") => void;
+  mode?: string;
 }
 
 export const PracticeHeader = ({ 
@@ -70,6 +71,7 @@ export const PracticeHeader = ({
     { name: "Home", path: "/" },
     { name: "Account", path: "/account" },
     { name: "Practice", path: "/practice" },
+    { name: "Analytics", path: "/analytics" },
     { name: "About us", path: "/about" },
   ];
 
@@ -342,21 +344,21 @@ export const PracticeHeader = ({
                 variant="ghost"
                 size="sm"
                 className="px-3 py-1 rounded-full transition-all duration-200 ease-out hover:scale-105 active:scale-95 h-6 text-xs"
-                style={activeTab === "solution" ? {
+                style={(mode === "exam" ? activeTab === "grid" : activeTab === "solution") ? {
                   background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)',
                   color: '#000000'
                 } : {
                   color: '#6B7280'
                 }}
-                onClick={() => setActiveTab("solution")}
+                onClick={() => setActiveTab(mode === "exam" ? "grid" : "solution")}
               >
-                <CheckCircle className="h-3 w-3 mr-1" style={activeTab !== "solution" ? {
+                <CheckCircle className="h-3 w-3 mr-1" style={(mode === "exam" ? activeTab !== "grid" : activeTab !== "solution") ? {
                   background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)',
                   WebkitBackgroundClip: 'text',
                   WebkitTextFillColor: 'transparent',
                   backgroundClip: 'text'
                 } : {}} />
-                Solution
+                {mode === "exam" ? "Grid" : "Solution"}
               </Button>
               <Button
                 variant="ghost"

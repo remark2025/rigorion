@@ -5,7 +5,6 @@ import { LeaderboardTable } from "./LeaderboardTable";
 import { Card } from "@/components/ui/card";
 import { EmptyProgressState } from "./EmptyProgressState";
 import type { LeaderboardEntry } from '@/services/types/progressTypes';
-import { Footer } from "@/components/Footer";
 import { useTheme } from "@/contexts/ThemeContext";
 
 // Sample leaderboard data
@@ -43,14 +42,14 @@ export const LeaderboardData = ({ userId }: { userId: string }) => {
   if (isLoading) {
     return (
       <Card className={`p-6 ${
-        isDarkMode ? 'bg-gray-800 border-green-500/30' : 'bg-white'
+        isDarkMode ? 'bg-gray-800 border-orange-500/30' : 'bg-white border-orange-100'
       }`}>
         <div className="py-8 flex justify-center">
           <div className="flex flex-col items-center gap-2">
             <div className={`w-8 h-8 border-4 border-t-transparent rounded-full animate-spin ${
-              isDarkMode ? 'border-green-500' : 'border-blue-500'
+              isDarkMode ? 'border-orange-500' : 'border-orange-500'
             }`}></div>
-            <p className={isDarkMode ? 'text-green-300' : 'text-gray-500'}>
+            <p className={isDarkMode ? 'text-orange-300' : 'text-gray-500'}>
               Loading leaderboard data...
             </p>
           </div>
@@ -62,7 +61,7 @@ export const LeaderboardData = ({ userId }: { userId: string }) => {
   if (error) {
     return (
       <Card className={`p-6 ${
-        isDarkMode ? 'bg-gray-800 border-green-500/30' : 'bg-white'
+        isDarkMode ? 'bg-gray-800 border-orange-500/30' : 'bg-white border-orange-100'
       }`}>
         <div className="py-8 flex justify-center text-red-500">
           <div className="text-center">
@@ -84,11 +83,11 @@ export const LeaderboardData = ({ userId }: { userId: string }) => {
   return (
     <div className="space-y-6">
       <Card className={`p-6 ${
-        isDarkMode ? 'bg-gray-800 border-green-500/30' : 'bg-white'
+        isDarkMode ? 'bg-gray-800 border-orange-500/30' : 'bg-white border-orange-100'
       }`}>
         <div className="mb-6 flex flex-col sm:flex-row justify-between items-center">
           <h3 className={`text-lg font-medium mb-4 sm:mb-0 ${
-            isDarkMode ? 'text-green-400' : 'text-gray-900'
+            isDarkMode ? 'text-orange-400' : 'text-gray-900'
           }`}>Student Leaderboard</h3>
           
           <div className="flex space-x-2">
@@ -97,10 +96,10 @@ export const LeaderboardData = ({ userId }: { userId: string }) => {
               className={`px-4 py-1 rounded-full text-sm transition-colors ${
                 period === 'week' 
                   ? isDarkMode 
-                    ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
-                    : 'bg-blue-100 text-blue-600'
+                    ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30' 
+                    : 'bg-orange-100 text-orange-600'
                   : isDarkMode
-                    ? 'bg-gray-700 text-green-300 hover:bg-gray-600'
+                    ? 'bg-gray-700 text-orange-300 hover:bg-gray-600'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
@@ -111,10 +110,10 @@ export const LeaderboardData = ({ userId }: { userId: string }) => {
               className={`px-4 py-1 rounded-full text-sm transition-colors ${
                 period === 'month' 
                   ? isDarkMode 
-                    ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
-                    : 'bg-blue-100 text-blue-600'
+                    ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30' 
+                    : 'bg-orange-100 text-orange-600'
                   : isDarkMode
-                    ? 'bg-gray-700 text-green-300 hover:bg-gray-600'
+                    ? 'bg-gray-700 text-orange-300 hover:bg-gray-600'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
@@ -125,10 +124,10 @@ export const LeaderboardData = ({ userId }: { userId: string }) => {
               className={`px-4 py-1 rounded-full text-sm transition-colors ${
                 period === 'all' 
                   ? isDarkMode 
-                    ? 'bg-green-500/20 text-green-400 border border-green-500/30' 
-                    : 'bg-blue-100 text-blue-600'
+                    ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30' 
+                    : 'bg-orange-100 text-orange-600'
                   : isDarkMode
-                    ? 'bg-gray-700 text-green-300 hover:bg-gray-600'
+                    ? 'bg-gray-700 text-orange-300 hover:bg-gray-600'
                     : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
@@ -139,8 +138,6 @@ export const LeaderboardData = ({ userId }: { userId: string }) => {
         
         <LeaderboardTable data={data} />
       </Card>
-      
-      <Footer />
     </div>
   );
 };

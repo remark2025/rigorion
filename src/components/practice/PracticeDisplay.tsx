@@ -21,6 +21,7 @@ import SolutionStepBuilder from "@/components/math/SolutionStepBuilder";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import InteractiveReadingSolution from "@/components/reading/InteractiveReadingSolution";
 import { getReadingSolution } from "@/data/sampleReadingSolutions";
+import SATSolutionGrid from "./SATSolutionGrid";
 
 interface PracticeDisplayProps {
   currentQuestion: Question | null;
@@ -44,7 +45,7 @@ interface PracticeDisplayProps {
     };
   };
   boardColor: string;
-  activeTab: "problem" | "solution" | "quote";
+  activeTab: "problem" | "solution" | "quote" | "grid";
   mode?: "timer" | "level" | "manual" | "pomodoro" | "exam";
   timerValue?: string; // Current timer display value
   objective?: {
@@ -59,6 +60,9 @@ interface PracticeDisplayProps {
     timestamp: string;
     questionId?: string;
   }>) => void;
+  selectedAnswers?: Record<number, string>;
+  onAnswerSelect?: (questionIndex: number, answer: string) => void;
+  questions?: Question[]; // Full questions array for SAT test manager
 }
 
 const PracticeDisplay = ({
@@ -81,6 +85,9 @@ const PracticeDisplay = ({
   correctAnswers = 0,
   incorrectAnswers = 0,
   onInteractionsChange,
+  selectedAnswers = {},
+  onAnswerSelect,
+  questions = [],
 }: PracticeDisplayProps) => {
   const { isDarkMode } = useTheme();
   const { user } = useAuth();
@@ -1323,6 +1330,18 @@ Keep the evaluation constructive and educational.`;
                   </div>
                 </>
               )}
+
+              {/* SAT Solution Grid Section */}
+              {activeTab === 'grid' && onAnswerSelect && (
+                <SATSolutionGrid
+                  currentQuestion={currentQuestion}
+                  totalQuestions={totalQuestions}
+                  currentQuestionIndex={currentQuestionIndex}
+                  onQuestionSelect={(index) => onJumpTo && onJumpTo(index)}
+                  selectedAnswers={selectedAnswers}
+                  onAnswerSelect={onAnswerSelect}
+                />
+              )}
             </div>
           </div>
         )}
@@ -1720,6 +1739,19 @@ Keep the evaluation constructive and educational.`;
                     {formatQuote(currentQuestion.quote)}
                     </div>
                   </>
+                )}
+
+                {/* SAT Solution Grid Section */}
+                {activeTab === 'grid' && onAnswerSelect && (
+                  <SATSolutionGrid
+                    currentQuestion={currentQuestion}
+                    totalQuestions={totalQuestions}
+                    currentQuestionIndex={currentQuestionIndex}
+                    onQuestionSelect={(index) => onJumpTo && onJumpTo(index)}
+                    selectedAnswers={selectedAnswers}
+                    onAnswerSelect={onAnswerSelect}
+                    questions={questions}
+                  />
                 )}
               </div>
             </div>
@@ -2129,6 +2161,19 @@ Keep the evaluation constructive and educational.`;
                     {formatQuote(currentQuestion.quote)}
                     </div>
                   </>
+                )}
+
+                {/* SAT Solution Grid Section */}
+                {activeTab === 'grid' && onAnswerSelect && (
+                  <SATSolutionGrid
+                    currentQuestion={currentQuestion}
+                    totalQuestions={totalQuestions}
+                    currentQuestionIndex={currentQuestionIndex}
+                    onQuestionSelect={(index) => onJumpTo && onJumpTo(index)}
+                    selectedAnswers={selectedAnswers}
+                    onAnswerSelect={onAnswerSelect}
+                    questions={questions}
+                  />
                 )}
               </div>
             </div>

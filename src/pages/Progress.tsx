@@ -2,7 +2,7 @@ import { useState, useCallback } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { LeaderboardData } from "@/components/progress/LeaderboardData";
 import { FullPageLoader } from "@/components/progress/FullPageLoader";
-import { Navigation, User, Users, BookOpen, BarChart, Target, ChevronDown, LogOut, Menu, Clock, Trophy, TrendingUp } from "lucide-react";
+import { Navigation, User, Users, BookOpen, BarChart, Target, ChevronDown, LogOut, Menu, Clock, Trophy, TrendingUp, FileText } from "lucide-react";
 import { SecureProgressDataProvider } from "@/components/progress/SecureProgressDataProvider";
 import { useProgress } from "@/contexts/ProgressContext";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useTheme } from "@/contexts/ThemeContext";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart as RechartsBarChart, Bar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
+import { Footer } from '@/components/Footer';
 import { useProgressData } from "@/hooks/useAnalytics";
 
 // Define course type
@@ -67,7 +68,6 @@ const DUMMY_PROGRESS = {
     const globalAverage = Math.floor(Math.random() * 25) + 8;
     const previousDay = i > 0 ? Math.floor(Math.random() * 30) + 10 : userAttempted;
     
-    // Most practiced skills rotation
     const skills = [
       { name: 'Linear Equations', percentile: 85, contribution: 35 },
       { name: 'Ratios & Proportions', percentile: 95, contribution: 42 },
@@ -90,7 +90,6 @@ const DUMMY_PROGRESS = {
     };
   }),
   skillAnalytics: [
-    // SAT Math Skills
     {
       skillId: 'math_1',
       skillName: 'Linear Equations in One Variable',
@@ -98,329 +97,76 @@ const DUMMY_PROGRESS = {
       section: 'Math',
       correct: 18,
       incorrect: 2,
-      unattempted: 5,
+      accuracy: 90,
+      averageTime: 1.8,
+      percentile: 85,
+      improvement: 12
+    },
+    {
+      skillId: 'reading_1', 
+      skillName: 'Vocabulary in Context',
+      chapter: 'Reading Comprehension',
+      section: 'Reading',
+      correct: 22,
+      incorrect: 3,
+      accuracy: 88,
+      averageTime: 1.5,
+      percentile: 78,
+      improvement: 8
+    },
+    {
+      skillId: 'writing_1',
+      skillName: 'Standard English Conventions',
+      chapter: 'Expression of Ideas',
+      section: 'Writing',
+      correct: 15,
+      incorrect: 5,
+      unattempted: 10,
+      accuracy: 75,
+      averageTime: 2.1,
+      percentile: 82,
+      improvement: 15,
       solvedProblems: 20,
-      practicePerDay: 3.2,
-      percentileGrowth: +12,
-      globalPercentile: 85,
+      practicePerDay: 2.5,
+      globalPercentile: 78,
+      percentileGrowth: 8
     },
     {
       skillId: 'math_2',
-      skillName: 'Systems of Linear Equations',
-      chapter: 'Heart of Algebra',
-      section: 'Math',
-      correct: 12,
-      incorrect: 4,
-      unattempted: 8,
-      solvedProblems: 16,
-      practicePerDay: 2.1,
-      percentileGrowth: +8,
-      globalPercentile: 72,
-    },
-    {
-      skillId: 'math_3',
       skillName: 'Quadratic Functions',
       chapter: 'Passport to Advanced Math',
       section: 'Math',
-      correct: 8,
-      incorrect: 6,
-      unattempted: 12,
-      solvedProblems: 14,
-      practicePerDay: 1.8,
-      percentileGrowth: -3,
-      globalPercentile: 58,
-    },
-    {
-      skillId: 'math_4',
-      skillName: 'Polynomial Expressions',
-      chapter: 'Passport to Advanced Math',
-      section: 'Math',
-      correct: 15,
-      incorrect: 3,
-      unattempted: 7,
-      solvedProblems: 18,
-      practicePerDay: 2.7,
-      percentileGrowth: +15,
-      globalPercentile: 88,
-    },
-    {
-      skillId: 'math_5',
-      skillName: 'Ratios and Proportions',
-      chapter: 'Problem Solving & Data Analysis',
-      section: 'Math',
-      correct: 22,
-      incorrect: 1,
-      unattempted: 2,
-      solvedProblems: 23,
-      practicePerDay: 4.1,
-      percentileGrowth: +20,
-      globalPercentile: 95,
-    },
-    {
-      skillId: 'math_6',
-      skillName: 'Statistics and Probability',
-      chapter: 'Problem Solving & Data Analysis',
-      section: 'Math',
-      correct: 14,
-      incorrect: 5,
-      unattempted: 6,
-      solvedProblems: 19,
-      practicePerDay: 2.9,
-      percentileGrowth: +5,
-      globalPercentile: 79,
-    },
-    {
-      skillId: 'math_7',
-      skillName: 'Geometry and Trigonometry',
-      chapter: 'Additional Topics in Math',
-      section: 'Math',
-      correct: 9,
-      incorrect: 7,
-      unattempted: 9,
-      solvedProblems: 16,
-      practicePerDay: 1.6,
-      percentileGrowth: -8,
-      globalPercentile: 45,
-    },
-    {
-      skillId: 'math_8',
-      skillName: 'Complex Numbers',
-      chapter: 'Additional Topics in Math',
-      section: 'Math',
-      correct: 6,
-      incorrect: 4,
+      correct: 12,
+      incorrect: 8,
       unattempted: 15,
-      solvedProblems: 10,
-      practicePerDay: 1.2,
-      percentileGrowth: -5,
-      globalPercentile: 32,
+      accuracy: 60,
+      averageTime: 3.2,
+      percentile: 72,
+      improvement: 5,
+      solvedProblems: 20,
+      practicePerDay: 1.8,
+      globalPercentile: 65,
+      percentileGrowth: 12
     },
-    // SAT Reading Skills
     {
-      skillId: 'read_1',
-      skillName: 'Main Ideas and Central Themes',
+      skillId: 'reading_2',
+      skillName: 'Command of Evidence',
       chapter: 'Information and Ideas',
       section: 'Reading',
       correct: 16,
-      incorrect: 3,
-      unattempted: 6,
-      solvedProblems: 19,
-      practicePerDay: 2.8,
-      percentileGrowth: +18,
-      globalPercentile: 89,
-    },
-    {
-      skillId: 'read_2',
-      skillName: 'Supporting Details and Evidence',
-      chapter: 'Information and Ideas',
-      section: 'Reading',
-      correct: 20,
-      incorrect: 2,
-      unattempted: 3,
-      solvedProblems: 22,
-      practicePerDay: 3.5,
-      percentileGrowth: +22,
-      globalPercentile: 93,
-    },
-    {
-      skillId: 'read_3',
-      skillName: 'Inferences and Implications',
-      chapter: 'Information and Ideas',
-      section: 'Reading',
-      correct: 11,
-      incorrect: 6,
-      unattempted: 8,
-      solvedProblems: 17,
-      practicePerDay: 2.3,
-      percentileGrowth: +2,
-      globalPercentile: 64,
-    },
-    {
-      skillId: 'read_4',
-      skillName: 'Vocabulary in Context',
-      chapter: 'Craft and Structure',
-      section: 'Reading',
-      correct: 18,
       incorrect: 4,
-      unattempted: 3,
-      solvedProblems: 22,
-      practicePerDay: 3.7,
-      percentileGrowth: +16,
-      globalPercentile: 87,
-    },
-    {
-      skillId: 'read_5',
-      skillName: 'Text Structure and Purpose',
-      chapter: 'Craft and Structure',
-      section: 'Reading',
-      correct: 13,
-      incorrect: 5,
-      unattempted: 7,
-      solvedProblems: 18,
-      practicePerDay: 2.4,
-      percentileGrowth: +7,
-      globalPercentile: 76,
-    },
-    {
-      skillId: 'read_6',
-      skillName: 'Point of View and Perspective',
-      chapter: 'Craft and Structure',
-      section: 'Reading',
-      correct: 9,
-      incorrect: 8,
       unattempted: 8,
-      solvedProblems: 17,
-      practicePerDay: 2.1,
-      percentileGrowth: -4,
-      globalPercentile: 52,
-    },
-    {
-      skillId: 'read_7',
-      skillName: 'Quantitative Information',
-      chapter: 'Integration of Knowledge',
-      section: 'Reading',
-      correct: 7,
-      incorrect: 6,
-      unattempted: 12,
-      solvedProblems: 13,
-      practicePerDay: 1.5,
-      percentileGrowth: -7,
-      globalPercentile: 38,
-    },
-    {
-      skillId: 'read_8',
-      skillName: 'Comparing Dual Passages',
-      chapter: 'Integration of Knowledge',
-      section: 'Reading',
-      correct: 10,
-      incorrect: 7,
-      unattempted: 8,
-      solvedProblems: 17,
-      practicePerDay: 2.0,
-      percentileGrowth: +1,
-      globalPercentile: 68,
-    },
-    // SAT Writing Skills
-    {
-      skillId: 'write_1',
-      skillName: 'Standard English Conventions',
-      chapter: 'Language & Usage',
-      section: 'Writing',
-      correct: 17,
-      incorrect: 3,
-      unattempted: 5,
+      accuracy: 80,
+      averageTime: 2.0,
+      percentile: 88,
+      improvement: 10,
       solvedProblems: 20,
       practicePerDay: 3.1,
-      percentileGrowth: +14,
-      globalPercentile: 84,
-    },
-    {
-      skillId: 'write_2',
-      skillName: 'Sentence Structure',
-      chapter: 'Language & Usage',
-      section: 'Writing',
-      correct: 14,
-      incorrect: 4,
-      unattempted: 7,
-      solvedProblems: 18,
-      practicePerDay: 2.6,
-      percentileGrowth: +9,
-      globalPercentile: 78,
-    },
-    {
-      skillId: 'write_3',
-      skillName: 'Punctuation and Grammar',
-      chapter: 'Language & Usage',
-      section: 'Writing',
-      correct: 19,
-      incorrect: 2,
-      unattempted: 4,
-      solvedProblems: 21,
-      practicePerDay: 3.4,
-      percentileGrowth: +19,
-      globalPercentile: 91,
-    },
-    {
-      skillId: 'write_4',
-      skillName: 'Rhetorical Strategy',
-      chapter: 'Expression of Ideas',
-      section: 'Writing',
-      correct: 12,
-      incorrect: 5,
-      unattempted: 8,
-      solvedProblems: 17,
-      practicePerDay: 2.2,
-      percentileGrowth: +4,
-      globalPercentile: 71,
-    },
-    {
-      skillId: 'write_5',
-      skillName: 'Organization and Transitions',
-      chapter: 'Expression of Ideas',
-      section: 'Writing',
-      correct: 15,
-      incorrect: 3,
-      unattempted: 7,
-      solvedProblems: 18,
-      practicePerDay: 2.8,
-      percentileGrowth: +11,
-      globalPercentile: 82,
-    },
-    {
-      skillId: 'write_6',
-      skillName: 'Effective Language Use',
-      chapter: 'Expression of Ideas',
-      section: 'Writing',
-      correct: 11,
-      incorrect: 6,
-      unattempted: 8,
-      solvedProblems: 17,
-      practicePerDay: 2.1,
-      percentileGrowth: +3,
-      globalPercentile: 67,
-    },
-    {
-      skillId: 'write_7',
-      skillName: 'Style and Tone',
-      chapter: 'Expression of Ideas',
-      section: 'Writing',
-      correct: 8,
-      incorrect: 7,
-      unattempted: 10,
-      solvedProblems: 15,
-      practicePerDay: 1.7,
-      percentileGrowth: -6,
-      globalPercentile: 43,
-    },
-    {
-      skillId: 'write_8',
-      skillName: 'Quantitative Information',
-      chapter: 'Expression of Ideas',
-      section: 'Writing',
-      correct: 13,
-      incorrect: 4,
-      unattempted: 8,
-      solvedProblems: 17,
-      practicePerDay: 2.5,
-      percentileGrowth: +8,
-      globalPercentile: 75,
-    },
-  ],
-  goals: [{
-    id: '1',
-    title: 'Complete 100 Questions',
-    targetValue: 100,
-    currentValue: 75,
-    dueDate: '2024-05-01'
-  }, {
-    id: '2',
-    title: 'Achieve 90% in Hard Questions',
-    targetValue: 90,
-    currentValue: 83,
-    dueDate: '2024-05-15'
-  }]
+      globalPercentile: 85,
+      percentileGrowth: 15
+    }
+  ]
 };
-
 
 const Progress = () => {
   const navigate = useNavigate();
@@ -439,24 +185,9 @@ const Progress = () => {
   const [timeAnalyticsView, setTimeAnalyticsView] = useState<'daily' | 'skills'>('daily');
   const [selectedSkillForAnalytics, setSelectedSkillForAnalytics] = useState<string>('all');
   const queryClient = useQueryClient();
-  
-  // Get real analytics data
-  const { 
-    progressData: realProgressData, 
-    loading: analyticsLoading, 
-    error: analyticsError,
-    refreshAnalytics 
-  } = useProgressData('all');
-  
-  // Add refreshProgressData function to invalidate progress data cache
-  const refreshProgressData = useCallback(async () => {
-    queryClient.invalidateQueries({ queryKey: ['userProgress'] });
-    if (refreshAnalytics) {
-      await refreshAnalytics();
-    }
-  }, [queryClient, refreshAnalytics]);
 
-  // Use real analytics data if available, otherwise fallback to dummy data
+  const { progressData: realProgressData, isLoading: analyticsLoading } = useProgressData(session?.user?.id);
+  
   const currentProgressData = realProgressData || DUMMY_PROGRESS;
   
   const pages = [
@@ -494,20 +225,18 @@ const Progress = () => {
   const getPageIcon = (pageName: string) => {
     switch (pageName) {
       case "Account":
-        return <User className={`h-4 w-4 mr-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />;
+        return <User className="h-4 w-4 mr-2 text-gray-500" />;
       case "Practice":
-        return <BookOpen className={`h-4 w-4 mr-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />;
+        return <BookOpen className="h-4 w-4 mr-2 text-gray-500" />;
       case "Analytics":
-        return <BarChart className={`h-4 w-4 mr-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />;
+        return <BarChart className="h-4 w-4 mr-2 text-gray-500" />;
       case "About us":
-        return <Users className={`h-4 w-4 mr-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />;
+        return <Users className="h-4 w-4 mr-2 text-gray-500" />;
       default:
         return null;
     }
   };
-  
-  
-  
+
   return (
     <SecureProgressDataProvider fallbackData={currentProgressData} showLoadingState={analyticsLoading}>
       <div className={`flex min-h-screen w-full transition-colors duration-300 ${
@@ -516,180 +245,184 @@ const Progress = () => {
         <main className={`flex-1 transition-colors duration-300 ${
           isDarkMode ? 'bg-gray-900' : 'bg-mono-bg'
         }`}>
-          <header className={`fixed top-0 left-0 right-0 w-full z-50 border-b px-1 sm:px-2 md:px-4 py-2 sm:py-3 flex items-center justify-between shadow-sm transition-all duration-300 overflow-hidden ${
-            isDarkMode ? 'bg-gray-900 border-green-500/30' : 'bg-white border-gray-200'
-          }`}>
-            <div className="flex items-center gap-1 sm:gap-2">
-              {/* Mobile Hamburger Menu */}
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setSidebarOpen(!sidebarOpen)}
-                className={`lg:hidden rounded-lg ${
-                  isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
-                }`}
-              >
-                <Menu className={`h-5 w-5 ${
-                  isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                }`} />
-              </Button>
+          <header className="fixed top-0 left-0 right-0 w-full z-50 border-b shadow-lg transition-all duration-300 bg-white">
+            <div className="px-1 sm:px-2 md:px-4 py-2 sm:py-3 flex items-center justify-between min-h-[40px] relative z-10">
+              <div className="flex items-center gap-1 sm:gap-2">
+                {/* Mobile Hamburger Menu */}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setSidebarOpen(!sidebarOpen)}
+                  className="lg:hidden rounded-lg hover:bg-gray-100"
+                >
+                  <Menu className="h-5 w-5 text-gray-500" />
+                </Button>
 
-              {/* Desktop Navigation Dropdown */}
-              <DropdownMenu open={isNavDropdownOpen} onOpenChange={setIsNavDropdownOpen}>
-                <DropdownMenuTrigger className={`hidden lg:block rounded-lg p-2 transition-colors ${
-                  isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
-                }`}>
-                  <Navigation className={`h-5 w-5 ${
-                    isDarkMode ? 'text-gray-400' : 'text-gray-500'
-                  }`} />
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start" className={`w-56 shadow-lg rounded-lg p-2 z-50 ${
-                  isDarkMode ? 'bg-gray-900 border-green-500/30' : 'bg-white border-gray-200'
-                }`}>
-                  <ScrollArea className="h-auto max-h-[300px]">
-                    {pages.map((page, index) => (
-                      <DropdownMenuItem 
-                        key={index}
-                        className={`cursor-pointer py-2 rounded-sm transition-colors flex items-center ${
-                          isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
-                        }`}
-                        onClick={() => handleNavigation(page.path)}
-                      >
-                        {getPageIcon(page.name)}
-                        <span className={`font-source-sans ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{page.name}</span>
-                      </DropdownMenuItem>
-                    ))}
-                  </ScrollArea>
-                </DropdownMenuContent>
-              </DropdownMenu>
-              
-              {/* SAT Premium Logo */}
-              <div className="flex items-center">
-                <h1 className="text-base sm:text-lg font-semibold tracking-wide bg-gradient-to-r from-gray-300 via-blue-400 to-blue-500 bg-clip-text text-transparent">
-                  SAT
-                  <span className="text-[8px] font-bold text-gray-400 border border-gray-300 rounded-full w-2.5 h-2.5 inline-flex items-center justify-center leading-none ml-0.5 mr-1 align-top">
-                    ®
-                  </span>
-                  Premium
-                </h1>
+                {/* Desktop Navigation Dropdown */}
+                <DropdownMenu open={isNavDropdownOpen} onOpenChange={setIsNavDropdownOpen}>
+                  <DropdownMenuTrigger className="hidden lg:block rounded-lg p-2 transition-colors hover:bg-gray-100">
+                    <Navigation className="h-5 w-5 text-gray-500" />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="w-56 shadow-lg rounded-lg p-2 z-50 bg-white border-orange-200">
+                    <ScrollArea className="h-auto max-h-[300px]">
+                      {pages.map((page, index) => (
+                        <DropdownMenuItem 
+                          key={index}
+                          className="cursor-pointer py-2 rounded-sm transition-colors hover:bg-gray-100"
+                          onClick={() => handleNavigation(page.path)}
+                        >
+                          {getPageIcon(page.name)}
+                          <span className="font-source-sans text-gray-600">{page.name}</span>
+                        </DropdownMenuItem>
+                      ))}
+                    </ScrollArea>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+                
+                {/* SAT Premium Logo */}
+                <div className="flex items-center">
+                  <h1 className="text-base sm:text-lg font-semibold tracking-wide bg-gradient-to-r from-gray-300 via-blue-400 to-blue-500 bg-clip-text text-transparent">
+                    SAT
+                    <span className="text-[8px] font-bold text-gray-400 border border-gray-300 rounded-full w-2.5 h-2.5 inline-flex items-center justify-center leading-none ml-0.5 mr-1 align-top">
+                      ®
+                    </span>
+                    Premium
+                  </h1>
+                </div>
               </div>
-            </div>
 
-            <div className="flex items-center gap-1 sm:gap-2 overflow-hidden">
-              {/* Course Dropdown */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
+              {/* Center Tab Menu - Practice Style Buttons */}
+              <div className="flex items-center justify-center absolute left-1/2 transform -translate-x-1/2">
+                <div className="inline-flex items-center rounded-full px-2 py-1 border-2" style={{
+                  borderColor: '#EA580C',
+                  background: 'rgba(255, 255, 255, 0.9)'
+                }}>
                   <Button
                     variant="ghost"
                     size="sm"
-                    disabled={selectedView === 'exam-results' || selectedView === 'leaderboard'}
-                    className={`rounded-full bg-transparent transition-colors flex ${
-                      isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
-                    } ${selectedCourse !== '1' ? (isDarkMode ? 'text-green-300 bg-green-900/20' : 'text-blue-600 bg-blue-50') : ''}`}
+                    className="px-3 py-1 rounded-full transition-all duration-200 ease-out hover:scale-105 active:scale-95 h-6 text-xs"
+                    style={selectedView === 'analytics' ? {
+                      background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)',
+                      color: '#000000'
+                    } : {
+                      color: '#6B7280'
+                    }}
+                    onClick={() => setSelectedView('analytics')}
                   >
-                    <BookOpen className={`h-4 w-4 mr-1 ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`} />
-                    <span className={`font-thin text-xs ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
-                      {courses.find(c => c.id === selectedCourse)?.name || 'SAT Math'}
-                    </span>
-                    <ChevronDown className={`ml-1 h-3 w-3 transition-transform ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} />
+                    <BarChart className="h-3 w-3 mr-1" style={selectedView !== 'analytics' ? {
+                      background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      backgroundClip: 'text'
+                    } : {}} />
+                    Analytics
+                    {analyticsLoading && (
+                      <span className="ml-1 inline-block w-2 h-2 bg-orange-400 rounded-full animate-pulse"></span>
+                    )}
                   </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className={`w-56 shadow-lg rounded-lg p-2 z-50 ${
-                  isDarkMode ? 'bg-gray-900 border-green-500/30' : 'bg-white border-gray-200'
-                }`}>
-                  <ScrollArea className="h-[150px]">
-                    {courses.map((course) => (
-                      <DropdownMenuItem 
-                        key={course.id}
-                        className={`cursor-pointer py-2 px-3 rounded-md transition-colors ${
-                          isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-50'
-                        } ${selectedCourse === course.id ? (isDarkMode ? 'bg-gray-800' : 'bg-gray-100') : ''}`}
-                        onClick={() => setSelectedCourse(course.id)}
-                      >
-                        <span className={`font-source-sans text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{course.name}</span>
-                        {selectedCourse === course.id && <span className="ml-auto text-xs">✓</span>}
-                      </DropdownMenuItem>
-                    ))}
-                  </ScrollArea>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="px-3 py-1 rounded-full transition-all duration-200 ease-out hover:scale-105 active:scale-95 h-6 text-xs"
+                    style={selectedView === 'exam-results' ? {
+                      background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)',
+                      color: '#000000'
+                    } : {
+                      color: '#6B7280'
+                    }}
+                    onClick={() => setSelectedView('exam-results')}
+                  >
+                    <FileText className="h-3 w-3 mr-1" style={selectedView !== 'exam-results' ? {
+                      background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      backgroundClip: 'text'
+                    } : {}} />
+                    <span className="hidden sm:inline">Exam Report</span>
+                    <span className="sm:hidden">Report</span>
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="px-3 py-1 rounded-full transition-all duration-200 ease-out hover:scale-105 active:scale-95 h-6 text-xs"
+                    style={selectedView === 'leaderboard' ? {
+                      background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)',
+                      color: '#000000'
+                    } : {
+                      color: '#6B7280'
+                    }}
+                    onClick={() => setSelectedView('leaderboard')}
+                  >
+                    <Trophy className="h-3 w-3 mr-1" style={selectedView !== 'leaderboard' ? {
+                      background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      backgroundClip: 'text'
+                    } : {}} />
+                    <span className="hidden sm:inline">Leaderboard</span>
+                    <span className="sm:hidden">Board</span>
+                  </Button>
+                </div>
+              </div>
 
-              <div className="ml-2 flex items-center">
+              <div className="flex items-center gap-1 sm:gap-2 overflow-hidden">
+                {/* Course Dropdown */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Avatar className={`h-8 w-8 cursor-pointer transition-all ${
-                      isDarkMode ? 'hover:ring-2 hover:ring-green-400' : 'hover:ring-2 hover:ring-blue-200'
-                    }`}>
-                      <AvatarImage src={profile?.avatar_url} />
-                      <AvatarFallback className={`text-xs ${
-                        isDarkMode ? 'bg-green-600 text-white' : 'bg-blue-500 text-white'
-                      }`}>
-                        {getUserInitials()}
-                      </AvatarFallback>
-                    </Avatar>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className={`w-48 shadow-lg rounded-md p-1 z-50 ${
-                    isDarkMode ? 'bg-gray-900 border-green-500/30' : 'bg-white border-gray-200'
-                  }`}>
-                    <DropdownMenuItem 
-                      className={`cursor-pointer py-2 rounded-sm transition-colors flex items-center text-blue-500 ${
-                        isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-100'
-                      }`}
-                      onClick={handleLogout}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-xs px-2 py-1 h-7 bg-white border-gray-200 hover:bg-gray-50"
                     >
-                      <LogOut className="h-4 w-4 mr-2" />
-                      Logout
-                    </DropdownMenuItem>
+                      <span className="text-gray-600 truncate max-w-[60px] sm:max-w-[100px]">
+                        {courses.find(c => c.id === selectedCourse)?.name}
+                      </span>
+                      <ChevronDown className="ml-1 h-3 w-3 text-gray-400" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48 shadow-lg rounded-md p-1 z-50 bg-white border-orange-200">
+                    <ScrollArea className="h-[150px]">
+                      {courses.map((course) => (
+                        <DropdownMenuItem 
+                          key={course.id}
+                          className="cursor-pointer py-2 px-3 rounded-md transition-colors hover:bg-gray-50"
+                          onClick={() => setSelectedCourse(course.id)}
+                        >
+                          <span className="font-source-sans text-sm text-gray-600">{course.name}</span>
+                          {selectedCourse === course.id && <span className="ml-auto text-xs">✓</span>}
+                        </DropdownMenuItem>
+                      ))}
+                    </ScrollArea>
                   </DropdownMenuContent>
                 </DropdownMenu>
+
+                <div className="ml-2 flex items-center">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Avatar className="h-8 w-8 cursor-pointer transition-all hover:ring-2 hover:ring-blue-200">
+                        <AvatarImage src={profile?.avatar_url} />
+                        <AvatarFallback className="text-xs bg-blue-500 text-white">
+                          {getUserInitials()}
+                        </AvatarFallback>
+                      </Avatar>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-48 shadow-lg rounded-md p-1 z-50 bg-white border-orange-200">
+                      <DropdownMenuItem 
+                        className="cursor-pointer py-2 rounded-sm transition-colors flex items-center text-blue-500 hover:bg-gray-100"
+                        onClick={handleLogout}
+                      >
+                        <LogOut className="h-4 w-4 mr-2" />
+                        Logout
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
               </div>
             </div>
           </header>
 
           <div className="pt-20">
-            <div className="container mx-auto p-6">
-              {/* Modern Radio Buttons for Analytics/Exam Results/Leaders Board */}
-              <div className="mb-8 flex justify-center">
-                <div className="inline-flex items-center rounded-full p-1 bg-white shadow-lg border border-gray-100">
-                  <button
-                    onClick={() => setSelectedView('analytics')}
-                    className={`px-6 py-3 rounded-full transition-all duration-300 text-sm font-semibold ${
-                      selectedView === 'analytics'
-                        ? 'bg-blue-600 text-white shadow-md transform scale-105'
-                        : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'
-                    }`}
-                  >
-                    Analytics
-                    {analyticsLoading && (
-                      <span className="ml-2 inline-block w-2 h-2 bg-blue-400 rounded-full animate-pulse"></span>
-                    )}
-                    {realProgressData && !analyticsLoading && (
-                      <span className="ml-2 inline-block w-2 h-2 bg-green-400 rounded-full" title="Real data"></span>
-                    )}
-                  </button>
-                  <button
-                    onClick={() => setSelectedView('exam-results')}
-                    className={`px-6 py-3 rounded-full transition-all duration-300 text-sm font-semibold ${
-                      selectedView === 'exam-results'
-                        ? 'bg-blue-600 text-white shadow-md transform scale-105'
-                        : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'
-                    }`}
-                  >
-                    Exam Results
-                  </button>
-                  <button
-                    onClick={() => setSelectedView('leaderboard')}
-                    className={`px-6 py-3 rounded-full transition-all duration-300 text-sm font-semibold ${
-                      selectedView === 'leaderboard'
-                        ? 'bg-blue-600 text-white shadow-md transform scale-105'
-                        : 'text-gray-700 hover:text-blue-600 hover:bg-blue-50'
-                    }`}
-                  >
-                    Leaders Board
-                  </button>
-                </div>
-              </div>
-
+            <div className="w-full p-6">
               {/* Analytics View */}
               {selectedView === 'analytics' && (
                 <div className="space-y-8">
@@ -763,54 +496,32 @@ const Progress = () => {
                         <div className="flex-1">
                           <h3 className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} mb-3`}>Projected Score</h3>
                           
-                          {/* Current Subject Score */}
                           <div className="mb-2">
                             <div className="flex items-baseline gap-2">
                               <span className={`text-2xl font-bold ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`}>
-                                {(() => {
-                                  const selectedCourseName = courses.find(c => c.id === selectedCourse)?.name || 'SAT Math';
-                                  if (selectedCourseName.includes('Math')) return '720';
-                                  if (selectedCourseName.includes('Reading')) return '680';
-                                  if (selectedCourseName.includes('Writing')) return '700';
-                                  return '720';
-                                })()}
+                                720
                               </span>
                               <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                                ±{(() => {
-                                  const selectedCourseName = courses.find(c => c.id === selectedCourse)?.name || 'SAT Math';
-                                  if (selectedCourseName.includes('Math')) return '35';
-                                  if (selectedCourseName.includes('Reading')) return '40';
-                                  if (selectedCourseName.includes('Writing')) return '30';
-                                  return '35';
-                                })()}
+                                ±35
                               </span>
                             </div>
                             <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                              {courses.find(c => c.id === selectedCourse)?.name.split(' ')[1] || 'Math'} (200–800)
+                              Math (200–800)
                             </div>
-                          </div>
-
-                          {/* Total Score */}
-                          <div className="pt-2 border-t border-gray-200 dark:border-gray-600">
-                            <div className="flex items-baseline gap-2">
-                              <span className={`text-lg font-semibold ${isDarkMode ? 'text-green-300' : 'text-blue-500'}`}>1420</span>
-                              <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>±50</span>
-                            </div>
-                            <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Total (400–1600)</div>
                           </div>
                         </div>
-                        <Target className={`h-8 w-8 ${isDarkMode ? 'text-green-400/70' : 'text-blue-500/70'} ml-2`} />
+                        <Target className={`h-8 w-8 ${isDarkMode ? 'text-green-400/70' : 'text-blue-500/70'}`} />
                       </div>
                     </div>
 
-                    {/* Global Ranking */}
+                    {/* Questions Attempted Today */}
                     <div className={`p-6 rounded-xl ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm border-0`}>
                       <div className="flex items-center justify-between">
                         <div>
-                          <h3 className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Global Ranking</h3>
+                          <h3 className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Today's Progress</h3>
                           <div className="mt-2">
-                            <span className={`text-3xl font-bold ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`}>#{currentProgressData.rank}</span>
-                            <span className={`text-sm ml-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>worldwide</span>
+                            <span className={`text-3xl font-bold ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`}>{currentProgressData.questionsAnsweredToday}</span>
+                            <span className={`text-sm ml-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>questions</span>
                           </div>
                         </div>
                         <Trophy className={`h-8 w-8 ${isDarkMode ? 'text-green-400/70' : 'text-blue-500/70'}`} />
@@ -818,12 +529,8 @@ const Progress = () => {
                     </div>
                   </div>
 
-
-                  {/* Minimalistic Separator */}
-                  <div className={`border-t ${isDarkMode ? 'border-gray-700/50' : 'border-gray-200/50'}`}></div>
-
                   {/* SAT Skill Analytics Table - Full Width */}
-                  <div className={`p-8 rounded-xl ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm border-0`}>
+                  <div className={`p-8 rounded-xl ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm border-0 mt-8`}>
                     <div className="flex items-center justify-between mb-6">
                       <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>
                         {courses.find(c => c.id === selectedCourse)?.name || 'SAT Math'} - Skill Analytics
@@ -861,221 +568,96 @@ const Progress = () => {
                               if (selectedCourseName.includes('Math')) return skill.section === 'Math';
                               if (selectedCourseName.includes('Reading')) return skill.section === 'Reading';
                               if (selectedCourseName.includes('Writing')) return skill.section === 'Writing';
-                              return skill.section === 'Math'; // Default to Math if no match
+                              return skill.section === 'Math';
                             })
                             .map((skill) => {
-                            // Handle zero values to avoid NaN calculations
-                            const totalAttempted = skill.correct + skill.incorrect;
-                            const accuracy = totalAttempted > 0 ? Math.round((skill.correct / totalAttempted) * 100) : 0;
-                            const totalQuestions = skill.correct + skill.incorrect + skill.unattempted;
-                            const progress = totalQuestions > 0 ? Math.round((totalAttempted / totalQuestions) * 100) : 0;
-                            
-                            // Generate status based on performance
-                            const getStatus = (acc: number, growth: number) => {
-                              if (acc >= 85 && growth >= 10) return { text: "Mastered", color: "text-green-600", bg: "bg-green-100" };
-                              if (acc >= 75 && growth >= 5) return { text: "Strong", color: "text-blue-600", bg: "bg-blue-100" };
-                              if (acc >= 65 && growth >= 0) return { text: "Learning", color: "text-yellow-600", bg: "bg-yellow-100" };
-                              if (acc >= 50) return { text: "Developing", color: "text-orange-600", bg: "bg-orange-100" };
-                              return { text: "Needs Focus", color: "text-red-600", bg: "bg-red-100" };
-                            };
-                            
-                            const status = getStatus(accuracy, skill.percentileGrowth);
-                            
-                            // Section color coding
-                            const getSectionColor = (section: string) => {
-                              switch(section) {
-                                case 'Math': return isDarkMode ? 'text-blue-400' : 'text-blue-600';
-                                case 'Reading': return isDarkMode ? 'text-green-400' : 'text-green-600';
-                                case 'Writing': return isDarkMode ? 'text-purple-400' : 'text-purple-600';
-                                default: return isDarkMode ? 'text-gray-400' : 'text-gray-600';
-                              }
-                            };
-                            
-                            return (
-                              <tr key={skill.skillId} className={`border-b ${isDarkMode ? 'border-gray-700/50' : 'border-gray-100'} hover:${isDarkMode ? 'bg-gray-700/30' : 'bg-blue-50/30'} transition-colors`}>
-                                <td className={`py-4 px-4 ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>
-                                  <div className="font-medium text-sm">{skill.skillName}</div>
-                                </td>
-                                <td className={`py-4 px-3 text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                                  {skill.chapter}
-                                </td>
-                                <td className="py-4 px-3 text-center">
-                                  <span className={`font-bold ${accuracy >= 80 ? 'text-green-600' : accuracy >= 60 ? 'text-yellow-600' : 'text-red-600'}`}>
-                                    {accuracy}%
-                                  </span>
-                                </td>
-                                <td className={`py-4 px-3 text-center font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                                  {skill.solvedProblems}
-                                </td>
-                                <td className={`py-4 px-3 text-center font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                                  {skill.practicePerDay.toFixed(1)}
-                                </td>
-                                <td className="py-4 px-3 text-center">
-                                  <div className="flex flex-col items-center">
-                                    <span className={`font-bold text-lg ${
-                                      skill.globalPercentile >= 90 ? 'text-green-600' : 
-                                      skill.globalPercentile >= 75 ? 'text-blue-600' : 
-                                      skill.globalPercentile >= 50 ? 'text-yellow-600' : 
+                              const totalAttempted = skill.correct + skill.incorrect;
+                              const accuracy = totalAttempted > 0 ? Math.round((skill.correct / totalAttempted) * 100) : 0;
+                              const totalQuestions = skill.correct + skill.incorrect + (skill.unattempted || 0);
+                              const progress = totalQuestions > 0 ? Math.round((totalAttempted / totalQuestions) * 100) : 0;
+                              
+                              const getStatus = (acc: number, growth: number) => {
+                                if (acc >= 85 && growth >= 10) return { text: "Mastered", color: "text-green-600", bg: "bg-green-100" };
+                                if (acc >= 75 && growth >= 5) return { text: "Strong", color: "text-blue-600", bg: "bg-blue-100" };
+                                if (acc >= 65 && growth >= 0) return { text: "Learning", color: "text-yellow-600", bg: "bg-yellow-100" };
+                                if (acc >= 50) return { text: "Developing", color: "text-orange-600", bg: "bg-orange-100" };
+                                return { text: "Needs Focus", color: "text-red-600", bg: "bg-red-100" };
+                              };
+                              
+                              const status = getStatus(accuracy, skill.percentileGrowth || 0);
+                              
+                              return (
+                                <tr key={skill.skillId} className={`border-b ${isDarkMode ? 'border-gray-700/50' : 'border-gray-100'} hover:${isDarkMode ? 'bg-gray-700/30' : 'bg-blue-50/30'} transition-colors`}>
+                                  <td className={`py-4 px-4 ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>
+                                    <div className="font-medium text-sm">{skill.skillName}</div>
+                                  </td>
+                                  <td className={`py-4 px-3 text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                                    {skill.chapter}
+                                  </td>
+                                  <td className="py-4 px-3 text-center">
+                                    <span className={`font-bold ${accuracy >= 80 ? 'text-green-600' : accuracy >= 60 ? 'text-yellow-600' : 'text-red-600'}`}>
+                                      {accuracy}%
+                                    </span>
+                                  </td>
+                                  <td className={`py-4 px-3 text-center font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                                    {skill.solvedProblems || skill.correct + skill.incorrect}
+                                  </td>
+                                  <td className={`py-4 px-3 text-center font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                                    {(skill.practicePerDay || 2.0).toFixed(1)}
+                                  </td>
+                                  <td className="py-4 px-3 text-center">
+                                    <div className="flex flex-col items-center">
+                                      <span className={`font-bold text-lg ${
+                                        (skill.globalPercentile || skill.percentile) >= 90 ? 'text-green-600' : 
+                                        (skill.globalPercentile || skill.percentile) >= 75 ? 'text-blue-600' : 
+                                        (skill.globalPercentile || skill.percentile) >= 50 ? 'text-yellow-600' : 
+                                        'text-red-600'
+                                      }`}>
+                                        {skill.globalPercentile || skill.percentile}th
+                                      </span>
+                                      <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                                        {(skill.globalPercentile || skill.percentile) >= 90 ? 'Elite' : 
+                                         (skill.globalPercentile || skill.percentile) >= 75 ? 'Strong' : 
+                                         (skill.globalPercentile || skill.percentile) >= 50 ? 'Average' : 
+                                         'Below Avg'}
+                                      </span>
+                                    </div>
+                                  </td>
+                                  <td className="py-4 px-3 text-center">
+                                    <span className={`font-bold ${
+                                      (skill.percentileGrowth || skill.improvement) >= 10 ? 'text-green-600' : 
+                                      (skill.percentileGrowth || skill.improvement) >= 5 ? 'text-blue-600' : 
+                                      (skill.percentileGrowth || skill.improvement) >= 0 ? 'text-yellow-600' : 
                                       'text-red-600'
                                     }`}>
-                                      {skill.globalPercentile}th
+                                      +{skill.percentileGrowth || skill.improvement}%
                                     </span>
-                                    <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                                      {skill.globalPercentile >= 90 ? 'Elite' : 
-                                       skill.globalPercentile >= 75 ? 'Strong' : 
-                                       skill.globalPercentile >= 50 ? 'Average' : 
-                                       'Below Avg'}
-                                    </span>
-                                  </div>
-                                </td>
-                                <td className="py-4 px-3 text-center">
-                                  <span className={`font-bold ${skill.percentileGrowth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                                    {skill.percentileGrowth > 0 ? '+' : ''}{skill.percentileGrowth}
-                                  </span>
-                                </td>
-                                <td className="py-4 px-3">
-                                  <div className="flex items-center gap-2">
-                                    <div className={`flex-1 bg-gray-200 rounded-full h-2 ${isDarkMode ? 'bg-gray-700' : ''}`}>
-                                      <div 
-                                        className={`h-2 rounded-full transition-all duration-500 ${
-                                          progress >= 80 ? 'bg-green-500' : progress >= 60 ? 'bg-blue-500' : 'bg-yellow-500'
-                                        }`}
-                                        style={{ width: `${progress}%` }}
-                                      ></div>
+                                  </td>
+                                  <td className="py-4 px-3 text-center">
+                                    <div className="flex flex-col items-center">
+                                      <div className={`w-16 h-2 rounded-full ${isDarkMode ? 'bg-gray-600' : 'bg-gray-200'} overflow-hidden`}>
+                                        <div 
+                                          className={`h-full rounded-full transition-all duration-300 ${
+                                            progress >= 80 ? 'bg-green-500' : progress >= 60 ? 'bg-blue-500' : progress >= 40 ? 'bg-yellow-500' : 'bg-orange-500'
+                                          }`}
+                                          style={{ width: `${progress}%` }}
+                                        ></div>
+                                      </div>
+                                      <span className={`text-xs mt-1 font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                        {progress}%
+                                      </span>
                                     </div>
-                                    <span className={`text-xs font-medium min-w-[35px] ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                                      {progress}%
+                                  </td>
+                                  <td className="py-4 px-4 text-center">
+                                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${status.bg} ${status.color}`}>
+                                      {status.text}
                                     </span>
-                                  </div>
-                                </td>
-                                <td className="py-4 px-4 text-center">
-                                  <span className={`font-semibold px-2 py-1 rounded-full text-xs ${status.color} ${
-                                    isDarkMode ? 'bg-gray-700' : status.bg
-                                  }`}>
-                                    {status.text}
-                                  </span>
-                                </td>
-                              </tr>
-                            );
-                          })}
+                                  </td>
+                                </tr>
+                              );
+                            })}
                         </tbody>
                       </table>
-                    </div>
-                  </div>
-
-                  {/* Daily Performance Chart */}
-                  <div className={`p-8 rounded-xl ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm border-0 mt-8`}>
-                    <h3 className={`text-xl font-semibold mb-6 ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>Daily Performance Trend</h3>
-                    <div className="h-80">
-                      <ResponsiveContainer width="100%" height="100%">
-                        <LineChart data={currentProgressData.performanceGraph}>
-                          <CartesianGrid strokeDasharray="3 3" stroke={isDarkMode ? '#374151' : '#e5e7eb'} />
-                          <XAxis 
-                            dataKey="date" 
-                            stroke={isDarkMode ? '#9ca3af' : '#6b7280'}
-                            fontSize={12}
-                            tickFormatter={(value) => {
-                              const date = new Date(value);
-                              return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                            }}
-                          />
-                          <YAxis 
-                            stroke={isDarkMode ? '#9ca3af' : '#6b7280'}
-                            fontSize={12}
-                            label={{ value: 'Questions Attempted', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle' } }}
-                          />
-                          <Tooltip 
-                            contentStyle={{
-                              backgroundColor: isDarkMode ? '#1f2937' : '#ffffff',
-                              border: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb',
-                              borderRadius: '8px',
-                              boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
-                            }}
-                            labelFormatter={(label) => {
-                              const date = new Date(label);
-                              return date.toLocaleDateString('en-US', { 
-                                weekday: 'long', 
-                                month: 'long', 
-                                day: 'numeric' 
-                              });
-                            }}
-                            formatter={(value, name, props) => {
-                              if (name === 'attempted') {
-                                const momentum = props.payload.momentum;
-                                const skill = props.payload.mostPracticedSkill;
-                                const momentumText = momentum > 0 ? `+${momentum}` : momentum.toString();
-                                const momentumColor = momentum > 0 ? '#10b981' : momentum < 0 ? '#ef4444' : '#6b7280';
-                                const percentileColor = skill.percentile >= 90 ? '#10b981' : skill.percentile >= 75 ? '#3b82f6' : skill.percentile >= 50 ? '#eab308' : '#ef4444';
-                                
-                                return [
-                                  <div style={{ color: isDarkMode ? '#e5e7eb' : '#374151' }}>
-                                    <div className="mb-2">
-                                      <strong>Your Performance: {value} questions</strong>
-                                    </div>
-                                    <div style={{ color: momentumColor, fontSize: '12px', marginBottom: '8px' }}>
-                                      Momentum: {momentumText} vs. previous day
-                                    </div>
-                                    <div className="border-t pt-2" style={{ borderColor: isDarkMode ? '#374151' : '#e5e7eb' }}>
-                                      <div style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '4px' }}>
-                                        Most Practiced Skill:
-                                      </div>
-                                      <div style={{ fontSize: '11px' }}>
-                                        <div>{skill.name}</div>
-                                        <div style={{ color: percentileColor, fontWeight: 'bold' }}>
-                                          {skill.percentile}th percentile • {skill.contribution}% of today's practice
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>,
-                                  ''
-                                ];
-                              }
-                              if (name === 'globalAverage') {
-                                return [
-                                  <div style={{ color: isDarkMode ? '#fb923c' : '#ea580c' }}>
-                                    Global Average: <strong>{value}</strong>
-                                  </div>,
-                                  ''
-                                ];
-                              }
-                              return [value, name];
-                            }}
-                          />
-                          {/* User Performance Line */}
-                          <Line 
-                            type="monotone" 
-                            dataKey="attempted" 
-                            stroke={isDarkMode ? '#10b981' : '#3b82f6'}
-                            strokeWidth={3}
-                            dot={{ fill: isDarkMode ? '#10b981' : '#3b82f6', r: 4 }}
-                            activeDot={{ r: 6, fill: isDarkMode ? '#10b981' : '#3b82f6' }}
-                            name="attempted"
-                          />
-                          {/* Global Average Line */}
-                          <Line 
-                            type="monotone" 
-                            dataKey="globalAverage" 
-                            stroke={isDarkMode ? '#fb923c' : '#ea580c'}
-                            strokeWidth={2}
-                            strokeDasharray="5 5"
-                            dot={{ fill: isDarkMode ? '#fb923c' : '#ea580c', r: 3 }}
-                            activeDot={{ r: 5, fill: isDarkMode ? '#fb923c' : '#ea580c' }}
-                            name="globalAverage"
-                          />
-                        </LineChart>
-                      </ResponsiveContainer>
-                    </div>
-
-                    {/* Chart Legend */}
-                    <div className="flex items-center justify-center gap-6 mt-4">
-                      <div className="flex items-center gap-2">
-                        <div className={`w-4 h-0.5 ${isDarkMode ? 'bg-green-400' : 'bg-blue-600'} rounded`}></div>
-                        <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Your Performance</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className={`w-4 h-0.5 ${isDarkMode ? 'bg-orange-400' : 'bg-orange-600'} rounded border-dashed border-t-2`} style={{ borderStyle: 'dashed' }}></div>
-                        <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Global Average</span>
-                      </div>
                     </div>
                   </div>
 
@@ -1132,7 +714,7 @@ const Progress = () => {
                         {currentProgressData.performanceGraph.slice(-15).map((day, index) => {
                           const questionsForSkill = selectedSkillForAnalytics === 'all' 
                             ? day.attempted 
-                            : Math.floor(day.attempted * (Math.random() * 0.3 + 0.1)); // Mock skill-specific data
+                            : Math.floor(day.attempted * (Math.random() * 0.3 + 0.1));
                           return (
                             <div key={day.date} className={`flex items-center justify-between p-3 rounded-lg ${isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
                               <div className="flex items-center space-x-4 min-w-[120px]">
@@ -1164,55 +746,116 @@ const Progress = () => {
 
                     {/* Daily Performance Trend View */}
                     {timeAnalyticsView === 'daily' && (
-                      <div className="space-y-4">
-                        <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'} mb-4`}>
-                          Hourly practice distribution over the last 15 days
-                        </p>
-                        {currentProgressData.performanceGraph.slice(-15).map((day, index) => {
-                          // Mock hourly data - distribute questions across hours
-                          const hourlyData = Array.from({length: 24}, (_, hour) => {
-                            const studyHours = [9, 10, 14, 15, 16, 19, 20, 21]; // Common study hours
-                            const isStudyHour = studyHours.includes(hour);
-                            const questions = isStudyHour ? Math.floor(day.attempted / studyHours.length) + Math.floor(Math.random() * 3) : 0;
-                            return { hour, questions };
-                          });
-                          
-                          const maxQuestions = Math.max(...hourlyData.map(h => h.questions));
-                          
-                          return (
-                            <div key={day.date} className={`p-4 rounded-lg ${isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
-                              <div className="flex items-center justify-between mb-3">
-                                <div className="flex items-center space-x-2">
-                                  <div className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                                    {new Date(day.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', weekday: 'short' })}
-                                  </div>
-                                </div>
-                                <div className={`text-sm font-semibold ${isDarkMode ? 'text-orange-400' : 'text-orange-600'}`}>
-                                  Total: {day.attempted} questions
-                                </div>
-                              </div>
-                              <div className="flex items-end space-x-1 h-12">
-                                {hourlyData.map((hourData, hourIndex) => (
-                                  <div key={hourIndex} className="flex flex-col items-center flex-1">
-                                    <div 
-                                      className={`w-full bg-orange-500 rounded-t transition-all duration-500 ease-out ${hourData.questions > 0 ? '' : 'opacity-20'}`}
-                                      style={{ 
-                                        height: hourData.questions > 0 ? `${(hourData.questions / Math.max(maxQuestions, 1)) * 100}%` : '2px',
-                                        minHeight: '2px'
-                                      }}
-                                      title={`${hourData.hour}:00 - ${hourData.questions} questions`}
-                                    ></div>
-                                    {hourData.questions > 0 && (
-                                      <span className={`text-xs mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                                        {hourData.hour}h
-                                      </span>
-                                    )}
-                                  </div>
-                                ))}
-                              </div>
-                            </div>
-                          );
-                        })}
+                      <div className="h-80">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <LineChart data={currentProgressData.performanceGraph}>
+                            <CartesianGrid strokeDasharray="3 3" stroke={isDarkMode ? '#374151' : '#e5e7eb'} />
+                            <XAxis 
+                              dataKey="date" 
+                              stroke={isDarkMode ? '#9ca3af' : '#6b7280'}
+                              fontSize={12}
+                              tickFormatter={(value) => {
+                                const date = new Date(value);
+                                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                              }}
+                            />
+                            <YAxis 
+                              stroke={isDarkMode ? '#9ca3af' : '#6b7280'}
+                              fontSize={12}
+                              label={{ value: 'Questions Attempted', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle' } }}
+                            />
+                            <Tooltip 
+                              contentStyle={{
+                                backgroundColor: isDarkMode ? '#1f2937' : '#ffffff',
+                                border: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb',
+                                borderRadius: '8px',
+                                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                              }}
+                              labelFormatter={(label) => {
+                                const date = new Date(label);
+                                return date.toLocaleDateString('en-US', { 
+                                  weekday: 'long', 
+                                  month: 'long', 
+                                  day: 'numeric' 
+                                });
+                              }}
+                              formatter={(value, name, props) => {
+                                if (name === 'attempted') {
+                                  const momentum = props.payload.momentum;
+                                  const skill = props.payload.mostPracticedSkill;
+                                  const momentumText = momentum > 0 ? `+${momentum}` : momentum.toString();
+                                  const momentumColor = momentum > 0 ? '#10b981' : momentum < 0 ? '#ef4444' : '#6b7280';
+                                  const percentileColor = skill.percentile >= 90 ? '#10b981' : skill.percentile >= 75 ? '#3b82f6' : skill.percentile >= 50 ? '#eab308' : '#ef4444';
+                                  
+                                  return [
+                                    <div style={{ color: isDarkMode ? '#e5e7eb' : '#374151' }}>
+                                      <div className="mb-2">
+                                        <strong>Your Performance: {value} questions</strong>
+                                      </div>
+                                      <div style={{ color: momentumColor, fontSize: '12px', marginBottom: '8px' }}>
+                                        Momentum: {momentumText} vs. previous day
+                                      </div>
+                                      <div className="border-t pt-2" style={{ borderColor: isDarkMode ? '#374151' : '#e5e7eb' }}>
+                                        <div style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '4px' }}>
+                                          Most Practiced Skill:
+                                        </div>
+                                        <div style={{ fontSize: '11px' }}>
+                                          <div>{skill.name}</div>
+                                          <div style={{ color: percentileColor, fontWeight: 'bold' }}>
+                                            {skill.percentile}th percentile • {skill.contribution}% of today's practice
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>,
+                                    ''
+                                  ];
+                                }
+                                if (name === 'globalAverage') {
+                                  return [
+                                    <div style={{ color: isDarkMode ? '#fb923c' : '#ea580c' }}>
+                                      Global Average: <strong>{value}</strong>
+                                    </div>,
+                                    ''
+                                  ];
+                                }
+                                return [value, name];
+                              }}
+                            />
+                            <Line 
+                              type="monotone" 
+                              dataKey="attempted" 
+                              stroke={isDarkMode ? '#10b981' : '#3b82f6'}
+                              strokeWidth={3}
+                              dot={{ fill: isDarkMode ? '#10b981' : '#3b82f6', r: 4 }}
+                              activeDot={{ r: 6, fill: isDarkMode ? '#10b981' : '#3b82f6' }}
+                              name="attempted"
+                            />
+                            <Line 
+                              type="monotone" 
+                              dataKey="globalAverage" 
+                              stroke={isDarkMode ? '#fb923c' : '#ea580c'}
+                              strokeWidth={2}
+                              strokeDasharray="5 5"
+                              dot={{ fill: isDarkMode ? '#fb923c' : '#ea580c', r: 3 }}
+                              activeDot={{ r: 5, fill: isDarkMode ? '#fb923c' : '#ea580c' }}
+                              name="globalAverage"
+                            />
+                          </LineChart>
+                        </ResponsiveContainer>
+                      </div>
+                    )}
+
+                    {/* Chart Legend */}
+                    {timeAnalyticsView === 'daily' && (
+                      <div className="flex items-center justify-center gap-6 mt-4">
+                        <div className="flex items-center gap-2">
+                          <div className={`w-4 h-0.5 ${isDarkMode ? 'bg-green-400' : 'bg-blue-600'} rounded`}></div>
+                          <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Your Performance</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className={`w-4 h-0.5 ${isDarkMode ? 'bg-orange-400' : 'bg-orange-600'} rounded`} style={{ borderStyle: 'dashed' }}></div>
+                          <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Global Average</span>
+                        </div>
                       </div>
                     )}
                   </div>
@@ -1268,7 +911,7 @@ const Progress = () => {
 
                         {/* Calibration Analysis */}
                         <div>
-                          <h4 className={`font-semibold mb-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                          <h4 className={`text-lg font-semibold mb-4 ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>
                             Calibration (Metacognition)
                           </h4>
                           
@@ -1277,25 +920,12 @@ const Progress = () => {
                             <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-gray-700/50' : 'bg-indigo-50'}`}>
                               <div className="flex justify-between items-center mb-2">
                                 <span className={`font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Brier Score</span>
-                                <span className={`text-2xl font-bold ${
-                                  0.15 <= 0.20 ? (isDarkMode ? 'text-green-400' : 'text-green-600') :
-                                  0.15 <= 0.30 ? (isDarkMode ? 'text-yellow-400' : 'text-yellow-600') :
-                                  (isDarkMode ? 'text-red-400' : 'text-red-600')
-                                }`}>0.15</span>
+                                <span className={`text-2xl font-bold ${isDarkMode ? 'text-green-400' : 'text-green-600'}`}>0.15</span>
                               </div>
                               <div className={`w-full bg-gray-200 rounded-full h-2 ${isDarkMode ? 'bg-gray-600' : ''}`}>
-                                <div 
-                                  className={`h-2 rounded-full transition-all duration-300 ${
-                                    0.15 <= 0.20 ? 'bg-green-500' : 
-                                    0.15 <= 0.30 ? 'bg-yellow-500' : 
-                                    'bg-red-500'
-                                  }`} 
-                                  style={{ width: `${Math.max(5, (1 - 0.15) * 100)}%` }}
-                                ></div>
+                                <div className="h-2 rounded-full transition-all duration-300 bg-green-500" style={{ width: '85%' }}></div>
                               </div>
-                              <p className={`text-xs mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                                Target: ≤ 0.20 (Lower is better)
-                              </p>
+                              <p className={`text-xs mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Target: ≤ 0.20 (Lower is better)</p>
                             </div>
 
                             {/* Confidence Calibration */}
@@ -1303,85 +933,11 @@ const Progress = () => {
                               <div className="flex justify-between items-center mb-2">
                                 <span className={`font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Confidence Gap</span>
                                 <div className="text-center">
-                                  <span className={`text-2xl font-bold ${
-                                    Math.abs(3) < 5 ? (isDarkMode ? 'text-green-400' : 'text-green-600') :
-                                    Math.abs(3) < 10 ? (isDarkMode ? 'text-yellow-400' : 'text-yellow-600') :
-                                    (isDarkMode ? 'text-red-400' : 'text-red-600')
-                                  }`}>+3</span>
+                                  <span className={`text-2xl font-bold ${isDarkMode ? 'text-green-400' : 'text-green-600'}`}>+3</span>
                                   <span className={`text-sm ml-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>pp</span>
                                 </div>
                               </div>
-                              <div className="flex items-center gap-2">
-                                <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Under</span>
-                                <div className={`flex-1 h-2 rounded-full ${isDarkMode ? 'bg-gray-600' : 'bg-gray-200'} relative`}>
-                                  {/* Zero line */}
-                                  <div className="absolute left-1/2 top-0 w-0.5 h-2 bg-gray-400 transform -translate-x-0.5"></div>
-                                  {/* Confidence gap indicator */}
-                                  <div 
-                                    className={`absolute top-0 h-2 w-1 rounded ${
-                                      3 > 0 ? 'bg-orange-500' : 'bg-blue-500'
-                                    }`}
-                                    style={{ 
-                                      left: `${50 + (3 / 20) * 50}%`,
-                                      transform: 'translateX(-50%)'
-                                    }}
-                                  ></div>
-                                </div>
-                                <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Over</span>
-                              </div>
-                              <p className={`text-xs mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                                Target: |gap| &lt; 5pp • {3 > 0 ? 'Slightly overconfident' : 'Slightly underconfident'}
-                              </p>
-                            </div>
-
-                            {/* Confidence Distribution */}
-                            <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-gray-700/50' : 'bg-cyan-50'}`}>
-                              <div className="flex justify-between items-center mb-3">
-                                <span className={`font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Confidence Pattern</span>
-                                <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Last 50 questions</span>
-                              </div>
-                              
-                              {/* Confidence level breakdown */}
-                              <div className="space-y-2">
-                                {[
-                                  { level: 5, label: 'Very Sure', count: 18, accuracy: 89 },
-                                  { level: 4, label: 'Sure', count: 15, accuracy: 80 },
-                                  { level: 3, label: 'Neutral', count: 12, accuracy: 67 },
-                                  { level: 2, label: 'Unsure', count: 3, accuracy: 33 },
-                                  { level: 1, label: 'Guessing', count: 2, accuracy: 50 }
-                                ].map((conf) => {
-                                  const calibrationGap = conf.accuracy - (conf.level * 20);
-                                  return (
-                                    <div key={conf.level} className="flex items-center gap-3">
-                                      <span className={`text-xs w-16 ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                                        {conf.label}
-                                      </span>
-                                      <div className="flex-1 flex items-center gap-2">
-                                        <div className={`w-full bg-gray-200 rounded-full h-1.5 ${isDarkMode ? 'bg-gray-600' : ''}`}>
-                                          <div 
-                                            className="bg-blue-500 h-1.5 rounded-full transition-all duration-300" 
-                                            style={{ width: `${(conf.count / 50) * 100}%` }}
-                                          ></div>
-                                        </div>
-                                        <span className={`text-xs min-w-[30px] ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                                          {conf.count}
-                                        </span>
-                                        <span className={`text-xs min-w-[35px] font-medium ${
-                                          Math.abs(calibrationGap) < 10 ? 'text-green-600' : 
-                                          Math.abs(calibrationGap) < 20 ? 'text-yellow-600' : 
-                                          'text-red-600'
-                                        }`}>
-                                          {conf.accuracy}%
-                                        </span>
-                                      </div>
-                                    </div>
-                                  );
-                                })}
-                              </div>
-                              
-                              <p className={`text-xs mt-2 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                                Good calibration: confidence matches actual accuracy
-                              </p>
+                              <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Slightly overconfident</p>
                             </div>
                           </div>
                         </div>
@@ -1393,7 +949,7 @@ const Progress = () => {
                       <h3 className={`text-xl font-semibold mb-6 ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>Key Performance Insights</h3>
                       
                       <div className="space-y-6">
-                        {/* Radar Chart - Professional Enlarged */}
+                        {/* Radar Chart */}
                         <div className="h-96">
                           <ResponsiveContainer width="100%" height="100%">
                             <RadarChart 
@@ -1422,7 +978,6 @@ const Progress = () => {
                                   fontWeight: 600
                                 }}
                                 tickFormatter={(value) => {
-                                  // Abbreviate long metric names for better display
                                   const abbreviations = {
                                     'Peak Hours': 'Peak Hours',
                                     'Easy Questions': 'Easy',
@@ -1438,159 +993,53 @@ const Progress = () => {
                               />
                               <PolarRadiusAxis 
                                 angle={90} 
-                                domain={[0, 100]} 
-                                tick={{ 
-                                  fontSize: 12, 
-                                  fill: isDarkMode ? '#9ca3af' : '#6b7280',
-                                  fontWeight: 500
-                                }}
-                                tickCount={6}
+                                domain={[0, 100]}
+                                tick={false}
+                                tickCount={5}
                               />
-                              <Radar
-                                name="Performance"
-                                dataKey="value"
-                                stroke={isDarkMode ? '#10b981' : '#3b82f6'}
-                                fill={isDarkMode ? '#10b981' : '#3b82f6'}
-                                fillOpacity={0.12}
-                                strokeWidth={4}
-                                dot={{ 
-                                  r: 6, 
-                                  fill: isDarkMode ? '#10b981' : '#3b82f6',
-                                  strokeWidth: 3,
-                                  stroke: isDarkMode ? '#064e3b' : '#1e40af'
-                                }}
-                                activeDot={{
-                                  r: 8,
-                                  fill: isDarkMode ? '#34d399' : '#60a5fa',
-                                  strokeWidth: 3,
-                                  stroke: isDarkMode ? '#064e3b' : '#1e40af'
-                                }}
+                              <Radar 
+                                name="Performance" 
+                                dataKey="value" 
+                                stroke={isDarkMode ? '#fb923c' : '#ea580c'}
+                                fill={isDarkMode ? '#fb923c' : '#ea580c'}
+                                fillOpacity={0.3}
+                                strokeWidth={2}
+                                dot={{ r: 4, fill: isDarkMode ? '#fb923c' : '#ea580c' }}
                               />
                             </RadarChart>
                           </ResponsiveContainer>
                         </div>
 
-                        {/* Performance Breakdown */}
+                        {/* Key Insights Text */}
                         <div className="space-y-3">
-                          <h4 className={`font-semibold text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Performance Breakdown</h4>
-                          
-                          {/* Peak Performance Hours */}
-                          <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-green-900/30' : 'bg-green-50'} border-l-4 border-green-500`}>
-                            <div className="flex justify-between items-center">
-                              <div>
-                                <p className={`text-sm font-medium ${isDarkMode ? 'text-green-300' : 'text-green-700'}`}>Peak Hours</p>
-                                <p className={`text-xs ${isDarkMode ? 'text-green-400' : 'text-green-600'}`}>2:00 PM - 4:00 PM</p>
-                              </div>
-                              <span className={`text-lg font-bold ${isDarkMode ? 'text-green-400' : 'text-green-600'}`}>85%</span>
-                            </div>
+                          <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-orange-500/10 border border-orange-500/20' : 'bg-orange-50 border border-orange-200'}`}>
+                            <p className={`text-sm font-medium ${isDarkMode ? 'text-orange-400' : 'text-orange-700'}`}>
+                              💡 <strong>Focus Area:</strong> Hard questions need more practice (55% accuracy)
+                            </p>
                           </div>
-
-                          {/* Time Distribution */}
-                          <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-blue-900/30' : 'bg-blue-50'} border-l-4 border-blue-500`}>
-                            <div className="flex justify-between items-center">
-                              <div>
-                                <p className={`text-sm font-medium ${isDarkMode ? 'text-blue-300' : 'text-blue-700'}`}>Time per Difficulty</p>
-                                <p className={`text-xs ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>Easy: 45s • Med: 78s • Hard: 125s</p>
-                              </div>
-                              <span className={`text-lg font-bold ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>78%</span>
-                            </div>
+                          <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-green-500/10 border border-green-500/20' : 'bg-green-50 border border-green-200'}`}>
+                            <p className={`text-sm font-medium ${isDarkMode ? 'text-green-400' : 'text-green-700'}`}>
+                              ✅ <strong>Strength:</strong> Excellent performance on easy questions (90%)
+                            </p>
                           </div>
-
-                          {/* Focus & Consistency */}
-                          <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-purple-900/30' : 'bg-purple-50'} border-l-4 border-purple-500`}>
-                            <div className="flex justify-between items-center">
-                              <div>
-                                <p className={`text-sm font-medium ${isDarkMode ? 'text-purple-300' : 'text-purple-700'}`}>Focus Duration</p>
-                                <p className={`text-xs ${isDarkMode ? 'text-purple-400' : 'text-purple-600'}`}>Avg: 45 min sessions</p>
-                              </div>
-                              <span className={`text-lg font-bold ${isDarkMode ? 'text-purple-400' : 'text-purple-600'}`}>75%</span>
-                            </div>
+                          <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-blue-500/10 border border-blue-500/20' : 'bg-blue-50 border border-blue-200'}`}>
+                            <p className={`text-sm font-medium ${isDarkMode ? 'text-blue-400' : 'text-blue-700'}`}>
+                              📈 <strong>Improvement:</strong> Time management has improved 12% this month
+                            </p>
                           </div>
-
-                          {/* Improvement Areas */}
-                          <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-orange-900/30' : 'bg-orange-50'} border-l-4 border-orange-500`}>
-                            <div className="flex justify-between items-center">
-                              <div>
-                                <p className={`text-sm font-medium ${isDarkMode ? 'text-orange-300' : 'text-orange-700'}`}>Hard Questions</p>
-                                <p className={`text-xs ${isDarkMode ? 'text-orange-400' : 'text-orange-600'}`}>Focus area for improvement</p>
-                              </div>
-                              <span className={`text-lg font-bold ${isDarkMode ? 'text-orange-400' : 'text-orange-600'}`}>55%</span>
-                            </div>
-                          </div>
-
-                          {/* Knowledge Retention */}
-                          <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-red-900/30' : 'bg-red-50'} border-l-4 border-red-500`}>
-                            <div className="flex justify-between items-center">
-                              <div>
-                                <p className={`text-sm font-medium ${isDarkMode ? 'text-red-300' : 'text-red-700'}`}>Retention Rate</p>
-                                <p className={`text-xs ${isDarkMode ? 'text-red-400' : 'text-red-600'}`}>Knowledge decay over 7 days</p>
-                              </div>
-                              <span className={`text-lg font-bold ${isDarkMode ? 'text-red-400' : 'text-red-600'}`}>68%</span>
-                            </div>
-                          </div>
-
                         </div>
                       </div>
                     </div>
                   </div>
 
-                  {/* Footer Section */}
-                  <footer className={`mt-16 py-12 px-8 rounded-xl ${isDarkMode ? 'bg-gray-800' : 'bg-gray-50'} border-t-4 ${isDarkMode ? 'border-green-500' : 'border-blue-500'}`}>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                      {/* About Section */}
-                      <div>
-                        <h3 className={`text-lg font-bold mb-4 ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`}>SAT® Premium</h3>
-                        <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} leading-relaxed`}>
-                          Your comprehensive SAT preparation platform. Track your progress, analyze your performance, and achieve your target score with our advanced analytics and personalized insights.
-                        </p>
-                      </div>
-
-                      {/* Quick Links */}
-                      <div>
-                        <h4 className={`font-semibold mb-4 ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>Quick Links</h4>
-                        <ul className="space-y-2">
-                          <li><a href="/practice" className={`text-sm ${isDarkMode ? 'text-gray-400 hover:text-green-400' : 'text-gray-600 hover:text-blue-600'} transition-colors`}>Practice Tests</a></li>
-                          <li><a href="/analytics" className={`text-sm ${isDarkMode ? 'text-gray-400 hover:text-green-400' : 'text-gray-600 hover:text-blue-600'} transition-colors`}>Analytics Dashboard</a></li>
-                          <li><a href="/leaderboard" className={`text-sm ${isDarkMode ? 'text-gray-400 hover:text-green-400' : 'text-gray-600 hover:text-blue-600'} transition-colors`}>Leaderboard</a></li>
-                          <li><a href="/about" className={`text-sm ${isDarkMode ? 'text-gray-400 hover:text-green-400' : 'text-gray-600 hover:text-blue-600'} transition-colors`}>About Us</a></li>
-                        </ul>
-                      </div>
-
-                      {/* Statistics */}
-                      <div>
-                        <h4 className={`font-semibold mb-4 ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>Platform Stats</h4>
-                        <div className="space-y-2">
-                          <div className="flex justify-between">
-                            <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Active Students</span>
-                            <span className={`text-sm font-bold ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`}>50,000+</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Tests Completed</span>
-                            <span className={`text-sm font-bold ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`}>1.2M+</span>
-                          </div>
-                          <div className="flex justify-between">
-                            <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Avg. Score Improvement</span>
-                            <span className={`text-sm font-bold ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`}>+180 pts</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Copyright */}
-                    <div className={`mt-8 pt-6 border-t ${isDarkMode ? 'border-gray-700' : 'border-gray-200'} text-center`}>
-                      <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                        © 2024 SAT Premium. All rights reserved. SAT® is a trademark of the College Board.
-                      </p>
-                    </div>
-                  </footer>
                 </div>
               )}
 
-              {/* Exam Results View - SAT Style */}
+              {/* Exam Results View */}
               {selectedView === 'exam-results' && (
                 <div className="space-y-8">
                   {/* Official SAT Score Report Style */}
-                  <div className={`bg-white border-2 border-gray-300 rounded-lg overflow-hidden shadow-lg`}>
+                  <div className="bg-white border-2 border-gray-300 rounded-lg overflow-hidden shadow-lg">
                     {/* Header - Official SAT Style */}
                     <div className="bg-blue-900 text-white p-6">
                       <div className="flex items-center justify-between">
@@ -1645,140 +1094,131 @@ const Progress = () => {
                     </div>
 
                     {/* Section Scores */}
-                    <div className="p-6 border-b border-gray-200">
+                    <div className="p-6">
                       <h2 className="text-lg font-semibold text-gray-800 mb-4">Section Scores</h2>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {/* Reading and Writing */}
-                        <div className="bg-gray-50 p-4 rounded-lg">
-                          <h3 className="font-semibold text-gray-800 mb-3">Evidence-Based Reading and Writing</h3>
-                          <div className="space-y-3">
+                        <div className="border rounded-lg p-4">
+                          <h3 className="font-semibold text-blue-600 mb-3">Reading and Writing</h3>
+                          <div className="space-y-2">
                             <div className="flex justify-between">
-                              <span>Reading Test Score</span>
-                              <span className="font-medium">36</span>
+                              <span className="text-sm">Reading</span>
+                              <span className="font-medium">36/40</span>
                             </div>
                             <div className="flex justify-between">
-                              <span>Writing and Language Test Score</span>
-                              <span className="font-medium">35</span>
+                              <span className="text-sm">Writing and Language</span>
+                              <span className="font-medium">38/44</span>
                             </div>
-                            <div className="border-t pt-2">
-                              <div className="flex justify-between font-semibold">
-                                <span>Section Score</span>
-                                <span>720</span>
-                              </div>
+                            <div className="flex justify-between font-semibold pt-2 border-t">
+                              <span>Total</span>
+                              <span>720</span>
                             </div>
                           </div>
                         </div>
-
-                        {/* Math */}
-                        <div className="bg-gray-50 p-4 rounded-lg">
-                          <h3 className="font-semibold text-gray-800 mb-3">Math</h3>
-                          <div className="space-y-3">
+                        
+                        <div className="border rounded-lg p-4">
+                          <h3 className="font-semibold text-blue-600 mb-3">Math</h3>
+                          <div className="space-y-2">
                             <div className="flex justify-between">
-                              <span>Calculator</span>
-                              <span className="font-medium">34</span>
+                              <span className="text-sm">Calculator</span>
+                              <span className="font-medium">32/38</span>
                             </div>
                             <div className="flex justify-between">
-                              <span>No Calculator</span>
-                              <span className="font-medium">18</span>
+                              <span className="text-sm">No Calculator</span>
+                              <span className="font-medium">18/20</span>
                             </div>
-                            <div className="border-t pt-2">
-                              <div className="flex justify-between font-semibold">
-                                <span>Section Score</span>
-                                <span>700</span>
-                              </div>
+                            <div className="flex justify-between font-semibold pt-2 border-t">
+                              <span>Total</span>
+                              <span>700</span>
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
-
-                    {/* Subscores */}
-                    <div className="p-6 border-b border-gray-200">
-                      <h2 className="text-lg font-semibold text-gray-800 mb-4">Subscores (1-15)</h2>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div className="text-center p-3 bg-blue-50 rounded">
-                          <p className="text-sm text-gray-600">Command of Evidence</p>
-                          <p className="text-xl font-bold text-blue-600">13</p>
-                        </div>
-                        <div className="text-center p-3 bg-blue-50 rounded">
-                          <p className="text-sm text-gray-600">Words in Context</p>
-                          <p className="text-xl font-bold text-blue-600">14</p>
-                        </div>
-                        <div className="text-center p-3 bg-blue-50 rounded">
-                          <p className="text-sm text-gray-600">Expression of Ideas</p>
-                          <p className="text-xl font-bold text-blue-600">12</p>
-                        </div>
-                        <div className="text-center p-3 bg-blue-50 rounded">
-                          <p className="text-sm text-gray-600">Standard English</p>
-                          <p className="text-xl font-bold text-blue-600">13</p>
-                        </div>
-                        <div className="text-center p-3 bg-green-50 rounded">
-                          <p className="text-sm text-gray-600">Heart of Algebra</p>
-                          <p className="text-xl font-bold text-green-600">14</p>
-                        </div>
-                        <div className="text-center p-3 bg-green-50 rounded">
-                          <p className="text-sm text-gray-600">Problem Solving</p>
-                          <p className="text-xl font-bold text-green-600">13</p>
-                        </div>
-                        <div className="text-center p-3 bg-green-50 rounded">
-                          <p className="text-sm text-gray-600">Passport to Adv Math</p>
-                          <p className="text-xl font-bold text-green-600">12</p>
-                        </div>
-                        <div className="text-center p-3 bg-green-50 rounded">
-                          <p className="text-sm text-gray-600">Additional Topics</p>
-                          <p className="text-xl font-bold text-green-600">11</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Cross-Test Scores */}
-                    <div className="p-6 border-b border-gray-200">
-                      <h2 className="text-lg font-semibold text-gray-800 mb-4">Cross-Test Scores (10-40)</h2>
+                    
+                    {/* Detailed Score Analysis */}
+                    <div className="p-6 border-t border-gray-200">
+                      <h2 className="text-lg font-semibold text-gray-800 mb-4">Score Analysis & Recommendations</h2>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="text-center p-4 bg-purple-50 rounded-lg">
-                          <p className="text-sm text-gray-600 mb-2">Analysis in History/Social Studies</p>
-                          <p className="text-3xl font-bold text-purple-600">32</p>
+                        {/* Strengths */}
+                        <div className="bg-green-50 p-4 rounded-lg">
+                          <h3 className="font-semibold text-green-800 mb-2">Strengths</h3>
+                          <ul className="space-y-1 text-sm text-green-700">
+                            <li>• Excellent performance in Algebra (95% accuracy)</li>
+                            <li>• Strong reading comprehension skills</li>
+                            <li>• Consistent time management</li>
+                            <li>• High accuracy in grammar questions</li>
+                          </ul>
                         </div>
-                        <div className="text-center p-4 bg-orange-50 rounded-lg">
-                          <p className="text-sm text-gray-600 mb-2">Analysis in Science</p>
-                          <p className="text-3xl font-bold text-orange-600">30</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Percentiles */}
-                    <div className="p-6">
-                      <h2 className="text-lg font-semibold text-gray-800 mb-4">Percentiles Compared to SAT Test-Takers</h2>
-                      <div className="bg-yellow-50 p-4 rounded-lg">
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-                          <div>
-                            <p className="text-sm text-gray-600">Total Score</p>
-                            <p className="text-2xl font-bold text-yellow-600">95th</p>
-                            <p className="text-xs text-gray-500">percentile</p>
-                          </div>
-                          <div>
-                            <p className="text-sm text-gray-600">EBRW</p>
-                            <p className="text-2xl font-bold text-yellow-600">92nd</p>
-                            <p className="text-xs text-gray-500">percentile</p>
-                          </div>
-                          <div>
-                            <p className="text-sm text-gray-600">Math</p>
-                            <p className="text-2xl font-bold text-yellow-600">97th</p>
-                            <p className="text-xs text-gray-500">percentile</p>
-                          </div>
+                        
+                        {/* Areas for Improvement */}
+                        <div className="bg-orange-50 p-4 rounded-lg">
+                          <h3 className="font-semibold text-orange-800 mb-2">Focus Areas</h3>
+                          <ul className="space-y-1 text-sm text-orange-700">
+                            <li>• Geometry word problems (68% accuracy)</li>
+                            <li>• Advanced data analysis concepts</li>
+                            <li>• Complex reading passages</li>
+                            <li>• Time allocation on difficult questions</li>
+                          </ul>
                         </div>
                       </div>
                     </div>
-
-                    {/* Footer */}
-                    <div className="bg-gray-100 p-4 text-center text-sm text-gray-600">
-                      <p>This score report shows your performance on this practice test. Scores are valid for practice purposes only.</p>
+                    
+                    {/* Score Progression */}
+                    <div className="p-6 border-t border-gray-200">
+                      <h2 className="text-lg font-semibold text-gray-800 mb-4">Score Progression</h2>
+                      <div className="space-y-4">
+                        <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
+                          <span className="font-medium">Practice Test 1</span>
+                          <span className="text-lg font-bold text-blue-600">1320</span>
+                        </div>
+                        <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
+                          <span className="font-medium">Practice Test 2</span>
+                          <span className="text-lg font-bold text-blue-600">1350</span>
+                        </div>
+                        <div className="flex justify-between items-center p-3 bg-blue-100 rounded border-2 border-blue-300">
+                          <span className="font-medium">Current Test</span>
+                          <span className="text-lg font-bold text-blue-600">1420</span>
+                        </div>
+                        <div className="text-center p-4 bg-green-50 rounded-lg">
+                          <p className="text-sm text-green-700 font-medium">
+                            🎉 Improvement: +100 points from first practice test!
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* Next Steps */}
+                    <div className="p-6 border-t border-gray-200">
+                      <h2 className="text-lg font-semibold text-gray-800 mb-4">Recommended Next Steps</h2>
+                      <div className="space-y-3">
+                        <div className="flex items-start space-x-3">
+                          <div className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">1</div>
+                          <div>
+                            <h4 className="font-medium text-gray-800">Focus on Geometry</h4>
+                            <p className="text-sm text-gray-600">Complete 20 geometry practice problems daily</p>
+                          </div>
+                        </div>
+                        <div className="flex items-start space-x-3">
+                          <div className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">2</div>
+                          <div>
+                            <h4 className="font-medium text-gray-800">Improve Reading Speed</h4>
+                            <p className="text-sm text-gray-600">Practice timed reading passages (45 seconds per question)</p>
+                          </div>
+                        </div>
+                        <div className="flex items-start space-x-3">
+                          <div className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">3</div>
+                          <div>
+                            <h4 className="font-medium text-gray-800">Take Weekly Practice Tests</h4>
+                            <p className="text-sm text-gray-600">Maintain momentum with full-length practice tests</p>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
               )}
 
-              {/* Leaders Board View */}
+              {/* Leaderboard View */}
               {selectedView === 'leaderboard' && (
                 <LeaderboardData userId={userId || 'guest'} />
               )}
@@ -1792,6 +1232,9 @@ const Progress = () => {
                 progressData: progressData || currentProgressData
               }}
             />
+            
+            {/* Custom Footer for Analytics Section */}
+            <Footer />
           </div>
         </main>
       </div>

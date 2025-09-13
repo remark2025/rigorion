@@ -22,9 +22,12 @@ const CommentSection = () => {
       {!isOpen && (
         <Button
           onClick={handleToggle}
-          className="rounded-full bg-blue-600 hover:bg-blue-700 text-white p-3 h-12 w-12 shadow-lg flex items-center justify-center"
+          className="rounded-full text-black p-3 h-12 w-12 shadow-lg flex items-center justify-center"
+          style={{
+            background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)'
+          }}
         >
-          <MessageCircle className="h-5 w-5" />
+          <MessageCircle className="h-5 w-5 text-black" />
         </Button>
       )}
 
@@ -73,7 +76,10 @@ const CommentSection = () => {
             <Button
               onClick={handleSend}
               disabled={!comment.trim()}
-              className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-4 py-1 h-8 flex items-center gap-1"
+              className="text-black rounded-full px-4 py-1 h-8 flex items-center gap-1 disabled:opacity-50"
+              style={{
+                background: !comment.trim() ? '#E5E7EB' : 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)'
+              }}
               size="sm"
             >
               <Send className="h-3 w-3" />

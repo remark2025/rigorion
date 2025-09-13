@@ -94,7 +94,7 @@ export default function PracticeContent({
   const [modeDialogOpen, setModeDialogOpen] = useState(false);
   const [objectiveDialogOpen, setObjectiveDialogOpen] = useState(false);
   const [soundsModalOpen, setSoundsModalOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<"problem" | "solution" | "quote">("problem");
+  const [activeTab, setActiveTab] = useState<"problem" | "solution" | "quote" | "grid">("problem");
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [timeRemaining, setTimeRemaining] = useState<string>("00:00");
@@ -139,6 +139,9 @@ export default function PracticeContent({
     timestamp: string;
     questionId?: string;
   }>>([]);
+  
+  // SAT Grid state
+  const [selectedAnswers, setSelectedAnswers] = useState<Record<number, string>>({});
 
 
   useEffect(() => {
@@ -367,6 +370,13 @@ export default function PracticeContent({
   const handleSetMode = (selectedMode: "timer" | "level" | "manual" | "pomodoro" | "exam", duration?: number, level?: "easy" | "medium" | "hard") => {
     setMode(selectedMode);
     setSelectedLevel(level || null);
+    
+    // Switch to grid tab when exam mode is selected
+    if (selectedMode === "exam") {
+      setActiveTab("grid");
+    } else if (activeTab === "grid") {
+      setActiveTab("problem"); // Switch back to problem tab when leaving exam mode
+    }
     
     if (selectedMode === "timer") {
       const questionDuration = duration || 90;
@@ -612,6 +622,11 @@ export default function PracticeContent({
             correctAnswers={correctAnswers}
             incorrectAnswers={incorrectAnswers}
             onInteractionsChange={setInteractions}
+            selectedAnswers={selectedAnswers}
+            onAnswerSelect={(questionIndex: number, answer: string) => {
+              setSelectedAnswers(prev => ({ ...prev, [questionIndex]: answer }));
+            }}
+            questions={filteredQuestions}
           />
         ) : (
           <div className={`w-full p-8 text-center ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>No question selected</div>

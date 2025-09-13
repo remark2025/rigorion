@@ -27,6 +27,7 @@ import SimpleInteractiveTest from "@/pages/SimpleInteractiveTest";
 import ReadingSolutionDemo from "@/pages/ReadingSolutionDemo";
 import WritingSolutionDemo from "@/pages/WritingSolutionDemo";
 import AdvancedAnimationDemo from "@/pages/AdvancedAnimationDemo";
+import SATMockTestPage from "@/pages/SATMockTestPage";
 
 function App() {
   // Prevent layout shift from modals by maintaining scrollbar space
@@ -52,6 +53,7 @@ function App() {
                 <Route path="/reading-demo" element={<ReadingSolutionDemo />} />
                 <Route path="/writing-demo" element={<WritingSolutionDemo />} />
                 <Route path="/advanced-animations" element={<AdvancedAnimationDemo />} />
+                <Route path="/sat-mock-test" element={<SATMockTestPage />} />
                 <Route path="/analytics" element={<Analytics />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/payment" element={

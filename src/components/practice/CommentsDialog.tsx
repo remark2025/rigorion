@@ -45,9 +45,12 @@ const CommentsDialog = ({ onSubmitComment }: CommentsDialogProps) => {
         <Button 
           variant="ghost" 
           size="sm" 
-          className="rounded-full relative transition-all duration-300"
+          className="rounded-full relative transition-all duration-300 text-black"
+          style={{
+            background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)'
+          }}
         >
-          <MessageSquare className="h-4 w-4" />
+          <MessageSquare className="h-4 w-4 text-black" />
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px] bg-white">
@@ -89,7 +92,13 @@ const CommentsDialog = ({ onSubmitComment }: CommentsDialogProps) => {
         </div>
         
         <DialogFooter>
-          <Button onClick={handleSubmit} className="w-full">
+          <Button 
+            onClick={handleSubmit} 
+            className="w-full text-black"
+            style={{
+              background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)'
+            }}
+          >
             Submit Feedback
           </Button>
         </DialogFooter>

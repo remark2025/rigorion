@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { Search, ChevronLeft, ChevronRight, MessageCircle, Bot } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight, Bot } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useTheme } from "@/contexts/ThemeContext";
 
@@ -104,18 +104,6 @@ const PracticeFooter = ({
         </div>
       </div>
 
-      {/* Floating Feedback Icon - Left Bottom Corner */}
-      <div className="fixed bottom-6 left-6 z-30">
-        <Button
-          size="sm"
-          className="h-8 w-8 rounded-full transition-all duration-300 hover:scale-110 text-black font-semibold"
-          style={{
-            background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)'
-          }}
-        >
-          <MessageCircle className="h-4 w-4 text-black" />
-        </Button>
-      </div>
 
 
       {/* Go to Question Popup */}
