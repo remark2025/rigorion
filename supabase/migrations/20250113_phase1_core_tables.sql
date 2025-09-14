@@ -1,403 +1,441 @@
--- Phase 1.2: Core Content Tables with UUID PKs and Proper Relationships
--- Creates the main content structure with enhanced relationships
+-- ============================================================
+-- 0) EXTENSIONS (for gen_random_uuid)
+-- ============================================================
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
--- ============================================================================
--- CONTENT PACKS - Enhanced from existing
--- ============================================================================
+-- ============================================================
+-- 1) DOMAINS (idempotent creation via DO blocks)
+-- ============================================================
 
--- Drop existing table if needed and recreate with proper structure
-DROP TABLE IF EXISTS public.content_packs CASCADE;
+-- version_string: semantic version like 1.0.0 / 2.1.3-beta
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_type t WHERE t.typname = 'version_string'
+  ) THEN
+    CREATE DOMAIN version_string AS text
+      CHECK (VALUE ~ '^\d+\.\d+\.\d+(-[0-9A-Za-z\.-]+)?$');
+  END IF;
+END$$;
 
-CREATE TABLE public.content_packs (
+-- duration_seconds: non-negative integer
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_type t WHERE t.typname = 'duration_seconds'
+  ) THEN
+    CREATE DOMAIN duration_seconds AS integer
+      CHECK (VALUE >= 0);
+  END IF;
+END$$;
+
+-- percentage: 0..100 with two decimals
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_type t WHERE t.typname = 'percentage'
+  ) THEN
+    CREATE DOMAIN percentage AS numeric(5,2)
+      CHECK (VALUE >= 0 AND VALUE <= 100);
+  END IF;
+END$$;
+
+-- content_hash: allow sha256 or other hashes; nullable is fine
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_type t WHERE t.typname = 'content_hash'
+  ) THEN
+    CREATE DOMAIN content_hash AS text
+      CHECK (
+        VALUE IS NULL
+        OR VALUE ~ '^[A-Fa-f0-9]{32}$'           -- md5
+        OR VALUE ~ '^[A-Fa-f0-9]{40}$'           -- sha1
+        OR VALUE ~ '^[A-Fa-f0-9]{64}$'           -- sha256
+        OR VALUE ~ '^[A-Fa-f0-9]{128}$'          -- sha512
+      );
+  END IF;
+END$$;
+
+-- ============================================================
+-- 2) ENUMS (create if missing; add missing values if needed)
+-- ============================================================
+
+-- pack_category
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname='pack_category') THEN
+    CREATE TYPE pack_category AS ENUM ('math','reading','writing','mixed');
+  END IF;
+END$$;
+
+-- subject
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname='subject') THEN
+    CREATE TYPE subject AS ENUM ('math','reading','writing','science');
+  END IF;
+END$$;
+
+-- difficulty
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname='difficulty') THEN
+    CREATE TYPE difficulty AS ENUM ('easy','medium','hard');
+  END IF;
+END$$;
+
+-- content_status
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname='content_status') THEN
+    CREATE TYPE content_status AS ENUM ('draft','review','published','archived');
+  END IF;
+END$$;
+
+-- question_type
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname='question_type') THEN
+    CREATE TYPE question_type AS ENUM ('multiple_choice','grid_in','essay','interactive');
+  END IF;
+END$$;
+
+-- passage_type
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname='passage_type') THEN
+    CREATE TYPE passage_type AS ENUM ('fiction','nonfiction','poetry','historical','scientific','persuasive');
+  END IF;
+END$$;
+
+-- graph_type (ensure it includes 'function_graph')
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname='graph_type') THEN
+    CREATE TYPE graph_type AS ENUM (
+      'coordinate_plane','bar_chart','line_graph','pie_chart',
+      'scatter_plot','histogram','function_graph'
+    );
+  ELSE
+    -- add 'function_graph' if it’s missing
+    IF NOT EXISTS (
+      SELECT 1
+      FROM pg_type t
+      JOIN pg_enum e ON e.enumtypid = t.oid
+      WHERE t.typname='graph_type' AND e.enumlabel='function_graph'
+    ) THEN
+      ALTER TYPE graph_type ADD VALUE 'function_graph';
+    END IF;
+  END IF;
+END$$;
+
+-- step_type
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname='step_type') THEN
+    CREATE TYPE step_type AS ENUM ('concept','calculation','analysis','verification','insight');
+  END IF;
+END$$;
+
+-- interaction_type
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname='interaction_type') THEN
+    CREATE TYPE interaction_type AS ENUM ('fill_blank','input','slider','multiple_choice','drag_drop');
+  END IF;
+END$$;
+
+-- calculator_type
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname='calculator_type') THEN
+    CREATE TYPE calculator_type AS ENUM ('basic','scientific','graphing');
+  END IF;
+END$$;
+
+-- solution_type
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname='solution_type') THEN
+    CREATE TYPE solution_type AS ENUM ('graph','calculator','diagram','simulation','step_by_step');
+  END IF;
+END$$;
+
+-- ============================================================
+-- 3) TABLES (Phase 1.2) - use IF NOT EXISTS to avoid data loss
+-- ============================================================
+
+-- CONTENT PACKS
+CREATE TABLE IF NOT EXISTS public.content_packs (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    -- Human-readable identifier for references
-    slug text UNIQUE NOT NULL, -- e.g., 'sat-math-algebra-2025'
-    
-    -- Metadata
+    slug text UNIQUE NOT NULL,
     title text NOT NULL,
     description text,
     version version_string NOT NULL DEFAULT '1.0.0',
-    
-    -- Classification
     category pack_category NOT NULL DEFAULT 'mixed',
     subject subject,
     difficulty difficulty,
     tags text[] DEFAULT '{}',
-    
-    -- Content metrics
     question_count integer NOT NULL DEFAULT 0,
     estimated_duration duration_seconds,
-    
-    -- File and content management
     file_path text,
     content_hash content_hash,
     size_bytes bigint DEFAULT 0,
-    
-    -- Publishing and lifecycle
     status content_status NOT NULL DEFAULT 'draft',
     is_published boolean GENERATED ALWAYS AS (status = 'published') STORED,
-    
-    -- Access control
     is_premium boolean NOT NULL DEFAULT false,
-    access_level text DEFAULT 'free' CHECK (access_level IN ('free', 'premium', 'internal')),
-    
-    -- Analytics
+    access_level text DEFAULT 'free' CHECK (access_level IN ('free','premium','internal')),
     download_count bigint DEFAULT 0,
     rating_average numeric(3,2) DEFAULT 0.00,
     rating_count integer DEFAULT 0,
-    
-    -- Caching
     cache_control text DEFAULT 'public, max-age=31536000, immutable',
     etag text,
-    
-    -- Timestamps and audit
     created_at timestamptz NOT NULL DEFAULT now(),
     updated_at timestamptz NOT NULL DEFAULT now(),
     published_at timestamptz,
     created_by uuid REFERENCES auth.users(id),
-    
-    -- Natural key constraint
     CONSTRAINT uq_content_packs_slug UNIQUE (slug)
 );
 
--- ============================================================================
--- PASSAGES - Reading Content with Rich Structure
--- ============================================================================
-
-CREATE TABLE public.passages (
+-- PASSAGES
+CREATE TABLE IF NOT EXISTS public.passages (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    -- Human-readable reference
-    reference_id text UNIQUE NOT NULL, -- e.g., 'PASSAGE-READING-001'
-    
-    -- Content
+    reference_id text UNIQUE NOT NULL,
     title text,
     content text NOT NULL,
-    
-    -- Classification
     passage_type passage_type NOT NULL DEFAULT 'nonfiction',
     subject subject NOT NULL DEFAULT 'reading',
     difficulty difficulty,
-    
-    -- Source information
     source text,
     author text,
     publication_date date,
     copyright_info text,
-    
-    -- Content analysis
     word_count integer,
     reading_level text,
-    estimated_time duration_seconds DEFAULT 300, -- 5 minutes default
+    estimated_time duration_seconds DEFAULT 300,
     key_concepts text[] DEFAULT '{}',
     vocabulary_level difficulty DEFAULT 'medium',
-    
-    -- Structure and formatting
-    paragraphs jsonb, -- Array of paragraph objects with line numbers, annotations
-    footnotes jsonb, -- Footnotes and citations
+    paragraphs jsonb,
+    footnotes jsonb,
     formatting_notes text,
-    
-    -- Full-text search (will be populated in Phase 4)
     search_vector tsvector,
-    
-    -- Accessibility
-    alt_descriptions jsonb, -- For images, charts within passage
+    alt_descriptions jsonb,
     accessibility_notes text,
-    
-    -- Timestamps and audit
     created_at timestamptz NOT NULL DEFAULT now(),
     updated_at timestamptz NOT NULL DEFAULT now(),
     created_by uuid REFERENCES auth.users(id),
-    
-    -- Constraints
     CONSTRAINT chk_passage_content_not_empty CHECK (char_length(trim(content)) > 0),
     CONSTRAINT chk_passage_word_count CHECK (word_count IS NULL OR word_count > 0)
 );
 
--- ============================================================================
--- GRAPHS - Visual Content and Interactive Elements
--- ============================================================================
-
-CREATE TABLE public.graphs (
+-- GRAPHS
+CREATE TABLE IF NOT EXISTS public.graphs (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    reference_id text UNIQUE NOT NULL, -- e.g., 'GRAPH-MATH-QUAD-001'
-    
-    -- Metadata
+    reference_id text UNIQUE NOT NULL,
     title text,
     description text,
-    
-    -- Graph classification
     graph_type graph_type NOT NULL,
     subject subject NOT NULL,
-    
-    -- Visual data
-    image_url text, -- Static image fallback
-    svg_data text, -- Scalable vector graphics
-    canvas_data jsonb, -- HTML5 canvas drawing instructions
-    
-    -- Interactive configuration
+    image_url text,
+    svg_data text,
+    canvas_data jsonb,
     is_interactive boolean NOT NULL DEFAULT false,
     interaction_config jsonb,
-    
-    -- Mathematical graphs specific
-    functions jsonb, -- Array of function objects for math graphs
-    coordinate_system jsonb, -- Axis configuration, ranges, labels
-    domain_range jsonb, -- Mathematical domain and range
-    
-    -- Data visualization graphs
-    data_points jsonb, -- Raw data points for charts
-    axis_labels jsonb, -- X and Y axis labeling
-    legend_info jsonb, -- Legend configuration
-    
-    -- Styling and presentation
+    functions jsonb,
+    coordinate_system jsonb,
+    domain_range jsonb,
+    data_points jsonb,
+    axis_labels jsonb,
+    legend_info jsonb,
     theme text DEFAULT 'default',
     color_scheme jsonb,
-    dimensions jsonb, -- Width, height, aspect ratio
-    
-    -- Accessibility compliance
+    dimensions jsonb,
     alt_text text NOT NULL,
     detailed_description text,
-    tactile_description text, -- For screen readers
-    
-    -- Timestamps and audit
+    tactile_description text,
     created_at timestamptz NOT NULL DEFAULT now(),
     updated_at timestamptz NOT NULL DEFAULT now(),
     created_by uuid REFERENCES auth.users(id),
-    
-    -- Constraints
     CONSTRAINT chk_graph_alt_text_not_empty CHECK (char_length(trim(alt_text)) > 0),
     CONSTRAINT chk_graph_has_visual_data CHECK (
         image_url IS NOT NULL OR svg_data IS NOT NULL OR canvas_data IS NOT NULL
     )
 );
 
--- ============================================================================
--- QUESTIONS - Main Content with Enhanced Structure
--- ============================================================================
-
-CREATE TABLE public.questions (
+-- QUESTIONS
+CREATE TABLE IF NOT EXISTS public.questions (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-    -- Pack relationship and ordering
     pack_id uuid NOT NULL REFERENCES public.content_packs(id) ON DELETE CASCADE,
     question_number integer NOT NULL,
-    
-    -- Human-readable reference
-    public_id text UNIQUE NOT NULL, -- e.g., 'MATH-ALG-001'
-    
-    -- Core content
+    public_id text UNIQUE NOT NULL,
     content text NOT NULL,
     question_type question_type NOT NULL DEFAULT 'multiple_choice',
-    
-    -- Subject and classification
     subject subject NOT NULL,
     topic text,
     subtopic text,
     difficulty difficulty NOT NULL DEFAULT 'medium',
-    
-    -- Multiple choice data
-    choices jsonb, -- Array of choice objects: [{"id": "A", "text": "...", "explanation": "..."}]
+    choices jsonb,
     correct_answer text,
-    
-    -- Content attachments (foreign keys)
     passage_id uuid REFERENCES public.passages(id) ON DELETE SET NULL,
     primary_graph_id uuid REFERENCES public.graphs(id) ON DELETE SET NULL,
-    
-    -- Solution content (basic - detailed steps in separate table)
     solution_text text,
     explanation text,
     hint text,
-    
-    -- Question metadata
     calculator_allowed boolean DEFAULT true,
     estimated_time duration_seconds DEFAULT 90,
     key_phrases text[] DEFAULT '{}',
-    
-    -- Analytics and difficulty metrics
     average_time duration_seconds,
     success_rate percentage,
-    discrimination_index numeric(4,3), -- Item discrimination for psychometrics
-    
-    -- Assessment configuration
+    discrimination_index numeric(4,3),
     points_possible integer DEFAULT 1,
     partial_credit boolean DEFAULT false,
-    
-    -- Status and lifecycle
     status content_status NOT NULL DEFAULT 'draft',
     is_active boolean GENERATED ALWAYS AS (status = 'published') STORED,
-    
-    -- Accessibility
     screen_reader_text text,
     accessibility_notes text,
-    
-    -- Timestamps and audit
     created_at timestamptz NOT NULL DEFAULT now(),
     updated_at timestamptz NOT NULL DEFAULT now(),
     created_by uuid REFERENCES auth.users(id),
-    
-    -- Constraints
     CONSTRAINT uq_questions_pack_number UNIQUE (pack_id, question_number),
     CONSTRAINT uq_questions_public_id UNIQUE (public_id),
     CONSTRAINT chk_question_content_not_empty CHECK (char_length(trim(content)) > 0),
     CONSTRAINT chk_question_positive_points CHECK (points_possible > 0),
     CONSTRAINT chk_multiple_choice_has_choices CHECK (
-        question_type != 'multiple_choice' OR (choices IS NOT NULL AND jsonb_array_length(choices) >= 2)
+      question_type != 'multiple_choice'
+      OR (choices IS NOT NULL AND jsonb_array_length(choices) >= 2)
     )
 );
 
--- ============================================================================
--- SOLUTION STEPS - Normalized Step-by-Step Solutions
--- ============================================================================
-
-CREATE TABLE public.solution_steps (
+-- SOLUTION STEPS
+CREATE TABLE IF NOT EXISTS public.solution_steps (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     question_id uuid NOT NULL REFERENCES public.questions(id) ON DELETE CASCADE,
     step_number integer NOT NULL,
-    
-    -- Step content
     title text,
     description text NOT NULL,
     step_type step_type NOT NULL DEFAULT 'concept',
-    
-    -- Mathematical expressions
-    from_expression jsonb, -- math_expression_type structure
-    to_expression jsonb, -- math_expression_type structure
-    
-    -- Visual aids
+    from_expression jsonb,
+    to_expression jsonb,
     diagram_id uuid REFERENCES public.graphs(id) ON DELETE SET NULL,
     image_url text,
-    
-    -- Interactive elements
     is_interactive boolean DEFAULT false,
     interaction_data jsonb,
     interaction_type interaction_type,
-    
-    -- Learning support
     hint text,
     explanation text,
-    common_mistakes jsonb, -- Array of common mistake objects
+    common_mistakes jsonb,
     related_concepts text[],
-    
-    -- Assessment checkpoint
     has_checkpoint boolean DEFAULT false,
-    checkpoint_data jsonb, -- assessment_point_type structure
-    
-    -- Timing and difficulty
+    checkpoint_data jsonb,
     estimated_time duration_seconds DEFAULT 30,
     difficulty difficulty,
-    
-    -- Timestamps and audit
     created_at timestamptz NOT NULL DEFAULT now(),
     updated_at timestamptz NOT NULL DEFAULT now(),
-    
-    -- Constraints
     CONSTRAINT uq_solution_steps_question_number UNIQUE (question_id, step_number),
     CONSTRAINT chk_solution_step_description_not_empty CHECK (char_length(trim(description)) > 0),
     CONSTRAINT chk_solution_step_positive_number CHECK (step_number > 0)
 );
 
--- ============================================================================
--- ENHANCED INTERACTIVE SOLUTIONS
--- ============================================================================
-
--- Drop existing if it exists and recreate with enhanced structure
-DROP TABLE IF EXISTS public.interactive_solutions CASCADE;
-
-CREATE TABLE public.interactive_solutions (
+-- INTERACTIVE SOLUTIONS
+CREATE TABLE IF NOT EXISTS public.interactive_solutions (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     question_id uuid NOT NULL UNIQUE REFERENCES public.questions(id) ON DELETE CASCADE,
-    
-    -- Solution classification
     solution_type solution_type NOT NULL,
-    
-    -- Graph-based interactions
     has_interactive_graph boolean DEFAULT false,
-    graph_config jsonb, -- Enhanced graph configuration
-    parameters jsonb, -- Array of interactive_parameter_type
-    
-    -- Calculator and computation
+    graph_config jsonb,
+    parameters jsonb,
     calculator_type calculator_type DEFAULT 'basic',
     allowed_functions text[] DEFAULT '{}',
     computation_steps jsonb,
-    
-    -- Interactive step-by-step progression
-    interactive_steps jsonb, -- Enhanced step objects with interaction data
-    
-    -- Simulation and modeling
+    interactive_steps jsonb,
     simulation_config jsonb,
     model_parameters jsonb,
-    
-    -- Assessment integration
-    assessment_points jsonb, -- Array of assessment_point_type
+    assessment_points jsonb,
     checkpoint_triggers text[] DEFAULT '{}',
-    
-    -- Unified frontend contract (Phase 3.1)
-    render_payload jsonb, -- Single JSON for frontend consumption
-    
-    -- Performance and analytics
+    render_payload jsonb,
     average_completion_time duration_seconds,
     interaction_success_rate percentage,
-    
-    -- Configuration metadata
     version version_string DEFAULT '1.0.0',
     configuration_hash content_hash,
-    
-    -- Timestamps and audit
     created_at timestamptz NOT NULL DEFAULT now(),
     updated_at timestamptz NOT NULL DEFAULT now(),
     created_by uuid REFERENCES auth.users(id),
-    
-    -- Constraints
     CONSTRAINT chk_interactive_graph_config CHECK (
-        (solution_type != 'graph') OR 
-        (has_interactive_graph = true AND graph_config IS NOT NULL)
+      (solution_type != 'graph')
+      OR (has_interactive_graph = true AND graph_config IS NOT NULL)
     ),
     CONSTRAINT chk_interactive_parameters CHECK (
-        (solution_type != 'graph') OR 
-        (parameters IS NOT NULL AND jsonb_array_length(parameters) > 0)
+      (solution_type != 'graph')
+      OR (parameters IS NOT NULL AND jsonb_array_length(parameters) > 0)
     )
 );
 
--- ============================================================================
--- UPDATED AT TRIGGERS
--- ============================================================================
-
--- Function to update updated_at timestamp
+-- ============================================================
+-- 4) UPDATED_AT triggers (create trigger function if missing)
+-- ============================================================
 CREATE OR REPLACE FUNCTION public.set_updated_at()
 RETURNS trigger AS $$
 BEGIN
-    NEW.updated_at = now();
-    RETURN NEW;
+  NEW.updated_at = now();
+  RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
--- Apply updated_at triggers to all tables
-CREATE TRIGGER trg_content_packs_updated_at
-    BEFORE UPDATE ON public.content_packs
-    FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_trigger WHERE tgname='trg_content_packs_updated_at'
+  ) THEN
+    CREATE TRIGGER trg_content_packs_updated_at
+      BEFORE UPDATE ON public.content_packs
+      FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+  END IF;
 
-CREATE TRIGGER trg_passages_updated_at
-    BEFORE UPDATE ON public.passages
-    FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_trigger WHERE tgname='trg_passages_updated_at'
+  ) THEN
+    CREATE TRIGGER trg_passages_updated_at
+      BEFORE UPDATE ON public.passages
+      FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+  END IF;
 
-CREATE TRIGGER trg_graphs_updated_at
-    BEFORE UPDATE ON public.graphs
-    FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_trigger WHERE tgname='trg_graphs_updated_at'
+  ) THEN
+    CREATE TRIGGER trg_graphs_updated_at
+      BEFORE UPDATE ON public.graphs
+      FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+  END IF;
 
-CREATE TRIGGER trg_questions_updated_at
-    BEFORE UPDATE ON public.questions
-    FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_trigger WHERE tgname='trg_questions_updated_at'
+  ) THEN
+    CREATE TRIGGER trg_questions_updated_at
+      BEFORE UPDATE ON public.questions
+      FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+  END IF;
 
-CREATE TRIGGER trg_solution_steps_updated_at
-    BEFORE UPDATE ON public.solution_steps
-    FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_trigger WHERE tgname='trg_solution_steps_updated_at'
+  ) THEN
+    CREATE TRIGGER trg_solution_steps_updated_at
+      BEFORE UPDATE ON public.solution_steps
+      FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+  END IF;
 
-CREATE TRIGGER trg_interactive_solutions_updated_at
-    BEFORE UPDATE ON public.interactive_solutions
-    FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_trigger WHERE tgname='trg_interactive_solutions_updated_at'
+  ) THEN
+    CREATE TRIGGER trg_interactive_solutions_updated_at
+      BEFORE UPDATE ON public.interactive_solutions
+      FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
+  END IF;
+END$$;
 
--- ============================================================================
--- COMMENTS FOR DOCUMENTATION
--- ============================================================================
-
+-- ============================================================
+-- 5) COMMENTS (safe to re-run)
+-- ============================================================
 COMMENT ON TABLE public.content_packs IS 'Content packages containing groups of related questions and materials';
 COMMENT ON TABLE public.passages IS 'Reading passages for comprehension questions with rich metadata';
 COMMENT ON TABLE public.graphs IS 'Visual content including static images and interactive graphs';

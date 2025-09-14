@@ -2,12 +2,12 @@
 // Generic fetch utility for Supabase Edge Functions
 import { useState, useEffect } from 'react';
 import { toast } from "@/hooks/use-toast";
-import { SUPABASE_URL } from '@/integrations/supabase/client';
+import { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } from '@/integrations/supabase/client';
 import { supabase } from '@/integrations/supabase/client';
 import { Question } from '@/types/QuestionInterface';
 
-// Base URL for Supabase Edge Functions
-const EDGE_FUNCTION_BASE_URL = "https://eantvimmgdmxzwrjwrop.supabase.co";
+// Base URL for Supabase Edge Functions - use the same URL as the client
+const EDGE_FUNCTION_BASE_URL = SUPABASE_URL;
 
 export interface EdgeFunctionResponse<T> {
   data: T | null;
@@ -57,9 +57,15 @@ export async function callEdgeFunction<T>(
     const hasAuthHeader = options.headers && 
       (options.headers as Record<string, string>)['Authorization'] !== undefined;
     
+    // For Edge Functions, we need the anon key as a fallback
+    const fallbackHeaders = authHeaders.Authorization ? {} : {
+      'Authorization': `Bearer ${SUPABASE_PUBLISHABLE_KEY}`
+    };
+    
     // Set default headers
     const headers = {
       'Content-Type': 'application/json',
+      ...fallbackHeaders,
       ...(hasAuthHeader ? {} : authHeaders),
       ...options.headers,
     };
@@ -69,7 +75,8 @@ export async function callEdgeFunction<T>(
     const response = await fetch(url, {
       ...options,
       headers,
-      mode: 'cors', // Explicitly set CORS mode
+      mode: 'cors',
+      credentials: 'omit', // Don't send cookies for CORS
     });
 
     if (!response.ok) {
