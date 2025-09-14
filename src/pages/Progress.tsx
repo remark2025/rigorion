@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { LeaderboardData } from "@/components/progress/LeaderboardData";
 import { FullPageLoader } from "@/components/progress/FullPageLoader";
 import { Navigation, User, Users, BookOpen, BarChart, Target, ChevronDown, LogOut, Menu, Clock, Trophy, TrendingUp, FileText } from "lucide-react";
-import { SecureProgressDataProvider } from "@/components/progress/SecureProgressDataProvider";
+// import { SecureProgressDataProvider } from "@/components/progress/SecureProgressDataProvider"; // Removed to fix caching
 import { useProgress } from "@/contexts/ProgressContext";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -21,7 +21,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useTheme } from "@/contexts/ThemeContext";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart as RechartsBarChart, Bar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
 import { Footer } from '@/components/Footer';
-import { useProgressData } from "@/hooks/useAnalytics";
+import { useSimpleProgress } from "@/hooks/useSimpleProgress";
 
 // Define course type
 type Course = {
@@ -186,9 +186,9 @@ const Progress = () => {
   const [selectedSkillForAnalytics, setSelectedSkillForAnalytics] = useState<string>('all');
   const queryClient = useQueryClient();
 
-  const { progressData: realProgressData, isLoading: analyticsLoading } = useProgressData(session?.user?.id);
+  const { progressData, isLoading: analyticsLoading, error: progressError } = useSimpleProgress();
   
-  const currentProgressData = realProgressData || DUMMY_PROGRESS;
+  const currentProgressData = progressData || DUMMY_PROGRESS;
   
   const pages = [
     { name: "Account", path: "/account" },
@@ -237,15 +237,28 @@ const Progress = () => {
     }
   };
 
+  // Removed SecureProgressDataProvider to fix caching
   return (
-    <SecureProgressDataProvider fallbackData={currentProgressData} showLoadingState={analyticsLoading}>
+    <div className="analytics-page">
       <div className={`flex min-h-screen w-full transition-colors duration-300 ${
         isDarkMode ? 'bg-gray-900' : 'bg-mono-bg'
       }`}>
         <main className={`flex-1 transition-colors duration-300 ${
           isDarkMode ? 'bg-gray-900' : 'bg-mono-bg'
         }`}>
-          <header className="fixed top-0 left-0 right-0 w-full z-50 border-b shadow-lg transition-all duration-300 bg-white">
+          {/* Debug info for analytics loading */}
+          {analyticsLoading && (
+            <div className="fixed top-0 left-0 right-0 z-50 bg-orange-500 text-white text-center py-2">
+              🔄 Loading analytics... (Using real data from interactions)
+            </div>
+          )}
+          {progressError && (
+            <div className="fixed top-0 left-0 right-0 z-50 bg-red-500 text-white text-center py-2">
+              ❌ Error: {progressError}
+            </div>
+          )}
+          
+          <header className={`fixed top-0 left-0 right-0 w-full z-50 border-b shadow-lg transition-all duration-300 bg-white ${analyticsLoading ? 'mt-10' : ''}`}>
             <div className="px-1 sm:px-2 md:px-4 py-2 sm:py-3 flex items-center justify-between min-h-[40px] relative z-10">
               <div className="flex items-center gap-1 sm:gap-2">
                 {/* Mobile Hamburger Menu */}
@@ -1238,7 +1251,7 @@ const Progress = () => {
           </div>
         </main>
       </div>
-    </SecureProgressDataProvider>
+    </div>
   );
 };
 

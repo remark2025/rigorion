@@ -29,11 +29,7 @@ serve(async (req) => {
       .from('questions')
       .select(`
         *,
-        content_packs!inner(title, slug),
-        passages(title, content, reference_id),
-        graphs(title, svg_data, is_interactive),
-        solution_steps(step_number, title, description, step_type, explanation, hint, from_expression, to_expression),
-        interactive_solutions(id, solution_type, has_interactive_graph, graph_config, parameters, interactive_steps, assessment_points, render_payload)
+        interactive_solutions(*)
       `)
       .eq('status', 'published')
       .order('created_at', { ascending: false })
@@ -44,6 +40,17 @@ serve(async (req) => {
     }
 
     console.log(`✅ Found ${questions?.length || 0} questions`)
+    
+    // Debug: Log the raw data for MATH-LINEAR-001
+    const linearQuestion = questions?.find(q => q.public_id === 'MATH-LINEAR-001')
+    if (linearQuestion) {
+      console.log('🔍 Raw MATH-LINEAR-001 data:', JSON.stringify({
+        id: linearQuestion.id,
+        public_id: linearQuestion.public_id,
+        has_interactive: linearQuestion.has_interactive,
+        interactive_solutions: linearQuestion.interactive_solutions
+      }, null, 2))
+    }
 
     // Transform for frontend
     const transformedQuestions = questions?.map(q => {
@@ -87,23 +94,21 @@ serve(async (req) => {
         // Calculator
         calculatorAllowed: q.calculator_allowed || false,
         
-        // Interactive solution
-        ...(q.interactive_solutions?.[0] && {
-          interactiveSolution: {
-            hasInteractiveGraph: q.interactive_solutions[0].has_interactive_graph,
-            graphConfig: q.interactive_solutions[0].graph_config,
-            parameters: q.interactive_solutions[0].parameters || [],
-            renderPayload: q.interactive_solutions[0].render_payload,
-            solutionSteps: q.solution_steps ? 
-              q.solution_steps.map((step: any, index: number) => ({
-                id: `step-${step.step_number || index + 1}`,
-                title: step.title,
-                description: step.description,
-                explanation: step.explanation,
-                hint: step.hint
-              })) : []
-          }
-        }),
+        // Interactive solution - explicit mapping
+        interactiveSolution: q.interactive_solutions?.[0] ? {
+          hasInteractiveGraph: q.interactive_solutions[0].has_interactive_graph,
+          graphConfig: q.interactive_solutions[0].graph_config,
+          parameters: q.interactive_solutions[0].parameters || [],
+          renderPayload: q.interactive_solutions[0].render_payload,
+          solutionSteps: q.solution_steps ? 
+            q.solution_steps.map((step: any, index: number) => ({
+              id: `step-${step.step_number || index + 1}`,
+              title: step.title,
+              description: step.description,
+              explanation: step.explanation,
+              hint: step.hint
+            })) : []
+        } : undefined,
         
         // Quote for consistency
         quote: {
