@@ -21,13 +21,20 @@ interface LogInteractionRequest {
   objective_progress?: number;
   idempotency_key?: string;
   attempt_number?: number;
-  // New skill tracking fields
+  // Enhanced skill tracking fields
   module?: 'math' | 'reading' | 'writing';
   chapter?: number;
   exam?: number;
   level?: 'easy' | 'medium' | 'difficult';
   topic?: string;
   question_type?: string;
+  // Additional context for better analytics
+  practice_session_id?: string;
+  question_index_in_session?: number;
+  total_questions_in_session?: number;
+  selected_answer?: string;
+  correct_answer?: string;
+  practice_mode?: 'timed' | 'untimed' | 'mock_test' | 'chapter_review';
 }
 
 serve(async (req) => {
@@ -101,7 +108,14 @@ serve(async (req) => {
       exam: requestData.exam || null,
       level: requestData.level || null,
       topic: requestData.topic || null,
-      question_type: requestData.question_type || null
+      question_type: requestData.question_type || null,
+      // Additional analytics context
+      practice_session_id: requestData.practice_session_id || null,
+      question_index_in_session: requestData.question_index_in_session || null,
+      total_questions_in_session: requestData.total_questions_in_session || null,
+      selected_answer: requestData.selected_answer || null,
+      correct_answer: requestData.correct_answer || null,
+      practice_mode: requestData.practice_mode || null
     };
 
     // Handle bookmarks separately

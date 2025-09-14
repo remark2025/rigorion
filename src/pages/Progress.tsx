@@ -171,7 +171,6 @@ const DUMMY_PROGRESS = {
 const Progress = () => {
   const navigate = useNavigate();
   const { session, user, profile, signOut } = useAuth();
-  const { progressData } = useProgress();
   const { isDarkMode } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isNavDropdownOpen, setIsNavDropdownOpen] = useState(false);

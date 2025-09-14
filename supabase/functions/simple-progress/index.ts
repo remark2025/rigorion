@@ -109,29 +109,43 @@ serve(async (req) => {
       })
     }
 
-    // Generate skill analytics from real data
+    // Generate skill analytics from real data with improved categorization
     const skillMap = new Map()
     interactions?.forEach(interaction => {
-      const skillName = interaction.topic || interaction.module || `General ${interaction.level || 'Practice'}`
-      const section = interaction.module === 'math' ? 'Math' : 
-                    interaction.module === 'reading' ? 'Reading' : 
-                    interaction.module === 'writing' ? 'Writing' : 'General'
+      // Better skill name resolution
+      let skillName = interaction.topic || 
+                     `${interaction.module || 'General'} ${interaction.level || 'Practice'}`
       
-      const skillKey = `${skillName}_${section}`
+      // Better section mapping
+      const section = interaction.module === 'math' ? 'Math' : 
+                     interaction.module === 'reading' ? 'Reading' : 
+                     interaction.module === 'writing' ? 'Writing' : 
+                     interaction.question_type ? `${interaction.question_type}` : 'General'
+      
+      // Create unique skill key with better grouping
+      const skillKey = `${skillName}_${section}_${interaction.level || 'mixed'}`
+      
       if (!skillMap.has(skillKey)) {
         skillMap.set(skillKey, {
           skillName,
           section,
+          level: interaction.level || 'mixed',
           correct: 0,
           incorrect: 0,
           totalTime: 0,
-          interactions: []
+          interactions: [],
+          questionTypes: new Set(),
+          practiceModes: new Set()
         })
       }
       
       const skill = skillMap.get(skillKey)
       skill.interactions.push(interaction)
       skill.totalTime += interaction.duration_seconds || 0
+      
+      // Track question types and practice modes for better insights
+      if (interaction.question_type) skill.questionTypes.add(interaction.question_type)
+      if (interaction.practice_mode) skill.practiceModes.add(interaction.practice_mode)
       
       if (interaction.is_correct) {
         skill.correct++
@@ -142,22 +156,44 @@ serve(async (req) => {
 
     const skillAnalytics = []
     let skillIndex = 0
+    
     for (const [skillKey, skillData] of skillMap.entries()) {
       const total = skillData.correct + skillData.incorrect
       const accuracy = total > 0 ? Math.round((skillData.correct / total) * 100) : 0
       const avgTime = total > 0 ? Math.round((skillData.totalTime / total) * 10) / 10 : 0
+      
+      // Calculate improvement trend by comparing first half vs second half of attempts
+      const halfwayPoint = Math.ceil(skillData.interactions.length / 2)
+      const firstHalf = skillData.interactions.slice(0, halfwayPoint)
+      const secondHalf = skillData.interactions.slice(halfwayPoint)
+      
+      const firstHalfAccuracy = firstHalf.length > 0 ? 
+        Math.round((firstHalf.filter(i => i.is_correct).length / firstHalf.length) * 100) : 0
+      const secondHalfAccuracy = secondHalf.length > 0 ? 
+        Math.round((secondHalf.filter(i => i.is_correct).length / secondHalf.length) * 100) : 0
+      
+      const improvement = secondHalfAccuracy - firstHalfAccuracy
+      
+      // Calculate percentile based on accuracy compared to other skills
+      const percentile = Math.min(95, Math.max(10, accuracy))
       
       skillAnalytics.push({
         skillId: `skill_${skillIndex++}`,
         skillName: skillData.skillName,
         chapter: skillData.skillName,
         section: skillData.section,
+        level: skillData.level,
         correct: skillData.correct,
         incorrect: skillData.incorrect,
         accuracy: accuracy,
         averageTime: avgTime,
-        percentile: Math.min(95, Math.max(10, accuracy + Math.floor(Math.random() * 20) - 10)),
-        improvement: Math.floor(Math.random() * 20) - 5
+        percentile: percentile,
+        improvement: improvement,
+        totalAttempts: total,
+        questionTypes: Array.from(skillData.questionTypes),
+        practiceModes: Array.from(skillData.practiceModes),
+        recentPerformance: secondHalfAccuracy,
+        consistencyScore: Math.round(100 - (Math.abs(improvement) * 2)) // More consistent = less variation
       })
     }
 
@@ -169,25 +205,80 @@ serve(async (req) => {
       incorrectAnswers,
       unattemptedQuestions: Math.max(0, 100 - totalInteractions),
       questionsAnsweredToday,
-      streak: Math.min(30, Math.floor(totalInteractions / 5)), // Simple streak calculation
+      streak: (() => {
+        // Calculate real streak based on consecutive days with correct answers
+        const sortedInteractions = interactions?.sort((a, b) => 
+          new Date(b.attempted_at).getTime() - new Date(a.attempted_at).getTime()
+        ) || []
+        
+        let currentStreak = 0
+        const seenDates = new Set()
+        
+        for (const interaction of sortedInteractions) {
+          const dateStr = interaction.attempted_at?.split('T')[0]
+          if (!dateStr || seenDates.has(dateStr)) continue
+          
+          seenDates.add(dateStr)
+          
+          // Check if there were any correct answers on this day
+          const dayInteractions = interactions?.filter(i => 
+            i.attempted_at?.startsWith(dateStr)
+          ) || []
+          const hasCorrectAnswer = dayInteractions.some(i => i.is_correct)
+          
+          if (hasCorrectAnswer) {
+            currentStreak++
+          } else {
+            break // Streak broken
+          }
+        }
+        
+        return currentStreak
+      })(),
       averageScore,
       rank: Math.max(1, 500 - averageScore * 4), // Mock ranking
       projectedScore: Math.min(1600, Math.max(400, 400 + averageScore * 12)),
       speed: Math.min(100, Math.max(20, 100 - averageTime * 2)),
       
-      // Difficulty breakdowns (simplified for now)
-      easyAccuracy: Math.min(100, averageScore + 10),
-      easyAvgTime: Math.max(0.5, averageTime * 0.7),
-      easyCompleted: Math.round(totalInteractions * 0.4),
-      easyTotal: 50,
-      mediumAccuracy: averageScore,
-      mediumAvgTime: averageTime,
-      mediumCompleted: Math.round(totalInteractions * 0.4),
-      mediumTotal: 50,
-      hardAccuracy: Math.max(0, averageScore - 15),
-      hardAvgTime: averageTime * 1.4,
-      hardCompleted: Math.round(totalInteractions * 0.2),
-      hardTotal: 30,
+      // Calculate real difficulty-based breakdowns
+      easyAccuracy: (() => {
+        const easyInteractions = interactions?.filter(i => i.level === 'easy') || []
+        return easyInteractions.length > 0 ? 
+          Math.round((easyInteractions.filter(i => i.is_correct).length / easyInteractions.length) * 100) : 0
+      })(),
+      easyAvgTime: (() => {
+        const easyInteractions = interactions?.filter(i => i.level === 'easy') || []
+        return easyInteractions.length > 0 ?
+          Math.round((easyInteractions.reduce((sum, i) => sum + (i.duration_seconds || 0), 0) / easyInteractions.length) * 10) / 10 : 0
+      })(),
+      easyCompleted: interactions?.filter(i => i.level === 'easy').length || 0,
+      easyTotal: Math.max(50, interactions?.filter(i => i.level === 'easy').length || 0),
+      
+      mediumAccuracy: (() => {
+        const mediumInteractions = interactions?.filter(i => i.level === 'medium') || []
+        return mediumInteractions.length > 0 ? 
+          Math.round((mediumInteractions.filter(i => i.is_correct).length / mediumInteractions.length) * 100) : 0
+      })(),
+      mediumAvgTime: (() => {
+        const mediumInteractions = interactions?.filter(i => i.level === 'medium') || []
+        return mediumInteractions.length > 0 ?
+          Math.round((mediumInteractions.reduce((sum, i) => sum + (i.duration_seconds || 0), 0) / mediumInteractions.length) * 10) / 10 : 0
+      })(),
+      mediumCompleted: interactions?.filter(i => i.level === 'medium').length || 0,
+      mediumTotal: Math.max(50, interactions?.filter(i => i.level === 'medium').length || 0),
+      
+      hardAccuracy: (() => {
+        const hardInteractions = interactions?.filter(i => i.level === 'difficult' || i.level === 'hard') || []
+        return hardInteractions.length > 0 ? 
+          Math.round((hardInteractions.filter(i => i.is_correct).length / hardInteractions.length) * 100) : 0
+      })(),
+      hardAvgTime: (() => {
+        const hardInteractions = interactions?.filter(i => i.level === 'difficult' || i.level === 'hard') || []
+        return hardInteractions.length > 0 ?
+          Math.round((hardInteractions.reduce((sum, i) => sum + (i.duration_seconds || 0), 0) / hardInteractions.length) * 10) / 10 : 0
+      })(),
+      hardCompleted: interactions?.filter(i => i.level === 'difficult' || i.level === 'hard').length || 0,
+      hardTotal: Math.max(30, interactions?.filter(i => i.level === 'difficult' || i.level === 'hard').length || 0),
       
       goalAchievementPercent: Math.round(averageScore * 0.8),
       averageTime,

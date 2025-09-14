@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Clock, Play, Pause, SkipForward, AlertCircle, ChevronLeft, ChevronRight } from "lucide-react";
 import { Question } from "@/types/QuestionInterface";
+import { useInteractionLogger } from "@/hooks/useInteractionLogger";
 
 interface SATMockTestProps {
   questions: Question[];
@@ -31,6 +32,13 @@ const SATMockTest: React.FC<SATMockTestProps> = ({ questions, onExit }) => {
   const [timeRemaining, setTimeRemaining] = useState(0);
   const [isActive, setIsActive] = useState(false);
   const [testStarted, setTestStarted] = useState(false);
+  const [questionStartTime, setQuestionStartTime] = useState<Record<number, number>>({});
+  
+  // Initialize interaction logger
+  const { logInteraction } = useInteractionLogger();
+  
+  // Generate unique session ID for this test session
+  const sessionId = useMemo(() => `mock_test_${Date.now()}`, []);
 
   const getSATSections = (): SATSection[] => {
     const totalQuestions = questions.length;
@@ -120,13 +128,41 @@ const SATMockTest: React.FC<SATMockTestProps> = ({ questions, onExit }) => {
     setIsActive(true);
     setTestStarted(true);
     setCurrentQuestionIndex(currentModuleData.startIndex);
+    // Track start time for first question
+    setQuestionStartTime(prev => ({
+      ...prev,
+      [currentModuleData.startIndex]: Date.now()
+    }));
   };
 
-  const handleAnswerSelect = (answer: string) => {
+  const handleAnswerSelect = async (answer: string) => {
+    const currentQuestion = questions[currentQuestionIndex];
+    const startTime = questionStartTime[currentQuestionIndex] || Date.now();
+    const timeSpent = Math.round((Date.now() - startTime) / 1000);
+    const isCorrect = answer === currentQuestion.correct_answer;
+
+    // Update selected answers
     setSelectedAnswers(prev => ({
       ...prev,
       [currentQuestionIndex]: answer
     }));
+
+    // Log the interaction
+    try {
+      await logInteraction({
+        question: currentQuestion,
+        selectedAnswer: answer,
+        isCorrect: isCorrect,
+        timeSpentSeconds: timeSpent,
+        practiceMode: 'mock_test',
+        practiceSessionId: sessionId,
+        questionIndexInSession: currentQuestionIndex - currentModuleData.startIndex,
+        totalQuestionsInSession: questions.length
+      });
+    } catch (error) {
+      console.error('Failed to log interaction:', error);
+      // Continue regardless of logging failure
+    }
   };
 
   const canNavigateToQuestion = (questionIndex: number): boolean => {
@@ -135,13 +171,29 @@ const SATMockTest: React.FC<SATMockTestProps> = ({ questions, onExit }) => {
 
   const nextQuestion = () => {
     if (currentQuestionIndex < currentModuleData.endIndex) {
-      setCurrentQuestionIndex(currentQuestionIndex + 1);
+      const nextIndex = currentQuestionIndex + 1;
+      setCurrentQuestionIndex(nextIndex);
+      // Track start time for next question if not already tracked
+      if (!questionStartTime[nextIndex]) {
+        setQuestionStartTime(prev => ({
+          ...prev,
+          [nextIndex]: Date.now()
+        }));
+      }
     }
   };
 
   const prevQuestion = () => {
     if (currentQuestionIndex > currentModuleData.startIndex) {
-      setCurrentQuestionIndex(currentQuestionIndex - 1);
+      const prevIndex = currentQuestionIndex - 1;
+      setCurrentQuestionIndex(prevIndex);
+      // Track start time for previous question if not already tracked
+      if (!questionStartTime[prevIndex]) {
+        setQuestionStartTime(prev => ({
+          ...prev,
+          [prevIndex]: Date.now()
+        }));
+      }
     }
   };
 
@@ -171,7 +223,18 @@ const SATMockTest: React.FC<SATMockTestProps> = ({ questions, onExit }) => {
                       ? 'bg-green-50 border-green-200'
                       : 'bg-white border-gray-200 hover:bg-gray-50'
                   }`}
-                  onClick={() => canNavigateToQuestion(questionIndex) && setCurrentQuestionIndex(questionIndex)}
+                  onClick={() => {
+                    if (canNavigateToQuestion(questionIndex)) {
+                      setCurrentQuestionIndex(questionIndex);
+                      // Track start time for this question if not already tracked
+                      if (!questionStartTime[questionIndex]) {
+                        setQuestionStartTime(prev => ({
+                          ...prev,
+                          [questionIndex]: Date.now()
+                        }));
+                      }
+                    }
+                  }}
                 >
                   <div className="text-center">
                     <span className={`text-sm font-medium ${

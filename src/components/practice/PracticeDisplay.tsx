@@ -15,6 +15,7 @@ import { QuestionTracking } from "./QuestionTracking";
 import { PracticeTimer } from "./PracticeTimer";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { useInteractionLogger } from "@/hooks/useInteractionLogger";
 import InteractiveMathSolution from "@/components/math/InteractiveMathSolution";
 import InteractiveGraph from "@/components/math/InteractiveGraph";
 import SolutionStepBuilder from "@/components/math/SolutionStepBuilder";
@@ -91,6 +92,18 @@ const PracticeDisplay = ({
 }: PracticeDisplayProps) => {
   const { isDarkMode } = useTheme();
   const { user } = useAuth();
+  const { logInteraction } = useInteractionLogger();
+
+  // Helper function to parse timer value
+  const parseTimerValue = (timerValue: string): number => {
+    const timeParts = timerValue.split(':').map(Number);
+    if (timeParts.length === 2) {
+      return timeParts[0] * 60 + timeParts[1]; // MM:SS
+    } else if (timeParts.length === 3) {
+      return timeParts[0] * 3600 + timeParts[1] * 60 + timeParts[2]; // HH:MM:SS
+    }
+    return 0; // fallback
+  };
   
   const [localSelectedAnswer, setLocalSelectedAnswer] = useState<string | null>(null);
   const [localIsCorrect, setLocalIsCorrect] = useState<boolean | null>(null);
@@ -502,22 +515,31 @@ const PracticeDisplay = ({
       
       console.log('✅ New Interaction Recorded:', JSON.stringify(interaction, null, 2));
       
-      // Send interaction to analytics system using Supabase functions
-      if (user) {
-        supabase.functions.invoke('log-interaction', {
-          body: interaction
-        }).then(({ data, error }) => {
-          if (error) {
-            console.error('❌ Failed to log interaction to analytics:', error);
-          } else {
-            console.log('✅ Interaction logged successfully:', data);
-          }
+      // Log interaction using improved interaction logger
+      if (user && currentQuestion) {
+        const timeSpent = mode === "timer" && timerValue ? 
+          parseTimerValue(timerValue) : 
+          Math.round((Date.now() - questionStartTime) / 1000);
+
+        logInteraction({
+          question: currentQuestion,
+          selectedAnswer: answer,
+          isCorrect: correct,
+          timeSpentSeconds: timeSpent,
+          practiceMode: mode === "timer" ? "timed" : mode === "exam" ? "mock_test" : "untimed",
+          practiceSessionId: sessionId,
+          questionIndexInSession: currentQuestionIndex,
+          totalQuestionsInSession: totalQuestions,
+          confidenceLevel: questionGuess,
+          hintChecked: hintsViewed.length > 0,
+          solutionChecked: solutionAccessed,
+          bookmarked: isBookmarked
         }).catch(error => {
-          console.error('❌ Failed to log interaction to analytics:', error);
+          console.error('❌ Failed to log interaction:', error);
           // Continue with local tracking even if server logging fails
         });
       } else {
-        console.warn('⚠️ User not authenticated, skipping server logging');
+        console.warn('⚠️ User not authenticated or no question, skipping server logging');
       }
     }
     
