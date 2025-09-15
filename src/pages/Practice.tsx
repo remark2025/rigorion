@@ -2,7 +2,6 @@ import { useState } from "react";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { QuestionsProvider } from "@/contexts/QuestionsContext";
 import PracticeContent from "@/components/practice/PracticeContent";
-import AIAnalyzer from "@/components/ai/AIAnalyzer";
 import CommentSection from "@/components/practice/CommentSection";
 
 const Practice = () => {
@@ -36,9 +35,6 @@ const Practice = () => {
               onSettingsChange={handleSettingsChange}
             />
           </div>
-          
-          {/* AI Analyzer Section */}
-          <AIAnalyzer />
           
           {/* Comment Section */}
           <CommentSection />

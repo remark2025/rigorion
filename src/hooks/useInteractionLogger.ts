@@ -39,6 +39,23 @@ export function useInteractionLogger(): InteractionLogger {
     setError(null);
 
     try {
+      console.log('📊 Preparing interaction payload for question:', data.question.public_id || data.question.id)
+      console.log('📊 Question data:', {
+        id: data.question.id,
+        public_id: data.question.public_id,
+        module: data.question.module,
+        chapter: data.question.chapter,
+        level: data.question.level,
+        topic: data.question.topic,
+        correct_answer: data.question.correct_answer
+      })
+      console.log('📊 Interaction data:', {
+        isCorrect: data.isCorrect,
+        timeSpentSeconds: data.timeSpentSeconds,
+        selectedAnswer: data.selectedAnswer,
+        practiceMode: data.practiceMode
+      })
+      
       const interactionPayload = {
         question_id: data.question.public_id || data.question.id,
         is_correct: data.isCorrect,
@@ -46,9 +63,15 @@ export function useInteractionLogger(): InteractionLogger {
         attempted_at: new Date().toISOString(),
         
         // Enhanced analytics data
-        module: data.question.module as 'math' | 'reading' | 'writing' | undefined,
-        chapter: data.question.chapter,
-        exam: data.question.exam,
+        module: (() => {
+          const moduleStr = data.question.module?.toLowerCase();
+          if (moduleStr?.includes('math')) return 'math';
+          if (moduleStr?.includes('reading')) return 'reading';
+          if (moduleStr?.includes('writing')) return 'writing';
+          return null;
+        })() as 'math' | 'reading' | 'writing' | null,
+        chapter: typeof data.question.chapter === 'number' ? data.question.chapter : null,
+        exam: typeof data.question.exam === 'number' ? data.question.exam : null,
         level: data.question.level as 'easy' | 'medium' | 'difficult' | undefined,
         topic: data.question.topic,
         question_type: data.question.question_type,
@@ -69,8 +92,8 @@ export function useInteractionLogger(): InteractionLogger {
         solution_checked: data.solutionChecked || false,
         bookmarked: data.bookmarked || false,
         
-        // Generate unique idempotency key for this attempt
-        idempotency_key: `${session.user.id}_${data.question.public_id || data.question.id}_${Date.now()}`
+        // Generate unique idempotency key for this attempt (use crypto.randomUUID for proper UUID format)
+        idempotency_key: crypto.randomUUID()
       };
 
       console.log('📊 Logging interaction:', {

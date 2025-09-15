@@ -43,8 +43,18 @@ serve(async (req) => {
   }
 
   try {
+    console.log('🚀 Edge Function: log-interaction starting...')
+    console.log('📥 Request method:', req.method)
+    console.log('📥 Request URL:', req.url)
+    
     const supabaseUrl = Deno.env.get("SUPABASE_URL") || "";
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") || "";
+    
+    if (!supabaseUrl || !supabaseServiceKey) {
+      console.error('❌ Missing environment variables:', { supabaseUrl: !!supabaseUrl, supabaseServiceKey: !!supabaseServiceKey })
+      throw new Error('Missing required environment variables')
+    }
+    
     const supabaseClient = createClient(supabaseUrl, supabaseServiceKey);
 
     // Get user from auth header
@@ -58,15 +68,36 @@ serve(async (req) => {
       );
     }
 
-    const requestData: LogInteractionRequest = await req.json();
+    let requestData: LogInteractionRequest;
+    try {
+      requestData = await req.json();
+      console.log('📝 Request data received:', JSON.stringify(requestData, null, 2))
+    } catch (jsonError) {
+      console.error('❌ JSON parsing error:', jsonError)
+      return new Response(
+        JSON.stringify({ error: "Invalid JSON in request body" }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 400 }
+      );
+    }
 
     // Validate required fields
+    console.log('🔍 Validating required fields...')
+    console.log('- question_id:', requestData.question_id)
+    console.log('- is_correct:', requestData.is_correct, typeof requestData.is_correct)
+    console.log('- time_spent_seconds:', requestData.time_spent_seconds, typeof requestData.time_spent_seconds)
+    
     if (!requestData.question_id || 
         typeof requestData.is_correct !== 'boolean' || 
         typeof requestData.time_spent_seconds !== 'number') {
+      console.error('❌ Validation failed')
       return new Response(
         JSON.stringify({ 
-          error: "Missing required fields: question_id, is_correct, time_spent_seconds" 
+          error: "Missing required fields: question_id, is_correct, time_spent_seconds",
+          received: {
+            question_id: requestData.question_id,
+            is_correct: requestData.is_correct,
+            time_spent_seconds: requestData.time_spent_seconds
+          }
         }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 400 }
       );
@@ -76,8 +107,9 @@ serve(async (req) => {
     const idempotencyKey = requestData.idempotency_key || crypto.randomUUID();
 
     // Calculate attempt number - always get the next available number
-    // Get existing attempts for this user/question combination
-    const { data: existingAttempts } = await supabaseClient
+    console.log('🔢 Calculating attempt number for user:', user.id, 'question:', requestData.question_id)
+    
+    const { data: existingAttempts, error: attemptError } = await supabaseClient
       .from('question_interactions')
       .select('attempt_number')
       .eq('user_id', user.id)
@@ -85,11 +117,19 @@ serve(async (req) => {
       .order('attempt_number', { ascending: false })
       .limit(1);
     
+    if (attemptError) {
+      console.error('❌ Error fetching existing attempts:', attemptError)
+      // Continue with attempt number 1 if we can't fetch existing attempts
+    }
+    
     const attemptNumber = existingAttempts && existingAttempts.length > 0 
       ? (existingAttempts[0].attempt_number || 0) + 1 
       : 1;
+      
+    console.log('🎯 Using attempt number:', attemptNumber)
 
     // Prepare interaction data using enhanced schema
+    console.log('📋 Preparing interaction data...')
     const interactionData = {
       user_id: user.id,
       question_public_id: requestData.question_id,
@@ -109,17 +149,21 @@ serve(async (req) => {
       level: requestData.level || null,
       topic: requestData.topic || null,
       question_type: requestData.question_type || null,
-      // Additional analytics context
-      practice_session_id: requestData.practice_session_id || null,
-      question_index_in_session: requestData.question_index_in_session || null,
-      total_questions_in_session: requestData.total_questions_in_session || null,
-      selected_answer: requestData.selected_answer || null,
-      correct_answer: requestData.correct_answer || null,
-      practice_mode: requestData.practice_mode || null
+      // Note: Additional fields like practice_session_id, selected_answer, etc. 
+      // are not yet added to the database schema, so they're commented out for now
+      // practice_session_id: requestData.practice_session_id || null,
+      // question_index_in_session: requestData.question_index_in_session || null,
+      // total_questions_in_session: requestData.total_questions_in_session || null,
+      // selected_answer: requestData.selected_answer || null,
+      // correct_answer: requestData.correct_answer || null,
+      // practice_mode: requestData.practice_mode || null
     };
+    
+    console.log('✅ Interaction data prepared:', JSON.stringify(interactionData, null, 2))
 
     // Handle bookmarks separately
     if (requestData.bookmarked) {
+      console.log('📖 Processing bookmark...')
       await supabaseClient
         .from('bookmarks')
         .upsert({
@@ -129,12 +173,14 @@ serve(async (req) => {
     }
 
     // Log the interaction to database with retry for duplicate key errors
+    console.log('💾 Inserting interaction into database...')
     let logResult;
     let logError;
     let retryCount = 0;
     const maxRetries = 3;
 
     while (retryCount < maxRetries) {
+      console.log(`🔄 Database insert attempt ${retryCount + 1}/${maxRetries}`)
       const result = await supabaseClient
         .from('question_interactions')
         .insert(interactionData)
