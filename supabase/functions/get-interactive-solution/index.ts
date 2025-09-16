@@ -1,6 +1,26 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0"
 
+// Simple in-memory rate limiter (more restrictive for heavy data)
+const rateLimiter = new Map<string, { count: number; resetTime: number }>()
+
+function checkRateLimit(identifier: string, limit: number = 30, windowMs: number = 60000): boolean {
+  const now = Date.now()
+  const record = rateLimiter.get(identifier)
+  
+  if (!record || now > record.resetTime) {
+    rateLimiter.set(identifier, { count: 1, resetTime: now + windowMs })
+    return true
+  }
+  
+  if (record.count >= limit) {
+    return false
+  }
+  
+  record.count++
+  return true
+}
+
 // Secure CORS - only allow your domains
 const allowedOrigins = new Set([
   'http://localhost:3000',
@@ -33,7 +53,7 @@ serve(async (req) => {
     return new Response('ok', { headers: corsHeaders })
   }
 
-  // Origin validation (more permissive for development)
+  // Strict origin validation + Rate limiting
   const isDevelopment = origin && origin.startsWith('http://localhost:')
   const isAllowed = origin && allowedOrigins.has(origin)
   
@@ -41,7 +61,24 @@ serve(async (req) => {
     console.log(`🚫 Blocked origin: ${origin}`)
     return new Response('Forbidden', { 
       status: 403,
-      headers: corsHeaders
+      headers: { 'Vary': 'Origin' }
+    })
+  }
+
+  // Rate limiting for interactive solutions (more restrictive)
+  const clientIP = req.headers.get('x-forwarded-for')?.split(',')[0] || 'unknown'
+  const userAuth = req.headers.get('authorization') || ''
+  const userToken = userAuth.replace('Bearer ', '').substring(0, 10)
+  const rateLimitKey = userToken ? `user:${userToken}` : `ip:${clientIP}`
+  
+  if (!checkRateLimit(rateLimitKey)) {
+    console.log(`🚫 Rate limit exceeded for interactive solution: ${rateLimitKey}`)
+    return new Response('Too Many Requests', {
+      status: 429,
+      headers: {
+        ...corsHeaders,
+        'Retry-After': '60'
+      }
     })
   }
 

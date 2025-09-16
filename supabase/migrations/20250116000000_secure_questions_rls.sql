@@ -64,12 +64,13 @@ SELECT
 FROM public.questions q
 WHERE q.status = 'published';
 
--- RPC function for paginated + incremental question fetching
+-- RPC function for paginated + incremental question fetching with composite cursor
 CREATE OR REPLACE FUNCTION public.get_question_cards(
   _pack_id UUID DEFAULT NULL,
   _since TIMESTAMPTZ DEFAULT NULL,
   _limit INT DEFAULT 500,
-  _cursor TIMESTAMPTZ DEFAULT NULL
+  _cursor_updated_at TIMESTAMPTZ DEFAULT NULL,
+  _cursor_id TEXT DEFAULT NULL
 )
 RETURNS SETOF public.question_cards
 LANGUAGE SQL
@@ -79,8 +80,12 @@ AS $$
   SELECT * FROM public.question_cards
   WHERE (_pack_id IS NULL OR pack_id = _pack_id)
     AND (_since IS NULL OR updated_at > _since)
-    AND (_cursor IS NULL OR updated_at < _cursor)
-  ORDER BY updated_at DESC
+    AND (
+      _cursor_updated_at IS NULL OR 
+      updated_at < _cursor_updated_at OR 
+      (updated_at = _cursor_updated_at AND id < _cursor_id)
+    )
+  ORDER BY updated_at DESC, id DESC
   LIMIT _limit;
 $$;
 

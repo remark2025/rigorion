@@ -91,8 +91,8 @@ class SecureQuestionService {
       if (data.questions) {
         console.log(`✅ Fetched ${data.questions.length} questions`);
         
-        // Update sync timestamp if available
-        if (data.timestamp) {
+        // Update sync timestamp only on 200 (not 304)
+        if (data.timestamp && response.status === 200) {
           this.lastSyncAt = data.timestamp;
         }
         
@@ -128,9 +128,10 @@ class SecureQuestionService {
       // Check if we got a full page (indicates more data might be available)
       hasMore = questions.length === 500;
       
-      // Get cursor for next page (last question's updatedAt)
+      // Get composite cursor for next page (updatedAt,id)
       if (hasMore && questions.length > 0) {
-        cursor = questions[questions.length - 1].updatedAt;
+        const lastQ = questions[questions.length - 1];
+        cursor = `${lastQ.updatedAt},${lastQ.id}`;
       } else {
         hasMore = false;
       }
