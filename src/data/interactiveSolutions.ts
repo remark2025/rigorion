@@ -5,6 +5,110 @@ import { InteractiveSolution } from "@/types/QuestionInterface";
  * Maps question IDs to their interactive solution configurations
  */
 export const interactiveSolutions: Record<string, InteractiveSolution> = {
+  // Linear Equations
+  "CORE-001": {
+    hasInteractiveGraph: false,
+    graphConfig: {
+      type: 'linear',
+      xRange: [-2, 8],
+      yRange: [-5, 25],
+      showGrid: true,
+      showAxis: true,
+      title: 'Linear Equation: 3x + 5 = 17'
+    },
+    parameters: [
+      {
+        name: 'x',
+        label: 'Variable x',
+        value: 4,
+        min: 0,
+        max: 10,
+        step: 1,
+        description: 'The unknown value we are solving for'
+      }
+    ],
+    solutionSteps: [
+      {
+        id: 'step-1',
+        title: 'Start with the Equation',
+        description: 'We have the linear equation 3x + 5 = 17',
+        fromExpression: {
+          latex: '3x + 5 = 17',
+          display: '3x + 5 = 17'
+        },
+        toExpression: {
+          latex: '3x + 5 = 17', 
+          display: '3x + 5 = 17'
+        },
+        explanation: 'This is our starting equation that we need to solve for x',
+        hint: 'Identify what operation is done to x first'
+      },
+      {
+        id: 'step-2',
+        title: 'Subtract 5 from Both Sides',
+        description: 'Eliminate the constant term by subtracting 5',
+        fromExpression: {
+          latex: '3x + 5 = 17',
+          display: '3x + 5 = 17'
+        },
+        toExpression: {
+          latex: '3x = 12',
+          display: '3x = 12'
+        },
+        explanation: 'Subtracting 5 from both sides: (3x + 5) - 5 = 17 - 5',
+        hint: 'What do you get when you subtract 5 from 17?',
+        interactive: {
+          type: 'input',
+          correctAnswer: '12'
+        }
+      },
+      {
+        id: 'step-3',
+        title: 'Divide Both Sides by 3',
+        description: 'Isolate x by dividing both sides by the coefficient',
+        fromExpression: {
+          latex: '3x = 12',
+          display: '3x = 12'
+        },
+        toExpression: {
+          latex: 'x = 4',
+          display: 'x = 4'
+        },
+        explanation: 'Dividing both sides by 3: 3x ÷ 3 = 12 ÷ 3',
+        hint: 'What is 12 divided by 3?',
+        interactive: {
+          type: 'input',
+          correctAnswer: '4'
+        }
+      }
+    ],
+    algebraSteps: true,
+    showWork: true,
+    allowInputValidation: true,
+    renderPayload: {
+      solutionSteps: [
+        {
+          id: "step-1",
+          title: "Start with the Equation",
+          explanation: "We have the linear equation 3x + 5 = 17"
+        },
+        {
+          id: "step-2",
+          title: "Subtract 5 from Both Sides", 
+          explanation: "Subtracting 5 from both sides: (3x + 5) - 5 = 17 - 5 which gives us 3x = 12"
+        },
+        {
+          id: "step-3",
+          title: "Divide Both Sides by 3",
+          explanation: "Dividing both sides by 3: 3x ÷ 3 = 12 ÷ 3 which gives us x = 4"
+        }
+      ],
+      algebraSteps: true,
+      showWork: true,
+      allowInputValidation: true
+    }
+  },
+  
   // Quadratic Functions
   "MATH-INTERACTIVE-001": {
     hasInteractiveGraph: true,

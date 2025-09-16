@@ -4,19 +4,24 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0"
 // Secure CORS - only allow your domains
 const allowedOrigins = new Set([
   'http://localhost:3000',
-  'http://localhost:5173', 
+  'http://localhost:5173',
+  'http://localhost:8080',  // Add the port being used
   'https://yourapp.com',
   'https://app.yourapp.com'
 ])
 
 function getCorsHeaders(origin: string | null): Record<string, string> {
   const isAllowed = origin && allowedOrigins.has(origin)
+  
+  // For development, be more permissive with localhost
+  const isDevelopment = origin && origin.startsWith('http://localhost:')
+  
   return {
-    'Access-Control-Allow-Origin': isAllowed ? origin : 'null',
+    'Access-Control-Allow-Origin': isAllowed || isDevelopment ? (origin || '*') : '*',
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type, if-none-match',
     'Access-Control-Allow-Methods': 'GET, OPTIONS',
     'Access-Control-Max-Age': '86400',
-    'Access-Control-Allow-Credentials': 'true'
+    'Access-Control-Allow-Credentials': 'false'  // Set to false when using wildcard
   }
 }
 
@@ -39,8 +44,12 @@ serve(async (req) => {
     return new Response('ok', { headers: corsHeaders })
   }
 
-  // Origin validation
-  if (origin && !allowedOrigins.has(origin)) {
+  // Origin validation (more permissive for development)
+  const isDevelopment = origin && origin.startsWith('http://localhost:')
+  const isAllowed = origin && allowedOrigins.has(origin)
+  
+  if (origin && !isAllowed && !isDevelopment) {
+    console.log(`🚫 Blocked origin: ${origin}`)
     return new Response('Forbidden', { 
       status: 403,
       headers: corsHeaders
@@ -48,7 +57,7 @@ serve(async (req) => {
   }
 
   try {
-    console.log('🚀 Edge Function: get-questions starting...')
+    console.log('🚀 Secure Edge Function: get-questions-secure starting...')
     
     // Use anon key + pass through user JWT for RLS
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
@@ -62,7 +71,6 @@ serve(async (req) => {
         } 
       }
     })
-
 
     console.log('🔄 Fetching questions using RLS+RPC...')
 
@@ -106,89 +114,54 @@ serve(async (req) => {
         }
       })
     }
-    
 
-    // Transform for frontend
-    const transformedQuestions = questions?.map(q => {
-      console.log(`🔧 Processing question ${q.public_id}:`)
-      console.log(`   - has_interactive: ${q.has_interactive}`)
-      console.log(`   - interactive_solutions count: ${q.interactive_solutions?.length || 0}`)
-      if (q.interactive_solutions?.[0]) {
-        console.log(`   - has_interactive_graph: ${q.interactive_solutions[0].has_interactive_graph}`)
-        console.log(`   - render_payload exists: ${q.interactive_solutions[0].render_payload ? 'YES' : 'NO'}`)
-      }
+    // Transform slim question cards (no sensitive data like answers or solutions)
+    const transformedQuestions = questions?.map(q => ({
+      id: q.id,
+      number: q.number,
+      content: q.content,
+      difficulty: q.difficulty,
+      chapter: q.topic || 'Math',
+      module: q.subject === 'math' ? 'All SAT Math' : 'SAT Practice',
+      bookmarked: false,
+      examNumber: 1,
       
-      const result = {
-        id: q.public_id,
-        number: 1,
-        content: q.content,
-        difficulty: q.difficulty,
-        chapter: q.topic || 'Interactive Math',
-        module: 'All SAT Math',
-        bookmarked: false,
-        examNumber: 1,
+      // Choices (safe to include for practice)
+      choices: Array.isArray(q.choices) ? 
+        q.choices.map((choice: any) => choice.text || choice) : [],
       
-        // Choices
-        choices: q.choices ? 
-          (Array.isArray(q.choices) ? 
-            q.choices.map((choice: any) => choice.text || choice) :
-            Object.values(q.choices).map((choice: any) => choice.text || choice)
-          ) : [],
-        
-        // Answer data
-        correctAnswer: q.correct_answer,
-        solution: q.solution_text || '',
-        explanation: q.explanation || '',
-        hint: q.hint || '',
-        
-        // Solution steps
-        solutionSteps: q.solution_steps ? 
-          q.solution_steps
-            .sort((a: any, b: any) => a.step_number - b.step_number)
-            .map((step: any) => step.explanation || step.description || step.title) : [],
-        
-        // Calculator
-        calculatorAllowed: q.calculator_allowed || false,
-        
-        // Interactive solution - explicit mapping
-        interactiveSolution: q.interactive_solutions?.[0] ? {
-          hasInteractiveGraph: q.interactive_solutions[0].has_interactive_graph,
-          graphConfig: q.interactive_solutions[0].graph_config,
-          parameters: q.interactive_solutions[0].parameters || [],
-          renderPayload: q.interactive_solutions[0].render_payload,
-          solutionSteps: q.solution_steps ? 
-            q.solution_steps.map((step: any, index: number) => ({
-              id: `step-${step.step_number || index + 1}`,
-              title: step.title,
-              description: step.description,
-              explanation: step.explanation,
-              hint: step.hint
-            })) : []
-        } : undefined,
-        
-        // Quote for consistency
-        quote: {
-          text: "Mathematics is not about numbers, equations, computations, or algorithms: it is about understanding.",
-          source: "William Paul Thurston"
-        }
-      }
+      // Calculator setting
+      calculatorAllowed: q.calculator_allowed || false,
       
-      console.log(`   ✅ Question ${q.public_id} transformed with interactiveSolution: ${result.interactiveSolution ? 'YES' : 'NO'}`)
-      return result
-    }) || []
+      // Interactive flag (details loaded separately)
+      hasInteractive: q.has_interactive || false,
+      
+      // Metadata for sync/pagination
+      updatedAt: q.updated_at
+    })) || []
 
-    console.log(`🎯 Transformed ${transformedQuestions.length} questions for frontend`)
+    // Add pagination cursor for next request
+    const nextCursor = questions?.length === limit ? 
+      questions[questions.length - 1]?.updated_at : null
 
     return new Response(
       JSON.stringify({ 
         questions: transformedQuestions,
         success: true,
-        count: transformedQuestions.length 
+        count: transformedQuestions.length,
+        pagination: {
+          hasMore: questions?.length === limit,
+          nextCursor,
+          limit
+        },
+        timestamp: new Date().toISOString()
       }),
       { 
         headers: { 
           ...corsHeaders, 
-          'Content-Type': 'application/json' 
+          'Content-Type': 'application/json',
+          'ETag': etag,
+          'Cache-Control': 'public, s-maxage=600, stale-while-revalidate=86400'
         } 
       }
     )
@@ -198,9 +171,9 @@ serve(async (req) => {
     
     return new Response(
       JSON.stringify({ 
-        error: error.message, 
         success: false,
-        questions: [] 
+        error: error.message,
+        details: 'Failed to fetch questions'
       }),
       { 
         headers: { 

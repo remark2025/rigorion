@@ -28,6 +28,7 @@ import ReadingSolutionDemo from "@/pages/ReadingSolutionDemo";
 import WritingSolutionDemo from "@/pages/WritingSolutionDemo";
 import AdvancedAnimationDemo from "@/pages/AdvancedAnimationDemo";
 import SATMockTestPage from "@/pages/SATMockTestPage";
+import DatabasePopulator from "@/pages/DatabasePopulator";
 
 function App() {
   // Prevent layout shift from modals by maintaining scrollbar space
@@ -69,6 +70,11 @@ function App() {
                 <Route path="/endpoints" element={
                   <ProtectedRoute>
                     <Endpoints />
+                  </ProtectedRoute>
+                } />
+                <Route path="/database-populator" element={
+                  <ProtectedRoute>
+                    <DatabasePopulator />
                   </ProtectedRoute>
                 } />
                 <Route path="/stripe-test" element={

@@ -8,6 +8,8 @@ import { sampleQuestions } from "@/components/practice/sampleQuestion";
 import { databaseQuestionService } from "@/services/databaseQuestionService";
 import { functionQuestionService } from "@/services/functionQuestionService";
 import { edgeFunctionQuestionService } from "@/services/edgeFunctionService";
+import { secureQuestionService } from "@/services/secureQuestionService";
+import { enhanceQuestionsWithInteractiveSolutions } from "@/utils/interactiveSolutionUtils";
 
 interface QuestionsContextType {
   questions: Question[];
@@ -47,29 +49,61 @@ export const QuestionsProvider: React.FC<QuestionsProviderProps> = ({ children }
       setIsLoading(true);
       setError(null);
       
-      // Method 1: Try Edge Function first (with timeout)
-      console.log("🚀 Attempting to load questions using Edge Function...");
+      // Method 1: Try Secure Edge Function first (with timeout)
+      console.log("🚀 Attempting to load questions using Secure Edge Function...");
       try {
         // Add timeout to prevent hanging
         const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Edge Function timeout')), 5000)
+          setTimeout(() => reject(new Error('Secure Edge Function timeout')), 5000)
+        );
+        
+        const securePromise = secureQuestionService.fetchAllQuestions();
+        const secureQuestions = await Promise.race([securePromise, timeoutPromise]) as Question[];
+        
+        if (secureQuestions.length > 0) {
+          console.log(`🎯 Loaded ${secureQuestions.length} questions from Secure Edge Function!`);
+          console.log("First question:", secureQuestions[0]);
+          
+          // Enhance questions with static interactive solutions
+          const enhancedQuestions = enhanceQuestionsWithInteractiveSolutions(secureQuestions);
+          console.log("🎨 Enhanced questions with interactive solutions");
+          console.log("Enhanced first question:", enhancedQuestions[0]);
+          
+          setQuestions(enhancedQuestions);
+          clearTimeout(overallTimeout);
+          return; // Success! Exit early
+        }
+      } catch (secureError) {
+        console.log("Secure Edge Function service failed:", secureError);
+      }
+
+      // Method 2: Try Legacy Edge Function (with timeout)
+      console.log("🚀 Attempting to load questions using Legacy Edge Function...");
+      try {
+        // Add timeout to prevent hanging
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Legacy Edge Function timeout')), 5000)
         );
         
         const edgeFunctionPromise = edgeFunctionQuestionService.fetchQuestions();
         const edgeQuestions = await Promise.race([edgeFunctionPromise, timeoutPromise]) as Question[];
         
         if (edgeQuestions.length > 0) {
-          console.log(`🎯 Loaded ${edgeQuestions.length} questions from Edge Function!`);
-          console.log("First question:", edgeQuestions[0]);
-          setQuestions(edgeQuestions);
+          console.log(`🎯 Loaded ${edgeQuestions.length} questions from Legacy Edge Function!`);
+          
+          // Enhance questions with static interactive solutions
+          const enhancedQuestions = enhanceQuestionsWithInteractiveSolutions(edgeQuestions);
+          console.log("🎨 Enhanced questions with interactive solutions");
+          
+          setQuestions(enhancedQuestions);
           clearTimeout(overallTimeout);
           return; // Success! Exit early
         }
       } catch (edgeFunctionError) {
-        console.log("Edge Function service failed:", edgeFunctionError);
+        console.log("Legacy Edge Function service failed:", edgeFunctionError);
       }
 
-      // Method 2: Try function-based access (with timeout)
+      // Method 3: Try function-based access (with timeout)
       console.log("🚀 Attempting to load questions using function-based access...");
       try {
         const timeoutPromise = new Promise((_, reject) => 
@@ -90,7 +124,7 @@ export const QuestionsProvider: React.FC<QuestionsProviderProps> = ({ children }
         console.log("Function service failed:", functionError);
       }
 
-      // Method 3: Try new database direct access (with timeout)
+      // Method 4: Try new database direct access (with timeout)
       console.log("⚡ Attempting direct database access...");
       try {
         const timeoutPromise = new Promise((_, reject) => 
@@ -103,7 +137,12 @@ export const QuestionsProvider: React.FC<QuestionsProviderProps> = ({ children }
         if (databaseQuestions.length > 0) {
           console.log(`🎯 Loaded ${databaseQuestions.length} questions from database!`);
           console.log("First question:", databaseQuestions[0]);
-          setQuestions(databaseQuestions);
+          
+          // Enhance questions with static interactive solutions
+          const enhancedQuestions = enhanceQuestionsWithInteractiveSolutions(databaseQuestions);
+          console.log("🎨 Enhanced database questions with interactive solutions");
+          
+          setQuestions(enhancedQuestions);
           clearTimeout(overallTimeout);
           return; // Success! Exit early
         }
@@ -111,7 +150,7 @@ export const QuestionsProvider: React.FC<QuestionsProviderProps> = ({ children }
         console.log("Database service failed:", dbError);
       }
       
-      // Method 4: Try legacy secure data service (with timeout)
+      // Method 5: Try legacy secure data service (with timeout)
       console.log("⚡ Trying legacy secure data service...");
       try {
         const timeoutPromise = new Promise((_, reject) => 
