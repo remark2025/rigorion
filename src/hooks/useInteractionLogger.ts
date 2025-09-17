@@ -82,9 +82,8 @@ export function useInteractionLogger(): InteractionLogger {
         question_index_in_session: data.questionIndexInSession,
         total_questions_in_session: data.totalQuestionsInSession,
         
-        // Answer data
+        // Answer data (trimmed payload - removed correct_answer, keeping selected_answer + is_correct)
         selected_answer: data.selectedAnswer,
-        correct_answer: data.question.correct_answer,
         
         // Optional interaction data
         confidence_level: data.confidenceLevel,

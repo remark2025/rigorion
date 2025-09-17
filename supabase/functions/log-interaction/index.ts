@@ -106,27 +106,35 @@ serve(async (req) => {
     // Generate idempotency key if not provided
     const idempotencyKey = requestData.idempotency_key || crypto.randomUUID();
 
-    // Calculate attempt number - always get the next available number
-    console.log('🔢 Calculating attempt number for user:', user.id, 'question:', requestData.question_id)
+    // Calculate attempt number using race-safe advisory locks
+    console.log('🔢 Getting race-safe attempt number for user:', user.id, 'question:', requestData.question_id)
     
-    const { data: existingAttempts, error: attemptError } = await supabaseClient
-      .from('question_interactions')
-      .select('attempt_number')
-      .eq('user_id', user.id)
-      .eq('question_public_id', requestData.question_id)
-      .order('attempt_number', { ascending: false })
-      .limit(1);
+    const { data: attemptResult, error: attemptError } = await supabaseClient
+      .rpc('get_next_attempt_number', {
+        p_user_id: user.id,
+        p_question_public_id: requestData.question_id
+      });
     
     if (attemptError) {
-      console.error('❌ Error fetching existing attempts:', attemptError)
-      // Continue with attempt number 1 if we can't fetch existing attempts
+      console.error('❌ Error getting attempt number:', attemptError)
+      // Fallback to simple increment if RPC fails
+      const { data: existingAttempts } = await supabaseClient
+        .from('question_interactions')
+        .select('attempt_number')
+        .eq('user_id', user.id)
+        .eq('question_public_id', requestData.question_id)
+        .order('attempt_number', { ascending: false })
+        .limit(1);
+      
+      const attemptNumber = existingAttempts && existingAttempts.length > 0 
+        ? (existingAttempts[0].attempt_number || 0) + 1 
+        : 1;
+      console.log('🔄 Using fallback attempt number:', attemptNumber)
+    } else {
+      console.log('🎯 Using race-safe attempt number:', attemptResult)
     }
     
-    const attemptNumber = existingAttempts && existingAttempts.length > 0 
-      ? (existingAttempts[0].attempt_number || 0) + 1 
-      : 1;
-      
-    console.log('🎯 Using attempt number:', attemptNumber)
+    const attemptNumber = attemptResult || 1;
 
     // Prepare interaction data using enhanced schema
     console.log('📋 Preparing interaction data...')
@@ -142,6 +150,7 @@ serve(async (req) => {
       solution_checked: requestData.solution_checked || false,
       objective_progress: requestData.objective_progress ? Math.max(0, Math.min(100, requestData.objective_progress)) : null,
       idempotency_key: idempotencyKey,
+      idempotency_expires_at: new Date(Date.now() + 60 * 60 * 1000).toISOString(), // 1 hour TTL
       // Enhanced skill tracking fields
       module: requestData.module || null,
       chapter: requestData.chapter || null,
@@ -149,14 +158,13 @@ serve(async (req) => {
       level: requestData.level || null,
       topic: requestData.topic || null,
       question_type: requestData.question_type || null,
-      // Note: Additional fields like practice_session_id, selected_answer, etc. 
-      // are not yet added to the database schema, so they're commented out for now
-      // practice_session_id: requestData.practice_session_id || null,
-      // question_index_in_session: requestData.question_index_in_session || null,
-      // total_questions_in_session: requestData.total_questions_in_session || null,
-      // selected_answer: requestData.selected_answer || null,
-      // correct_answer: requestData.correct_answer || null,
-      // practice_mode: requestData.practice_mode || null
+      // Practice context fields (now supported in schema)
+      practice_session_id: requestData.practice_session_id || null,
+      question_index_in_session: requestData.question_index_in_session || null,
+      total_questions_in_session: requestData.total_questions_in_session || null,
+      selected_answer: requestData.selected_answer || null,
+      practice_mode: requestData.practice_mode || null
+      // Note: Removed correct_answer to trim payload - keep only selected_answer + is_correct
     };
     
     console.log('✅ Interaction data prepared:', JSON.stringify(interactionData, null, 2))
