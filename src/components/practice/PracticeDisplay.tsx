@@ -6,7 +6,6 @@ import { Question } from "@/types/QuestionInterface";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useTheme } from "@/contexts/ThemeContext";
-import { analyzeWithAIML } from "@/services/aimlApi";
 import HintDialog from "./HintDialog";
 import TypingAnimation from "@/components/ui/TypingAnimation";
 import AttemptHistory from "./AttemptHistory";
@@ -577,26 +576,10 @@ const PracticeDisplay = ({
     
     setIsEvaluating(true);
     try {
-      const prompt = `Please evaluate this SAT Writing response:
-
-Question: ${currentQuestion?.content}
-
-Student's Response: ${writingAnswer}
-
-Please provide a detailed evaluation including:
-1. Grammar and mechanics
-2. Organization and structure
-3. Use of evidence and examples
-4. Clarity and style
-5. Overall score out of 6 points
-6. Specific suggestions for improvement
-
-Keep the evaluation constructive and educational.`;
-
-      const evaluation = await analyzeWithAIML({ query: prompt });
-      setAiEvaluation(evaluation);
+      // AI evaluation removed - provide basic feedback instead
+      setAiEvaluation('Your response has been recorded. Please review the rubric and check your work for grammar, organization, and clarity.');
     } catch (error) {
-      console.error('AI Evaluation error:', error);
+      console.error('Evaluation error:', error);
       setAiEvaluation('Unable to evaluate at this time. Please try again.');
     } finally {
       setIsEvaluating(false);

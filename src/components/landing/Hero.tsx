@@ -14,9 +14,32 @@ export const Hero = () => {
         <div className="flex flex-col items-center justify-center text-center">
           {/* Welcome Message */}
           <div className="mb-12 max-w-3xl w-full">
-            <p className="text-xl text-gray-200 leading-relaxed mb-8 font-light">
-              Master the SAT with our comprehensive preparation platform. 
-              Achieve your target score with personalized practice and expert guidance.
+            <p className="text-3xl leading-relaxed mb-8 italic" style={{
+              fontFamily: 'Dancing Script, "Caveat", "Patrick Hand", "Architects Daughter", cursive, sans-serif',
+              fontWeight: '300',
+              letterSpacing: '0.03em'
+            }}>
+              <span style={{
+                background: 'linear-gradient(45deg, #C0C0C0, #E5E5E5, #F5F5F5, #FFFFFF, #F5F5F5, #E5E5E5, #C0C0C0)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                textShadow: '0 0 10px rgba(255, 255, 255, 0.3), 0 0 20px rgba(192, 192, 192, 0.2)',
+                filter: 'drop-shadow(0 2px 4px rgba(255, 255, 255, 0.1))'
+              }}>
+                Stop Searching,
+              </span>
+              {' '}
+              <span style={{
+                background: 'linear-gradient(45deg, #FF6B35, #FF8C42, #FFA726, #000000)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                textShadow: '0 0 10px rgba(255, 165, 0, 0.3), 0 0 20px rgba(255, 107, 53, 0.2)',
+                filter: 'drop-shadow(0 2px 4px rgba(255, 140, 66, 0.1))'
+              }}>
+                Start Improving
+              </span>
             </p>
           </div>
           
@@ -24,14 +47,15 @@ export const Hero = () => {
           <div className="flex items-center justify-center mb-8">
             <Button 
               onClick={() => setShowPaymentModal(true)}
-              className="text-white font-medium px-8 py-3 rounded-full shadow-lg transform hover:scale-105 transition-all duration-200"
+              className="text-black font-medium px-8 py-3 rounded-full shadow-lg transform hover:scale-105 transition-all duration-200 relative overflow-hidden"
               style={{
                 background: 'linear-gradient(135deg, #ff6b35 0%, #ff8c42 50%, #ffa726 100%)',
                 backgroundSize: '200% 200%',
                 animation: 'gradientShift 3s ease-in-out infinite'
               }}
             >
-              Start Now
+              <span className="relative z-10">Start Now</span>
+              <div className="absolute inset-0 rounded-full border-2 border-black opacity-70 animate-[borderShimmer_2s_linear_infinite]"></div>
             </Button>
           </div>
         </div>
@@ -81,6 +105,21 @@ export const Hero = () => {
           }
           100% {
             background-position: 0% 50%;
+          }
+        }
+        
+        @keyframes borderShimmer {
+          0% {
+            opacity: 0.3;
+            transform: scale(1);
+          }
+          50% {
+            opacity: 1;
+            transform: scale(1.02);
+          }
+          100% {
+            opacity: 0.3;
+            transform: scale(1);
           }
         }
       `}</style>

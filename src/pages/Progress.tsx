@@ -8,7 +8,6 @@ import { useProgress } from "@/contexts/ProgressContext";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useQueryClient } from "@tanstack/react-query";
-import AIAnalyzer from "@/components/ai/AIAnalyzer";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,13 +22,6 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { Footer } from '@/components/Footer';
 import { useSimpleProgress } from "@/hooks/useSimpleProgress";
 
-// Define course type
-type Course = {
-  id: string;
-  name: string;
-  status: 'active' | 'expired';
-  expiresIn: number;
-};
 
 const DUMMY_PROGRESS = {
   userId: 'dummy',
@@ -174,15 +166,10 @@ const Progress = () => {
   const { isDarkMode } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isNavDropdownOpen, setIsNavDropdownOpen] = useState(false);
-  const [courses, setCourses] = useState<Course[]>([
-    { id: '1', name: 'SAT Math', status: 'active', expiresIn: 30 },
-    { id: '2', name: 'SAT Reading', status: 'active', expiresIn: 25 },
-    { id: '3', name: 'SAT Writing', status: 'active', expiresIn: 20 }
-  ]);
-  const [selectedCourse, setSelectedCourse] = useState<string>('1');
   const [selectedView, setSelectedView] = useState<'analytics' | 'exam-results' | 'leaderboard'>('analytics');
   const [timeAnalyticsView, setTimeAnalyticsView] = useState<'daily' | 'skills'>('daily');
   const [selectedSkillForAnalytics, setSelectedSkillForAnalytics] = useState<string>('all');
+  const [selectedSkillSection, setSelectedSkillSection] = useState<'Math' | 'Reading' | 'Writing'>('Math');
   const queryClient = useQueryClient();
 
   const { progressData, isLoading: analyticsLoading, error: progressError } = useSimpleProgress();
@@ -291,36 +278,68 @@ const Progress = () => {
                   </DropdownMenuContent>
                 </DropdownMenu>
                 
-                {/* SAT Premium Logo */}
+                {/* SAT Elite Logo */}
                 <div className="flex items-center">
-                  <h1 className="text-base sm:text-lg font-semibold tracking-wide bg-gradient-to-r from-gray-300 via-blue-400 to-blue-500 bg-clip-text text-transparent">
-                    SAT
-                    <span className="text-[8px] font-bold text-gray-400 border border-gray-300 rounded-full w-2.5 h-2.5 inline-flex items-center justify-center leading-none ml-0.5 mr-1 align-top">
+                  <h1 className="text-base sm:text-lg font-black tracking-wider select-none">
+                    <span className="relative inline-block">
+                      <span className="bg-gradient-to-r from-gray-400 via-gray-600 to-black bg-clip-text text-transparent font-black">
+                        SAT
+                      </span>
+                      <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-30 animate-pulse bg-[length:200%_100%] animate-[shimmer_2s_ease-in-out_infinite]">
+                        SAT
+                      </span>
+                    </span>
+                    <span className="text-[8px] font-bold text-gray-500 border border-gray-400 rounded-full w-2.5 h-2.5 inline-flex items-center justify-center leading-none ml-0.5 mr-1 align-top">
                       ®
                     </span>
-                    Premium
+                    <span className="relative inline-block">
+                      <span className="bg-gradient-to-r from-orange-500 via-orange-600 to-orange-700 bg-clip-text text-transparent font-black">
+                        Elite
+                      </span>
+                      <span className="absolute inset-0 bg-gradient-to-r from-transparent via-yellow-300 to-transparent opacity-40 bg-clip-text text-transparent bg-[length:200%_100%] animate-[shimmer_2s_ease-in-out_infinite_0.5s]">
+                        Elite
+                      </span>
+                    </span>
                   </h1>
+                  <style jsx>{`
+                    @keyframes shimmer {
+                      0% {
+                        background-position: -200% 0;
+                        opacity: 0;
+                      }
+                      50% {
+                        opacity: 0.6;
+                      }
+                      100% {
+                        background-position: 200% 0;
+                        opacity: 0;
+                      }
+                    }
+                    .animate-shimmer {
+                      animation: shimmer 2s ease-in-out infinite;
+                    }
+                  `}</style>
                 </div>
               </div>
 
-              {/* Center Tab Menu - Practice Style Buttons */}
+              {/* Center Tab Menu - Radio Button Navigation */}
               <div className="flex items-center justify-center absolute left-1/2 transform -translate-x-1/2">
                 <div className="inline-flex items-center rounded-full px-2 py-1 border-2" style={{
                   borderColor: '#EA580C',
                   background: 'rgba(255, 255, 255, 0.9)'
                 }}>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="px-3 py-1 rounded-full transition-all duration-200 ease-out hover:scale-105 active:scale-95 h-6 text-xs"
+                  <label className={`px-3 py-1 rounded-full transition-all duration-200 ease-out hover:scale-105 active:scale-95 h-6 text-xs cursor-pointer flex items-center ${selectedView === 'analytics' ? 'text-black' : 'text-gray-500'}`}
                     style={selectedView === 'analytics' ? {
-                      background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)',
-                      color: '#000000'
-                    } : {
-                      color: '#6B7280'
-                    }}
-                    onClick={() => setSelectedView('analytics')}
-                  >
+                      background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)'
+                    } : {}}>
+                    <input
+                      type="radio"
+                      name="analytics-view"
+                      value="analytics"
+                      checked={selectedView === 'analytics'}
+                      onChange={(e) => setSelectedView('analytics')}
+                      className="sr-only"
+                    />
                     <BarChart className="h-3 w-3 mr-1" style={selectedView !== 'analytics' ? {
                       background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)',
                       WebkitBackgroundClip: 'text',
@@ -331,19 +350,19 @@ const Progress = () => {
                     {analyticsLoading && (
                       <span className="ml-1 inline-block w-2 h-2 bg-orange-400 rounded-full animate-pulse"></span>
                     )}
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="px-3 py-1 rounded-full transition-all duration-200 ease-out hover:scale-105 active:scale-95 h-6 text-xs"
+                  </label>
+                  <label className={`px-3 py-1 rounded-full transition-all duration-200 ease-out hover:scale-105 active:scale-95 h-6 text-xs cursor-pointer flex items-center ${selectedView === 'exam-results' ? 'text-black' : 'text-gray-500'}`}
                     style={selectedView === 'exam-results' ? {
-                      background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)',
-                      color: '#000000'
-                    } : {
-                      color: '#6B7280'
-                    }}
-                    onClick={() => setSelectedView('exam-results')}
-                  >
+                      background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)'
+                    } : {}}>
+                    <input
+                      type="radio"
+                      name="analytics-view"
+                      value="exam-results"
+                      checked={selectedView === 'exam-results'}
+                      onChange={(e) => setSelectedView('exam-results')}
+                      className="sr-only"
+                    />
                     <FileText className="h-3 w-3 mr-1" style={selectedView !== 'exam-results' ? {
                       background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)',
                       WebkitBackgroundClip: 'text',
@@ -352,19 +371,19 @@ const Progress = () => {
                     } : {}} />
                     <span className="hidden sm:inline">Exam Report</span>
                     <span className="sm:hidden">Report</span>
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="px-3 py-1 rounded-full transition-all duration-200 ease-out hover:scale-105 active:scale-95 h-6 text-xs"
+                  </label>
+                  <label className={`px-3 py-1 rounded-full transition-all duration-200 ease-out hover:scale-105 active:scale-95 h-6 text-xs cursor-pointer flex items-center ${selectedView === 'leaderboard' ? 'text-black' : 'text-gray-500'}`}
                     style={selectedView === 'leaderboard' ? {
-                      background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)',
-                      color: '#000000'
-                    } : {
-                      color: '#6B7280'
-                    }}
-                    onClick={() => setSelectedView('leaderboard')}
-                  >
+                      background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)'
+                    } : {}}>
+                    <input
+                      type="radio"
+                      name="analytics-view"
+                      value="leaderboard"
+                      checked={selectedView === 'leaderboard'}
+                      onChange={(e) => setSelectedView('leaderboard')}
+                      className="sr-only"
+                    />
                     <Trophy className="h-3 w-3 mr-1" style={selectedView !== 'leaderboard' ? {
                       background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)',
                       WebkitBackgroundClip: 'text',
@@ -373,42 +392,12 @@ const Progress = () => {
                     } : {}} />
                     <span className="hidden sm:inline">Leaderboard</span>
                     <span className="sm:hidden">Board</span>
-                  </Button>
+                  </label>
                 </div>
               </div>
 
               <div className="flex items-center gap-1 sm:gap-2 overflow-hidden">
-                {/* Course Dropdown */}
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="text-xs px-2 py-1 h-7 bg-white border-gray-200 hover:bg-gray-50"
-                    >
-                      <span className="text-gray-600 truncate max-w-[60px] sm:max-w-[100px]">
-                        {courses.find(c => c.id === selectedCourse)?.name}
-                      </span>
-                      <ChevronDown className="ml-1 h-3 w-3 text-gray-400" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-48 shadow-lg rounded-md p-1 z-50 bg-white border-orange-200">
-                    <ScrollArea className="h-[150px]">
-                      {courses.map((course) => (
-                        <DropdownMenuItem 
-                          key={course.id}
-                          className="cursor-pointer py-2 px-3 rounded-md transition-colors hover:bg-gray-50"
-                          onClick={() => setSelectedCourse(course.id)}
-                        >
-                          <span className="font-source-sans text-sm text-gray-600">{course.name}</span>
-                          {selectedCourse === course.id && <span className="ml-auto text-xs">✓</span>}
-                        </DropdownMenuItem>
-                      ))}
-                    </ScrollArea>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-
-                <div className="ml-2 flex items-center">
+                <div className="flex items-center">
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Avatar className="h-8 w-8 cursor-pointer transition-all hover:ring-2 hover:ring-blue-200">
@@ -545,16 +534,57 @@ const Progress = () => {
                   <div className={`p-8 rounded-xl ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm border-0 mt-8`}>
                     <div className="flex items-center justify-between mb-6">
                       <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>
-                        {courses.find(c => c.id === selectedCourse)?.name || 'SAT Math'} - Skill Analytics
+                        SAT {selectedSkillSection} - Skill Analytics
                       </h3>
-                      <div className={`px-3 py-1 rounded-full text-sm font-medium ${isDarkMode ? 'bg-gray-700 text-gray-300' : 'bg-gray-100 text-gray-600'}`}>
-                        {currentProgressData.skillAnalytics.filter((skill) => {
-                          const selectedCourseName = courses.find(c => c.id === selectedCourse)?.name || 'SAT Math';
-                          if (selectedCourseName.includes('Math')) return skill.section === 'Math';
-                          if (selectedCourseName.includes('Reading')) return skill.section === 'Reading';
-                          if (selectedCourseName.includes('Writing')) return skill.section === 'Writing';
-                          return skill.section === 'Math';
-                        }).length} Skills
+                    </div>
+
+                    {/* Tab Menu for Skill Sections - Positioned Right */}
+                    <div className="flex items-center justify-end mb-6">
+                      <div className="inline-flex items-center rounded-full px-2 py-1" style={{
+                        background: 'rgba(255, 255, 255, 0.9)'
+                      }}>
+                        <label className={`px-4 py-2 rounded-full transition-all duration-200 ease-out hover:scale-105 active:scale-95 h-8 text-sm cursor-pointer flex items-center ${selectedSkillSection === 'Math' ? 'text-black' : 'text-gray-500'}`}
+                          style={selectedSkillSection === 'Math' ? {
+                            background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)'
+                          } : {}}>
+                          <input
+                            type="radio"
+                            name="skill-section"
+                            value="Math"
+                            checked={selectedSkillSection === 'Math'}
+                            onChange={(e) => setSelectedSkillSection('Math')}
+                            className="sr-only"
+                          />
+                          SAT Math
+                        </label>
+                        <label className={`px-4 py-2 rounded-full transition-all duration-200 ease-out hover:scale-105 active:scale-95 h-8 text-sm cursor-pointer flex items-center ${selectedSkillSection === 'Reading' ? 'text-black' : 'text-gray-500'}`}
+                          style={selectedSkillSection === 'Reading' ? {
+                            background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)'
+                          } : {}}>
+                          <input
+                            type="radio"
+                            name="skill-section"
+                            value="Reading"
+                            checked={selectedSkillSection === 'Reading'}
+                            onChange={(e) => setSelectedSkillSection('Reading')}
+                            className="sr-only"
+                          />
+                          SAT Reading
+                        </label>
+                        <label className={`px-4 py-2 rounded-full transition-all duration-200 ease-out hover:scale-105 active:scale-95 h-8 text-sm cursor-pointer flex items-center ${selectedSkillSection === 'Writing' ? 'text-black' : 'text-gray-500'}`}
+                          style={selectedSkillSection === 'Writing' ? {
+                            background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)'
+                          } : {}}>
+                          <input
+                            type="radio"
+                            name="skill-section"
+                            value="Writing"
+                            checked={selectedSkillSection === 'Writing'}
+                            onChange={(e) => setSelectedSkillSection('Writing')}
+                            className="sr-only"
+                          />
+                          SAT Writing
+                        </label>
                       </div>
                     </div>
                       
@@ -575,13 +605,7 @@ const Progress = () => {
                         </thead>
                         <tbody>
                           {currentProgressData.skillAnalytics
-                            .filter((skill) => {
-                              const selectedCourseName = courses.find(c => c.id === selectedCourse)?.name || 'SAT Math';
-                              if (selectedCourseName.includes('Math')) return skill.section === 'Math';
-                              if (selectedCourseName.includes('Reading')) return skill.section === 'Reading';
-                              if (selectedCourseName.includes('Writing')) return skill.section === 'Writing';
-                              return skill.section === 'Math';
-                            })
+                            .filter((skill) => skill.section === selectedSkillSection)
                             .map((skill) => {
                               const totalAttempted = skill.correct + skill.incorrect;
                               const accuracy = totalAttempted > 0 ? Math.round((skill.correct / totalAttempted) * 100) : 0;
@@ -1236,14 +1260,6 @@ const Progress = () => {
               )}
             </div>
 
-            {/* AI Assistant for Progress Page */}
-            <AIAnalyzer
-              context="progress"
-              data={{
-                userId,
-                progressData: progressData || currentProgressData
-              }}
-            />
             
             {/* Custom Footer for Analytics Section */}
             <Footer />

@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Lock, Loader2, RefreshCw, AlertTriangle, KeyRound } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import PracticeContent from "@/components/practice/PracticeContent";
-import AIAnalyzer from "@/components/ai/AIAnalyzer";
 import CommentSection from "@/components/practice/CommentSection";
 import { ThemeProvider } from "@/contexts/ThemeContext";
 import { QuestionsProvider } from "@/contexts/QuestionsContext";

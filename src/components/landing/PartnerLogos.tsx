@@ -105,30 +105,27 @@ export const PartnerLogos = () => {
     return "scale-90 opacity-0";
   };
   
-  const getCardBorderClass = (index: number) => {
-    if (index === activeProject) return "border-2 border-orange-400 shadow-orange-400/30";
-    return "border border-gray-600";
-  };
-  return <section id="products" ref={projectsRef} className="py-[50px] w-full h-[650px] overflow-visible relative" style={{
+  return <section id="products" ref={projectsRef} className="py-4 w-full h-[600px] overflow-visible relative" style={{
     backgroundImage: 'url(/resources/carbonwallpaper.jpg)',
     backgroundSize: 'cover',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat'
   }}>
-      {/* Subtle glass effect overlay */}
+      {/* Dark glass effect overlay */}
       <div className="absolute inset-0" style={{
-        backdropFilter: 'blur(2px) saturate(120%)',
-        WebkitBackdropFilter: 'blur(2px) saturate(120%)',
-        backgroundColor: 'rgba(0, 0, 0, 0.2)'
+        background: 'linear-gradient(45deg, rgba(25, 25, 25, 0.95) 0%, rgba(128, 128, 128, 0.4) 50%, rgba(25, 25, 25, 0.95) 100%)',
+        backdropFilter: 'blur(20px) saturate(180%)',
+        WebkitBackdropFilter: 'blur(20px) saturate(180%)',
+        boxShadow: 'inset 0 8px 32px rgba(25, 25, 25, 0.4)'
       }}></div>
       <div className="w-full px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto relative z-10">
-        <div className={`text-center mb-10 max-w-3xl mx-auto transition-all duration-1200 ease-out ${isInView ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-16 scale-95'}`}>
-          <h2 className="text-3xl font-bold mb-3">
+        <div className={`text-center mb-6 max-w-3xl mx-auto transition-all duration-1200 ease-out ${isInView ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-16 scale-95'}`}>
+          <h2 className="text-2xl font-bold mb-2">
             <span className="italic font-script text-orange-400" style={{ fontFamily: 'Dancing Script, cursive' }}>
               Academic Arc transforms SAT uncertainty into inevitability.
             </span>
           </h2>
-          <p className="text-gray-300 text-lg">
+          <p className="text-gray-300 text-base">
             Strategic preparation with personalized analytics and proven results.
           </p>
           {isMobile && <div className="flex items-center justify-center mt-4 animate-pulse-slow">
@@ -142,45 +139,69 @@ export const PartnerLogos = () => {
         
         <div className="flex justify-center">
           {/* Centered Carousel */}
-          <div className="relative w-full h-[580px] overflow-visible" onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd} ref={carouselRef}>
+          <div className="relative w-full h-[560px] overflow-visible" onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)} onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd} ref={carouselRef}>
             <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center">
               {PROMOTIONAL_ITEMS.map((item, index) => <div key={item.id} className={`absolute ${index === activeProject ? 'top-[-20px]' : 'top-0'} w-full ${index === activeProject ? 'max-w-4xl' : 'max-w-2xl'} transform transition-all duration-500 ${getCardAnimationClass(index)}`} style={{
               transitionDelay: `${index * 50}ms`
             }}>
-                  <Card className={`overflow-visible h-[500px] rounded-xl shadow-lg hover:shadow-xl flex flex-col bg-gray-800 ${getCardBorderClass(index % PROMOTIONAL_ITEMS.length)}`} style={{boxShadow: index % PROMOTIONAL_ITEMS.length === activeProject ? '0 0 30px rgba(255, 107, 53, 0.4), 0 0 60px rgba(255, 140, 66, 0.2)' : undefined}}>
-                    <div className="relative bg-black flex items-center justify-center overflow-hidden" style={{
-                  height: '90%',
-                  backgroundImage: `url(${item.imageUrl})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center'
-                }}>
-                      <div className="absolute inset-0 bg-black/60"></div>
-                      <div className="relative z-10 flex flex-col items-center justify-center p-6">
-                        <h3 className="text-3xl italic font-script text-white mb-3" style={{ fontFamily: 'Dancing Script, cursive' }}>{item.title.toUpperCase()}</h3>
-                        <div className="w-16 h-1 bg-white mb-3"></div>
-                        <p className="text-white text-lg font-medium text-center">{item.brand}</p>
+                  <Card className={`overflow-visible h-[480px] rounded-xl shadow-lg hover:shadow-xl flex flex-col bg-gray-800 border-2 ${index === activeProject ? 'border-orange-400' : 'border-gray-600'}`} style={{
+                    boxShadow: index === activeProject ? 
+                      '0 0 20px rgba(255, 107, 53, 0.6), 0 0 40px rgba(255, 140, 66, 0.4), inset 0 0 20px rgba(255, 107, 53, 0.1)' : 
+                      '0 4px 6px rgba(0, 0, 0, 0.1)'
+                  }}>
+                    <div className="relative flex items-center justify-center overflow-hidden h-full rounded-xl" style={{
+                      backgroundImage: `url(${item.imageUrl})`,
+                      backgroundSize: 'cover',
+                      backgroundPosition: 'center'
+                    }}>
+                      <div className="relative z-10 flex flex-col items-center justify-center p-6 text-center">
+                        <h3 className="text-4xl italic font-script text-white mb-4 drop-shadow-lg" style={{ fontFamily: 'Dancing Script, cursive' }}>{item.title.toUpperCase()}</h3>
+                        <div className="w-20 h-1 bg-orange-400 mb-4"></div>
+                        <p className="text-white text-lg font-medium">{item.brand}</p>
+                        <p className="text-gray-200 text-sm mt-3 max-w-md leading-relaxed">{item.description}</p>
                       </div>
                     </div>
-                    
-                    <CardContent className="p-3 flex items-center justify-center" style={{ height: '10%' }}>
-                      <div className="w-full h-full bg-cover bg-center rounded-b-xl" style={{
-                        backgroundImage: `url(${item.imageUrl})`,
-                        backgroundSize: 'cover',
-                        backgroundPosition: 'center'
-                      }}>
-                      </div>
-                    </CardContent>
                   </Card>
                 </div>)}
             </div>
             
             {!isMobile && <>
-                <button className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-gray-700 border border-gray-600 rounded-full flex items-center justify-center text-gray-300 hover:bg-gray-600 z-30 shadow-md transition-all duration-300 hover:scale-110" onClick={() => setActiveProject(prev => (prev - 1 + PROMOTIONAL_ITEMS.length) % PROMOTIONAL_ITEMS.length)} aria-label="Previous product">
-                  <ChevronLeft className="w-6 h-6" />
+                <button 
+                  className="absolute left-4 top-1/2 -translate-y-1/2 w-14 h-14 rounded-full flex items-center justify-center z-30 transition-all duration-300 hover:scale-110 active:scale-95" 
+                  onClick={() => setActiveProject(prev => (prev - 1 + PROMOTIONAL_ITEMS.length) % PROMOTIONAL_ITEMS.length)} 
+                  aria-label="Previous product"
+                  style={{
+                    background: 'linear-gradient(145deg, #4a4a4a, #2a2a2a)',
+                    boxShadow: '0 8px 16px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1), inset 0 -1px 0 rgba(0, 0, 0, 0.3)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)'
+                  }}
+                >
+                  <ChevronLeft 
+                    className="w-7 h-7" 
+                    style={{
+                      color: '#FF6B35',
+                      filter: 'drop-shadow(0 0 8px rgba(255, 107, 53, 0.8)) drop-shadow(0 0 16px rgba(255, 140, 66, 0.6))',
+                    }}
+                  />
                 </button>
                 
-                <button className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-gray-700 border border-gray-600 rounded-full flex items-center justify-center text-gray-300 hover:bg-gray-600 z-30 shadow-md transition-all duration-300 hover:scale-110" onClick={() => setActiveProject(prev => (prev + 1) % PROMOTIONAL_ITEMS.length)} aria-label="Next product">
-                  <ChevronRight className="w-6 h-6" />
+                <button 
+                  className="absolute right-4 top-1/2 -translate-y-1/2 w-14 h-14 rounded-full flex items-center justify-center z-30 transition-all duration-300 hover:scale-110 active:scale-95" 
+                  onClick={() => setActiveProject(prev => (prev + 1) % PROMOTIONAL_ITEMS.length)} 
+                  aria-label="Next product"
+                  style={{
+                    background: 'linear-gradient(145deg, #4a4a4a, #2a2a2a)',
+                    boxShadow: '0 8px 16px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1), inset 0 -1px 0 rgba(0, 0, 0, 0.3)',
+                    border: '1px solid rgba(255, 255, 255, 0.1)'
+                  }}
+                >
+                  <ChevronRight 
+                    className="w-7 h-7" 
+                    style={{
+                      color: '#FF6B35',
+                      filter: 'drop-shadow(0 0 8px rgba(255, 107, 53, 0.8)) drop-shadow(0 0 16px rgba(255, 140, 66, 0.6))',
+                    }}
+                  />
                 </button>
               </>}
             
