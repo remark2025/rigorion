@@ -108,24 +108,19 @@ export const PrinciplesSection = () => {
   const displayFeatures = FEATURES.slice(0, 6);
 
   return (
-    <section className="py-20 bg-white overflow-hidden w-full">
+    <section className="pt-16 pb-8 bg-white overflow-hidden w-full">
       <div className="w-full px-4">
         {/* Header */}
-        <div className="text-center mb-16">
-          <h2 className="text-3xl lg:text-4xl font-bold mb-4">
-            <span className="italic font-script text-black" style={{ fontFamily: 'Dancing Script, cursive' }}>
-              What Stands Academic Arc Apart
-            </span>
-          </h2>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Discover the innovative features and technologies that make Academic Arc the most advanced SAT preparation platform available today.
+        <div className="text-center mb-8">
+          <p className="text-base text-gray-600 max-w-2xl mx-auto">
+            Discover the innovative features that make Academic Arc the most advanced SAT platform.
           </p>
         </div>
 
         {/* Single Row - Moving Left */}
-        <div className="mb-8 overflow-hidden relative">
+        <div className="mb-6 overflow-visible relative mx-4 py-8">
           <div 
-            className="flex gap-4 transition-all duration-500 ease-in-out"
+            className="flex gap-8 transition-all duration-500 ease-in-out"
             style={{ width: 'calc(300px * 12)', transform: `translateX(-${currentIndex * 300}px)` }}
           >
             {/* Duplicate the row for infinite scroll effect */}
@@ -134,7 +129,7 @@ export const PrinciplesSection = () => {
                 key={`row1-${feature.id}-${index}`}
                 className={`flex-shrink-0 w-72 bg-gray-100/90 backdrop-blur-lg rounded-xl p-5 transition-all duration-500 cursor-pointer border border-gray-300/50 ${
                   hoveredCard === feature.id 
-                    ? 'shadow-2xl scale-105 bg-gradient-to-br from-gray-200/95 to-gray-100/80 border-2 border-orange-500/30' 
+                    ? 'shadow-2xl bg-gradient-to-br from-gray-200/95 to-gray-100/80 border-2 border-orange-500/30' 
                     : 'shadow-lg hover:shadow-xl hover:border-orange-200/50'
                 }`}
                 style={{
@@ -152,31 +147,28 @@ export const PrinciplesSection = () => {
                 }}
               >
                 {/* Image */}
-                <div className="mb-4 overflow-hidden rounded-lg">
+                <div className="mb-6 overflow-hidden rounded-lg">
                   <img
                     src={feature.image}
                     alt={feature.title}
                     className={`w-full h-40 object-cover transition-all duration-500 ${
-                      hoveredCard === feature.id ? 'scale-110 brightness-110' : ''
+                      hoveredCard === feature.id ? 'brightness-110' : ''
                     }`}
                   />
                 </div>
                 
                 {/* Content */}
                 <div className="text-center">
-                  {/* Icon */}
-                  <div className={`inline-flex items-center justify-center w-12 h-12 rounded-lg mb-3 transition-all duration-300 ${
-                    hoveredCard === feature.id 
-                      ? 'bg-orange-500 text-white shadow-lg' 
-                      : 'bg-orange-50 text-orange-500'
-                  }`}>
-                    {feature.icon}
-                  </div>
-                  
                   {/* Title */}
-                  <h3 className={`text-lg font-semibold mb-2 transition-colors duration-300 ${
-                    hoveredCard === feature.id ? 'text-orange-500' : 'text-gray-800'
-                  }`}>
+                  <h3 className={`text-lg font-semibold mb-2 transition-all duration-300 ${
+                    hoveredCard === feature.id ? '' : 'text-gray-800'
+                  }`}
+                  style={hoveredCard === feature.id ? {
+                    background: 'linear-gradient(90deg, #000000 0%, #FF6B35 50%, #000000 100%)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text'
+                  } : {}}>
                     {feature.title}
                   </h3>
                   
@@ -191,7 +183,7 @@ export const PrinciplesSection = () => {
           
           {/* Navigation Buttons */}
           <button 
-            className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-orange-500 hover:bg-orange-600 rounded-full flex items-center justify-center text-white z-30 shadow-lg transition-all duration-300 hover:scale-110"
+            className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-orange-500 hover:bg-orange-600 rounded-full flex items-center justify-center text-black z-30 shadow-lg transition-all duration-300 hover:scale-110"
             onClick={() => {
               setCurrentIndex(prev => (prev - 1 + displayFeatures.length) % displayFeatures.length);
             }}
@@ -203,7 +195,7 @@ export const PrinciplesSection = () => {
           </button>
           
           <button 
-            className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-orange-500 hover:bg-orange-600 rounded-full flex items-center justify-center text-white z-30 shadow-lg transition-all duration-300 hover:scale-110"
+            className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-orange-500 hover:bg-orange-600 rounded-full flex items-center justify-center text-black z-30 shadow-lg transition-all duration-300 hover:scale-110"
             onClick={() => {
               setCurrentIndex(prev => (prev + 1) % displayFeatures.length);
             }}
@@ -223,14 +215,15 @@ export const PrinciplesSection = () => {
           </p>
           <button 
             onClick={() => setShowPaymentModal(true)}
-            className="text-gray-900 font-medium px-8 py-3 rounded-full transition-all duration-300 hover:scale-105 shadow-lg"
+            className="text-black font-medium px-8 py-3 rounded-full transition-all duration-300 hover:scale-105 shadow-lg relative overflow-hidden"
             style={{
               background: 'linear-gradient(135deg, #ff6b35 0%, #ff8c42 50%, #ffa726 100%)',
               backgroundSize: '200% 200%',
               animation: 'gradientShift 3s ease-in-out infinite'
             }}
           >
-            Start Your Free Trial
+            <span className="relative z-10">Start Your Free Trial</span>
+            <div className="absolute inset-0 rounded-full border-2 border-black opacity-70 animate-[borderShimmer_2s_linear_infinite]"></div>
           </button>
         </div>
       </div>
@@ -278,6 +271,21 @@ export const PrinciplesSection = () => {
           }
           100% {
             background-position: 0% 50%;
+          }
+        }
+        
+        @keyframes borderShimmer {
+          0% {
+            opacity: 0.3;
+            transform: scale(1);
+          }
+          50% {
+            opacity: 1;
+            transform: scale(1.02);
+          }
+          100% {
+            opacity: 0.3;
+            transform: scale(1);
           }
         }
       `}</style>
