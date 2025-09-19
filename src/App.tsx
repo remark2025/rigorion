@@ -26,6 +26,7 @@ import InteractiveMathTest from "@/pages/InteractiveMathTest";
 import SimpleInteractiveTest from "@/pages/SimpleInteractiveTest";
 import ReadingSolutionDemo from "@/pages/ReadingSolutionDemo";
 import WritingSolutionDemo from "@/pages/WritingSolutionDemo";
+import WritingCorrectionDemo from "@/pages/WritingCorrectionDemo";
 import AdvancedAnimationDemo from "@/pages/AdvancedAnimationDemo";
 import SATMockTestPage from "@/pages/SATMockTestPage";
 import DatabasePopulator from "@/pages/DatabasePopulator";
@@ -53,6 +54,7 @@ function App() {
                 <Route path="/simple-test" element={<SimpleInteractiveTest />} />
                 <Route path="/reading-demo" element={<ReadingSolutionDemo />} />
                 <Route path="/writing-demo" element={<WritingSolutionDemo />} />
+                <Route path="/writing-correction-demo" element={<WritingCorrectionDemo />} />
                 <Route path="/advanced-animations" element={<AdvancedAnimationDemo />} />
                 <Route path="/sat-mock-test" element={<SATMockTestPage />} />
                 <Route path="/analytics" element={<Analytics />} />

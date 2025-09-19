@@ -22,6 +22,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import InteractiveReadingSolution from "@/components/reading/InteractiveReadingSolution";
 import { getReadingSolution } from "@/data/sampleReadingSolutions";
 import SATSolutionGrid from "./SATSolutionGrid";
+import EssayCorrection, { CorrectionMark } from "@/components/writing/EssayCorrection";
 
 interface PracticeDisplayProps {
   currentQuestion: Question | null;
@@ -626,6 +627,83 @@ const PracticeDisplay = ({
     return 'No key idea available for this question.';
   };
 
+  // Generate essay corrections for writing answers
+  const generateEssayCorrections = (essayText: string): { corrections: CorrectionMark[], feedback: any } => {
+    const corrections: CorrectionMark[] = [];
+    
+    // Simple pattern-based corrections (in production, this would use AI)
+    let startIndex = 0;
+    const patterns = [
+      {
+        search: /\beffect\b/gi,
+        replace: 'affect',
+        type: 'word_choice' as const,
+        explanation: '"Affect" is a verb meaning to influence, while "effect" is a noun meaning a result.',
+        rule: 'Effect vs. Affect'
+      },
+      {
+        search: /\bthere\b(?=\s+(argument|point|idea))/gi,
+        replace: 'their',
+        type: 'grammar' as const,
+        explanation: '"Their" shows possession, while "there" indicates location.',
+        rule: 'Homophones: There/Their/They\'re'
+      },
+      {
+        search: /\balot\b/gi,
+        replace: 'a lot',
+        type: 'spelling' as const,
+        explanation: '"A lot" is always written as two separate words.',
+        rule: 'Common Spelling Error'
+      },
+      {
+        search: /\bits\b(?=\s+important)/gi,
+        replace: "it's",
+        type: 'grammar' as const,
+        explanation: '"It\'s" is a contraction meaning "it is."',
+        rule: 'Contractions: It\'s vs. Its'
+      }
+    ];
+
+    patterns.forEach(pattern => {
+      const matches = [...essayText.matchAll(pattern.search)];
+      matches.forEach(match => {
+        if (match.index !== undefined) {
+          corrections.push({
+            type: pattern.type,
+            startIndex: match.index,
+            endIndex: match.index + match[0].length,
+            originalText: match[0],
+            correctedText: pattern.replace,
+            explanation: pattern.explanation,
+            grammarRule: pattern.rule
+          });
+        }
+      });
+    });
+
+    const feedback = {
+      strengths: [
+        "Clear thesis statement and essay structure",
+        "Good use of examples to support arguments",
+        "Appropriate length for the assignment"
+      ],
+      weaknesses: [
+        "Some grammar errors that could be avoided with proofreading",
+        "Consider using more varied vocabulary",
+        "Could benefit from stronger transitional phrases"
+      ],
+      suggestions: [
+        "Proofread for common word confusions (effect/affect, there/their)",
+        "Use spell-check before submitting",
+        "Read your essay aloud to catch grammatical errors",
+        "Practice writing complex sentences with proper punctuation"
+      ],
+      score: Math.max(65, Math.min(95, 75 + Math.floor(Math.random() * 15)))
+    };
+
+    return { corrections, feedback };
+  };
+
   // Helper function to format solution content
   const formatSolution = (currentQuestion: any) => {
     // If there are solutionSteps, format them nicely as HTML string
@@ -1111,30 +1189,50 @@ const PracticeDisplay = ({
                     <TabsContent value="step-by-step" className="mt-0 pt-0">
                       {isSATWriting ? (
                         <div className="w-full space-y-6 bg-white">
-                          {/* Sample Essay Solutions */}
-                          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                            {/* Solution 1 - High Score Essay */}
-                            <div className="space-y-4">
-                              <h3 className="text-lg font-semibold text-gray-800">Sample Essay - High Score (4/4)</h3>
-                              <div className="prose prose-sm max-w-none">
-                                <div className="space-y-3 text-sm leading-relaxed">
-                                  <p className="p-3 bg-white border-l-4 border-gray-300">
-                                    <span className="font-semibold text-gray-700">[Introduction]</span> Social media has fundamentally transformed how teenagers communicate and learn, making it an integral part of modern education rather than a distraction to be eliminated during school hours.
-                                  </p>
-                                  <p className="p-3 bg-white border-l-4 border-gray-300">
-                                    <span className="font-semibold text-gray-700">[Body 1 - Educational Benefits]</span> Schools that embrace social media platforms like Twitter and Instagram for educational purposes report increased student engagement and collaborative learning opportunities.
-                                  </p>
-                                  <p className="p-3 bg-white border-l-4 border-gray-300">
-                                    <span className="font-semibold text-gray-700">[Body 2 - Real-world Skills]</span> Furthermore, digital literacy and online communication skills are essential for students' future careers, making social media restriction counterproductive to their professional development.
-                                  </p>
-                                  <p className="p-3 bg-white border-l-4 border-gray-300">
-                                    <span className="font-semibold text-gray-700">[Counterargument]</span> While critics argue that social media causes distraction, proper guidance and structured use can transform these platforms into powerful educational tools.
-                                  </p>
-                                  <p className="p-3 bg-white border-l-4 border-gray-300">
-                                    <span className="font-semibold text-gray-700">[Conclusion]</span> Rather than restricting social media, schools should integrate it meaningfully into their curriculum to prepare students for a digitally connected world.
-                                  </p>
-                                </div>
-                              </div>
+                          {/* Student's Essay Correction */}
+                          {writingAnswer.trim() ? (
+                            <div className="space-y-6">
+                              <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+                                <FileText className="h-5 w-5" />
+                                Your Essay - Teacher Corrections
+                              </h3>
+                              {(() => {
+                                const { corrections, feedback } = generateEssayCorrections(writingAnswer);
+                                return (
+                                  <EssayCorrection
+                                    originalEssay={writingAnswer}
+                                    corrections={corrections}
+                                    overallFeedback={feedback}
+                                  />
+                                );
+                              })()}
+                            </div>
+                          ) : (
+                            <>
+                              {/* Sample Essay Solutions */}
+                              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                {/* Solution 1 - High Score Essay */}
+                                <div className="space-y-4">
+                                  <h3 className="text-lg font-semibold text-gray-800">Sample Essay - High Score (4/4)</h3>
+                                  <div className="prose prose-sm max-w-none">
+                                    <div className="space-y-3 text-sm leading-relaxed">
+                                      <p className="p-3 bg-white border-l-4 border-gray-300">
+                                        <span className="font-semibold text-gray-700">[Introduction]</span> Social media has fundamentally transformed how teenagers communicate and learn, making it an integral part of modern education rather than a distraction to be eliminated during school hours.
+                                      </p>
+                                      <p className="p-3 bg-white border-l-4 border-gray-300">
+                                        <span className="font-semibold text-gray-700">[Body 1 - Educational Benefits]</span> Schools that embrace social media platforms like Twitter and Instagram for educational purposes report increased student engagement and collaborative learning opportunities.
+                                      </p>
+                                      <p className="p-3 bg-white border-l-4 border-gray-300">
+                                        <span className="font-semibold text-gray-700">[Body 2 - Real-world Skills]</span> Furthermore, digital literacy and online communication skills are essential for students' future careers, making social media restriction counterproductive to their professional development.
+                                      </p>
+                                      <p className="p-3 bg-white border-l-4 border-gray-300">
+                                        <span className="font-semibold text-gray-700">[Counterargument]</span> While critics argue that social media causes distraction, proper guidance and structured use can transform these platforms into powerful educational tools.
+                                      </p>
+                                      <p className="p-3 bg-white border-l-4 border-gray-300">
+                                        <span className="font-semibold text-gray-700">[Conclusion]</span> Rather than restricting social media, schools should integrate it meaningfully into their curriculum to prepare students for a digitally connected world.
+                                      </p>
+                                    </div>
+                                  </div>
                               
                               {/* Structure Analysis */}
                               <div className="space-y-2 text-xs">
@@ -1255,6 +1353,8 @@ const PracticeDisplay = ({
                               </div>
                             </div>
                           </div>
+                            </>
+                          )}
                         </div>
                       ) : (
                         <>

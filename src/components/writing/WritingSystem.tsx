@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   ArrowLeft,
   FileText,
@@ -10,11 +11,13 @@ import {
   Share,
   Save,
   Eye,
-  Edit
+  Edit,
+  CheckCircle
 } from 'lucide-react';
 import { WritingTemplate, WritingPrompt, StudentEssay, TEMPLATE_COLORS } from '@/types/WritingInterface';
 import WritingTemplateSelector from './WritingTemplateSelector';
 import EnhancedWritingTemplateBuilder from './EnhancedWritingTemplateBuilder';
+import EssayCorrection, { CorrectionMark } from './EssayCorrection';
 
 interface WritingSystemProps {
   className?: string;
@@ -37,6 +40,7 @@ const WritingSystem: React.FC<WritingSystemProps> = ({
   const [currentEssay, setCurrentEssay] = useState<Partial<StudentEssay>>({});
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [timeSpent, setTimeSpent] = useState(0);
+  const [showCorrections, setShowCorrections] = useState(false);
 
   // Timer effect
   useEffect(() => {
@@ -118,6 +122,60 @@ const WritingSystem: React.FC<WritingSystemProps> = ({
     return 'text-green-600';
   };
 
+  // Function to generate sample corrections (in real implementation, this would call an AI service)
+  const generateSampleCorrections = (essayText: string): CorrectionMark[] => {
+    // This is a simplified example - in practice, you'd use an AI service to analyze the essay
+    const corrections: CorrectionMark[] = [];
+    
+    // Look for common grammar errors (simplified patterns)
+    const patterns = [
+      { regex: /\b(there|their|they're)\b/gi, type: 'grammar' as const, rule: 'Homophones' },
+      { regex: /\b(your|you're)\b/gi, type: 'grammar' as const, rule: 'Contractions' },
+      { regex: /\b(its|it's)\b/gi, type: 'grammar' as const, rule: 'Possessive vs Contraction' },
+      { regex: /\b(affect|effect)\b/gi, type: 'word_choice' as const, rule: 'Effect vs Affect' },
+    ];
+
+    // Simple correction generation (this would be much more sophisticated in practice)
+    if (essayText.includes('very good')) {
+      corrections.push({
+        type: 'word_choice',
+        startIndex: essayText.indexOf('very good'),
+        endIndex: essayText.indexOf('very good') + 9,
+        originalText: 'very good',
+        correctedText: 'excellent',
+        explanation: 'Use more specific adjectives instead of generic intensifiers.',
+        grammarRule: 'Word Choice Enhancement'
+      });
+    }
+
+    return corrections;
+  };
+
+  const generateOverallFeedback = (essayText: string) => {
+    const wordCount = essayText.split(' ').length;
+    const score = Math.min(95, Math.max(60, 75 + Math.floor(Math.random() * 20)));
+    
+    return {
+      strengths: [
+        "Clear thesis statement and essay structure",
+        "Good use of examples to support arguments",
+        "Appropriate length and organization"
+      ],
+      weaknesses: [
+        "Some grammar errors that affect readability",
+        "Could use more varied vocabulary",
+        "Consider stronger transitional phrases"
+      ],
+      suggestions: [
+        "Proofread for common grammar mistakes",
+        "Use a thesaurus to find more precise words",
+        "Practice writing complex sentences",
+        "Read your essay aloud to check flow"
+      ],
+      score
+    };
+  };
+
   const renderHeader = () => {
     if (currentView === 'selector') return null;
 
@@ -166,14 +224,24 @@ const WritingSystem: React.FC<WritingSystemProps> = ({
                 )}
                 
                 {currentView === 'preview' && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setCurrentView('builder')}
-                  >
-                    <Edit className="h-4 w-4 mr-2" />
-                    Edit
-                  </Button>
+                  <>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setCurrentView('builder')}
+                    >
+                      <Edit className="h-4 w-4 mr-2" />
+                      Edit
+                    </Button>
+                    <Button
+                      variant={showCorrections ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setShowCorrections(!showCorrections)}
+                    >
+                      <CheckCircle className="h-4 w-4 mr-2" />
+                      {showCorrections ? 'Hide' : 'Show'} Corrections
+                    </Button>
+                  </>
                 )}
                 
                 <Button
@@ -215,6 +283,10 @@ const WritingSystem: React.FC<WritingSystemProps> = ({
       
       case 'preview':
         if (!selectedTemplate || !selectedPrompt || !currentEssay.content) return null;
+        
+        const corrections = generateSampleCorrections(currentEssay.content);
+        const feedback = generateOverallFeedback(currentEssay.content);
+        
         return (
           <div className="space-y-6">
             <Card>
@@ -222,7 +294,7 @@ const WritingSystem: React.FC<WritingSystemProps> = ({
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center gap-2">
                     <Eye className="h-5 w-5" />
-                    Essay Preview
+                    Essay Review
                   </CardTitle>
                   <div className="flex gap-2">
                     <Button variant="outline" size="sm">
@@ -242,24 +314,47 @@ const WritingSystem: React.FC<WritingSystemProps> = ({
                   <p className="text-gray-600 text-sm">{selectedPrompt.prompt}</p>
                 </div>
                 
-                <div className="prose max-w-none">
-                  <div className="bg-white p-8 border rounded-lg shadow-sm">
-                    <div className="whitespace-pre-wrap text-base leading-relaxed">
-                      {currentEssay.content}
+                <Tabs value={showCorrections ? "corrected" : "original"} onValueChange={(value) => setShowCorrections(value === "corrected")}>
+                  <TabsList className="grid w-full grid-cols-2">
+                    <TabsTrigger value="original" className="flex items-center gap-2">
+                      <FileText className="h-4 w-4" />
+                      Original Essay
+                    </TabsTrigger>
+                    <TabsTrigger value="corrected" className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4" />
+                      Teacher Corrections
+                    </TabsTrigger>
+                  </TabsList>
+                  
+                  <TabsContent value="original" className="mt-6">
+                    <div className="prose max-w-none">
+                      <div className="bg-white p-8 border rounded-lg shadow-sm">
+                        <div className="whitespace-pre-wrap text-base leading-relaxed">
+                          {currentEssay.content}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </div>
-                
-                <div className="mt-6 flex justify-between items-center text-sm text-gray-600 bg-gray-50 p-4 rounded-lg">
-                  <div className="flex gap-6">
-                    <span>Word Count: {currentEssay.wordCount} words</span>
-                    <span>Time Spent: {formatTime(timeSpent)}</span>
-                    <span>Template: {selectedTemplate.name}</span>
-                  </div>
-                  <span className="text-xs">
-                    Generated on {new Date().toLocaleDateString()}
-                  </span>
-                </div>
+                    
+                    <div className="mt-6 flex justify-between items-center text-sm text-gray-600 bg-gray-50 p-4 rounded-lg">
+                      <div className="flex gap-6">
+                        <span>Word Count: {currentEssay.wordCount} words</span>
+                        <span>Time Spent: {formatTime(timeSpent)}</span>
+                        <span>Template: {selectedTemplate.name}</span>
+                      </div>
+                      <span className="text-xs">
+                        Generated on {new Date().toLocaleDateString()}
+                      </span>
+                    </div>
+                  </TabsContent>
+                  
+                  <TabsContent value="corrected" className="mt-6">
+                    <EssayCorrection
+                      originalEssay={currentEssay.content}
+                      corrections={corrections}
+                      overallFeedback={feedback}
+                    />
+                  </TabsContent>
+                </Tabs>
               </CardContent>
             </Card>
           </div>
