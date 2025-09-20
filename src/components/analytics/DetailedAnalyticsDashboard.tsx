@@ -16,7 +16,11 @@ import {
   Trophy,
   Zap,
   CheckCircle,
-  AlertTriangle
+  AlertTriangle,
+  Activity,
+  Timer,
+  Lightbulb,
+  LineChart
 } from 'lucide-react';
 import FallbackAnalyticsService, { CourseAnalytics, DetailedSkillAnalytics } from '@/services/fallbackAnalytics';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -31,6 +35,8 @@ const DetailedAnalyticsDashboard: React.FC<DetailedAnalyticsDashboardProps> = ({
   const [courseAnalytics, setCourseAnalytics] = useState<CourseAnalytics[]>([]);
   const [overallProgress, setOverallProgress] = useState<any>(null);
   const [performanceTrend, setPerformanceTrend] = useState<any[]>([]);
+  const [realTestData, setRealTestData] = useState<any[]>([]);
+  const [performanceAnalytics, setPerformanceAnalytics] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -42,9 +48,38 @@ const DetailedAnalyticsDashboard: React.FC<DetailedAnalyticsDashboardProps> = ({
         const progress = FallbackAnalyticsService.getOverallProgress();
         const trend = FallbackAnalyticsService.getPerformanceTrendData();
         
+        // Mock real test data
+        const mockRealTests = [
+          { testNo: 1, date: '2024-01-15', satResult: 1380, satMath: 720, satWR: 660, improvement: 0 },
+          { testNo: 2, date: '2024-02-20', satResult: 1420, satMath: 750, satWR: 670, improvement: 40 },
+          { testNo: 3, date: '2024-03-18', satResult: 1480, satMath: 780, satWR: 700, improvement: 60 },
+          { testNo: 4, date: '2024-04-22', satResult: 1510, satMath: 790, satWR: 720, improvement: 30 },
+        ];
+
+        // Mock performance analytics data
+        const mockPerformanceAnalytics = {
+          highPerformanceHours: [
+            { hour: '9-10 AM', accuracy: 92, questionCount: 45 },
+            { hour: '2-3 PM', accuracy: 88, questionCount: 38 },
+            { hour: '7-8 PM', accuracy: 85, questionCount: 52 },
+          ],
+          difficultyAccuracy: {
+            easy: { accuracy: 95, avgTime: 1.2, confidence: 88 },
+            medium: { accuracy: 78, avgTime: 2.1, confidence: 72 },
+            hard: { accuracy: 62, avgTime: 3.8, confidence: 54 },
+          },
+          metacognitionData: [
+            { confidence: 90, accuracy: 88, category: 'High Confidence' },
+            { confidence: 75, accuracy: 76, category: 'Medium Confidence' },
+            { confidence: 45, accuracy: 52, category: 'Low Confidence' },
+          ]
+        };
+        
         setCourseAnalytics(courses);
         setOverallProgress(progress);
         setPerformanceTrend(trend);
+        setRealTestData(mockRealTests);
+        setPerformanceAnalytics(mockPerformanceAnalytics);
       } catch (error) {
         console.error('Error loading analytics:', error);
       } finally {
@@ -371,6 +406,168 @@ const DetailedAnalyticsDashboard: React.FC<DetailedAnalyticsDashboardProps> = ({
               </Card>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* REAL TEST Analytics Table */}
+      <div className="mb-8">
+        <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+          <Trophy className="h-6 w-6 text-yellow-500" />
+          REAL TEST Analytics
+        </h2>
+        <Card className={isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white'}>
+          <CardContent className="p-6">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead>
+                  <tr className={`border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                    <th className="text-left py-3 px-4 font-semibold">Test No</th>
+                    <th className="text-left py-3 px-4 font-semibold">Date</th>
+                    <th className="text-left py-3 px-4 font-semibold">SAT Result</th>
+                    <th className="text-left py-3 px-4 font-semibold">SAT Math</th>
+                    <th className="text-left py-3 px-4 font-semibold">SAT W+R</th>
+                    <th className="text-left py-3 px-4 font-semibold">Improvement (Percentile)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {realTestData.map((test, index) => (
+                    <tr key={index} className={`border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-100'} hover:bg-gray-50 dark:hover:bg-gray-700/50`}>
+                      <td className="py-3 px-4 font-medium">{test.testNo}</td>
+                      <td className="py-3 px-4">{new Date(test.date).toLocaleDateString()}</td>
+                      <td className="py-3 px-4 font-bold text-blue-600 dark:text-blue-400">{test.satResult}</td>
+                      <td className="py-3 px-4">{test.satMath}</td>
+                      <td className="py-3 px-4">{test.satWR}</td>
+                      <td className="py-3 px-4">
+                        <div className="flex items-center gap-2">
+                          {test.improvement > 0 ? (
+                            <TrendingUp className="h-4 w-4 text-green-500" />
+                          ) : test.improvement < 0 ? (
+                            <TrendingDown className="h-4 w-4 text-red-500" />
+                          ) : (
+                            <BarChart3 className="h-4 w-4 text-gray-500" />
+                          )}
+                          <span className={`font-medium ${
+                            test.improvement > 0 ? 'text-green-600 dark:text-green-400' :
+                            test.improvement < 0 ? 'text-red-600 dark:text-red-400' :
+                            'text-gray-600 dark:text-gray-400'
+                          }`}>
+                            {test.improvement > 0 ? '+' : ''}{test.improvement}
+                          </span>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Performance Analytics */}
+      {performanceAnalytics && (
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+            <Activity className="h-6 w-6 text-purple-500" />
+            Performance Analytics
+          </h2>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            {/* High Performance Hours */}
+            <Card className={isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white'}>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Clock className="h-5 w-5 text-orange-500" />
+                  High Performance Hours
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {performanceAnalytics.highPerformanceHours.map((hour, index) => (
+                    <div key={index} className="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-700/50">
+                      <div>
+                        <p className="font-medium">{hour.hour}</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">{hour.questionCount} questions</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-bold text-lg">{hour.accuracy}%</p>
+                        <div className="w-16">
+                          <Progress value={hour.accuracy} className="h-2" />
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Problem Difficulty Accuracy */}
+            <Card className={isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white'}>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Target className="h-5 w-5 text-green-500" />
+                  Accuracy by Difficulty
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {Object.entries(performanceAnalytics.difficultyAccuracy).map(([difficulty, data]: [string, any]) => (
+                    <div key={difficulty} className="p-3 rounded-lg bg-gray-50 dark:bg-gray-700/50">
+                      <div className="flex justify-between items-center mb-2">
+                        <span className="font-medium capitalize">{difficulty} Problems</span>
+                        <span className="font-bold">{data.accuracy}%</span>
+                      </div>
+                      <Progress value={data.accuracy} className="h-2 mb-2" />
+                      <div className="flex justify-between text-sm text-gray-600 dark:text-gray-400">
+                        <span>Avg Time: {data.avgTime}min</span>
+                        <span>Confidence: {data.confidence}%</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Metacognition Confidence Correlation */}
+          <Card className={isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white'}>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Lightbulb className="h-5 w-5 text-yellow-500" />
+                Metacognition: Confidence vs Accuracy Correlation
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {performanceAnalytics.metacognitionData.map((item, index) => (
+                  <div key={index} className="text-center p-4 rounded-lg bg-gray-50 dark:bg-gray-700/50">
+                    <h4 className="font-semibold mb-3">{item.category}</h4>
+                    <div className="space-y-3">
+                      <div>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">Confidence</p>
+                        <div className="flex items-center gap-2">
+                          <Progress value={item.confidence} className="flex-1 h-2" />
+                          <span className="text-sm font-medium">{item.confidence}%</span>
+                        </div>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">Accuracy</p>
+                        <div className="flex items-center gap-2">
+                          <Progress value={item.accuracy} className="flex-1 h-2" />
+                          <span className="text-sm font-medium">{item.accuracy}%</span>
+                        </div>
+                      </div>
+                      <div className="pt-2 border-t border-gray-200 dark:border-gray-600">
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                          Correlation: {Math.abs(item.confidence - item.accuracy) <= 10 ? 'Strong' : 'Moderate'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
         </div>
       )}
 

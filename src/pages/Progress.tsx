@@ -2,7 +2,7 @@ import { useState, useCallback } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { LeaderboardData } from "@/components/progress/LeaderboardData";
 import { FullPageLoader } from "@/components/progress/FullPageLoader";
-import { Navigation, User, Users, BookOpen, BarChart, Target, ChevronDown, LogOut, Menu, Clock, Trophy, TrendingUp, FileText } from "lucide-react";
+import { Navigation, User, Users, BookOpen, BarChart, Target, ChevronDown, LogOut, Menu, Clock, Trophy, TrendingUp, FileText, TrendingDown, Brain } from "lucide-react";
 // import { SecureProgressDataProvider } from "@/components/progress/SecureProgressDataProvider"; // Removed to fix caching
 import { useProgress } from "@/contexts/ProgressContext";
 import { Button } from "@/components/ui/button";
@@ -896,177 +896,185 @@ const Progress = () => {
                     )}
                   </div>
 
-                  {/* Exam Tests Summary & Key Insights */}
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8 items-start">
-                    {/* Left Column - Exam Tests Status Summary */}
-                    <div className={`p-8 rounded-xl ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm border-0`}>
-                      <h3 className={`text-xl font-semibold mb-6 ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>Exam Tests Summary</h3>
-                      
-                      <div className="space-y-4">
-                        {/* Practice Tests Completed */}
-                        <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-gray-700/50' : 'bg-blue-50'}`}>
-                          <div className="flex justify-between items-center mb-2">
-                            <span className={`font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Practice Tests Completed</span>
-                            <span className={`text-2xl font-bold ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`}>12</span>
-                          </div>
-                          <div className={`w-full bg-gray-200 rounded-full h-2 ${isDarkMode ? 'bg-gray-600' : ''}`}>
-                            <div className={`h-2 rounded-full transition-all duration-300 ${isDarkMode ? 'bg-green-500' : 'bg-blue-500'}`} style={{ width: '80%' }}></div>
-                          </div>
-                          <p className={`text-xs mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Target: 15 tests</p>
-                        </div>
+                  {/* REAL TEST Analytics Table */}
+                  <div className={`p-8 rounded-xl ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm border-0 mt-8`}>
+                    <h2 className={`text-2xl font-bold mb-4 flex items-center gap-2 ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>
+                      <Trophy className="h-6 w-6 text-yellow-500" />
+                      REAL TEST Analytics
+                    </h2>
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead>
+                          <tr className={`border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                            <th className={`text-left py-3 px-4 font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Test No</th>
+                            <th className={`text-left py-3 px-4 font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Date</th>
+                            <th className={`text-left py-3 px-4 font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>SAT Result</th>
+                            <th className={`text-left py-3 px-4 font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>SAT Math</th>
+                            <th className={`text-left py-3 px-4 font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>SAT W+R</th>
+                            <th className={`text-left py-3 px-4 font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Improvement (Percentile)</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {[
+                            { testNo: 1, date: '2024-01-15', satResult: 1380, satMath: 720, satWR: 660, improvement: 0 },
+                            { testNo: 2, date: '2024-02-20', satResult: 1420, satMath: 750, satWR: 670, improvement: 40 },
+                            { testNo: 3, date: '2024-03-18', satResult: 1480, satMath: 780, satWR: 700, improvement: 60 },
+                            { testNo: 4, date: '2024-04-22', satResult: 1510, satMath: 790, satWR: 720, improvement: 30 },
+                          ].map((test, index) => (
+                            <tr key={index} className={`border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-100'} hover:${isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'} transition-colors`}>
+                              <td className={`py-3 px-4 font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>{test.testNo}</td>
+                              <td className={`py-3 px-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{new Date(test.date).toLocaleDateString()}</td>
+                              <td className={`py-3 px-4 font-bold ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>{test.satResult}</td>
+                              <td className={`py-3 px-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{test.satMath}</td>
+                              <td className={`py-3 px-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{test.satWR}</td>
+                              <td className="py-3 px-4">
+                                <div className="flex items-center gap-2">
+                                  {test.improvement > 0 ? (
+                                    <TrendingUp className="h-4 w-4 text-green-500" />
+                                  ) : test.improvement < 0 ? (
+                                    <TrendingDown className="h-4 w-4 text-red-500" />
+                                  ) : (
+                                    <BarChart className="h-4 w-4 text-gray-500" />
+                                  )}
+                                  <span className={`font-medium ${
+                                    test.improvement > 0 ? (isDarkMode ? 'text-green-400' : 'text-green-600') :
+                                    test.improvement < 0 ? (isDarkMode ? 'text-red-400' : 'text-red-600') :
+                                    (isDarkMode ? 'text-gray-400' : 'text-gray-600')
+                                  }`}>
+                                    {test.improvement > 0 ? '+' : ''}{test.improvement}
+                                  </span>
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
 
-                        {/* Average Score */}
-                        <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-gray-700/50' : 'bg-green-50'}`}>
-                          <div className="flex justify-between items-center">
-                            <span className={`font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Average Test Score</span>
-                            <span className={`text-2xl font-bold ${isDarkMode ? 'text-green-400' : 'text-green-600'}`}>1385</span>
-                          </div>
-                          <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>+45 from last month</p>
-                        </div>
-
-                        {/* Best Score */}
-                        <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-gray-700/50' : 'bg-yellow-50'}`}>
-                          <div className="flex justify-between items-center">
-                            <span className={`font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Best Score</span>
-                            <span className={`text-2xl font-bold ${isDarkMode ? 'text-yellow-400' : 'text-yellow-600'}`}>1520</span>
-                          </div>
-                          <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Achieved on March 10, 2024</p>
-                        </div>
-
-                        {/* Time Management */}
-                        <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-gray-700/50' : 'bg-purple-50'}`}>
-                          <div className="flex justify-between items-center">
-                            <span className={`font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Avg. Test Duration</span>
-                            <span className={`text-2xl font-bold ${isDarkMode ? 'text-purple-400' : 'text-purple-600'}`}>3h 2m</span>
-                          </div>
-                          <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Within time limit</p>
-                        </div>
-
-                        {/* Separator */}
-                        <div className={`border-t ${isDarkMode ? 'border-gray-600' : 'border-gray-200'} my-6`}></div>
-
-                        {/* Calibration Analysis */}
-                        <div>
-                          <h4 className={`text-lg font-semibold mb-4 ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>
-                            Calibration (Metacognition)
-                          </h4>
-                          
-                          <div className="space-y-4">
-                            {/* Brier Score */}
-                            <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-gray-700/50' : 'bg-indigo-50'}`}>
-                              <div className="flex justify-between items-center mb-2">
-                                <span className={`font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Brier Score</span>
-                                <span className={`text-2xl font-bold ${isDarkMode ? 'text-green-400' : 'text-green-600'}`}>0.15</span>
+                  {/* Performance Analytics */}
+                  <div className={`p-8 rounded-xl ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm border-0 mt-8`}>
+                    <h2 className={`text-2xl font-bold mb-6 flex items-center gap-2 ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>
+                      <BarChart className="h-6 w-6 text-purple-500" />
+                      Performance Analytics
+                    </h2>
+                    
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                      {/* High Performance Hours */}
+                      <div className={`p-6 rounded-lg ${isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                        <h3 className={`text-lg font-semibold mb-4 flex items-center gap-2 ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>
+                          <Clock className="h-5 w-5 text-orange-500" />
+                          High Performance Hours
+                        </h3>
+                        <div className="space-y-4">
+                          {[
+                            { hour: '9-10 AM', accuracy: 92, questionCount: 45 },
+                            { hour: '2-3 PM', accuracy: 88, questionCount: 38 },
+                            { hour: '7-8 PM', accuracy: 85, questionCount: 52 },
+                          ].map((hour, index) => (
+                            <div key={index} className={`flex items-center justify-between p-3 rounded-lg ${isDarkMode ? 'bg-gray-600/50' : 'bg-white'} shadow-sm`}>
+                              <div>
+                                <p className={`font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>{hour.hour}</p>
+                                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>{hour.questionCount} questions</p>
                               </div>
-                              <div className={`w-full bg-gray-200 rounded-full h-2 ${isDarkMode ? 'bg-gray-600' : ''}`}>
-                                <div className="h-2 rounded-full transition-all duration-300 bg-green-500" style={{ width: '85%' }}></div>
-                              </div>
-                              <p className={`text-xs mt-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Target: ≤ 0.20 (Lower is better)</p>
-                            </div>
-
-                            {/* Confidence Calibration */}
-                            <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-gray-700/50' : 'bg-purple-50'}`}>
-                              <div className="flex justify-between items-center mb-2">
-                                <span className={`font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Confidence Gap</span>
-                                <div className="text-center">
-                                  <span className={`text-2xl font-bold ${isDarkMode ? 'text-green-400' : 'text-green-600'}`}>+3</span>
-                                  <span className={`text-sm ml-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>pp</span>
+                              <div className="text-right">
+                                <p className={`font-bold text-lg ${isDarkMode ? 'text-green-400' : 'text-green-600'}`}>{hour.accuracy}%</p>
+                                <div className={`w-16 h-2 rounded-full ${isDarkMode ? 'bg-gray-600' : 'bg-gray-200'} overflow-hidden`}>
+                                  <div 
+                                    className="h-full bg-green-500 rounded-full transition-all duration-300"
+                                    style={{ width: `${hour.accuracy}%` }}
+                                  ></div>
                                 </div>
                               </div>
-                              <p className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Slightly overconfident</p>
                             </div>
-                          </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Problem Difficulty Accuracy */}
+                      <div className={`p-6 rounded-lg ${isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                        <h3 className={`text-lg font-semibold mb-4 flex items-center gap-2 ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>
+                          <Target className="h-5 w-5 text-green-500" />
+                          Accuracy by Difficulty
+                        </h3>
+                        <div className="space-y-4">
+                          {[
+                            { difficulty: 'Easy', accuracy: 95, avgTime: 1.2, confidence: 88 },
+                            { difficulty: 'Medium', accuracy: 78, avgTime: 2.1, confidence: 72 },
+                            { difficulty: 'Hard', accuracy: 62, avgTime: 3.8, confidence: 54 },
+                          ].map((item, index) => (
+                            <div key={index} className={`p-3 rounded-lg ${isDarkMode ? 'bg-gray-600/50' : 'bg-white'} shadow-sm`}>
+                              <div className="flex justify-between items-center mb-2">
+                                <span className={`font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>{item.difficulty} Problems</span>
+                                <span className={`font-bold ${isDarkMode ? 'text-green-400' : 'text-green-600'}`}>{item.accuracy}%</span>
+                              </div>
+                              <div className={`w-full h-2 rounded-full ${isDarkMode ? 'bg-gray-600' : 'bg-gray-200'} overflow-hidden mb-2`}>
+                                <div 
+                                  className="h-full bg-blue-500 rounded-full transition-all duration-300"
+                                  style={{ width: `${item.accuracy}%` }}
+                                ></div>
+                              </div>
+                              <div className={`flex justify-between text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
+                                <span>Avg Time: {item.avgTime}min</span>
+                                <span>Confidence: {item.confidence}%</span>
+                              </div>
+                            </div>
+                          ))}
                         </div>
                       </div>
                     </div>
 
-                    {/* Right Column - Key Insights Radar Chart */}
-                    <div className={`p-8 rounded-xl ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm border-0 h-fit`}>
-                      <h3 className={`text-xl font-semibold mb-6 ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>Key Performance Insights</h3>
-                      
-                      <div className="space-y-6">
-                        {/* Radar Chart */}
-                        <div className="h-96">
-                          <ResponsiveContainer width="100%" height="100%">
-                            <RadarChart 
-                              data={[
-                                { metric: 'Peak Hours', value: 85, fullMark: 100 },
-                                { metric: 'Easy Questions', value: 90, fullMark: 100 },
-                                { metric: 'Medium Questions', value: 70, fullMark: 100 },
-                                { metric: 'Hard Questions', value: 55, fullMark: 100 },
-                                { metric: 'Time Management', value: 78, fullMark: 100 },
-                                { metric: 'Consistency', value: 82, fullMark: 100 },
-                                { metric: 'Focus Duration', value: 75, fullMark: 100 },
-                                { metric: 'Retention Rate', value: 68, fullMark: 100 }
-                              ]}
-                              margin={{ top: 30, right: 30, bottom: 30, left: 30 }}
-                            >
-                              <PolarGrid 
-                                stroke={isDarkMode ? '#374151' : '#e5e7eb'} 
-                                strokeWidth={1.2}
-                                gridType="polygon"
-                              />
-                              <PolarAngleAxis 
-                                dataKey="metric" 
-                                tick={{ 
-                                  fontSize: 13, 
-                                  fill: isDarkMode ? '#d1d5db' : '#4b5563',
-                                  fontWeight: 600
-                                }}
-                                tickFormatter={(value) => {
-                                  const abbreviations = {
-                                    'Peak Hours': 'Peak Hours',
-                                    'Easy Questions': 'Easy',
-                                    'Medium Questions': 'Medium', 
-                                    'Hard Questions': 'Hard',
-                                    'Time Management': 'Time Mgmt',
-                                    'Consistency': 'Consistency',
-                                    'Focus Duration': 'Focus',
-                                    'Retention Rate': 'Retention'
-                                  };
-                                  return abbreviations[value] || value;
-                                }}
-                              />
-                              <PolarRadiusAxis 
-                                angle={90} 
-                                domain={[0, 100]}
-                                tick={false}
-                                tickCount={5}
-                              />
-                              <Radar 
-                                name="Performance" 
-                                dataKey="value" 
-                                stroke={isDarkMode ? '#fb923c' : '#ea580c'}
-                                fill={isDarkMode ? '#fb923c' : '#ea580c'}
-                                fillOpacity={0.3}
-                                strokeWidth={2}
-                                dot={{ r: 4, fill: isDarkMode ? '#fb923c' : '#ea580c' }}
-                              />
-                            </RadarChart>
-                          </ResponsiveContainer>
-                        </div>
-
-                        {/* Key Insights Text */}
-                        <div className="space-y-3">
-                          <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-orange-500/10 border border-orange-500/20' : 'bg-orange-50 border border-orange-200'}`}>
-                            <p className={`text-sm font-medium ${isDarkMode ? 'text-orange-400' : 'text-orange-700'}`}>
-                              💡 <strong>Focus Area:</strong> Hard questions need more practice (55% accuracy)
-                            </p>
+                    {/* Metacognition Confidence Correlation */}
+                    <div className={`p-6 rounded-lg ${isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                      <h3 className={`text-lg font-semibold mb-4 flex items-center gap-2 ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>
+                        <Brain className="h-5 w-5 text-yellow-500" />
+                        Metacognition: Confidence vs Accuracy Correlation
+                      </h3>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {[
+                          { confidence: 90, accuracy: 88, category: 'High Confidence' },
+                          { confidence: 75, accuracy: 76, category: 'Medium Confidence' },
+                          { confidence: 45, accuracy: 52, category: 'Low Confidence' },
+                        ].map((item, index) => (
+                          <div key={index} className={`text-center p-4 rounded-lg ${isDarkMode ? 'bg-gray-600/50' : 'bg-white'} shadow-sm`}>
+                            <h4 className={`font-semibold mb-3 ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>{item.category}</h4>
+                            <div className="space-y-3">
+                              <div>
+                                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Confidence</p>
+                                <div className="flex items-center gap-2">
+                                  <div className={`flex-1 h-2 rounded-full ${isDarkMode ? 'bg-gray-600' : 'bg-gray-200'} overflow-hidden`}>
+                                    <div 
+                                      className="h-full bg-blue-500 rounded-full transition-all duration-300"
+                                      style={{ width: `${item.confidence}%` }}
+                                    ></div>
+                                  </div>
+                                  <span className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{item.confidence}%</span>
+                                </div>
+                              </div>
+                              <div>
+                                <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Accuracy</p>
+                                <div className="flex items-center gap-2">
+                                  <div className={`flex-1 h-2 rounded-full ${isDarkMode ? 'bg-gray-600' : 'bg-gray-200'} overflow-hidden`}>
+                                    <div 
+                                      className="h-full bg-green-500 rounded-full transition-all duration-300"
+                                      style={{ width: `${item.accuracy}%` }}
+                                    ></div>
+                                  </div>
+                                  <span className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{item.accuracy}%</span>
+                                </div>
+                              </div>
+                              <div className={`pt-2 border-t ${isDarkMode ? 'border-gray-600' : 'border-gray-200'}`}>
+                                <p className={`text-xs ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+                                  Correlation: {Math.abs(item.confidence - item.accuracy) <= 10 ? 'Strong' : 'Moderate'}
+                                </p>
+                              </div>
+                            </div>
                           </div>
-                          <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-green-500/10 border border-green-500/20' : 'bg-green-50 border border-green-200'}`}>
-                            <p className={`text-sm font-medium ${isDarkMode ? 'text-green-400' : 'text-green-700'}`}>
-                              ✅ <strong>Strength:</strong> Excellent performance on easy questions (90%)
-                            </p>
-                          </div>
-                          <div className={`p-3 rounded-lg ${isDarkMode ? 'bg-blue-500/10 border border-blue-500/20' : 'bg-blue-50 border border-blue-200'}`}>
-                            <p className={`text-sm font-medium ${isDarkMode ? 'text-blue-400' : 'text-blue-700'}`}>
-                              📈 <strong>Improvement:</strong> Time management has improved 12% this month
-                            </p>
-                          </div>
-                        </div>
+                        ))}
                       </div>
                     </div>
                   </div>
+
 
                 </div>
               )}

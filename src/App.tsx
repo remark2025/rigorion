@@ -28,6 +28,8 @@ import ReadingSolutionDemo from "@/pages/ReadingSolutionDemo";
 import WritingSolutionDemo from "@/pages/WritingSolutionDemo";
 import WritingCorrectionDemo from "@/pages/WritingCorrectionDemo";
 import SATWritingDemo from "@/pages/SATWritingDemo";
+import AIWritingExaminer from "@/pages/AIWritingExaminer";
+import AIReadingAnalyzer from "@/pages/AIReadingAnalyzer";
 import AdvancedAnimationDemo from "@/pages/AdvancedAnimationDemo";
 import SATMockTestPage from "@/pages/SATMockTestPage";
 import DatabasePopulator from "@/pages/DatabasePopulator";
@@ -57,6 +59,8 @@ function App() {
                 <Route path="/writing-demo" element={<WritingSolutionDemo />} />
                 <Route path="/writing-correction-demo" element={<WritingCorrectionDemo />} />
                 <Route path="/sat-writing-demo" element={<SATWritingDemo />} />
+                <Route path="/ai-writing-examiner" element={<AIWritingExaminer />} />
+                <Route path="/ai-reading-analyzer" element={<AIReadingAnalyzer />} />
                 <Route path="/advanced-animations" element={<AdvancedAnimationDemo />} />
                 <Route path="/sat-mock-test" element={<SATMockTestPage />} />
                 <Route path="/analytics" element={<Analytics />} />

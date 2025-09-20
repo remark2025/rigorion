@@ -15,7 +15,7 @@ class AIGrammarService {
     this.mockService = new MockAIService();
     // Set to false to use mock service for testing
     // Set to true to use real API (after verification)
-    this.useRealAPI = false;
+    this.useRealAPI = true;
   }
 
   async analyzeEssay(essayText: string): Promise<{
@@ -71,7 +71,7 @@ class AIGrammarService {
         'Authorization': `Bearer ${this.apiKey}`
       },
       body: JSON.stringify({
-        model: 'deepseek/deepseek-prover-v2',
+        model: 'google/gemma-3-4b-it',
         messages: [
           {
             role: 'user',
@@ -94,9 +94,19 @@ class AIGrammarService {
     const analysisText = result.choices[0].message.content;
     
     try {
-      // Try to parse JSON response if AI returns structured data
-      return JSON.parse(analysisText);
-    } catch {
+      // Clean up the response - remove markdown code blocks if present
+      let cleanedText = analysisText;
+      if (analysisText.includes('```json')) {
+        cleanedText = analysisText.replace(/```json\n?/, '').replace(/\n?```$/, '');
+      } else if (analysisText.includes('```')) {
+        cleanedText = analysisText.replace(/```\n?/, '').replace(/\n?```$/, '');
+      }
+      
+      // Try to parse JSON response
+      return JSON.parse(cleanedText);
+    } catch (parseError) {
+      console.warn('Failed to parse AI response as JSON:', parseError.message);
+      console.log('Raw response:', analysisText);
       // If not JSON, return as text analysis
       return { textAnalysis: analysisText };
     }
@@ -155,23 +165,29 @@ Provide specific, actionable feedback that helps the student improve their SAT W
     
     if (aiAnalysis.corrections && Array.isArray(aiAnalysis.corrections)) {
       aiAnalysis.corrections.forEach((correction: any, index: number) => {
-        // Validate AI correction has required fields
-        if (this.isValidCorrection(correction, essayText)) {
+        // For Gemma responses, we need to find the actual text positions
+        // since the AI might not provide accurate startIndex/endIndex
+        const originalText = correction.originalText;
+        const searchIndex = essayText.indexOf(originalText);
+        
+        if (searchIndex !== -1) {
           corrections.push({
             id: `ai_${index}`,
             type: correction.type,
             severity: correction.severity,
             confidence: correction.confidence || 0.8,
-            startIndex: correction.startIndex,
-            endIndex: correction.endIndex,
-            originalText: correction.originalText,
+            startIndex: searchIndex,
+            endIndex: searchIndex + originalText.length,
+            originalText: originalText,
             correctedText: correction.correctedText,
             explanation: correction.explanation,
             grammarRule: correction.grammarRule,
             ruleId: `ai_${correction.type}_${index}`,
-            autofixSafe: correction.severity === 'minor' && correction.confidence > 0.9,
+            autofixSafe: correction.severity === 'minor' && (correction.confidence || 0.8) > 0.85,
             icon: this.getCorrectionIcon(correction.type)
           });
+        } else {
+          console.warn('Could not find text in essay:', originalText);
         }
       });
     }
@@ -258,7 +274,7 @@ Essay: """${essayText}"""`;
           'Authorization': `Bearer ${this.apiKey}`
         },
         body: JSON.stringify({
-          model: 'deepseek/deepseek-prover-v2',
+          model: 'google/gemma-3-4b-it',
           messages: [{ role: 'user', content: prompt }],
           temperature: 0.3,
           max_tokens: 512
