@@ -10,6 +10,13 @@ export const Hero = () => {
 
   return (
     <section className="relative pt-20 pb-64 overflow-hidden">
+      {/* Background Image */}
+      <div 
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        style={{
+          backgroundImage: 'url(/resources/junior.png)'
+        }}
+      ></div>
       {/* Charcoal and Silver Overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-gray-800/60 via-gray-600/40 to-gray-300/30"></div>
       <div className="container mx-auto px-4 relative z-10">
