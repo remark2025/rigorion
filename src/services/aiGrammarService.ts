@@ -15,7 +15,7 @@ class AIGrammarService {
     this.mockService = new MockAIService();
     // Set to false to use mock service for testing
     // Set to true to use real API (after verification)
-    this.useRealAPI = true;
+    this.useRealAPI = false; // Using mock until API verification is complete
   }
 
   async analyzeEssay(essayText: string): Promise<{
@@ -162,37 +162,105 @@ Provide specific, actionable feedback that helps the student improve their SAT W
 
   private parseAICorrections(aiAnalysis: any, essayText: string): CorrectionMark[] {
     const corrections: CorrectionMark[] = [];
-    
-    if (aiAnalysis.corrections && Array.isArray(aiAnalysis.corrections)) {
-      aiAnalysis.corrections.forEach((correction: any, index: number) => {
-        // For Gemma responses, we need to find the actual text positions
-        // since the AI might not provide accurate startIndex/endIndex
-        const originalText = correction.originalText;
-        const searchIndex = essayText.indexOf(originalText);
-        
-        if (searchIndex !== -1) {
-          corrections.push({
-            id: `ai_${index}`,
-            type: correction.type,
-            severity: correction.severity,
-            confidence: correction.confidence || 0.8,
-            startIndex: searchIndex,
-            endIndex: searchIndex + originalText.length,
-            originalText: originalText,
-            correctedText: correction.correctedText,
-            explanation: correction.explanation,
-            grammarRule: correction.grammarRule,
-            ruleId: `ai_${correction.type}_${index}`,
-            autofixSafe: correction.severity === 'minor' && (correction.confidence || 0.8) > 0.85,
-            icon: this.getCorrectionIcon(correction.type)
-          });
-        } else {
-          console.warn('Could not find text in essay:', originalText);
+    const occupiedRanges: Array<{ start: number; end: number }> = [];
+
+    const overlaps = (start: number, end: number) =>
+      occupiedRanges.some(range => !(end <= range.start || start >= range.end));
+
+    const reserveRange = (start: number, end: number) => {
+      occupiedRanges.push({ start, end });
+    };
+
+    if (aiAnalysis?.corrections && Array.isArray(aiAnalysis.corrections)) {
+      aiAnalysis.corrections.forEach((rawCorrection: any, index: number) => {
+        if (!rawCorrection) {
+          return;
         }
+
+        const hasCorrectedText = typeof rawCorrection.correctedText === 'string' && rawCorrection.correctedText.length > 0;
+        const hasExplanation = typeof rawCorrection.explanation === 'string' && rawCorrection.explanation.length > 0;
+
+        if (!hasCorrectedText || !hasExplanation) {
+          console.warn('Skipping AI correction missing required fields:', rawCorrection);
+          return;
+        }
+
+        const providedStart = rawCorrection.startIndex;
+        const providedEnd = rawCorrection.endIndex;
+
+        let startIndex = typeof providedStart === 'number' ? providedStart : Number(providedStart);
+        let endIndex = typeof providedEnd === 'number' ? providedEnd : Number(providedEnd);
+
+        const indicesAreValid =
+          Number.isFinite(startIndex) &&
+          Number.isFinite(endIndex) &&
+          startIndex >= 0 &&
+          endIndex > startIndex &&
+          endIndex <= essayText.length;
+
+        if (indicesAreValid) {
+          startIndex = Math.max(0, Math.floor(startIndex));
+          endIndex = Math.min(essayText.length, Math.ceil(endIndex));
+          if (endIndex > startIndex) {
+            const originalSlice = essayText.substring(startIndex, endIndex);
+            if (originalSlice && !overlaps(startIndex, endIndex)) {
+              reserveRange(startIndex, endIndex);
+              corrections.push(this.buildCorrectionMark(rawCorrection, index, startIndex, endIndex, originalSlice));
+              return;
+            }
+          }
+        }
+
+        const originalText = typeof rawCorrection.originalText === 'string' ? rawCorrection.originalText : '';
+        if (!originalText) {
+          console.warn('Skipping AI correction without originalText:', rawCorrection);
+          return;
+        }
+
+        let searchPosition = 0;
+        while (searchPosition < essayText.length) {
+          const foundIndex = essayText.indexOf(originalText, searchPosition);
+          if (foundIndex === -1) {
+            break;
+          }
+          const rangeEnd = foundIndex + originalText.length;
+          if (!overlaps(foundIndex, rangeEnd)) {
+            reserveRange(foundIndex, rangeEnd);
+            corrections.push(this.buildCorrectionMark(rawCorrection, index, foundIndex, rangeEnd, essayText.substring(foundIndex, rangeEnd)));
+            return;
+          }
+          searchPosition = foundIndex + 1;
+        }
+
+        console.warn('Could not find text in essay:', originalText);
       });
     }
-    
+
     return corrections;
+  }
+
+  private buildCorrectionMark(correction: any, index: number, startIndex: number, endIndex: number, originalText: string): CorrectionMark {
+    const confidence = typeof correction.confidence === 'number' ? correction.confidence : 0.8;
+    const severity = correction.severity === 'major' ? 'major' : 'minor';
+    const rawType = typeof correction.type === 'string' ? correction.type : '';
+    const allowedTypes: CorrectionMark['type'][] = ['grammar', 'word_choice', 'sentence_structure', 'punctuation', 'spelling', 'concision', 'rhetoric'];
+    const type = allowedTypes.includes(rawType as CorrectionMark['type']) ? (rawType as CorrectionMark['type']) : 'grammar';
+
+    return {
+      id: `ai_${index}`,
+      type,
+      severity,
+      confidence,
+      startIndex,
+      endIndex,
+      originalText,
+      correctedText: correction.correctedText,
+      explanation: correction.explanation,
+      grammarRule: correction.grammarRule,
+      ruleId: `ai_${type}_${index}`,
+      autofixSafe: severity === 'minor' && confidence > 0.85,
+      icon: this.getCorrectionIcon(type)
+    };
   }
 
   private isValidCorrection(correction: any, essayText: string): boolean {

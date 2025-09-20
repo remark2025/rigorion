@@ -25,34 +25,35 @@ export const LeaderboardTable = ({ data }: LeaderboardTableProps) => {
       isDarkMode ? 'bg-gray-700' : 'bg-white'
     }`}>
       <div className="overflow-x-auto">
-        <Table>
-          <TableHeader className={isDarkMode ? 'bg-gray-600' : 'bg-gray-50'}>
-            <TableRow>
-              <TableHead className={`px-4 py-3 text-left text-sm font-medium ${
-                isDarkMode ? 'text-green-300' : 'text-gray-600'
-              }`}>Rank</TableHead>
-              <TableHead className={`px-4 py-3 text-left text-sm font-medium ${
-                isDarkMode ? 'text-green-300' : 'text-gray-600'
-              }`}>User</TableHead>
-              <TableHead className={`px-4 py-3 text-left text-sm font-medium ${
-                isDarkMode ? 'text-green-300' : 'text-gray-600'
-              }`}>Problems</TableHead>
-              <TableHead className={`px-4 py-3 text-left text-sm font-medium ${
-                isDarkMode ? 'text-green-300' : 'text-gray-600'
-              }`}>Accuracy</TableHead>
-              <TableHead className={`px-4 py-3 text-left text-sm font-medium ${
-                isDarkMode ? 'text-green-300' : 'text-gray-600'
-              }`}>Streak</TableHead>
-              <TableHead className={`px-4 py-3 text-left text-sm font-medium ${
-                isDarkMode ? 'text-green-300' : 'text-gray-600'
-              }`}>Projected Score</TableHead>
-              <TableHead className={`px-4 py-3 text-left text-sm font-medium ${
-                isDarkMode ? 'text-green-300' : 'text-gray-600'
-              }`}>Trend</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {data.map((user, index) => (
+        <div className="max-h-96 overflow-y-auto">
+          <Table>
+            <TableHeader className={`sticky top-0 z-10 ${isDarkMode ? 'bg-gray-600' : 'bg-gray-50'}`}>
+              <TableRow>
+                <TableHead className={`px-4 py-3 text-left text-sm font-medium ${
+                  isDarkMode ? 'text-green-300' : 'text-gray-600'
+                }`}>Rank</TableHead>
+                <TableHead className={`px-4 py-3 text-left text-sm font-medium ${
+                  isDarkMode ? 'text-green-300' : 'text-gray-600'
+                }`}>User</TableHead>
+                <TableHead className={`px-4 py-3 text-left text-sm font-medium ${
+                  isDarkMode ? 'text-green-300' : 'text-gray-600'
+                }`}>Problems</TableHead>
+                <TableHead className={`px-4 py-3 text-left text-sm font-medium ${
+                  isDarkMode ? 'text-green-300' : 'text-gray-600'
+                }`}>Accuracy</TableHead>
+                <TableHead className={`px-4 py-3 text-left text-sm font-medium ${
+                  isDarkMode ? 'text-green-300' : 'text-gray-600'
+                }`}>Streak</TableHead>
+                <TableHead className={`px-4 py-3 text-left text-sm font-medium ${
+                  isDarkMode ? 'text-green-300' : 'text-gray-600'
+                }`}>Projected Score</TableHead>
+                <TableHead className={`px-4 py-3 text-left text-sm font-medium ${
+                  isDarkMode ? 'text-green-300' : 'text-gray-600'
+                }`}>Trend</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {data.map((user, index) => (
               <TableRow 
                 key={index} 
                 className={`transition-colors ${
@@ -129,9 +130,10 @@ export const LeaderboardTable = ({ data }: LeaderboardTableProps) => {
                   </div>
                 </TableCell>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       </div>
     </div>
   );

@@ -7,7 +7,7 @@ import { EmptyProgressState } from "./EmptyProgressState";
 import type { LeaderboardEntry } from '@/services/types/progressTypes';
 import { useTheme } from "@/contexts/ThemeContext";
 
-// Sample leaderboard data
+// Sample leaderboard data - 12+ entries for scrolling
 const SAMPLE_LEADERBOARD_DATA: LeaderboardEntry[] = [
   { rank: 1, name: 'Alex Zhang', problems: 156, accuracy: '98%', score: 1480, trend: 12, streak: 15, isCurrentUser: false },
   { rank: 2, name: 'Maria Rodriguez', problems: 142, accuracy: '96%', score: 1465, trend: 8, streak: 12, isCurrentUser: false },
@@ -18,7 +18,17 @@ const SAMPLE_LEADERBOARD_DATA: LeaderboardEntry[] = [
   { rank: 7, name: 'Sophie Chen', problems: 121, accuracy: '89%', score: 1350, trend: 3, streak: 4, isCurrentUser: false },
   { rank: 8, name: 'James Wilson', problems: 118, accuracy: '87%', score: 1325, trend: -1, streak: 2, isCurrentUser: false },
   { rank: 9, name: 'Emma Johnson', problems: 115, accuracy: '86%', score: 1300, trend: 6, streak: 7, isCurrentUser: false },
-  { rank: 10, name: 'Michael Brown', problems: 112, accuracy: '85%', score: 1275, trend: -3, streak: 1, isCurrentUser: false }
+  { rank: 10, name: 'Michael Brown', problems: 112, accuracy: '85%', score: 1275, trend: -3, streak: 1, isCurrentUser: false },
+  { rank: 11, name: 'Sarah Davis', problems: 108, accuracy: '84%', score: 1250, trend: 4, streak: 5, isCurrentUser: false },
+  { rank: 12, name: 'Chris Lee', problems: 105, accuracy: '83%', score: 1225, trend: 2, streak: 3, isCurrentUser: false },
+  { rank: 13, name: 'Nicole White', problems: 102, accuracy: '82%', score: 1200, trend: -1, streak: 2, isCurrentUser: false },
+  { rank: 14, name: 'Ryan Garcia', problems: 98, accuracy: '81%', score: 1175, trend: 1, streak: 1, isCurrentUser: false },
+  { rank: 15, name: 'Ashley Martinez', problems: 95, accuracy: '80%', score: 1150, trend: 3, streak: 4, isCurrentUser: false },
+  { rank: 16, name: 'Kevin Thompson', problems: 92, accuracy: '79%', score: 1125, trend: -2, streak: 0, isCurrentUser: false },
+  { rank: 17, name: 'Michelle Lopez', problems: 89, accuracy: '78%', score: 1100, trend: 0, streak: 2, isCurrentUser: false },
+  { rank: 18, name: 'Tyler Anderson', problems: 86, accuracy: '77%', score: 1075, trend: 1, streak: 1, isCurrentUser: false },
+  { rank: 19, name: 'Amanda Clark', problems: 83, accuracy: '76%', score: 1050, trend: -1, streak: 0, isCurrentUser: false },
+  { rank: 20, name: 'Jordan Moore', problems: 80, accuracy: '75%', score: 1025, trend: 2, streak: 3, isCurrentUser: false }
 ];
 
 export const LeaderboardData = ({ userId }: { userId: string }) => {

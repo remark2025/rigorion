@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -16,6 +16,19 @@ const AIWritingExaminer: React.FC = () => {
   const [corrections, setCorrections] = useState<CorrectionMark[]>([]);
   const [satScore, setSatScore] = useState<SATWritingScore | null>(null);
   const [analysisComplete, setAnalysisComplete] = useState(false);
+  const latestEssayRef = useRef(studentEssay);
+
+  const resetAnalysisState = useCallback(() => {
+    setCorrections([]);
+    setSatScore(null);
+    setAnalysisComplete(false);
+  }, []);
+
+  const handleEssayChange = useCallback((value: string) => {
+    latestEssayRef.current = value;
+    setStudentEssay(value);
+    resetAnalysisState();
+  }, [resetAnalysisState]);
 
   // Sample essay for quick testing
   const sampleEssay = `Social media has become a integral part of modern communication, fundamentally reshaping how we interact and consume information. While these platforms offer remarkable benefits in connecting people and democratizing access to knowledge, I believe that the mental health risks, particularly for teenagers, outweigh these advantages and require immediate attention.
@@ -29,11 +42,16 @@ However, critics argue that social media provides valuable benefits that justify
 In conclusion, although social media offers legitimate advantages in communication and access to information, the mounting evidence of its negative impact on mental health, particularly among vulnerable teenage populations, suggests that these risks outweigh the benefits.`;
 
   const handleAnalyzeEssay = async () => {
-    if (!studentEssay.trim()) return;
-    
+    const trimmedEssay = studentEssay.trim();
+    if (!trimmedEssay) return;
+
+    const essaySnapshot = studentEssay;
     setIsAnalyzing(true);
     try {
-      const result = await aiGrammarService.analyzeEssay(studentEssay);
+      const result = await aiGrammarService.analyzeEssay(essaySnapshot);
+      if (latestEssayRef.current !== essaySnapshot) {
+        return;
+      }
       setCorrections(result.corrections);
       setSatScore(result.satScore);
       setAnalysisComplete(true);
@@ -45,17 +63,15 @@ In conclusion, although social media offers legitimate advantages in communicati
   };
 
   const handleUseSample = () => {
-    setStudentEssay(sampleEssay);
+    handleEssayChange(sampleEssay);
   };
 
   const handleClearEssay = () => {
-    setStudentEssay('');
-    setCorrections([]);
-    setSatScore(null);
-    setAnalysisComplete(false);
+    handleEssayChange('');
   };
 
-  const wordCount = studentEssay.split(' ').filter(w => w.length > 0).length;
+  const normalizedEssay = studentEssay.trim();
+  const wordCount = normalizedEssay ? normalizedEssay.split(/\s+/).length : 0;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -127,7 +143,7 @@ In conclusion, although social media offers legitimate advantages in communicati
             <div className="space-y-4">
               <Textarea
                 value={studentEssay}
-                onChange={(e) => setStudentEssay(e.target.value)}
+                onChange={(e) => handleEssayChange(e.target.value)}
                 placeholder="Paste or type your essay here for AI analysis..."
                 className="min-h-[300px] text-base leading-relaxed"
               />
@@ -206,11 +222,7 @@ In conclusion, although social media offers legitimate advantages in communicati
                   <div className="flex gap-3">
                     <Button
                       variant="outline"
-                      onClick={() => {
-                        setCorrections([]);
-                        setSatScore(null);
-                        setAnalysisComplete(false);
-                      }}
+                      onClick={resetAnalysisState}
                     >
                       <Zap className="h-4 w-4 mr-2" />
                       Analyze Again

@@ -2,7 +2,7 @@ import { useState, useCallback } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { LeaderboardData } from "@/components/progress/LeaderboardData";
 import { FullPageLoader } from "@/components/progress/FullPageLoader";
-import { Navigation, User, Users, BookOpen, BarChart, Target, ChevronDown, LogOut, Menu, Clock, Trophy, TrendingUp, FileText, TrendingDown, Brain } from "lucide-react";
+import { Navigation, User, Users, BookOpen, BarChart, Target, ChevronDown, LogOut, Menu, Clock, Trophy, TrendingUp, FileText, TrendingDown, Brain, ChevronLeft, ChevronRight } from "lucide-react";
 // import { SecureProgressDataProvider } from "@/components/progress/SecureProgressDataProvider"; // Removed to fix caching
 import { useProgress } from "@/contexts/ProgressContext";
 import { Button } from "@/components/ui/button";
@@ -170,11 +170,101 @@ const Progress = () => {
   const [timeAnalyticsView, setTimeAnalyticsView] = useState<'daily' | 'skills'>('daily');
   const [selectedSkillForAnalytics, setSelectedSkillForAnalytics] = useState<string>('all');
   const [selectedSkillSection, setSelectedSkillSection] = useState<'Math' | 'Reading' | 'Writing'>('Math');
+  const [currentExamReport, setCurrentExamReport] = useState<number>(0);
   const queryClient = useQueryClient();
 
   const { progressData, isLoading: analyticsLoading, error: progressError } = useSimpleProgress();
   
   const currentProgressData = progressData || DUMMY_PROGRESS;
+
+  // Mock exam reports data
+  const examReports = [
+    {
+      id: 1,
+      date: "March 15, 2024",
+      totalScore: 1420,
+      mathScore: 700,
+      readingWritingScore: 720,
+      readingCorrect: 36,
+      writingCorrect: 38,
+      mathCalculatorCorrect: 32,
+      mathNoCalculatorCorrect: 18,
+      skillAnalysis: {
+        strengths: [
+          { skill: "Linear Equations in One Variable", percentile: 95, description: "Exceptional mastery of solving and graphing linear equations" },
+          { skill: "Grammar and Usage", percentile: 92, description: "Strong command of standard English conventions" },
+          { skill: "Reading Comprehension - Main Ideas", percentile: 88, description: "Excellent ability to identify central themes and purposes" },
+          { skill: "Data Analysis - Statistics", percentile: 85, description: "Good understanding of mean, median, and statistical measures" }
+        ],
+        improvements: [
+          { skill: "Geometry - Area and Volume", percentile: 42, description: "Need focused practice on complex geometric calculations" },
+          { skill: "Advanced Algebra - Quadratic Functions", percentile: 38, description: "Requires strengthening in factoring and solving quadratics" },
+          { skill: "Reading - Synthesis and Analysis", percentile: 45, description: "Needs improvement in connecting ideas across multiple texts" },
+          { skill: "Writing - Expression of Ideas", percentile: 48, description: "Focus on clarity, style, and effective language use" }
+        ]
+      }
+    },
+    {
+      id: 2,
+      date: "April 20, 2024",
+      totalScore: 1480,
+      mathScore: 750,
+      readingWritingScore: 730,
+      readingCorrect: 38,
+      writingCorrect: 40,
+      mathCalculatorCorrect: 35,
+      mathNoCalculatorCorrect: 19,
+      skillAnalysis: {
+        strengths: [
+          { skill: "Linear Equations in One Variable", percentile: 98, description: "Outstanding mastery with complex multi-step problems" },
+          { skill: "Geometry - Circles and Triangles", percentile: 89, description: "Significant improvement in geometric reasoning" },
+          { skill: "Vocabulary in Context", percentile: 91, description: "Excellent word choice analysis and interpretation" },
+          { skill: "Writing - Standard English Conventions", percentile: 94, description: "Near-perfect grammar and punctuation usage" }
+        ],
+        improvements: [
+          { skill: "Trigonometry and Radians", percentile: 52, description: "Need more practice with trigonometric functions and unit circle" },
+          { skill: "Data Analysis - Scatterplots", percentile: 48, description: "Requires work on interpreting trends and correlations" },
+          { skill: "Reading - Historical Documents", percentile: 44, description: "Struggle with older texts and historical context" },
+          { skill: "Test-Taking Strategies", percentile: 41, description: "Need techniques for managing time pressure and anxiety" }
+        ]
+      }
+    },
+    {
+      id: 3,
+      date: "May 18, 2024", 
+      totalScore: 1520,
+      mathScore: 780,
+      readingWritingScore: 740,
+      readingCorrect: 39,
+      writingCorrect: 42,
+      mathCalculatorCorrect: 37,
+      mathNoCalculatorCorrect: 20,
+      skillAnalysis: {
+        strengths: [
+          { skill: "Linear Equations in One Variable", percentile: 99, description: "Complete mastery of all algebraic equation types" },
+          { skill: "Geometry - All Topics", percentile: 93, description: "Comprehensive understanding of geometric principles" },
+          { skill: "Reading - Literary Analysis", percentile: 90, description: "Strong ability to analyze themes, tone, and literary devices" },
+          { skill: "Writing - Language and Style", percentile: 96, description: "Exceptional command of effective expression" }
+        ],
+        improvements: [
+          { skill: "Probability and Combinatorics", percentile: 58, description: "Need practice with complex probability scenarios" },
+          { skill: "Advanced Statistics - Inference", percentile: 54, description: "Requires work on statistical conclusions and confidence intervals" },
+          { skill: "Reading - Dense Academic Texts", percentile: 62, description: "Challenges with highly technical or philosophical passages" },
+          { skill: "Endurance and Focus Management", percentile: 65, description: "Slight decline in performance during final test sections" }
+        ]
+      }
+    }
+  ];
+
+  const currentExam = examReports[currentExamReport];
+
+  const navigateExamReport = (direction: 'prev' | 'next') => {
+    if (direction === 'prev' && currentExamReport > 0) {
+      setCurrentExamReport(currentExamReport - 1);
+    } else if (direction === 'next' && currentExamReport < examReports.length - 1) {
+      setCurrentExamReport(currentExamReport + 1);
+    }
+  };
   
   const pages = [
     { name: "Account", path: "/account" },
@@ -427,115 +517,201 @@ const Progress = () => {
               {/* Analytics View */}
               {selectedView === 'analytics' && (
                 <div className="space-y-8">
-                  {/* Top Row: Stats Cards around Total Progress */}
+                  {/* Top Row: Stats Cards */}
                   <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
                     {/* Days to Exam */}
-                    <div className={`p-6 rounded-xl ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm border-0`}>
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <h3 className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Days to Exam</h3>
-                          <div className="mt-2">
-                            <span className={`text-3xl font-bold ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`}>45</span>
-                            <span className={`text-sm ml-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>days</span>
-                          </div>
+                    <div className={`p-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-lg border-0 transition-all duration-500 hover:shadow-xl hover:scale-105 relative`} style={{
+                      borderTopLeftRadius: '50px',
+                      borderBottomLeftRadius: '50px',
+                      borderTopRightRadius: '0px',
+                      borderBottomRightRadius: '0px',
+                      background: isDarkMode 
+                        ? 'linear-gradient(135deg, #1f2937 0%, #374151 50%, #4b5563 100%)'
+                        : 'linear-gradient(135deg, #ffffff 0%, #f9fafb 50%, #f3f4f6 100%)',
+                      boxShadow: '0 8px 32px rgba(156, 163, 175, 0.15), 0 0 0 1px rgba(156, 163, 175, 0.1)',
+                      animation: 'pulse-soft 3s ease-in-out infinite'
+                    }}>
+                      <Clock className="h-6 w-6 text-orange-600 absolute left-2 top-1/2 transform -translate-y-1/2" />
+                      <div className="text-center">
+                        <h3 className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Days to Exam</h3>
+                        <div className="mt-1">
+                          <span className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-black'}`}>45</span>
+                          <span className={`text-sm ml-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>days</span>
                         </div>
-                        <Clock className={`h-8 w-8 ${isDarkMode ? 'text-green-400/70' : 'text-blue-500/70'}`} />
                       </div>
                     </div>
 
                     {/* Streak */}
-                    <div className={`p-6 rounded-xl ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm border-0`}>
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <h3 className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Current Streak</h3>
-                          <div className="mt-2">
-                            <span className={`text-3xl font-bold ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`}>{currentProgressData.streak}</span>
-                            <span className={`text-sm ml-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>days</span>
-                          </div>
+                    <div className={`p-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-lg border-0 transition-all duration-500 hover:shadow-xl hover:scale-105 relative`} style={{
+                      borderTopLeftRadius: '50px',
+                      borderBottomLeftRadius: '50px',
+                      borderTopRightRadius: '0px',
+                      borderBottomRightRadius: '0px',
+                      background: isDarkMode 
+                        ? 'linear-gradient(135deg, #1f2937 0%, #374151 50%, #4b5563 100%)'
+                        : 'linear-gradient(135deg, #ffffff 0%, #f9fafb 50%, #f3f4f6 100%)',
+                      boxShadow: '0 8px 32px rgba(156, 163, 175, 0.15), 0 0 0 1px rgba(156, 163, 175, 0.1)',
+                      animation: 'pulse-soft 3s ease-in-out infinite 0.5s'
+                    }}>
+                      <TrendingUp className="h-6 w-6 text-orange-600 absolute left-2 top-1/2 transform -translate-y-1/2" />
+                      <div className="text-center">
+                        <h3 className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Current Streak</h3>
+                        <div className="mt-1">
+                          <span className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-black'}`}>{currentProgressData.streak}</span>
+                          <span className={`text-sm ml-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>days</span>
                         </div>
-                        <TrendingUp className={`h-8 w-8 ${isDarkMode ? 'text-green-400/70' : 'text-blue-500/70'}`} />
                       </div>
                     </div>
 
-                    {/* Total Progress - Center with larger size */}
-                    <div className={`p-6 rounded-xl ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-lg border-0 lg:col-span-1`}>
-                      <div className="text-center">
-                        <h3 className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} mb-4`}>Total Progress</h3>
-                        <div className="relative w-24 h-24 mx-auto">
-                          <svg className="w-24 h-24 transform -rotate-90" viewBox="0 0 100 100">
-                            <circle
-                              cx="50"
-                              cy="50"
-                              r="45"
-                              stroke={isDarkMode ? '#374151' : '#e5e7eb'}
-                              strokeWidth="8"
-                              fill="none"
-                            />
-                            <circle
-                              cx="50"
-                              cy="50"
-                              r="45"
-                              stroke={isDarkMode ? '#10b981' : '#3b82f6'}
-                              strokeWidth="8"
-                              fill="none"
-                              strokeDasharray={`${currentProgressData.totalProgressPercent * 2.83} 283`}
-                              strokeLinecap="round"
-                            />
-                          </svg>
-                          <div className="absolute inset-0 flex items-center justify-center">
-                            <span className={`text-xl font-bold ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`}>
-                              {currentProgressData.totalProgressPercent}%
-                            </span>
-                          </div>
+                    {/* Global Ranking */}
+                    <div className={`p-4 rounded-xl ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-xl border-0 lg:col-span-1 transition-all duration-500 hover:shadow-2xl hover:scale-110 relative`} style={{
+                      background: isDarkMode 
+                        ? 'linear-gradient(135deg, #1f2937 0%, #374151 50%, #4b5563 100%)'
+                        : 'linear-gradient(135deg, #ffffff 0%, #f9fafb 50%, #f3f4f6 100%)',
+                      border: '3px solid transparent',
+                      backgroundClip: 'padding-box',
+                      position: 'relative'
+                    }}>
+                      <div className="absolute inset-0 rounded-xl" style={{
+                        background: 'linear-gradient(45deg, #ff4500, #ff6347, #ff8c00, #ffa500, #ff4500)',
+                        backgroundSize: '400% 400%',
+                        animation: 'flame-border 3s ease infinite',
+                        zIndex: -1,
+                        margin: '-3px'
+                      }}></div>
+                      <div className="text-center relative z-10">
+                        <h3 className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Global Ranking</h3>
+                        <div className="mt-1">
+                          <span className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-black'}`}>#247</span>
+                          <span className={`text-sm ml-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>worldwide</span>
                         </div>
+                        <Trophy className="h-6 w-6 text-orange-500 absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-20" />
                       </div>
                     </div>
 
                     {/* Projected Score */}
-                    <div className={`p-6 rounded-xl ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm border-0`}>
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1">
-                          <h3 className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-600'} mb-3`}>Projected Score</h3>
-                          
-                          <div className="mb-2">
-                            <div className="flex items-baseline gap-2">
-                              <span className={`text-2xl font-bold ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`}>
-                                720
-                              </span>
-                              <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                                ±35
-                              </span>
-                            </div>
-                            <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
-                              Math (200–800)
-                            </div>
+                    <div className={`p-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-lg border-0 transition-all duration-500 hover:shadow-xl hover:scale-105 relative`} style={{
+                      borderTopLeftRadius: '0px',
+                      borderBottomLeftRadius: '0px',
+                      borderTopRightRadius: '50px',
+                      borderBottomRightRadius: '50px',
+                      background: isDarkMode 
+                        ? 'linear-gradient(135deg, #1f2937 0%, #374151 50%, #4b5563 100%)'
+                        : 'linear-gradient(135deg, #ffffff 0%, #f9fafb 50%, #f3f4f6 100%)',
+                      boxShadow: '0 8px 32px rgba(156, 163, 175, 0.15), 0 0 0 1px rgba(156, 163, 175, 0.1)',
+                      animation: 'pulse-soft 3s ease-in-out infinite 1s'
+                    }}>
+                      <Target className="h-6 w-6 text-orange-600 absolute right-2 top-1/2 transform -translate-y-1/2" />
+                      <div className="text-center">
+                        <h3 className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Projected Score</h3>
+                        <div className="mt-1">
+                          <div className="flex items-baseline justify-center gap-2">
+                            <span className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-black'}`}>
+                              720
+                            </span>
+                            <span className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                              ±35
+                            </span>
+                          </div>
+                          <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                            Math (200–800)
                           </div>
                         </div>
-                        <Target className={`h-8 w-8 ${isDarkMode ? 'text-green-400/70' : 'text-blue-500/70'}`} />
                       </div>
                     </div>
 
                     {/* Questions Attempted Today */}
-                    <div className={`p-6 rounded-xl ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm border-0`}>
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <h3 className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Today's Progress</h3>
-                          <div className="mt-2">
-                            <span className={`text-3xl font-bold ${isDarkMode ? 'text-green-400' : 'text-blue-600'}`}>{currentProgressData.questionsAnsweredToday}</span>
-                            <span className={`text-sm ml-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>questions</span>
-                          </div>
+                    <div className={`p-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-lg border-0 transition-all duration-500 hover:shadow-xl hover:scale-105 relative`} style={{
+                      borderTopLeftRadius: '0px',
+                      borderBottomLeftRadius: '0px',
+                      borderTopRightRadius: '50px',
+                      borderBottomRightRadius: '50px',
+                      background: isDarkMode 
+                        ? 'linear-gradient(135deg, #1f2937 0%, #374151 50%, #4b5563 100%)'
+                        : 'linear-gradient(135deg, #ffffff 0%, #f9fafb 50%, #f3f4f6 100%)',
+                      boxShadow: '0 8px 32px rgba(156, 163, 175, 0.15), 0 0 0 1px rgba(156, 163, 175, 0.1)',
+                      animation: 'pulse-soft 3s ease-in-out infinite 1.5s'
+                    }}>
+                      <BookOpen className="h-6 w-6 text-orange-600 absolute right-2 top-1/2 transform -translate-y-1/2" />
+                      <div className="text-center">
+                        <h3 className={`text-sm font-medium ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>Today's Progress</h3>
+                        <div className="mt-1">
+                          <span className={`text-2xl font-bold ${isDarkMode ? 'text-white' : 'text-black'}`}>{currentProgressData.questionsAnsweredToday}</span>
+                          <span className={`text-sm ml-1 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>questions</span>
                         </div>
-                        <Trophy className={`h-8 w-8 ${isDarkMode ? 'text-green-400/70' : 'text-blue-500/70'}`} />
                       </div>
                     </div>
                   </div>
 
+                  {/* Custom CSS for animations */}
+                  <style jsx>{`
+                    @keyframes pulse-soft {
+                      0%, 100% {
+                        box-shadow: 0 8px 32px rgba(156, 163, 175, 0.15), 0 0 0 1px rgba(156, 163, 175, 0.1);
+                      }
+                      50% {
+                        box-shadow: 0 12px 40px rgba(156, 163, 175, 0.25), 0 0 0 1px rgba(156, 163, 175, 0.2);
+                      }
+                    }
+                    @keyframes flame-border {
+                      0% {
+                        background-position: 0% 50%;
+                      }
+                      50% {
+                        background-position: 100% 50%;
+                      }
+                      100% {
+                        background-position: 0% 50%;
+                      }
+                    }
+                    @keyframes shimmer-gradient {
+                      0% {
+                        background-position: 0% 50%;
+                      }
+                      50% {
+                        background-position: 100% 50%;
+                      }
+                      100% {
+                        background-position: 0% 50%;
+                      }
+                    }
+                    @keyframes shimmer-bg {
+                      0% {
+                        background-position: 0% 50%;
+                        opacity: 0.1;
+                      }
+                      50% {
+                        background-position: 100% 50%;
+                        opacity: 0.3;
+                      }
+                      100% {
+                        background-position: 0% 50%;
+                        opacity: 0.1;
+                      }
+                    }
+                  `}</style>
+
                   {/* SAT Skill Analytics Table - Full Width */}
                   <div className={`p-8 rounded-xl ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm border-0 mt-8`}>
                     <div className="flex items-center justify-between mb-6">
-                      <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>
-                        SAT {selectedSkillSection} - Skill Analytics
-                      </h3>
+                      <div className="relative">
+                        <h3 className="text-xl font-semibold text-transparent bg-clip-text relative z-10" style={{
+                          background: 'linear-gradient(135deg, #ff4500 0%, #ff6347 25%, #ff8c00 50%, #ffa500 75%, #000000 100%)',
+                          WebkitBackgroundClip: 'text',
+                          backgroundClip: 'text',
+                          backgroundSize: '200% 100%',
+                          animation: 'shimmer-gradient 4s ease-in-out infinite alternate'
+                        }}>
+                          SAT {selectedSkillSection} - Skill Analytics
+                        </h3>
+                        <div className="absolute inset-0 rounded-lg opacity-20" style={{
+                          background: 'linear-gradient(135deg, #ff4500 0%, #ff6347 25%, #ff8c00 50%, #ffa500 75%, #000000 100%)',
+                          backgroundSize: '200% 100%',
+                          animation: 'shimmer-bg 4s ease-in-out infinite alternate',
+                          filter: 'blur(8px)',
+                          zIndex: -1
+                        }}></div>
+                      </div>
                     </div>
 
                     {/* Tab Menu for Skill Sections - Positioned Right */}
@@ -903,65 +1079,94 @@ const Progress = () => {
                       REAL TEST Analytics
                     </h2>
                     <div className="overflow-x-auto">
-                      <table className="w-full">
-                        <thead>
-                          <tr className={`border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
-                            <th className={`text-left py-3 px-4 font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Test No</th>
-                            <th className={`text-left py-3 px-4 font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Date</th>
-                            <th className={`text-left py-3 px-4 font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>SAT Result</th>
-                            <th className={`text-left py-3 px-4 font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>SAT Math</th>
-                            <th className={`text-left py-3 px-4 font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>SAT W+R</th>
-                            <th className={`text-left py-3 px-4 font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Improvement (Percentile)</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {[
-                            { testNo: 1, date: '2024-01-15', satResult: 1380, satMath: 720, satWR: 660, improvement: 0 },
-                            { testNo: 2, date: '2024-02-20', satResult: 1420, satMath: 750, satWR: 670, improvement: 40 },
-                            { testNo: 3, date: '2024-03-18', satResult: 1480, satMath: 780, satWR: 700, improvement: 60 },
-                            { testNo: 4, date: '2024-04-22', satResult: 1510, satMath: 790, satWR: 720, improvement: 30 },
-                          ].map((test, index) => (
-                            <tr key={index} className={`border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-100'} hover:${isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'} transition-colors`}>
-                              <td className={`py-3 px-4 font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>{test.testNo}</td>
-                              <td className={`py-3 px-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{new Date(test.date).toLocaleDateString()}</td>
-                              <td className={`py-3 px-4 font-bold ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>{test.satResult}</td>
-                              <td className={`py-3 px-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{test.satMath}</td>
-                              <td className={`py-3 px-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>{test.satWR}</td>
-                              <td className="py-3 px-4">
-                                <div className="flex items-center gap-2">
-                                  {test.improvement > 0 ? (
-                                    <TrendingUp className="h-4 w-4 text-green-500" />
-                                  ) : test.improvement < 0 ? (
-                                    <TrendingDown className="h-4 w-4 text-red-500" />
-                                  ) : (
-                                    <BarChart className="h-4 w-4 text-gray-500" />
-                                  )}
-                                  <span className={`font-medium ${
-                                    test.improvement > 0 ? (isDarkMode ? 'text-green-400' : 'text-green-600') :
-                                    test.improvement < 0 ? (isDarkMode ? 'text-red-400' : 'text-red-600') :
-                                    (isDarkMode ? 'text-gray-400' : 'text-gray-600')
-                                  }`}>
-                                    {test.improvement > 0 ? '+' : ''}{test.improvement}
-                                  </span>
-                                </div>
-                              </td>
+                      <div className="max-h-96 overflow-y-auto">
+                        <table className="w-full">
+                          <thead className={`sticky top-0 ${isDarkMode ? 'bg-gray-800' : 'bg-white'} z-10`}>
+                            <tr className={`border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                              <th className={`text-left py-3 px-4 font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Test No</th>
+                              <th className={`text-left py-3 px-4 font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Date</th>
+                              <th className={`text-left py-3 px-4 font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>SAT Result</th>
+                              <th className={`text-left py-3 px-4 font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>SAT Math</th>
+                              <th className={`text-left py-3 px-4 font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>SAT W+R</th>
+                              <th className={`text-left py-3 px-4 font-semibold ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Improvement (Percentile)</th>
                             </tr>
-                          ))}
-                        </tbody>
-                      </table>
+                          </thead>
+                          <tbody>
+                            {[
+                              { testNo: 1, date: '2024-01-15', satResult: 1380, satMath: 720, satWR: 660, improvement: 0 },
+                              { testNo: 2, date: '2024-02-20', satResult: 1420, satMath: 750, satWR: 670, improvement: 40 },
+                              { testNo: 3, date: '2024-03-18', satResult: 1480, satMath: 780, satWR: 700, improvement: 60 },
+                              { testNo: 4, date: '2024-04-22', satResult: 1510, satMath: 790, satWR: 720, improvement: 30 },
+                              { testNo: 5, date: '2024-05-18', satResult: 1495, satMath: 785, satWR: 710, improvement: -15 },
+                              { testNo: 6, date: '2024-06-15', satResult: 1525, satMath: 800, satWR: 725, improvement: 30 },
+                              { testNo: 7, date: '2024-07-20', satResult: 1540, satMath: 800, satWR: 740, improvement: 15 },
+                              { testNo: 8, date: null, satResult: null, satMath: null, satWR: null, improvement: null },
+                              { testNo: 9, date: null, satResult: null, satMath: null, satWR: null, improvement: null },
+                              { testNo: 10, date: null, satResult: null, satMath: null, satWR: null, improvement: null },
+                              { testNo: 11, date: null, satResult: null, satMath: null, satWR: null, improvement: null },
+                              { testNo: 12, date: null, satResult: null, satMath: null, satWR: null, improvement: null },
+                            ].map((test, index) => (
+                              <tr key={index} className={`border-b ${isDarkMode ? 'border-gray-700' : 'border-gray-100'} hover:${isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'} transition-colors`}>
+                                <td className={`py-3 px-4 font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>{test.testNo}</td>
+                                <td className={`py-3 px-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                                  {test.date ? new Date(test.date).toLocaleDateString() : 
+                                    <span className={`italic ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>Not Available</span>
+                                  }
+                                </td>
+                                <td className={`py-3 px-4 font-bold ${isDarkMode ? 'text-blue-400' : 'text-blue-600'}`}>
+                                  {test.satResult || <span className={`italic ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>Not Available</span>}
+                                </td>
+                                <td className={`py-3 px-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                                  {test.satMath || <span className={`italic ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>Not Available</span>}
+                                </td>
+                                <td className={`py-3 px-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                                  {test.satWR || <span className={`italic ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>Not Available</span>}
+                                </td>
+                                <td className="py-3 px-4">
+                                  {test.improvement !== null ? (
+                                    <div className="flex items-center gap-2">
+                                      {test.improvement > 0 ? (
+                                        <TrendingUp className="h-4 w-4 text-green-500" />
+                                      ) : test.improvement < 0 ? (
+                                        <TrendingDown className="h-4 w-4 text-red-500" />
+                                      ) : (
+                                        <BarChart className="h-4 w-4 text-gray-500" />
+                                      )}
+                                      <span className={`font-medium ${
+                                        test.improvement > 0 ? (isDarkMode ? 'text-green-400' : 'text-green-600') :
+                                        test.improvement < 0 ? (isDarkMode ? 'text-red-400' : 'text-red-600') :
+                                        (isDarkMode ? 'text-gray-400' : 'text-gray-600')
+                                      }`}>
+                                        {test.improvement > 0 ? '+' : ''}{test.improvement}
+                                      </span>
+                                    </div>
+                                  ) : (
+                                    <span className={`italic ${isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}>Not Available</span>
+                                  )}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
                     </div>
                   </div>
 
                   {/* Performance Analytics */}
                   <div className={`p-8 rounded-xl ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm border-0 mt-8`}>
                     <h2 className={`text-2xl font-bold mb-6 flex items-center gap-2 ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>
-                      <BarChart className="h-6 w-6 text-purple-500" />
+                      <BarChart className="h-6 w-6" style={{
+                        background: 'linear-gradient(135deg, #f97316 0%, #1f2937 100%)',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                        backgroundClip: 'text'
+                      }} />
                       Performance Analytics
                     </h2>
                     
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-0 mb-6">
                       {/* High Performance Hours */}
-                      <div className={`p-6 rounded-lg ${isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                      <div className={`p-6 ${isDarkMode ? 'border-r border-gray-600' : 'border-r border-gray-300'}`}>
                         <h3 className={`text-lg font-semibold mb-4 flex items-center gap-2 ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>
                           <Clock className="h-5 w-5 text-orange-500" />
                           High Performance Hours
@@ -992,7 +1197,7 @@ const Progress = () => {
                       </div>
 
                       {/* Problem Difficulty Accuracy */}
-                      <div className={`p-6 rounded-lg ${isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                      <div className="p-6">
                         <h3 className={`text-lg font-semibold mb-4 flex items-center gap-2 ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>
                           <Target className="h-5 w-5 text-green-500" />
                           Accuracy by Difficulty
@@ -1025,7 +1230,7 @@ const Progress = () => {
                     </div>
 
                     {/* Metacognition Confidence Correlation */}
-                    <div className={`p-6 rounded-lg ${isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
+                    <div className={`p-6 ${isDarkMode ? 'border-t border-gray-600' : 'border-t border-gray-300'} mt-6`}>
                       <h3 className={`text-lg font-semibold mb-4 flex items-center gap-2 ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>
                         <Brain className="h-5 w-5 text-yellow-500" />
                         Metacognition: Confidence vs Accuracy Correlation
@@ -1087,19 +1292,45 @@ const Progress = () => {
                     {/* Header - Official SAT Style */}
                     <div className="bg-blue-900 text-white p-6">
                       <div className="flex items-center justify-between">
-                        <div>
-                          <h1 className="text-2xl font-bold">SAT® Score Report</h1>
-                          <p className="text-blue-200 mt-1">Official Practice Test Results</p>
+                        <div className="flex items-center gap-4">
+                          <button
+                            onClick={() => navigateExamReport('prev')}
+                            disabled={currentExamReport === 0}
+                            className={`p-2 rounded-full transition-colors ${
+                              currentExamReport === 0 
+                                ? 'bg-gray-600 text-gray-400 cursor-not-allowed' 
+                                : 'bg-blue-800 text-white hover:bg-blue-700'
+                            }`}
+                          >
+                            <ChevronLeft className="h-5 w-5" />
+                          </button>
+                          <div>
+                            <h1 className="text-2xl font-bold">SAT® Score Report</h1>
+                            <p className="text-blue-200 mt-1">Official Practice Test Results</p>
+                          </div>
                         </div>
-                        <div className="text-right">
-                          <p className="text-sm">Test Date: March 15, 2024</p>
-                          <p className="text-sm">Registration Number: 12345678</p>
+                        <div className="flex items-center gap-4">
+                          <div className="text-right">
+                            <p className="text-sm">Test Date: {currentExam.date}</p>
+                            <p className="text-sm">Test {currentExam.id} of {examReports.length}</p>
+                          </div>
+                          <button
+                            onClick={() => navigateExamReport('next')}
+                            disabled={currentExamReport === examReports.length - 1}
+                            className={`p-2 rounded-full transition-colors ${
+                              currentExamReport === examReports.length - 1
+                                ? 'bg-gray-600 text-gray-400 cursor-not-allowed' 
+                                : 'bg-blue-800 text-white hover:bg-blue-700'
+                            }`}
+                          >
+                            <ChevronRight className="h-5 w-5" />
+                          </button>
                         </div>
                       </div>
                     </div>
 
                     {/* Student Info */}
-                    <div className="p-6 border-b border-gray-200">
+                    <div className="p-6 border-b border-gray-200 bg-blue-50">
                       <h2 className="text-lg font-semibold text-gray-800 mb-3">Student Information</h2>
                       <div className="grid grid-cols-2 gap-4">
                         <div>
@@ -1117,19 +1348,19 @@ const Progress = () => {
                     <div className="p-6 border-b border-gray-200 bg-blue-50">
                       <div className="text-center">
                         <h2 className="text-2xl font-bold text-blue-900 mb-2">Total SAT Score</h2>
-                        <div className="text-6xl font-bold text-blue-600 mb-2">1420</div>
+                        <div className="text-6xl font-bold text-blue-600 mb-2">{currentExam.totalScore}</div>
                         <p className="text-gray-600">Out of 1600</p>
                         <div className="mt-4 bg-white rounded-lg p-3 inline-block">
                           <div className="flex items-center space-x-8">
                             <div className="text-center">
                               <p className="text-sm text-gray-600">Evidence-Based Reading and Writing</p>
-                              <p className="text-2xl font-bold text-blue-600">720</p>
+                              <p className="text-2xl font-bold text-blue-600">{currentExam.readingWritingScore}</p>
                               <p className="text-xs text-gray-500">200-800</p>
                             </div>
                             <div className="text-4xl text-gray-300">+</div>
                             <div className="text-center">
                               <p className="text-sm text-gray-600">Math</p>
-                              <p className="text-2xl font-bold text-blue-600">700</p>
+                              <p className="text-2xl font-bold text-blue-600">{currentExam.mathScore}</p>
                               <p className="text-xs text-gray-500">200-800</p>
                             </div>
                           </div>
@@ -1138,7 +1369,7 @@ const Progress = () => {
                     </div>
 
                     {/* Section Scores */}
-                    <div className="p-6">
+                    <div className="p-6 bg-blue-50">
                       <h2 className="text-lg font-semibold text-gray-800 mb-4">Section Scores</h2>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="border rounded-lg p-4">
@@ -1146,15 +1377,15 @@ const Progress = () => {
                           <div className="space-y-2">
                             <div className="flex justify-between">
                               <span className="text-sm">Reading</span>
-                              <span className="font-medium">36/40</span>
+                              <span className="font-medium">{currentExam.readingCorrect}/40</span>
                             </div>
                             <div className="flex justify-between">
                               <span className="text-sm">Writing and Language</span>
-                              <span className="font-medium">38/44</span>
+                              <span className="font-medium">{currentExam.writingCorrect}/44</span>
                             </div>
                             <div className="flex justify-between font-semibold pt-2 border-t">
                               <span>Total</span>
-                              <span>720</span>
+                              <span>{currentExam.readingWritingScore}</span>
                             </div>
                           </div>
                         </div>
@@ -1164,15 +1395,15 @@ const Progress = () => {
                           <div className="space-y-2">
                             <div className="flex justify-between">
                               <span className="text-sm">Calculator</span>
-                              <span className="font-medium">32/38</span>
+                              <span className="font-medium">{currentExam.mathCalculatorCorrect}/38</span>
                             </div>
                             <div className="flex justify-between">
                               <span className="text-sm">No Calculator</span>
-                              <span className="font-medium">18/20</span>
+                              <span className="font-medium">{currentExam.mathNoCalculatorCorrect}/20</span>
                             </div>
                             <div className="flex justify-between font-semibold pt-2 border-t">
                               <span>Total</span>
-                              <span>700</span>
+                              <span>{currentExam.mathScore}</span>
                             </div>
                           </div>
                         </div>
@@ -1184,76 +1415,52 @@ const Progress = () => {
                       <h2 className="text-lg font-semibold text-gray-800 mb-4">Score Analysis & Recommendations</h2>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Strengths */}
-                        <div className="bg-green-50 p-4 rounded-lg">
-                          <h3 className="font-semibold text-green-800 mb-2">Strengths</h3>
-                          <ul className="space-y-1 text-sm text-green-700">
-                            <li>• Excellent performance in Algebra (95% accuracy)</li>
-                            <li>• Strong reading comprehension skills</li>
-                            <li>• Consistent time management</li>
-                            <li>• High accuracy in grammar questions</li>
-                          </ul>
+                        <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                          <h3 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                            <Brain className="h-5 w-5 text-gray-600" />
+                            AI-Analyzed Strengths
+                          </h3>
+                          <div className="space-y-3">
+                            {currentExam.skillAnalysis.strengths.map((strength, index) => (
+                              <div key={index} className="border-l-4 border-green-500 pl-3">
+                                <div className="flex items-center justify-between mb-1">
+                                  <h4 className="font-medium text-gray-800 text-sm">{strength.skill}</h4>
+                                  <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-bold border border-green-200">
+                                    {strength.percentile}th percentile
+                                  </span>
+                                </div>
+                                <p className="text-xs text-gray-600">{strength.description}</p>
+                              </div>
+                            ))}
+                          </div>
                         </div>
                         
                         {/* Areas for Improvement */}
-                        <div className="bg-orange-50 p-4 rounded-lg">
-                          <h3 className="font-semibold text-orange-800 mb-2">Focus Areas</h3>
-                          <ul className="space-y-1 text-sm text-orange-700">
-                            <li>• Geometry word problems (68% accuracy)</li>
-                            <li>• Advanced data analysis concepts</li>
-                            <li>• Complex reading passages</li>
-                            <li>• Time allocation on difficult questions</li>
-                          </ul>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    {/* Score Progression */}
-                    <div className="p-6 border-t border-gray-200">
-                      <h2 className="text-lg font-semibold text-gray-800 mb-4">Score Progression</h2>
-                      <div className="space-y-4">
-                        <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
-                          <span className="font-medium">Practice Test 1</span>
-                          <span className="text-lg font-bold text-blue-600">1320</span>
-                        </div>
-                        <div className="flex justify-between items-center p-3 bg-gray-50 rounded">
-                          <span className="font-medium">Practice Test 2</span>
-                          <span className="text-lg font-bold text-blue-600">1350</span>
-                        </div>
-                        <div className="flex justify-between items-center p-3 bg-blue-100 rounded border-2 border-blue-300">
-                          <span className="font-medium">Current Test</span>
-                          <span className="text-lg font-bold text-blue-600">1420</span>
-                        </div>
-                        <div className="text-center p-4 bg-green-50 rounded-lg">
-                          <p className="text-sm text-green-700 font-medium">
-                            🎉 Improvement: +100 points from first practice test!
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    {/* Next Steps */}
-                    <div className="p-6 border-t border-gray-200">
-                      <h2 className="text-lg font-semibold text-gray-800 mb-4">Recommended Next Steps</h2>
-                      <div className="space-y-3">
-                        <div className="flex items-start space-x-3">
-                          <div className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">1</div>
-                          <div>
-                            <h4 className="font-medium text-gray-800">Focus on Geometry</h4>
-                            <p className="text-sm text-gray-600">Complete 20 geometry practice problems daily</p>
-                          </div>
-                        </div>
-                        <div className="flex items-start space-x-3">
-                          <div className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">2</div>
-                          <div>
-                            <h4 className="font-medium text-gray-800">Improve Reading Speed</h4>
-                            <p className="text-sm text-gray-600">Practice timed reading passages (45 seconds per question)</p>
-                          </div>
-                        </div>
-                        <div className="flex items-start space-x-3">
-                          <div className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold">3</div>
-                          <div>
-                            <h4 className="font-medium text-gray-800">Take Weekly Practice Tests</h4>
-                            <p className="text-sm text-gray-600">Maintain momentum with full-length practice tests</p>
+                        <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+                          <h3 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                            <Target className="h-5 w-5 text-gray-600" />
+                            AI-Identified Focus Areas
+                          </h3>
+                          <div className="space-y-3">
+                            {currentExam.skillAnalysis.improvements.map((improvement, index) => (
+                              <div key={index} className="border-l-4 border-orange-500 pl-3">
+                                <div className="flex items-center justify-between mb-1">
+                                  <h4 className="font-medium text-gray-800 text-sm">{improvement.skill}</h4>
+                                  <span className="bg-orange-100 text-orange-800 px-2 py-1 rounded-full text-xs font-bold border border-orange-200">
+                                    {improvement.percentile}th percentile
+                                  </span>
+                                </div>
+                                <p className="text-xs text-gray-600">{improvement.description}</p>
+                                <div className="mt-2">
+                                  <div className="w-full bg-gray-200 rounded-full h-2">
+                                    <div 
+                                      className="bg-orange-500 h-2 rounded-full transition-all duration-300"
+                                      style={{ width: `${improvement.percentile}%` }}
+                                    ></div>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
                           </div>
                         </div>
                       </div>
