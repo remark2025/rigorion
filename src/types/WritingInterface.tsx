@@ -63,6 +63,52 @@ export interface StudentEssay {
   status: 'draft' | 'completed' | 'submitted';
 }
 
+// Enhanced SAT-focused correction interface
+export interface CorrectionMark {
+  id: string;                        // stable for tracking
+  type: 'grammar' | 'word_choice' | 'sentence_structure' | 'punctuation' | 'spelling' | 'concision' | 'rhetoric';
+  severity: 'minor' | 'major';       // affects scoring
+  confidence: number;                // 0–1 for AI/rule certainty
+  startIndex: number;
+  endIndex: number;
+  originalText: string;
+  correctedText: string;
+  explanation: string;
+  grammarRule?: string;              // e.g., "Pronoun case"
+  ruleId?: string;                   // internal catalog key
+  suggestions?: string[];            // alt phrasings
+  autofixSafe?: boolean;             // one-click apply
+  icon?: string;                     // accessibility icon
+}
+
+// SAT Writing trait-based scoring
+export interface SATWritingScore {
+  total: number;                     // 0-100
+  traits: {
+    grammar: number;                 // 40% weight
+    structure: number;               // 25% weight  
+    concision: number;               // 20% weight
+    rhetoric: number;                // 15% weight
+  };
+  penalties: {
+    major: number;                   // count of major errors
+    minor: number;                   // count of minor errors
+  };
+  breakdown: string[];               // explanation of score
+}
+
+// SAT rule mastery tracking
+export interface RuleMastery {
+  ruleId: string;
+  ruleName: string;
+  category: 'grammar' | 'punctuation' | 'rhetoric';
+  attempts: number;
+  correct: number;
+  lastSeen: Date;
+  masteryLevel: 'learning' | 'almost' | 'mastered';
+  averageTime: number;               // seconds to fix
+}
+
 export interface AIEvaluation {
   essayId: string;
   overallScore: number; // 1-4 scale
@@ -70,6 +116,8 @@ export interface AIEvaluation {
   coherenceScore: number;
   developmentScore: number;
   languageScore: number;
+  satScore?: SATWritingScore;        // SAT-specific scoring
+  corrections?: CorrectionMark[];    // detailed corrections
   
   feedback: {
     strengths: string[];

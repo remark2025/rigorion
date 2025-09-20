@@ -22,7 +22,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import InteractiveReadingSolution from "@/components/reading/InteractiveReadingSolution";
 import { getReadingSolution } from "@/data/sampleReadingSolutions";
 import SATSolutionGrid from "./SATSolutionGrid";
-import EssayCorrection, { CorrectionMark } from "@/components/writing/EssayCorrection";
+import EssayCorrection from "@/components/writing/EssayCorrection";
+import { CorrectionMark } from "@/types/WritingInterface";
+import { aiGrammarService } from "@/services/aiGrammarService";
 
 interface PracticeDisplayProps {
   currentQuestion: Question | null;
@@ -113,6 +115,8 @@ const PracticeDisplay = ({
   const [writingAnswer, setWritingAnswer] = useState('');
   const [aiEvaluation, setAiEvaluation] = useState('');
   const [isEvaluating, setIsEvaluating] = useState(false);
+  const [writingCorrections, setWritingCorrections] = useState<CorrectionMark[]>([]);
+  const [writingAnalysisComplete, setWritingAnalysisComplete] = useState(false);
   
   // Interaction tracking
   const [questionStartTime, setQuestionStartTime] = useState<number>(Date.now());
@@ -577,11 +581,31 @@ const PracticeDisplay = ({
     
     setIsEvaluating(true);
     try {
-      // AI evaluation removed - provide basic feedback instead
-      setAiEvaluation('Your response has been recorded. Please review the rubric and check your work for grammar, organization, and clarity.');
+      // Get comprehensive AI analysis
+      const result = await aiGrammarService.analyzeEssay(writingAnswer);
+      setWritingCorrections(result.corrections);
+      setWritingAnalysisComplete(true);
+      
+      // Log interaction with analysis results
+      logInteraction({
+        type: 'writing_submission',
+        questionId: currentQuestion?.id || 'unknown',
+        response: writingAnswer,
+        timestamp: new Date().toISOString(),
+        module: currentQuestion?.module || null,
+        chapter: currentQuestion?.chapter || null,
+        difficulty: currentQuestion?.difficulty || null,
+        corrections_count: result.corrections.length,
+        sat_score: result.satScore.total
+      });
+      
+      setAiEvaluation(
+        `AI Analysis Complete! Found ${result.corrections.length} areas for improvement. ` +
+        `SAT Writing Score: ${result.satScore.total}/100. Review the detailed feedback below.`
+      );
     } catch (error) {
-      console.error('Evaluation error:', error);
-      setAiEvaluation('Unable to evaluate at this time. Please try again.');
+      console.error('AI evaluation error:', error);
+      setAiEvaluation('AI analysis temporarily unavailable. Your response has been recorded.');
     } finally {
       setIsEvaluating(false);
     }
@@ -905,7 +929,8 @@ const PracticeDisplay = ({
                     {isEvaluating ? (
                       <>
                         <Bot className="h-4 w-4 mr-2 animate-spin" />
-                        Evaluating...
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                        Analyzing with AI...
                       </>
                     ) : (
                       <>
@@ -1196,16 +1221,27 @@ const PracticeDisplay = ({
                                 <FileText className="h-5 w-5" />
                                 Your Essay - Teacher Corrections
                               </h3>
-                              {(() => {
-                                const { corrections, feedback } = generateEssayCorrections(writingAnswer);
-                                return (
-                                  <EssayCorrection
-                                    originalEssay={writingAnswer}
-                                    corrections={corrections}
-                                    overallFeedback={feedback}
-                                  />
-                                );
-                              })()}
+                              {writingAnalysisComplete && writingCorrections.length > 0 ? (
+                                <EssayCorrection
+                                  originalEssay={writingAnswer}
+                                  corrections={writingCorrections}
+                                  overallFeedback={{
+                                    strengths: ["Response submitted for analysis"],
+                                    weaknesses: ["Check detailed AI feedback above"],
+                                    suggestions: ["Review each correction to improve your writing"]
+                                  }}
+                                />
+                              ) : writingAnalysisComplete ? (
+                                <div className="bg-green-50 border border-green-200 p-4 rounded-lg">
+                                  <p className="text-green-800 font-medium">Excellent work! No major issues found.</p>
+                                  <p className="text-green-600 text-sm mt-1">Your writing demonstrates good SAT Writing conventions.</p>
+                                </div>
+                              ) : (
+                                <div className="text-center py-8 text-gray-500">
+                                  <Bot className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                                  <p>Click "Get AI Feedback" to analyze your essay</p>
+                                </div>
+                              )}
                             </div>
                           ) : (
                             <>

@@ -1,36 +1,36 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { AlertTriangle, CheckCircle, Edit3, BookOpen } from 'lucide-react';
-
-export interface CorrectionMark {
-  type: 'grammar' | 'word_choice' | 'sentence_structure' | 'punctuation' | 'spelling';
-  startIndex: number;
-  endIndex: number;
-  originalText: string;
-  correctedText: string;
-  explanation: string;
-  grammarRule?: string;
-}
+import { Button } from '@/components/ui/button';
+import { AlertTriangle, CheckCircle, Edit3, BookOpen, Zap, Target, TrendingUp, Award } from 'lucide-react';
+import { CorrectionMark, SATWritingScore } from '@/types/WritingInterface';
 
 export interface EssayCorrectionProps {
   originalEssay: string;
   corrections: CorrectionMark[];
+  satScore?: SATWritingScore;
   overallFeedback?: {
     strengths: string[];
     weaknesses: string[];
     suggestions: string[];
     score?: number;
   };
+  onCorrectionApply?: (correctionId: string) => void;
+  onCorrectionReject?: (correctionId: string) => void;
   className?: string;
 }
 
 const EssayCorrection: React.FC<EssayCorrectionProps> = ({
   originalEssay,
   corrections,
+  satScore,
   overallFeedback,
+  onCorrectionApply,
+  onCorrectionReject,
   className = ""
 }) => {
+  const [appliedCorrections, setAppliedCorrections] = useState<Set<string>>(new Set());
+  const [rejectedCorrections, setRejectedCorrections] = useState<Set<string>>(new Set());
   const renderCorrectedText = () => {
     const sortedCorrections = [...corrections].sort((a, b) => a.startIndex - b.startIndex);
     const elements: JSX.Element[] = [];
@@ -62,20 +62,64 @@ const EssayCorrection: React.FC<EssayCorrectionProps> = ({
             {correction.correctedText}
           </span>
           
-          {/* Grammar rule explanation in brackets */}
-          <span className="text-xs text-blue-600 ml-1 font-semibold">
+          {/* Grammar rule explanation with icon */}
+          <span className="text-xs text-blue-600 ml-1 font-semibold flex items-center gap-1">
+            <span>{correction.icon || getCorrectionIcon(correction.type)}</span>
             [{correction.grammarRule || getDefaultRule(correction.type)}]
+            {correction.severity === 'major' && <span className="text-red-500 font-bold">!</span>}
           </span>
+          
+          {/* Action buttons for autofix-safe corrections */}
+          {correction.autofixSafe && !appliedCorrections.has(correction.id) && !rejectedCorrections.has(correction.id) && (
+            <div className="inline-flex ml-2 gap-1">
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-6 px-2 text-xs text-green-600 hover:bg-green-50 border-green-300"
+                onClick={() => {
+                  setAppliedCorrections(prev => new Set([...prev, correction.id]));
+                  onCorrectionApply?.(correction.id);
+                }}
+              >
+                ✓
+              </Button>
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-6 px-2 text-xs text-red-600 hover:bg-red-50 border-red-300"
+                onClick={() => {
+                  setRejectedCorrections(prev => new Set([...prev, correction.id]));
+                  onCorrectionReject?.(correction.id);
+                }}
+              >
+                ✗
+              </Button>
+            </div>
+          )}
           
           {/* Detailed tooltip on hover */}
           <div className="absolute bottom-full left-0 mb-2 hidden group-hover:block z-10 w-64 p-3 bg-gray-900 text-white text-xs rounded-lg shadow-lg">
-            <div className="font-semibold mb-1">{correction.type.replace('_', ' ').toUpperCase()}</div>
+            <div className="font-semibold mb-1 flex items-center gap-2">
+              <span>{correction.icon || getCorrectionIcon(correction.type)}</span>
+              {correction.type.replace('_', ' ').toUpperCase()}
+              <Badge variant="outline" className="text-xs">
+                {correction.severity}
+              </Badge>
+            </div>
             <div className="mb-2">{correction.explanation}</div>
             {correction.grammarRule && (
               <div className="text-blue-300">
                 <strong>Rule:</strong> {correction.grammarRule}
               </div>
             )}
+            {correction.suggestions && correction.suggestions.length > 0 && (
+              <div className="text-yellow-300 mt-2">
+                <strong>Alternatives:</strong> {correction.suggestions.join(', ')}
+              </div>
+            )}
+            <div className="text-gray-400 text-xs mt-2">
+              Confidence: {Math.round((correction.confidence || 0.8) * 100)}%
+            </div>
             {/* Arrow pointing down */}
             <div className="absolute top-full left-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-gray-900"></div>
           </div>

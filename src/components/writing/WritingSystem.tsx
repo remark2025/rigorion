@@ -14,10 +14,11 @@ import {
   Edit,
   CheckCircle
 } from 'lucide-react';
-import { WritingTemplate, WritingPrompt, StudentEssay, TEMPLATE_COLORS } from '@/types/WritingInterface';
+import { WritingTemplate, WritingPrompt, StudentEssay, TEMPLATE_COLORS, CorrectionMark, SATWritingScore } from '@/types/WritingInterface';
 import WritingTemplateSelector from './WritingTemplateSelector';
 import EnhancedWritingTemplateBuilder from './EnhancedWritingTemplateBuilder';
-import EssayCorrection, { CorrectionMark } from './EssayCorrection';
+import EssayCorrection from './EssayCorrection';
+import { aiGrammarService } from '@/services/aiGrammarService';
 
 interface WritingSystemProps {
   className?: string;
@@ -41,6 +42,10 @@ const WritingSystem: React.FC<WritingSystemProps> = ({
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [timeSpent, setTimeSpent] = useState(0);
   const [showCorrections, setShowCorrections] = useState(false);
+  const [corrections, setCorrections] = useState<CorrectionMark[]>([]);
+  const [satScore, setSatScore] = useState<SATWritingScore | null>(null);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisComplete, setAnalysisComplete] = useState(false);
 
   // Timer effect
   useEffect(() => {
@@ -122,33 +127,23 @@ const WritingSystem: React.FC<WritingSystemProps> = ({
     return 'text-green-600';
   };
 
-  // Function to generate sample corrections (in real implementation, this would call an AI service)
-  const generateSampleCorrections = (essayText: string): CorrectionMark[] => {
-    // This is a simplified example - in practice, you'd use an AI service to analyze the essay
-    const corrections: CorrectionMark[] = [];
+  // Request AI analysis of the essay
+  const requestFeedback = async () => {
+    if (!currentEssay.content?.trim()) return;
     
-    // Look for common grammar errors (simplified patterns)
-    const patterns = [
-      { regex: /\b(there|their|they're)\b/gi, type: 'grammar' as const, rule: 'Homophones' },
-      { regex: /\b(your|you're)\b/gi, type: 'grammar' as const, rule: 'Contractions' },
-      { regex: /\b(its|it's)\b/gi, type: 'grammar' as const, rule: 'Possessive vs Contraction' },
-      { regex: /\b(affect|effect)\b/gi, type: 'word_choice' as const, rule: 'Effect vs Affect' },
-    ];
-
-    // Simple correction generation (this would be much more sophisticated in practice)
-    if (essayText.includes('very good')) {
-      corrections.push({
-        type: 'word_choice',
-        startIndex: essayText.indexOf('very good'),
-        endIndex: essayText.indexOf('very good') + 9,
-        originalText: 'very good',
-        correctedText: 'excellent',
-        explanation: 'Use more specific adjectives instead of generic intensifiers.',
-        grammarRule: 'Word Choice Enhancement'
-      });
+    setIsAnalyzing(true);
+    try {
+      const result = await aiGrammarService.analyzeEssay(currentEssay.content);
+      setCorrections(result.corrections);
+      setSatScore(result.satScore);
+      setAnalysisComplete(true);
+      setShowCorrections(true);
+    } catch (error) {
+      console.error('Failed to analyze essay:', error);
+      // Could show error message to user
+    } finally {
+      setIsAnalyzing(false);
     }
-
-    return corrections;
   };
 
   const generateOverallFeedback = (essayText: string) => {
@@ -220,6 +215,25 @@ const WritingSystem: React.FC<WritingSystemProps> = ({
                       <Eye className="h-4 w-4 mr-2" />
                       Preview
                     </Button>
+                    <Button
+                      variant="default"
+                      size="sm"
+                      onClick={requestFeedback}
+                      disabled={!currentEssay.content?.trim() || isAnalyzing}
+                      className="bg-blue-600 hover:bg-blue-700"
+                    >
+                      {isAnalyzing ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                          Analyzing...
+                        </>
+                      ) : (
+                        <>
+                          <CheckCircle className="h-4 w-4 mr-2" />
+                          Get Feedback
+                        </>
+                      )}
+                    </Button>
                   </>
                 )}
                 
@@ -233,14 +247,36 @@ const WritingSystem: React.FC<WritingSystemProps> = ({
                       <Edit className="h-4 w-4 mr-2" />
                       Edit
                     </Button>
-                    <Button
-                      variant={showCorrections ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setShowCorrections(!showCorrections)}
-                    >
-                      <CheckCircle className="h-4 w-4 mr-2" />
-                      {showCorrections ? 'Hide' : 'Show'} Corrections
-                    </Button>
+                    {!analysisComplete ? (
+                      <Button
+                        variant="default"
+                        size="sm"
+                        onClick={requestFeedback}
+                        disabled={isAnalyzing}
+                        className="bg-blue-600 hover:bg-blue-700"
+                      >
+                        {isAnalyzing ? (
+                          <>
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                            Analyzing...
+                          </>
+                        ) : (
+                          <>
+                            <CheckCircle className="h-4 w-4 mr-2" />
+                            Get AI Feedback
+                          </>
+                        )}
+                      </Button>
+                    ) : (
+                      <Button
+                        variant={showCorrections ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setShowCorrections(!showCorrections)}
+                      >
+                        <CheckCircle className="h-4 w-4 mr-2" />
+                        {showCorrections ? 'Hide' : 'Show'} Corrections
+                      </Button>
+                    )}
                   </>
                 )}
                 
@@ -284,7 +320,6 @@ const WritingSystem: React.FC<WritingSystemProps> = ({
       case 'preview':
         if (!selectedTemplate || !selectedPrompt || !currentEssay.content) return null;
         
-        const corrections = generateSampleCorrections(currentEssay.content);
         const feedback = generateOverallFeedback(currentEssay.content);
         
         return (
@@ -348,11 +383,39 @@ const WritingSystem: React.FC<WritingSystemProps> = ({
                   </TabsContent>
                   
                   <TabsContent value="corrected" className="mt-6">
-                    <EssayCorrection
-                      originalEssay={currentEssay.content}
-                      corrections={corrections}
-                      overallFeedback={feedback}
-                    />
+                    {analysisComplete && corrections.length > 0 ? (
+                      <EssayCorrection
+                        originalEssay={currentEssay.content}
+                        corrections={corrections}
+                        satScore={satScore || undefined}
+                        overallFeedback={feedback}
+                        onCorrectionApply={(id) => console.log('Applied correction:', id)}
+                        onCorrectionReject={(id) => console.log('Rejected correction:', id)}
+                      />
+                    ) : (
+                      <div className="text-center py-12">
+                        <CheckCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                        <h3 className="text-lg font-medium text-gray-900 mb-2">No Analysis Yet</h3>
+                        <p className="text-gray-600 mb-4">Click "Get AI Feedback" to analyze your essay for grammar, style, and SAT Writing conventions.</p>
+                        <Button
+                          onClick={requestFeedback}
+                          disabled={isAnalyzing}
+                          className="bg-blue-600 hover:bg-blue-700"
+                        >
+                          {isAnalyzing ? (
+                            <>
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                              Analyzing Essay...
+                            </>
+                          ) : (
+                            <>
+                              <CheckCircle className="h-4 w-4 mr-2" />
+                              Get AI Feedback
+                            </>
+                          )}
+                        </Button>
+                      </div>
+                    )}
                   </TabsContent>
                 </Tabs>
               </CardContent>

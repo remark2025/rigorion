@@ -477,44 +477,8 @@ export const PracticeHeader = ({
         </DropdownMenu>
 
 
-        {/* Desktop Individual Filter Buttons - Just Exam */}
+        {/* Desktop Individual Filter Buttons */}
         <div className="hidden md:flex items-center gap-2 flex-shrink-0">
-          {/* Mock Test Button - Desktop */}
-          <DropdownMenu open={isExamDropdownOpen} onOpenChange={setIsExamDropdownOpen}>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="rounded-full transition-colors flex min-w-[120px] justify-center overflow-hidden hover:scale-105 text-black font-semibold px-4 h-7"
-                style={{
-                  background: 'linear-gradient(135deg, #FB923C 0%, #F97316 50%, #EA580C 100%)'
-                }}
-              >
-                <Target className="h-4 w-4 mr-2 flex-shrink-0 text-black" />
-                <span className="font-semibold text-sm text-black">
-                  {selectedExam !== null ? `Mock Test E${selectedExam}` : "Mock Test"}
-                </span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className={`w-56 shadow-lg rounded-lg p-2 z-50 ${
-              isDarkMode ? 'bg-gray-900 border-green-500/30' : 'bg-white border-gray-200'
-            }`} sideOffset={5} avoidCollisions={true}>
-              <ScrollArea className="h-[300px]">
-                {exams.map((exam, index) => (
-                  <DropdownMenuItem 
-                    key={index}
-                    className={`cursor-pointer py-2 px-3 rounded-md transition-colors ${
-                      isDarkMode ? 'hover:bg-gray-800' : 'hover:bg-gray-50'
-                    } ${(selectedExam === null && exam === "All Exams") || (selectedExam !== null && exam === `Exam ${selectedExam}`) ? (isDarkMode ? 'bg-gray-800' : 'bg-gray-100') : ''}`}
-                    onClick={() => handleExamFilter(exam)}
-                  >
-                    <span className={`font-source-sans text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>{exam}</span>
-                    {((selectedExam === null && exam === "All Exams") || (selectedExam !== null && exam === `Exam ${selectedExam}`)) && <span className="ml-auto text-xs">✓</span>}
-                  </DropdownMenuItem>
-                ))}
-              </ScrollArea>
-            </DropdownMenuContent>
-          </DropdownMenu>
         </div>
 
         
