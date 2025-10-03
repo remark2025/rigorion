@@ -79,8 +79,8 @@ export const Header = () => {
           <nav className="hidden md:flex space-x-6 mr-6">
             {session && <Link to="/account" className="text-gray-200 hover:text-orange-300 transition-colors">Account</Link>}
             <Link to="/practice" className="text-gray-200 hover:text-orange-300 transition-colors">Practice</Link>
-            <Link to="/ai-writing-examiner" className="text-gray-200 hover:text-orange-300 transition-colors">AI Writing</Link>
-            <Link to="/ai-reading-analyzer" className="text-gray-200 hover:text-orange-300 transition-colors">AI Reading</Link>
+            <Link to="/sat-writing-demo" className="text-gray-200 hover:text-orange-300 transition-colors">AI Writing</Link>
+            <Link to="/reading-assistant" className="text-gray-200 hover:text-orange-300 transition-colors">AI Reading</Link>
             <Link to="/sat-mock-test" className="text-gray-200 hover:text-orange-300 transition-colors">Real Test</Link>
             <Link to="/analytics" className="text-gray-200 hover:text-orange-300 transition-colors">Analytics</Link>
             <Link to="/contact" className="text-gray-200 hover:text-orange-300 transition-colors">Contact us</Link>
@@ -102,8 +102,8 @@ export const Header = () => {
             <div className="flex flex-col space-y-2">
               {session && <Link to="/account" className="text-gray-200 hover:text-orange-400 py-2 transition-colors" onClick={() => setIsNavOpen(false)}>Account</Link>}
               <Link to="/practice" className="text-gray-200 hover:text-orange-400 py-2 transition-colors" onClick={() => setIsNavOpen(false)}>Practice</Link>
-              <Link to="/ai-writing-examiner" className="text-gray-200 hover:text-orange-400 py-2 transition-colors" onClick={() => setIsNavOpen(false)}>AI Writing</Link>
-              <Link to="/ai-reading-analyzer" className="text-gray-200 hover:text-orange-400 py-2 transition-colors" onClick={() => setIsNavOpen(false)}>AI Reading</Link>
+              <Link to="/sat-writing-demo" className="text-gray-200 hover:text-orange-400 py-2 transition-colors" onClick={() => setIsNavOpen(false)}>AI Writing</Link>
+              <Link to="/reading-assistant" className="text-gray-200 hover:text-orange-400 py-2 transition-colors" onClick={() => setIsNavOpen(false)}>AI Reading</Link>
               <Link to="/sat-mock-test" className="text-gray-200 hover:text-orange-400 py-2 transition-colors" onClick={() => setIsNavOpen(false)}>Real Test</Link>
               <Link to="/analytics" className="text-gray-200 hover:text-orange-400 py-2 transition-colors" onClick={() => setIsNavOpen(false)}>Analytics</Link>
               <Link to="/contact" className="text-gray-200 hover:text-orange-400 py-2 transition-colors" onClick={() => setIsNavOpen(false)}>Contact us</Link>

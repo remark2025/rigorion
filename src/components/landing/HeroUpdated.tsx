@@ -1,12 +1,49 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { useNavigate } from 'react-router-dom';
 import { FinalPaymentModal } from "@/components/payment/FinalPaymentModal";
-import { BookOpen, Timer, Zap } from 'lucide-react';
+import { BookOpen, Timer, Zap, PenTool } from 'lucide-react';
 
 export const Hero = () => {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
   const navigate = useNavigate();
+  const rippleButtonRef = useRef<HTMLButtonElement>(null);
+  const messageRef = useRef<HTMLDivElement>(null);
+
+  const handleRippleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const button = rippleButtonRef.current;
+    const message = messageRef.current;
+    if (!button || !message) return;
+
+    // Create click ripple effect
+    const ripple = document.createElement('span');
+    ripple.classList.add('click-ripple');
+    
+    const rect = button.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height) * 2;
+    const x = e.clientX - rect.left - size / 2;
+    const y = e.clientY - rect.top - size / 2;
+    
+    ripple.style.width = ripple.style.height = size + 'px';
+    ripple.style.left = x + 'px';
+    ripple.style.top = y + 'px';
+    
+    button.appendChild(ripple);
+    
+    setTimeout(() => {
+      ripple.remove();
+    }, 800);
+
+    // Show message
+    message.classList.remove('show');
+    void message.offsetWidth; // Trigger reflow
+    message.classList.add('show');
+
+    // Open payment modal after a brief delay
+    setTimeout(() => {
+      setShowPaymentModal(true);
+    }, 600);
+  };
 
   return (
     <section className="relative pt-20 pb-64 overflow-hidden">
@@ -36,7 +73,7 @@ export const Hero = () => {
           </div>
           
           {/* Navigation Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 items-center justify-center mb-8 w-full max-w-2xl">
+          <div className="flex flex-col sm:flex-row gap-4 items-center justify-center mb-8 w-full max-w-3xl">
             {/* Practice Questions Button */}
             <Button 
               onClick={() => navigate('/practice')}
@@ -47,6 +84,32 @@ export const Hero = () => {
               <div className="text-left">
                 <div className="font-semibold">Practice Questions</div>
                 <div className="text-sm text-gray-600">Step-by-step solutions</div>
+              </div>
+            </Button>
+            
+            {/* AI Writing Button */}
+            <Button 
+              onClick={() => navigate('/sat-writing-demo')}
+              variant="outline"
+              className="w-full sm:w-auto px-6 py-4 bg-white/95 text-gray-800 hover:bg-white border-2 border-white/20 hover:border-white transition-all duration-300 transform hover:scale-105 shadow-lg"
+            >
+              <PenTool className="mr-2 h-5 w-5" />
+              <div className="text-left">
+                <div className="font-semibold">AI Writing</div>
+                <div className="text-sm text-gray-600">Smart essay feedback</div>
+              </div>
+            </Button>
+            
+            {/* Reading Assistance Button */}
+            <Button 
+              onClick={() => navigate('/reading-assistant')}
+              variant="outline"
+              className="w-full sm:w-auto px-6 py-4 bg-white/95 text-gray-800 hover:bg-white border-2 border-white/20 hover:border-white transition-all duration-300 transform hover:scale-105 shadow-lg"
+            >
+              <BookOpen className="mr-2 h-5 w-5" />
+              <div className="text-left">
+                <div className="font-semibold">Reading Assistant</div>
+                <div className="text-sm text-gray-600">Interactive comprehension</div>
               </div>
             </Button>
             
@@ -63,25 +126,55 @@ export const Hero = () => {
               </div>
             </Button>
             
-            {/* Premium Button */}
-            <Button 
-              onClick={() => setShowPaymentModal(true)}
-              className="w-full sm:w-auto px-6 py-4 text-white font-semibold border-2 border-transparent transform hover:scale-105 transition-all duration-300 shadow-lg relative overflow-hidden"
-              style={{
-                background: 'linear-gradient(135deg, #ff6b35 0%, #ff8c42 50%, #ffa726 100%)',
-                backgroundSize: '200% 200%',
-                animation: 'gradientShift 3s ease-in-out infinite'
-              }}
-            >
-              <Zap className="mr-2 h-5 w-5" />
-              <div className="text-left">
-                <div className="font-semibold">Go Premium</div>
-                <div className="text-sm opacity-90">Unlock everything</div>
+            {/* Premium Rippling Button */}
+            <div className="relative button-container">
+              {/* Click Message */}
+              <div 
+                ref={messageRef}
+                className="click-message absolute -top-12 left-1/2 transform -translate-x-1/2 text-orange-500 text-lg font-bold opacity-0 pointer-events-none whitespace-nowrap"
+                style={{
+                  textShadow: '0 0 10px rgba(255, 136, 0, 0.5)'
+                }}
+              >
+                Premium Unlocked! ⚡
               </div>
               
-              {/* Shine effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent transform -skew-x-12 translate-x-[-100%] hover:translate-x-[100%] transition-transform duration-700"></div>
-            </Button>
+              {/* Glow Effect */}
+              <div className="glow absolute -inset-1 rounded-full z-0 blur-md opacity-60"
+                style={{
+                  background: 'linear-gradient(135deg, #c0c0c0, #ff8800, #c0c0c0)',
+                  backgroundSize: '200% 200%',
+                  animation: 'glowPulse 4s ease-in-out infinite'
+                }}
+              ></div>
+              
+              {/* Main Button */}
+              <button
+                ref={rippleButtonRef}
+                onClick={handleRippleClick}
+                className="ripple-button relative w-full sm:w-auto px-6 py-4 font-bold border-2 border-black rounded-full cursor-pointer uppercase tracking-widest shadow-lg transition-all duration-400 overflow-hidden"
+                style={{
+                  background: 'linear-gradient(135deg, #c0c0c0 0%, #ff8800 50%, #c0c0c0 100%)',
+                  backgroundSize: '200% 200%',
+                  animation: 'gentleRipple 4s ease-in-out infinite',
+                  color: '#000000',
+                  fontSize: '16px',
+                  boxShadow: '0 10px 30px rgba(255, 136, 0, 0.3)'
+                }}
+              >
+                <div className="flex items-center relative z-10">
+                  <Zap className="mr-2 h-5 w-5" />
+                  <div className="text-left">
+                    <div className="font-semibold">
+                      <span className="shimmer-text">Go Premium</span>
+                    </div>
+                    <div className="text-sm opacity-90">
+                      <span className="shimmer-text">Unlock everything</span>
+                    </div>
+                  </div>
+                </div>
+              </button>
+            </div>
           </div>
 
           {/* Feature Highlights */}
@@ -125,6 +218,146 @@ export const Hero = () => {
           0% { background-position: 0% 50%; }
           50% { background-position: 100% 50%; }
           100% { background-position: 0% 50%; }
+        }
+        
+        /* Gentle ripple background animation */
+        @keyframes gentleRipple {
+          0%, 100% {
+            background-position: 0% 50%;
+          }
+          50% {
+            background-position: 100% 50%;
+          }
+        }
+
+        /* Pulse ripple effect */
+        @keyframes pulseRipple {
+          0% {
+            width: 0;
+            height: 0;
+            opacity: 0.8;
+          }
+          50% {
+            width: 300px;
+            height: 300px;
+            opacity: 0.4;
+          }
+          100% {
+            width: 400px;
+            height: 400px;
+            opacity: 0;
+          }
+        }
+
+        /* Click ripple effect */
+        .click-ripple {
+          position: absolute;
+          border-radius: 50%;
+          background: radial-gradient(circle, rgba(255, 136, 0, 0.6) 0%, rgba(192, 192, 192, 0.4) 50%, transparent 70%);
+          transform: scale(0);
+          animation: clickRippleAnimation 0.8s ease-out;
+          pointer-events: none;
+        }
+
+        @keyframes clickRippleAnimation {
+          0% {
+            transform: scale(0);
+            opacity: 1;
+          }
+          100% {
+            transform: scale(3);
+            opacity: 0;
+          }
+        }
+
+        /* Shimmer text effect */
+        .shimmer-text {
+          position: relative;
+          background: linear-gradient(90deg, #000000 0%, #ff8800 50%, #c0c0c0 100%);
+          background-size: 200% auto;
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          animation: shimmer 3s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+          0%, 100% {
+            background-position: 0% center;
+          }
+          50% {
+            background-position: 200% center;
+          }
+        }
+
+        /* Click message animation */
+        .click-message.show {
+          animation: fadeInOut 1.2s ease-out;
+        }
+
+        @keyframes fadeInOut {
+          0% {
+            opacity: 0;
+            transform: translateX(-50%) translateY(0);
+          }
+          30% {
+            opacity: 1;
+            transform: translateX(-50%) translateY(-10px);
+          }
+          100% {
+            opacity: 0;
+            transform: translateX(-50%) translateY(-25px);
+          }
+        }
+
+        /* Glow effect */
+        @keyframes glowPulse {
+          0%, 100% {
+            opacity: 0.4;
+            background-position: 0% 50%;
+          }
+          50% {
+            opacity: 0.7;
+            background-position: 100% 50%;
+          }
+        }
+
+        /* Button pseudo-elements for ripple effects */
+        .ripple-button::before {
+          content: '';
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: 0;
+          height: 0;
+          border-radius: 50%;
+          background: radial-gradient(circle, rgba(255, 136, 0, 0.3) 0%, transparent 70%);
+          transform: translate(-50%, -50%);
+          animation: pulseRipple 3s ease-out infinite;
+        }
+
+        .ripple-button::after {
+          content: '';
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          width: 0;
+          height: 0;
+          border-radius: 50%;
+          background: radial-gradient(circle, rgba(192, 192, 192, 0.3) 0%, transparent 70%);
+          transform: translate(-50%, -50%);
+          animation: pulseRipple 3s ease-out infinite 1.5s;
+        }
+
+        .ripple-button:hover {
+          transform: translateY(-3px);
+          box-shadow: 0 15px 40px rgba(255, 136, 0, 0.5);
+          background: linear-gradient(135deg, #ff8800 0%, #c0c0c0 50%, #ff8800 100%) !important;
+        }
+
+        .ripple-button:active {
+          transform: translateY(-1px);
+          box-shadow: 0 8px 20px rgba(255, 136, 0, 0.4);
         }
         
         .animate-fade-in {
