@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { useNavigate } from 'react-router-dom';
 import { FinalPaymentModal } from "@/components/payment/FinalPaymentModal";
-import { BookOpen, Timer, Zap, PenTool } from 'lucide-react';
+import { BookOpen, Timer, Zap, PenTool, Calculator } from 'lucide-react';
 
 export const Hero = () => {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
@@ -110,6 +110,19 @@ export const Hero = () => {
               <div className="text-left">
                 <div className="font-semibold">Reading Assistant</div>
                 <div className="text-sm text-gray-600">Interactive comprehension</div>
+              </div>
+            </Button>
+            
+            {/* Interactive Math Button */}
+            <Button 
+              onClick={() => navigate('/interactive-math')}
+              variant="outline"
+              className="w-full sm:w-auto px-6 py-4 bg-white/95 text-gray-800 hover:bg-white border-2 border-white/20 hover:border-white transition-all duration-300 transform hover:scale-105 shadow-lg"
+            >
+              <Calculator className="mr-2 h-5 w-5" />
+              <div className="text-left">
+                <div className="font-semibold">Interactive Math</div>
+                <div className="text-sm text-gray-600">Visual math tools</div>
               </div>
             </Button>
             

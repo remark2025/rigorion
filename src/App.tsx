@@ -31,6 +31,9 @@ import SATWritingDemo from "@/pages/SATWritingDemo";
 import AIWritingExaminer from "@/pages/AIWritingExaminer";
 import AIReadingAnalyzer from "@/pages/AIReadingAnalyzer";
 import ReadingAssistant from "@/components/reading/ReadingAssistant";
+import InteractiveMathHub from "@/pages/InteractiveMathHub";
+import ProjectileMotion from "@/components/math/ProjectileMotion";
+import PremiumMathTool from "@/components/math/PremiumMathTool";
 import AdvancedAnimationDemo from "@/pages/AdvancedAnimationDemo";
 import SATMockTestPage from "@/pages/SATMockTestPage";
 import DatabasePopulator from "@/pages/DatabasePopulator";
@@ -63,6 +66,85 @@ function App() {
                 <Route path="/ai-writing-examiner" element={<AIWritingExaminer />} />
                 <Route path="/ai-reading-analyzer" element={<AIReadingAnalyzer />} />
                 <Route path="/reading-assistant" element={<ReadingAssistant />} />
+                <Route path="/interactive-math" element={<InteractiveMathHub />} />
+                <Route path="/interactive-math/projectile-motion" element={<ProjectileMotion />} />
+                <Route 
+                  path="/interactive-math/quadratic-grapher" 
+                  element={
+                    <PremiumMathTool 
+                      title="Quadratic Functions"
+                      description="Explore parabolas and their transformations with interactive graphing tools."
+                      category="Algebra"
+                      toolName="Quadratic Grapher"
+                    />
+                  } 
+                />
+                <Route 
+                  path="/interactive-math/trig-circle" 
+                  element={
+                    <PremiumMathTool 
+                      title="Unit Circle Explorer"
+                      description="Master trigonometric functions with visual circle interactions."
+                      category="Trigonometry"
+                      toolName="Trigonometry Circle"
+                    />
+                  } 
+                />
+                <Route 
+                  path="/interactive-math/linear-transforms" 
+                  element={
+                    <PremiumMathTool 
+                      title="Linear Transformations"
+                      description="Understand matrix operations through visual transformations."
+                      category="Geometry"
+                      toolName="Linear Transformations"
+                    />
+                  } 
+                />
+                <Route 
+                  path="/interactive-math/statistics" 
+                  element={
+                    <PremiumMathTool 
+                      title="Data Visualization"
+                      description="Interactive charts and probability distribution tools."
+                      category="Statistics"
+                      toolName="Statistics Visualizer"
+                    />
+                  } 
+                />
+                <Route 
+                  path="/interactive-math/calculus" 
+                  element={
+                    <PremiumMathTool 
+                      title="Calculus Explorer"
+                      description="Visualize derivatives and integrals with interactive tools."
+                      category="Advanced Math"
+                      toolName="Calculus Explorer"
+                    />
+                  } 
+                />
+                <Route 
+                  path="/interactive-math/coordinate-geometry" 
+                  element={
+                    <PremiumMathTool 
+                      title="Coordinate Geometry"
+                      description="Points, lines, and shapes in the coordinate plane."
+                      category="Geometry"
+                      toolName="Coordinate Geometry"
+                    />
+                  } 
+                />
+                <Route 
+                  path="/interactive-math/exponential" 
+                  element={
+                    <PremiumMathTool 
+                      title="Exponential & Logarithmic Functions"
+                      description="Growth and decay in mathematical models."
+                      category="Algebra"
+                      toolName="Exponential Functions"
+                    />
+                  } 
+                />
                 <Route path="/advanced-animations" element={<AdvancedAnimationDemo />} />
                 <Route path="/sat-mock-test" element={<SATMockTestPage />} />
                 <Route path="/analytics" element={<Analytics />} />
