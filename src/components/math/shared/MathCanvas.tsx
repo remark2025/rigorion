@@ -55,11 +55,7 @@ const MathCanvas = React.forwardRef<HTMLCanvasElement, MathCanvasProps>(
               ref.current = node;
             }
           }}
-          className={`w-full rounded-lg cursor-crosshair border-2 transition-colors ${
-            isDarkMode 
-              ? 'bg-gradient-to-b from-gray-800 via-gray-700 to-gray-800 border-gray-600' 
-              : 'bg-gradient-to-b from-orange-50 via-white to-orange-50 border-orange-200'
-          }`}
+          className="w-full rounded-lg cursor-crosshair border-2 border-orange-200"
           style={{ height: `${height}px` }}
         />
         {children}

@@ -64,8 +64,9 @@ const ProjectileMotion: React.FC = () => {
   }, [velocity, angle, gravity]);
 
   const drawGrid = useCallback((ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) => {
-    ctx.strokeStyle = isDarkMode ? 'rgba(234, 88, 12, 0.2)' : 'rgba(234, 88, 12, 0.3)';
-    ctx.lineWidth = 1;
+    // Draw thin black grid lines on white background
+    ctx.strokeStyle = '#000000';
+    ctx.lineWidth = 0.5;
     
     // Vertical lines
     for (let x = 0; x < canvas.width; x += 50) {
@@ -98,7 +99,7 @@ const ProjectileMotion: React.FC = () => {
       const meters = Math.round((tankY - y) / scale);
       ctx.fillText(`${meters}m`, 10, y + 5);
     }
-  }, [isDarkMode, tankY, scale, tankX]);
+  }, [tankY, scale, tankX]);
 
   const drawTank = useCallback((ctx: CanvasRenderingContext2D) => {
     ctx.save();
@@ -215,6 +216,11 @@ const ProjectileMotion: React.FC = () => {
 
   const drawFrame = useCallback((ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement) => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Draw white background
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
     drawGrid(ctx, canvas);
     drawTank(ctx);
     
@@ -289,6 +295,7 @@ const ProjectileMotion: React.FC = () => {
   const onCanvasReady = useCallback((canvas: HTMLCanvasElement, ctx: CanvasRenderingContext2D) => {
     canvasRef.current = canvas;
     ctxRef.current = ctx;
+    
     drawFrame(ctx, canvas);
   }, [drawFrame]);
 
@@ -511,50 +518,291 @@ const ProjectileMotion: React.FC = () => {
   ];
 
   return (
-    <InteractiveMathContainer
-      title="🚀 Projectile Motion Visualizer"
-      subtitle="Master Physics & Math Through Interactive Visualization"
-    >
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        {/* Canvas Section */}
-        <div className="xl:col-span-2">
-          <MathCanvas
-            ref={canvasRef}
-            height={500}
-            onCanvasReady={onCanvasReady}
-          >
-            {/* Info overlay */}
-            <div className={`absolute top-4 left-4 backdrop-blur-sm rounded-lg p-4 border ${
+    <div className={`min-h-screen transition-colors duration-300 ${
+      isDarkMode ? 'bg-gray-900' : 'bg-gradient-to-br from-orange-50 via-white to-orange-50'
+    } overflow-x-hidden`}>
+      {/* Glassmorphism Header */}
+      <header className="text-center py-8 mb-8">
+        <div className={`mx-auto max-w-4xl backdrop-blur-sm rounded-2xl p-8 border shadow-2xl ${
+          isDarkMode ? 'bg-gray-800/90 border-gray-700' : 'bg-white/90 border-orange-200'
+        }`}>
+          <h1 className={`text-5xl font-bold mb-4 ${
+            isDarkMode ? 'text-white' : 'bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text text-transparent'
+          }`}>
+            🚀 Projectile Motion Visualizer
+          </h1>
+          <p className={`text-xl ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+            Master Physics & Math Through Interactive Visualization
+          </p>
+        </div>
+      </header>
+
+      <div className="container mx-auto px-4 pb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-6">
+          {/* Canvas Section */}
+          <div className="lg:col-span-3">
+            <div className={`backdrop-blur-sm rounded-2xl p-6 border shadow-2xl relative ${
               isDarkMode ? 'bg-gray-800/90 border-gray-700' : 'bg-white/90 border-orange-200'
             }`}>
-              <div className={`text-sm space-y-1 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                <div><strong>Time:</strong> {time.toFixed(2)} s</div>
-                <div><strong>Height:</strong> {stats.currentHeight.toFixed(1)} m</div>
-                <div><strong>Distance:</strong> {stats.currentDistance.toFixed(1)} m</div>
-                <div><strong>Speed:</strong> {stats.currentSpeed.toFixed(1)} m/s</div>
+              <MathCanvas
+                ref={canvasRef}
+                height={500}
+                onCanvasReady={onCanvasReady}
+                className="shadow-inner"
+              >
+                {/* Enhanced Info overlay with glassmorphism */}
+                <div className={`absolute top-6 left-6 backdrop-blur-lg rounded-xl p-4 border shadow-lg ${
+                  isDarkMode ? 'bg-gray-800/95 border-gray-600' : 'bg-white/95 border-orange-300'
+                }`}>
+                  <div className={`text-sm space-y-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-orange-500 rounded-full"></div>
+                      <strong>Time:</strong> <span className="text-orange-600 font-mono">{time.toFixed(2)} s</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-orange-400 rounded-full"></div>
+                      <strong>Height:</strong> <span className="text-orange-600 font-mono">{stats.currentHeight.toFixed(1)} m</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-orange-300 rounded-full"></div>
+                      <strong>Distance:</strong> <span className="text-orange-600 font-mono">{stats.currentDistance.toFixed(1)} m</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-orange-600 rounded-full"></div>
+                      <strong>Speed:</strong> <span className="text-orange-600 font-mono">{stats.currentSpeed.toFixed(1)} m/s</span>
+                    </div>
+                  </div>
+                </div>
+              </MathCanvas>
+            </div>
+          </div>
+
+          {/* Enhanced Controls Section */}
+          <div className="lg:col-span-1">
+            <div className={`backdrop-blur-sm rounded-2xl p-6 border shadow-2xl max-h-[500px] overflow-y-auto ${
+              isDarkMode ? 'bg-gray-800/90 border-gray-700' : 'bg-white/90 border-orange-200'
+            }`}>
+              <h2 className={`text-xl font-bold mb-6 flex items-center gap-2 ${
+                isDarkMode ? 'text-white' : 'text-gray-900'
+              }`}>
+                ⚙️ Controls
+              </h2>
+              
+              {/* Enhanced Sliders */}
+              {sliders.map((slider, index) => (
+                <div key={index} className="mb-6">
+                  <label className={`block mb-3 font-semibold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+                    {slider.label}
+                  </label>
+                  <div className="flex items-center gap-4">
+                    <input
+                      type="range"
+                      min={slider.min}
+                      max={slider.max}
+                      step={slider.step}
+                      value={slider.value}
+                      onChange={(e) => slider.onChange(parseFloat(e.target.value))}
+                      className={`flex-1 h-2 rounded-lg appearance-none cursor-pointer ${
+                        isDarkMode ? 'bg-gray-700' : 'bg-orange-100'
+                      }`}
+                      style={{
+                        background: `linear-gradient(to right, #ea580c 0%, #ea580c ${((slider.value - slider.min) / (slider.max - slider.min)) * 100}%, ${isDarkMode ? '#374151' : '#fed7aa'} ${((slider.value - slider.min) / (slider.max - slider.min)) * 100}%, ${isDarkMode ? '#374151' : '#fed7aa'} 100%)`
+                      }}
+                    />
+                    <div className={`min-w-[80px] text-center px-3 py-1 rounded-lg font-bold ${
+                      isDarkMode ? 'bg-orange-900/30 text-orange-400 border border-orange-600' : 'bg-orange-50 text-orange-800 border border-orange-300'
+                    }`}>
+                      {slider.value}{slider.unit}
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              {/* Enhanced Action Buttons */}
+              <div className="space-y-3 mb-6">
+                {actions.map((action, index) => (
+                  <button
+                    key={index}
+                    onClick={action.onClick}
+                    disabled={action.disabled}
+                    className={`w-full px-6 py-3 rounded-xl font-bold text-white transition-all duration-300 transform hover:scale-105 shadow-lg ${
+                      action.variant === 'primary' 
+                        ? 'bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 shadow-orange-500/40' 
+                        : action.variant === 'success'
+                        ? 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 shadow-green-500/40'
+                        : isDarkMode
+                        ? 'bg-gray-700 text-white border-2 border-gray-600 hover:bg-gray-600'
+                        : 'bg-gray-100 text-gray-900 border-2 border-gray-300 hover:bg-gray-200'
+                    } ${action.disabled ? 'opacity-50 cursor-not-allowed transform-none' : ''}`}
+                  >
+                    {action.icon && <span className="mr-2">{action.icon}</span>}
+                    {action.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Enhanced Statistics Grid */}
+              <div className="grid grid-cols-1 gap-3">
+                {displayStats.slice(0, 4).map((stat, index) => (
+                  <div key={index} className={`p-3 rounded-lg border ${
+                    isDarkMode ? 'bg-gray-700/50 border-gray-600' : 'bg-orange-50 border-orange-200'
+                  }`}>
+                    <div className={`text-xs font-medium mb-1 ${
+                      isDarkMode ? 'text-gray-400' : 'text-gray-600'
+                    }`}>
+                      {stat.label}
+                    </div>
+                    <div className="text-lg font-bold text-orange-600">
+                      {stat.value}{stat.unit}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Enhanced Legend */}
+              <div className={`mt-6 p-4 rounded-lg border ${
+                isDarkMode ? 'bg-gray-700/50 border-gray-600' : 'bg-orange-50 border-orange-200'
+              }`}>
+                <h4 className={`text-sm font-semibold mb-3 ${
+                  isDarkMode ? 'text-white' : 'text-gray-900'
+                }`}>
+                  Legend
+                </h4>
+                {legend.map((item, index) => (
+                  <div key={index} className="flex items-center gap-3 mb-2">
+                    <div
+                      className="w-5 h-5 rounded border"
+                      style={{ backgroundColor: item.color }}
+                    />
+                    <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                      {item.label}
+                    </span>
+                  </div>
+                ))}
               </div>
             </div>
-          </MathCanvas>
+          </div>
         </div>
 
-        {/* Controls Section */}
-        <div>
-          <ControlPanel
-            title="Controls"
-            sliders={sliders}
-            actions={actions}
-            stats={displayStats}
-            legend={legend}
-          />
+        {/* Enhanced Solution Panel */}
+        <div className={`transition-all duration-500 ease-in-out overflow-hidden ${
+          showSolution ? 'max-h-[3000px] opacity-100' : 'max-h-0 opacity-0'
+        }`}>
+          <div className={`backdrop-blur-sm rounded-2xl p-8 border shadow-2xl ${
+            isDarkMode ? 'bg-gray-800/90 border-gray-700' : 'bg-white/90 border-orange-200'
+          }`}>
+            <h2 className={`text-3xl font-bold mb-8 text-center ${
+              isDarkMode ? 'text-white' : 'bg-gradient-to-r from-orange-500 to-orange-600 bg-clip-text text-transparent'
+            }`}>
+              📐 Step-by-Step Solution
+            </h2>
+            
+            {solutionSteps.map((step, index) => (
+              <div key={index} className={`mb-6 p-6 rounded-xl border-l-4 border-orange-500 ${
+                isDarkMode ? 'bg-gray-700/50' : 'bg-orange-50'
+              }`}>
+                <h3 className="text-lg font-semibold mb-3 text-orange-600">
+                  Step {index + 1}: {step.title}
+                </h3>
+                
+                <p className={`mb-4 leading-relaxed ${
+                  isDarkMode ? 'text-gray-300' : 'text-gray-700'
+                }`}>
+                  {step.description}
+                </p>
+                
+                {step.formula && (
+                  <div className={`p-4 rounded-lg font-mono text-lg border mb-4 ${
+                    isDarkMode 
+                      ? 'bg-gray-800 border-gray-600 text-gray-200' 
+                      : 'bg-white border-orange-200 text-gray-900'
+                  }`}>
+                    {step.formula}
+                  </div>
+                )}
+                
+                {step.calculation && (
+                  <div className={`mb-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    <p className="font-semibold text-orange-600 mb-2">Calculation:</p>
+                    <p className="font-mono bg-orange-100 dark:bg-orange-900/30 p-3 rounded border">
+                      {step.calculation}
+                    </p>
+                  </div>
+                )}
+                
+                {step.result && (
+                  <div className={`mb-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    <p className="font-semibold text-orange-600 mb-2">Result:</p>
+                    <p className="font-bold text-lg text-orange-600">{step.result}</p>
+                  </div>
+                )}
+                
+                {step.insights && step.insights.length > 0 && (
+                  <div className={`mt-4 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                    <p className="font-semibold text-orange-600 mb-2">💡 Key Insights:</p>
+                    <ul className="list-disc list-inside space-y-1">
+                      {step.insights.map((insight, i) => (
+                        <li key={i} className="leading-relaxed">{insight}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            ))}
+            
+            <div className={`mt-8 p-6 rounded-xl border ${
+              isDarkMode 
+                ? 'bg-orange-900/20 border-orange-600' 
+                : 'bg-orange-50 border-orange-300'
+            }`}>
+              <h3 className="text-lg font-semibold mb-3 text-orange-600 flex items-center gap-2">
+                🎯 Mathematical Mastery
+              </h3>
+              <div className={`space-y-2 ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                <p>• <strong>Understanding:</strong> Visualize the relationship between variables</p>
+                <p>• <strong>Application:</strong> Apply formulas to solve real-world problems</p>
+                <p>• <strong>Analysis:</strong> Interpret results and their physical meaning</p>
+                <p>• <strong>Connection:</strong> Link mathematical concepts to practical scenarios</p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Solution Panel */}
-      <SolutionPanel
-        steps={solutionSteps}
-        isOpen={showSolution}
-      />
-    </InteractiveMathContainer>
+      {/* Custom CSS for enhanced styling */}
+      <style>{`
+        input[type="range"]::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          appearance: none;
+          width: 20px;
+          height: 20px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #ea580c 0%, #fb923c 100%);
+          cursor: pointer;
+          box-shadow: 0 4px 12px rgba(234, 88, 12, 0.5);
+          border: 2px solid white;
+          transition: all 0.3s ease;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb:hover {
+          transform: scale(1.1);
+          box-shadow: 0 6px 16px rgba(234, 88, 12, 0.7);
+        }
+        
+        input[type="range"]::-moz-range-thumb {
+          width: 20px;
+          height: 20px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #ea580c 0%, #fb923c 100%);
+          cursor: pointer;
+          box-shadow: 0 4px 12px rgba(234, 88, 12, 0.5);
+          border: 2px solid white;
+          transition: all 0.3s ease;
+        }
+        
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+      `}</style>
+    </div>
   );
 };
 

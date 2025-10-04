@@ -86,10 +86,10 @@ Looking ahead, the next frontier in AI development appears to be artificial gene
   const wordCount = passageText.split(' ').filter(w => w.length > 0).length;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="sticky top-0 z-10 bg-white border-b shadow-sm">
-        <div className="container mx-auto px-4 py-4">
+    <div className="min-h-screen bg-white">
+      {/* Fixed Header - Full Width */}
+      <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200">
+        <div className="w-full px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
               <Button 
@@ -122,9 +122,10 @@ Looking ahead, the next frontier in AI development appears to be artificial gene
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-6 space-y-6">
+      {/* Content with top padding for fixed header */}
+      <div className="pt-16 px-4 space-y-6 w-full max-w-none">
         {/* Reading Input Interface */}
-        <Card>
+        <Card className="w-full">
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
               <span className="flex items-center gap-2">
@@ -202,7 +203,7 @@ Looking ahead, the next frontier in AI development appears to be artificial gene
 
         {/* Analysis Results */}
         {(isAnalyzing || analysis) && (
-          <Card>
+          <Card className="w-full">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Brain className="h-5 w-5 text-purple-500" />
@@ -382,7 +383,7 @@ Looking ahead, the next frontier in AI development appears to be artificial gene
 
         {/* Usage Instructions */}
         {!passageText && !analysis && (
-          <Card>
+          <Card className="w-full">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Brain className="h-5 w-5" />
@@ -437,8 +438,8 @@ Looking ahead, the next frontier in AI development appears to be artificial gene
       </div>
 
       {/* Demo Information */}
-      <div className="mt-12 bg-purple-50 border-t border-purple-200">
-        <div className="container mx-auto px-4 py-6">
+      <div className="mt-12 bg-gray-50 border-t border-gray-200">
+        <div className="w-full px-4 py-6">
           <div className="text-center">
             <h3 className="text-lg font-semibold text-purple-900 mb-2">
               🧠 AI Reading Analyzer

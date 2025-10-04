@@ -6,112 +6,23 @@ import {
   Lightbulb, X, Clock, Check, Target, 
   Play, Pause, Settings, ChevronLeft, 
   ChevronRight, TrendingUp, Award, Flame,
-  ArrowLeft
+  ArrowLeft, ChevronUp, ChevronDown, GripVertical
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@/contexts/ThemeContext';
+import { readingService } from '@/services/readingService';
+import { PassageContent, PassageMetadata } from '@/data/reading/types';
+import { CATEGORIES } from '@/data/reading/categories';
 
-// Category themes
-const CATEGORY_THEMES = {
-  Science: { icon: "🔬", color: "#EA580C" },
-  History: { icon: "📜", color: "#EA580C" },
-  Literature: { icon: "📖", color: "#EA580C" },
-  "Social Science": { icon: "🧠", color: "#EA580C" },
-  Technology: { icon: "💻", color: "#EA580C" }
-};
+// Category themes - using new architecture
+const CATEGORY_THEMES = CATEGORIES;
 
-// Lightweight passage metadata with images
-const PASSAGE_METADATA = [
-  { id: 1, title: "Climate Change and Global Action", category: "Science", difficulty: "Medium", questionCount: 3, imageUrl: "/resources/junior.png" },
-  { id: 2, title: "The Impact of Social Media", category: "Social Science", difficulty: "Easy", questionCount: 3, imageUrl: "/resources/junior.png" },
-  { id: 3, title: "Evolution of Artificial Intelligence", category: "Technology", difficulty: "Hard", questionCount: 3, imageUrl: "/resources/junior.png" },
-  { id: 4, title: "The American Dream in Literature", category: "Literature", difficulty: "Medium", questionCount: 4, imageUrl: "/resources/junior.png" },
-  { id: 5, title: "Democracy and Civic Engagement", category: "History", difficulty: "Medium", questionCount: 4, imageUrl: "/resources/junior.png" },
-  { id: 6, title: "Renewable Energy Solutions", category: "Science", difficulty: "Easy", questionCount: 3, imageUrl: "/resources/junior.png" },
-  { id: 7, title: "The Psychology of Memory", category: "Social Science", difficulty: "Hard", questionCount: 4, imageUrl: "/resources/junior.png" },
-  { id: 8, title: "Ancient Roman Architecture", category: "History", difficulty: "Medium", questionCount: 3, imageUrl: "/resources/junior.png" },
-  { id: 9, title: "Genetic Engineering Ethics", category: "Science", difficulty: "Hard", questionCount: 4, imageUrl: "/resources/junior.png" },
-  { id: 10, title: "Shakespeare's Modern Influence", category: "Literature", difficulty: "Medium", questionCount: 3, imageUrl: "/resources/junior.png" },
-];
+// Get all passage metadata
+const PASSAGE_METADATA = readingService.getAllPassages();
 
-// Simulated passage fetch with PRE-STORED highlights
-const fetchPassageById = async (id: number) => {
-  await new Promise(resolve => setTimeout(resolve, 300));
- 
-  const passages: Record<number, any> = {
-    1: {
-      id: 1,
-      title: "Climate Change and Global Action",
-      text: `Climate change represents one of the most pressing challenges of our time. According to NASA, global temperatures have risen by 1.1°C since the late 19th century. However, the impact varies significantly across different regions of the world.
-
-First, we must understand that greenhouse gases trap heat in the atmosphere. This phenomenon, known as the greenhouse effect, is natural and necessary for life. Nevertheless, human activities have intensified this process dramatically. For instance, carbon dioxide levels have increased by 50% since pre-industrial times.
-
-Furthermore, the consequences extend beyond just temperature increases. Scientists have documented rising sea levels, more frequent extreme weather events, and disruptions to ecosystems worldwide. In fact, the past decade has seen record-breaking temperatures globally.
-
-On the other hand, there is hope. Renewable energy technologies have become increasingly affordable and efficient. Moreover, countries around the world are committing to ambitious climate goals. Although challenges remain, collective action can still make a significant difference.
-
-In conclusion, addressing climate change requires both immediate action and long-term commitment. The evidence is clear, and the time to act is now.`,
-     
-      // PRE-STORED HIGHLIGHTING DATA
-      highlights: {
-        evidence: [
-          "According to NASA, global temperatures have risen by 1.1°C since the late 19th century",
-          "carbon dioxide levels have increased by 50% since pre-industrial times",
-          "Scientists have documented rising sea levels, more frequent extreme weather events, and disruptions to ecosystems worldwide",
-          "the past decade has seen record-breaking temperatures globally"
-        ],
-        toneShifters: [
-          "However",
-          "Nevertheless",
-          "On the other hand",
-          "Although"
-        ],
-        transitions: [
-          "First",
-          "For instance",
-          "Furthermore",
-          "In fact",
-          "Moreover",
-          "In conclusion"
-        ],
-        difficult: {
-          "phenomenon": "An observable event or fact, especially one that is remarkable",
-          "greenhouse effect": "The trapping of heat in Earth's atmosphere by certain gases",
-          "intensified": "Made or become more intense or stronger",
-          "ecosystems": "Communities of living organisms interacting with their environment"
-        }
-      },
-     
-      questions: [
-        {
-          id: 1,
-          text: "What is the main purpose of this passage?",
-          type: "purpose",
-          options: ["To explain the greenhouse effect", "To present climate change as serious but addressable", "To criticize countries", "To provide temperature history"],
-          correctAnswer: 1,
-          hint: "Look at the introduction and conclusion. The author balances urgency with hope, suggesting action is both needed and possible."
-        },
-        {
-          id: 2,
-          text: "The author's tone can best be described as:",
-          type: "tone",
-          options: ["Alarmist and panicked", "Optimistic but cautious", "Neutral and detached", "Critical and angry"],
-          correctAnswer: 1,
-          hint: "Notice words like 'hope,' 'can still make a difference' balanced with 'pressing challenges.' This indicates measured optimism."
-        },
-        {
-          id: 3,
-          text: "What evidence supports the climate change claim?",
-          type: "evidence",
-          options: ["Only rising sea levels", "NASA temperature data and CO2 levels", "Political commitments", "Renewable energy"],
-          correctAnswer: 1,
-          hint: "Look for specific facts and data. The passage cites NASA's temperature measurements and CO2 percentage increases."
-        }
-      ]
-    }
-  };
- 
-  return passages[id] || null;
+// Fetch passage content using the new service
+const fetchPassageById = async (id: number): Promise<PassageContent | null> => {
+  return await readingService.getPassageContent(id);
 };
 
 const ReadingAssistant: React.FC = () => {
@@ -124,6 +35,7 @@ const ReadingAssistant: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('All');
   const [filterDifficulty, setFilterDifficulty] = useState('All');
+  const [filterCompletion, setFilterCompletion] = useState('All');
  
   const [displayText, setDisplayText] = useState('');
   const [fontSize, setFontSize] = useState('16px');
@@ -132,6 +44,9 @@ const ReadingAssistant: React.FC = () => {
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [eliminated, setEliminated] = useState<Record<number, Record<number, boolean>>>({});
   const [showHint, setShowHint] = useState<Record<number, boolean>>({});
+  const [passageWidth, setPassageWidth] = useState(65); // percentage
+  const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+  const [isResizing, setIsResizing] = useState(false);
   const [timer, setTimer] = useState(0);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [highlights, setHighlights] = useState({ evidence: true, toneShifters: true, transitions: true, difficult: true });
@@ -199,7 +114,7 @@ const ReadingAssistant: React.FC = () => {
       }
     }
 
-    return { completed, total: PASSAGE_METADATA.length, avgAccuracy, streak };
+    return { completed, total: readingService.getAllPassages().length, avgAccuracy, streak };
   };
 
   const stats = calculateStats();
@@ -223,7 +138,7 @@ const ReadingAssistant: React.FC = () => {
     const progress = userProgress[passageId];
     if (!progress) return { status: 'not-started', progress: 0, stars: 0, accuracy: 0 };
    
-    const metadata = PASSAGE_METADATA.find(p => p.id === passageId);
+    const metadata = readingService.getPassageMetadata(passageId);
     const total = metadata?.questionCount || 0;
     const answered = progress.questionsAnswered?.length || 0;
     const correct = progress.questionsCorrect?.length || 0;
@@ -239,12 +154,32 @@ const ReadingAssistant: React.FC = () => {
     };
   };
 
-  const filteredPassages = PASSAGE_METADATA.filter(passage => {
-    const matchesSearch = passage.title.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = filterCategory === 'All' || passage.category === filterCategory;
-    const matchesDifficulty = filterDifficulty === 'All' || passage.difficulty === filterDifficulty;
-    return matchesSearch && matchesCategory && matchesDifficulty;
-  });
+  // Get filtered passages using the reading service
+  const filteredPassages = (() => {
+    // Start with all passages
+    let passages = readingService.getAllPassages();
+    
+    // Apply search filter first if there's a search term
+    if (searchTerm.trim()) {
+      passages = readingService.searchPassages(searchTerm);
+    }
+    
+    // Then apply category, difficulty, and completion filters
+    return passages.filter(passage => {
+      const categoryMatch = filterCategory === 'All' || passage.category === filterCategory;
+      const difficultyMatch = filterDifficulty === 'All' || passage.difficulty === filterDifficulty;
+      
+      let completionMatch = true;
+      if (filterCompletion !== 'All') {
+        const progress = getPassageProgress(passage.id);
+        completionMatch = filterCompletion === 'Completed' 
+          ? progress.status === 'completed' 
+          : progress.status !== 'completed';
+      }
+      
+      return categoryMatch && difficultyMatch && completionMatch;
+    });
+  })();
 
   const filteredCategorized = filteredPassages.reduce((acc: Record<string, any[]>, passage) => {
     if (!acc[passage.category]) acc[passage.category] = [];
@@ -267,6 +202,7 @@ const ReadingAssistant: React.FC = () => {
         setAnswers({});
         setEliminated({});
         setTimer(0);
+        setCurrentQuestionIndex(0);
        
         const currentProgress = userProgress[passageId] || {};
         saveProgress(passageId, {
@@ -483,6 +419,13 @@ const ReadingAssistant: React.FC = () => {
         questionsCorrect,
         status: questionsAnswered.length === selectedPassage.questions.length ? 'completed' : 'in-progress'
       });
+      
+      // Auto-focus next question
+      setTimeout(() => {
+        if (currentQuestionIndex < selectedPassage.questions.length - 1) {
+          setCurrentQuestionIndex(currentQuestionIndex + 1);
+        }
+      }, 500);
     }
   };
 
@@ -497,7 +440,7 @@ const ReadingAssistant: React.FC = () => {
     setHighlights(prev => ({ ...prev, [category]: !prev[category] }));
   };
 
-  const continueReading = PASSAGE_METADATA
+  const continueReading = readingService.getAllPassages()
     .filter(p => getPassageProgress(p.id).status === 'in-progress')
     .sort((a, b) => {
       const aTime = userProgress[a.id]?.lastAccessed || '';
@@ -512,75 +455,67 @@ const ReadingAssistant: React.FC = () => {
    
     return (
       <div
-        className={`relative rounded-xl overflow-hidden cursor-pointer transition-all duration-300 ${
-          size === 'large' ? 'h-64' : 'h-48'
-        } ${isHovered ? 'scale-105 shadow-2xl z-10' : 'shadow-lg'} ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}
+        className={`rounded-xl overflow-hidden cursor-pointer transition-all duration-300 bg-white border border-gray-200 ${
+          size === 'large' ? 'h-[20.7rem]' : 'h-[19.4rem]'
+        } ${isHovered ? 'card-shimmer shadow-xl z-10' : 'shadow-sm hover:shadow-md'}`}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         onClick={() => loadPassage(passage.id)}
       >
-        {/* Background Image */}
-        <img
-          src={passage.imageUrl}
-          alt={passage.title}
-          className="absolute inset-0 w-full h-full object-cover"
-        />
-       
-        {/* Orange Overlay for brand consistency */}
-        <div className="absolute inset-0 bg-gradient-to-t from-orange-600/90 via-orange-500/60 to-orange-400/40" />
-       
-        {/* Content */}
-        <div className="relative h-full p-4 flex flex-col justify-between text-white">
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-3xl drop-shadow-lg">📖</span>
-              {progress.status === 'not-started' && (
-                <span className="px-2 py-1 bg-white/90 text-orange-900 backdrop-blur-sm rounded-full text-xs font-bold">NEW</span>
-              )}
-              {progress.status === 'completed' && progress.stars === 5 && (
-                <span className="text-2xl drop-shadow-lg">🏆</span>
-              )}
+        {/* Image Section - Fills top portion */}
+        <div className="h-40 relative overflow-hidden">
+          <img
+            src={passage.imageUrl}
+            alt={passage.title}
+            className="w-full h-full object-cover"
+          />
+          {progress.status === 'not-started' && (
+            <div className="absolute top-2 right-2">
+              <span className="px-2 py-1 bg-orange-500 text-white rounded-full text-xs font-medium">NEW</span>
             </div>
-           
-            <h3 className={`font-bold mb-2 drop-shadow-lg ${size === 'large' ? 'text-xl' : 'text-lg'} line-clamp-2`}>
+          )}
+          {progress.status === 'completed' && progress.stars === 5 && (
+            <div className="absolute top-2 right-2">
+              <span className="text-2xl">🏆</span>
+            </div>
+          )}
+        </div>
+       
+        {/* Content Section - Below image */}
+        <div className="p-4 flex flex-col justify-between h-32">
+          <div>
+            {/* Title - thin and clean, positioned below image */}
+            <h3 className={`font-light text-lg mb-4 line-clamp-2 leading-tight ${
+              isHovered ? 'shimmer-title' : 'text-gray-900'
+            }`}>
               {passage.title}
             </h3>
-           
-            {!isHovered && progress.status !== 'not-started' && (
-              <div className="space-y-1">
-                <div className="flex items-center gap-1">
-                  {[...Array(5)].map((_, i) => (
-                    <span key={i} className={i < progress.stars ? 'text-yellow-400 drop-shadow' : 'text-white/30'}>⭐</span>
-                  ))}
-                  <span className="text-sm ml-2 font-semibold drop-shadow">{progress.accuracy}%</span>
-                </div>
-                <div className="w-full bg-white/20 rounded-full h-2">
-                  <div
-                    className="bg-white rounded-full h-2 transition-all duration-500"
-                    style={{ width: `${progress.progress}%` }}
-                  />
-                </div>
+          </div>
+          
+          {/* Progress section */}
+          <div className="space-y-2">
+            {/* Progress bar */}
+            <div className="w-full">
+              <div className="flex justify-between items-center mb-1">
+                <span className="text-xs font-light text-gray-500">Progress</span>
+                <span className="text-xs font-light text-gray-700">{progress.progress}%</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-1">
+                <div
+                  className="bg-green-500 rounded-full h-1 transition-all duration-500"
+                  style={{ width: `${progress.progress}%` }}
+                />
+              </div>
+            </div>
+            
+            {/* Accuracy */}
+            {progress.accuracy > 0 && (
+              <div className="flex justify-between items-center">
+                <span className="text-xs font-light text-gray-500">Accuracy</span>
+                <span className="text-xs font-medium text-orange-600">{progress.accuracy}%</span>
               </div>
             )}
           </div>
-         
-          {isHovered && (
-            <div className="space-y-2 animate-fadeIn">
-              <div className="text-sm space-y-1 drop-shadow-lg font-medium">
-                <p>📊 {passage.difficulty} • {passage.questionCount} questions</p>
-                {progress.attempts > 0 && (
-                  <>
-                    <p>🎯 Best: {progress.accuracy}%</p>
-                    <p>🔄 Attempts: {progress.attempts}</p>
-                  </>
-                )}
-              </div>
-            </div>
-          )}
-         
-          <button className="mt-2 w-full bg-white/20 backdrop-blur-sm hover:bg-white/30 py-2 rounded-lg font-semibold transition-colors">
-            {progress.status === 'in-progress' ? '▶ CONTINUE' : progress.status === 'completed' ? '↻ RETRY' : '▶ START'}
-          </button>
         </div>
       </div>
     );
@@ -597,7 +532,7 @@ const ReadingAssistant: React.FC = () => {
    
     return (
       <div className="mb-8">
-        <h2 className={`text-2xl font-bold mb-4 flex items-center gap-2 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+        <h2 className={`text-2xl font-bold mb-4 flex items-center gap-2 px-6 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
           <span>📖</span>
           <span>{category}</span>
         </h2>
@@ -612,11 +547,11 @@ const ReadingAssistant: React.FC = () => {
          
           <div
             ref={scrollRef}
-            className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth"
+            className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth pl-6"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
           >
             {passages.map(passage => (
-              <div key={passage.id} className="flex-shrink-0 w-64">
+              <div key={passage.id} className="flex-shrink-0 w-[230px]">
                 <PassageCard passage={passage} />
               </div>
             ))}
@@ -633,21 +568,97 @@ const ReadingAssistant: React.FC = () => {
     );
   };
 
+  const nextPassageInCategory = () => {
+    if (!selectedPassage) return null;
+    const currentCategory = readingService.getPassageMetadata(selectedPassage.id)?.category;
+    if (!currentCategory) return null;
+    
+    const categoryPassages = readingService.getPassagesByCategory(currentCategory);
+    const currentIndex = categoryPassages.findIndex(p => p.id === selectedPassage.id);
+    const nextIndex = (currentIndex + 1) % categoryPassages.length;
+    return categoryPassages[nextIndex];
+  };
+
+  const previousPassageInCategory = () => {
+    if (!selectedPassage) return null;
+    const currentCategory = readingService.getPassageMetadata(selectedPassage.id)?.category;
+    if (!currentCategory) return null;
+    
+    const categoryPassages = readingService.getPassagesByCategory(currentCategory);
+    const currentIndex = categoryPassages.findIndex(p => p.id === selectedPassage.id);
+    const prevIndex = (currentIndex - 1 + categoryPassages.length) % categoryPassages.length;
+    return categoryPassages[prevIndex];
+  };
+
   if (view === 'selection') {
     return (
-      <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'} p-6`}>
+      <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'}`}>
         <style dangerouslySetInnerHTML={{ __html: `
           .scrollbar-hide::-webkit-scrollbar { display: none; }
           @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
           .animate-fadeIn { animation: fadeIn 0.3s ease-in; }
           .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+          
+          @keyframes shimmer {
+            0% { background-position: -200px 0; }
+            100% { background-position: calc(200px + 100%) 0; }
+          }
+          
+          .shiver-text {
+            background: linear-gradient(90deg, #ea580c 0%, #fb923c 50%, #ea580c 100%);
+            background-size: 200px 100%;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 2s infinite linear;
+            font-weight: bold;
+            display: inline-block;
+          }
+          
+          .card-shimmer {
+            position: relative;
+            overflow: hidden;
+          }
+          
+          .card-shimmer::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, 
+              transparent 0%, 
+              transparent 40%, 
+              rgba(234, 88, 12, 0.15) 45%, 
+              rgba(192, 192, 192, 0.3) 50%, 
+              rgba(234, 88, 12, 0.15) 55%, 
+              transparent 60%, 
+              transparent 100%);
+            animation: diagonalShimmer 2s ease-in-out infinite;
+            z-index: 1;
+            pointer-events: none;
+          }
+          
+          @keyframes diagonalShimmer {
+            0% { transform: translate(-100%, 100%); }
+            100% { transform: translate(100%, -100%); }
+          }
+          
+          .shimmer-title {
+            background: linear-gradient(90deg, #ea580c 0%, #fb923c 50%, #ea580c 100%);
+            background-size: 200px 100%;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 2s infinite linear;
+          }
         `}} />
        
-        <div className="max-w-7xl mx-auto">
-          {/* Header */}
-          <div className={`sticky top-0 z-10 border-b shadow-sm mb-8 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-            <div className="container mx-auto px-4 py-4">
-              <div className="flex items-center justify-between">
+        {/* Fixed Header - Full Width */}
+        <div className={`fixed top-0 left-0 right-0 z-50 border-b shadow-sm ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
+          <div className="w-full px-6 py-4">
+            <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4">
                   <Button 
                     variant="ghost" 
@@ -662,8 +673,8 @@ const ReadingAssistant: React.FC = () => {
                       <BookOpen className="h-6 w-6 text-white" />
                     </div>
                     <div>
-                      <h1 className={`text-3xl font-bold ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
-                        SAT Reading Practice
+                      <h1 className="text-3xl font-bold text-gray-900">
+                        <span className="shiver-text">SAT Reading</span> Practice
                       </h1>
                       <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
                         Interactive Reading Comprehension
@@ -689,29 +700,33 @@ const ReadingAssistant: React.FC = () => {
                     <Award className="w-5 h-5 text-orange-500" />
                     <span className="font-bold">{stats.completed}/{stats.total}</span>
                     <span className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Complete</span>
-                  </div>
                 </div>
               </div>
             </div>
           </div>
+        </div>
 
-          {/* Search and Filters */}
-          <div className={`mb-8 backdrop-blur-sm rounded-xl p-4 ${isDarkMode ? 'bg-gray-800/50' : 'bg-white/80'}`}>
-            <div className="flex flex-wrap gap-4 items-center">
-              <div className="flex-1 min-w-64">
+        {/* Content with top padding for fixed header */}
+        <div className="pt-20">
+          <div className="w-full max-w-none">
+            {/* Search and Filters */}
+          <div className={`mb-8 backdrop-blur-sm p-4 ${isDarkMode ? 'bg-gray-800/50' : 'bg-white/80'}`}>
+            <div className="flex flex-wrap gap-8 items-center">
+              <div className="w-80">
                 <input
                   type="text"
                   placeholder="🔍 Search passages..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className={`w-full px-4 py-2 rounded-lg border transition-colors ${
+                  className={`w-full px-4 py-2 rounded-full border transition-colors ${
                     isDarkMode 
                       ? 'bg-gray-700 text-white placeholder-gray-400 border-gray-600 focus:border-orange-500' 
                       : 'bg-white text-gray-900 placeholder-gray-500 border-gray-300 focus:border-orange-500'
-                  } focus:outline-none`}
+                  } focus:outline-none shadow-sm`}
                 />
               </div>
              
+              <div className="flex gap-4">
               <select
                 value={filterCategory}
                 onChange={(e) => setFilterCategory(e.target.value)}
@@ -743,30 +758,46 @@ const ReadingAssistant: React.FC = () => {
                 <option value="Medium">Medium</option>
                 <option value="Hard">Hard</option>
               </select>
+              
+              <select
+                value={filterCompletion}
+                onChange={(e) => setFilterCompletion(e.target.value)}
+                className={`px-4 py-2 rounded-lg border transition-colors ${
+                  isDarkMode 
+                    ? 'bg-gray-700 text-white border-gray-600 focus:border-orange-500' 
+                    : 'bg-white text-gray-900 border-gray-300 focus:border-orange-500'
+                } focus:outline-none`}
+              >
+                <option value="All">All Status</option>
+                <option value="Completed">Completed</option>
+                <option value="Not Completed">Not Completed</option>
+              </select>
 
-              {(searchTerm || filterCategory !== 'All' || filterDifficulty !== 'All') && (
+              {(searchTerm || filterCategory !== 'All' || filterDifficulty !== 'All' || filterCompletion !== 'All') && (
                 <Button
                   onClick={() => {
                     setSearchTerm('');
                     setFilterCategory('All');
                     setFilterDifficulty('All');
+                    setFilterCompletion('All');
                   }}
                   className="bg-red-500 hover:bg-red-600 text-white"
                 >
                   Clear Filters
                 </Button>
               )}
+              </div>
             </div>
            
             <div className={`mt-2 text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-              Showing {filteredPassages.length} of {PASSAGE_METADATA.length} passages
+              Showing {filteredPassages.length} of {readingService.getAllPassages().length} passages
             </div>
           </div>
 
           {continueReading.length > 0 && (
             <div className="mb-8">
               <h2 className={`text-2xl font-bold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>📚 Continue Reading</h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 px-6">
                 {continueReading.map(passage => (
                   <PassageCard key={passage.id} passage={passage} />
                 ))}
@@ -784,25 +815,66 @@ const ReadingAssistant: React.FC = () => {
               <CategoryRow key={category} category={category} passages={passages} />
             ))
           )}
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'bg-gray-900' : 'bg-gray-50'} p-4`}>
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className={`rounded-xl shadow-lg p-4 mb-4 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
+    <div className="min-h-screen bg-white">
+      {/* Fixed Header - Full Width */}
+      <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200">
+        <div className="w-full px-4 py-3">
           <div className="flex justify-between items-center">
-            <Button 
-              onClick={() => setView('selection')} 
-              variant="outline"
-              className="flex items-center gap-2"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              Back to Passages
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button 
+                onClick={() => setView('selection')} 
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                Back to Passages
+              </Button>
+              
+              {/* Navigation within category */}
+              <div className="flex items-center gap-2 border-l pl-4 ml-4">
+                <Button
+                  onClick={() => {
+                    const prev = previousPassageInCategory();
+                    if (prev) loadPassage(prev.id);
+                  }}
+                  variant="outline"
+                  size="sm"
+                  disabled={!previousPassageInCategory()}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  Previous
+                </Button>
+                <span className="text-sm px-2 text-gray-600">
+                  {selectedPassage && readingService.getPassageMetadata(selectedPassage.id)?.category}
+                </span>
+                <Button
+                  onClick={() => {
+                    const next = nextPassageInCategory();
+                    if (next) loadPassage(next.id);
+                  }}
+                  variant="outline"
+                  size="sm"
+                  disabled={!nextPassageInCategory()}
+                >
+                  Next
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+              
+              {/* SAT Reading title with shiver effect */}
+              <div className="flex items-center gap-2">
+                <h2 className="text-xl font-light text-gray-900">
+                  <span className="shiver-text">SAT Reading</span>
+                </h2>
+              </div>
+            </div>
            
             <div className="flex items-center gap-4">
               {/* Highlight Toggles */}
@@ -872,18 +944,19 @@ const ReadingAssistant: React.FC = () => {
             </div>
           )}
         </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      </div>
+      
+      {/* Content with top padding for fixed header */}
+      <div className="pt-16">
+        <div className="w-full flex h-[calc(100vh-4rem)] relative">
           {/* Reading Panel */}
-          <div className={`rounded-xl shadow-lg p-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-            <h3 className={`font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
+          <div className="p-6 border-r border-gray-200 overflow-y-auto" style={{ width: `${passageWidth}%` }}>
+            <h3 className="text-lg font-semibold mb-4 text-gray-900">
               {selectedPassage?.title}
             </h3>
             <div className="passage-container relative">
               <div
-                className={`p-4 border rounded-lg whitespace-pre-wrap leading-relaxed ${
-                  isDarkMode ? 'bg-gray-900 border-gray-700 text-gray-100' : 'bg-gray-50 border-gray-300 text-gray-900'
-                }`}
+                className="p-4 whitespace-pre-wrap leading-relaxed text-gray-900 bg-white"
                 style={{ fontFamily, fontSize }}
                 dangerouslySetInnerHTML={{ __html: getDisplayTextContent() }}
                 onMouseOver={handleMouseOver}
@@ -892,9 +965,7 @@ const ReadingAssistant: React.FC = () => {
              
               {activeTooltip && (
                 <div
-                  className={`simplifier-tooltip absolute z-50 rounded-lg shadow-2xl border p-4 ${
-                    isDarkMode ? 'bg-gray-800 border-gray-600' : 'bg-white border-gray-200'
-                  }`}
+                  className="simplifier-tooltip absolute z-50 rounded-lg shadow-2xl border p-4 bg-white border-gray-200"
                   style={{
                     top: `${tooltipPosition.top}px`,
                     left: `${tooltipPosition.left}px`,
@@ -906,13 +977,11 @@ const ReadingAssistant: React.FC = () => {
                   <div className="mb-2">
                     <span className="font-semibold text-orange-600 text-sm">{activeTooltip.text}</span>
                   </div>
-                  <p className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+                  <p className="text-sm text-gray-700">
                     {activeTooltip.explanation}
                   </p>
                   <div 
-                    className={`absolute w-3 h-3 border-b border-r ${
-                      isDarkMode ? 'bg-gray-800 border-gray-600' : 'bg-white border-gray-200'
-                    }`} 
+                    className="absolute w-3 h-3 border-b border-r bg-white border-gray-200" 
                     style={{ bottom: '-6px', left: '50%', transform: 'translateX(-50%) rotate(45deg)' }} 
                   />
                 </div>
@@ -920,24 +989,74 @@ const ReadingAssistant: React.FC = () => {
             </div>
           </div>
 
+          {/* Resizer */}
+          <div 
+            className="w-1 bg-gray-300 hover:bg-orange-400 cursor-col-resize transition-colors flex items-center justify-center group"
+            onMouseDown={(e) => {
+              setIsResizing(true);
+              const startX = e.clientX;
+              const startWidth = passageWidth;
+              
+              const handleMouseMove = (e: MouseEvent) => {
+                const deltaX = e.clientX - startX;
+                const containerWidth = window.innerWidth;
+                const newWidth = startWidth + (deltaX / containerWidth) * 100;
+                setPassageWidth(Math.max(30, Math.min(80, newWidth)));
+              };
+              
+              const handleMouseUp = () => {
+                setIsResizing(false);
+                document.removeEventListener('mousemove', handleMouseMove);
+                document.removeEventListener('mouseup', handleMouseUp);
+              };
+              
+              document.addEventListener('mousemove', handleMouseMove);
+              document.addEventListener('mouseup', handleMouseUp);
+            }}
+          >
+            <GripVertical className="w-3 h-3 text-gray-500 group-hover:text-orange-500 transition-colors" />
+          </div>
+          
           {/* Questions Panel */}
-          <div className={`rounded-xl shadow-lg p-6 ${isDarkMode ? 'bg-gray-800' : 'bg-white'}`}>
-            <h3 className={`font-semibold mb-4 ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>Questions</h3>
-            <div className="space-y-4 max-h-96 overflow-y-auto">
+          <div className="flex-1 p-6 bg-white flex flex-col" style={{ width: `${100 - passageWidth}%` }}>
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">Questions</h3>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setCurrentQuestionIndex(Math.max(0, currentQuestionIndex - 1))}
+                  disabled={currentQuestionIndex === 0}
+                  className="p-1 rounded border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <ChevronUp className="w-4 h-4" />
+                </button>
+                <span className="text-sm text-gray-600 min-w-[60px] text-center">
+                  {currentQuestionIndex + 1} of {selectedPassage?.questions.length || 0}
+                </span>
+                <button
+                  onClick={() => setCurrentQuestionIndex(Math.min((selectedPassage?.questions.length || 1) - 1, currentQuestionIndex + 1))}
+                  disabled={currentQuestionIndex >= (selectedPassage?.questions.length || 1) - 1}
+                  className="p-1 rounded border border-gray-300 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <ChevronDown className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+            <div className="flex-1 overflow-y-auto">
               {selectedPassage?.questions.map((q: any, idx: number) => {
+                if (idx !== currentQuestionIndex) return null;
                 const typeInfo = questionTypes.find(t => t.value === q.type);
                 const isCorrect = answers[q.id] === q.correctAnswer;
                 const hasAnswered = answers[q.id] !== undefined;
                
                 return (
-                  <div key={q.id} className={`border rounded-lg p-3 ${isDarkMode ? 'border-gray-700' : 'border-gray-200'}`}>
+                  <div key={q.id} className="border border-gray-200 rounded-lg p-3">
                     <div className="flex gap-2 mb-2">
                       <span className="font-bold text-orange-600">{idx + 1}.</span>
                       <div className="flex-1">
                         <span className={`inline-block px-2 py-0.5 rounded text-xs ${typeInfo?.color} mb-2`}>
                           {typeInfo?.label}
                         </span>
-                        <p className={`text-sm mb-2 ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>{q.text}</p>
+                        <p className="text-sm mb-2 text-gray-800">{q.text}</p>
                        
                         <div className="space-y-1">
                           {q.options.map((opt: string, optIdx: number) => {
@@ -950,10 +1069,10 @@ const ReadingAssistant: React.FC = () => {
                                 key={optIdx}
                                 className={`flex items-center gap-2 p-2 rounded border transition-colors ${
                                   isEliminated ? 'opacity-50 line-through' :
-                                  isSelected && hasAnswered && isCorrect ? 'bg-green-100 border-green-400 dark:bg-green-900/30 dark:border-green-600' :
-                                  isSelected && hasAnswered ? 'bg-red-100 border-red-400 dark:bg-red-900/30 dark:border-red-600' :
-                                  isSelected ? 'bg-orange-100 border-orange-400 dark:bg-orange-900/30 dark:border-orange-600' : 
-                                  isDarkMode ? 'border-gray-600 hover:border-gray-500' : 'border-gray-200 hover:border-gray-300'
+                                  isSelected && hasAnswered && isCorrect ? 'bg-green-100 border-green-400' :
+                                  isSelected && hasAnswered ? 'bg-red-100 border-red-400' :
+                                  isSelected ? 'bg-orange-100 border-orange-400' : 
+                                  'border-gray-200 hover:border-gray-300'
                                 }`}
                               >
                                 <Button
@@ -966,7 +1085,7 @@ const ReadingAssistant: React.FC = () => {
                                 </Button>
                                 <button 
                                   onClick={() => selectAnswer(q.id, optIdx)} 
-                                  className={`flex-1 text-left text-sm ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}
+                                  className="flex-1 text-left text-sm text-gray-800"
                                 >
                                   <span className="font-medium">{String.fromCharCode(65 + optIdx)}.</span> {opt}
                                 </button>
@@ -988,9 +1107,7 @@ const ReadingAssistant: React.FC = () => {
                         )}
                        
                         {showHint[q.id] && (
-                          <div className={`mt-2 p-2 rounded text-xs border-l-4 border-orange-500 ${
-                            isDarkMode ? 'bg-orange-900/20 text-gray-200' : 'bg-orange-50 text-gray-700'
-                          }`}>
+                          <div className="mt-2 p-2 rounded text-xs border-l-4 border-orange-500 bg-orange-50 text-gray-700">
                             <p className="font-semibold text-orange-600 mb-1 flex items-center gap-1">
                               <Target className="w-3 h-3" />
                               HINT
@@ -1002,8 +1119,8 @@ const ReadingAssistant: React.FC = () => {
                         {hasAnswered && (
                           <div className={`mt-2 p-2 rounded text-xs ${
                             isCorrect 
-                              ? isDarkMode ? 'bg-green-900/30 text-green-400' : 'bg-green-100 text-green-800'
-                              : isDarkMode ? 'bg-red-900/30 text-red-400' : 'bg-red-100 text-red-800'
+                              ? 'bg-green-100 text-green-800'
+                              : 'bg-red-100 text-red-800'
                           }`}>
                             {isCorrect ? '✓ Correct!' : `✗ Incorrect. Answer: ${String.fromCharCode(65 + q.correctAnswer)}`}
                           </div>
