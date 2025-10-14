@@ -7,7 +7,7 @@ export const PASSAGE_METADATA: PassageMetadata[] = [
     category: "Science",
     difficulty: "Medium",
     questionCount: 3,
-    imageUrl: "/resources/passages/climate-change.webp",
+    imageUrl: "/resources/passages/climate-change.jpg",
     description: "Exploring the scientific evidence and global response to climate change",
     estimatedTime: 8,
     tags: ["environment", "global warming", "policy"]
@@ -18,7 +18,7 @@ export const PASSAGE_METADATA: PassageMetadata[] = [
     category: "Social Science",
     difficulty: "Easy",
     questionCount: 3,
-    imageUrl: "/resources/passages/social-media.webp",
+    imageUrl: "/resources/sphere-3d-model-3840x2160-10993.jpg",
     description: "Analyzing how social platforms shape modern communication and society",
     estimatedTime: 6,
     tags: ["technology", "communication", "society"]
@@ -29,7 +29,7 @@ export const PASSAGE_METADATA: PassageMetadata[] = [
     category: "Technology",
     difficulty: "Hard",
     questionCount: 3,
-    imageUrl: "/resources/passages/artificial-intelligence.webp",
+    imageUrl: "/resources/carbonwallpaper.jpg",
     description: "From early computing to modern AI and its implications for the future",
     estimatedTime: 10,
     tags: ["AI", "machine learning", "future technology"]
@@ -40,7 +40,7 @@ export const PASSAGE_METADATA: PassageMetadata[] = [
     category: "Literature",
     difficulty: "Medium",
     questionCount: 4,
-    imageUrl: "/resources/passages/american-dream.webp",
+    imageUrl: "/resources/hero5.webp",
     description: "How American authors have portrayed the pursuit of success and happiness",
     estimatedTime: 9,
     tags: ["American literature", "themes", "social commentary"]
@@ -51,7 +51,7 @@ export const PASSAGE_METADATA: PassageMetadata[] = [
     category: "History",
     difficulty: "Medium",
     questionCount: 4,
-    imageUrl: "/resources/passages/democracy.webp",
+    imageUrl: "/resources/4k-white-two-skyscrapers-j25128ysdyqlmeo6.jpg",
     description: "The evolution of democratic institutions and citizen participation",
     estimatedTime: 9,
     tags: ["government", "political participation", "civic duty"]
@@ -62,7 +62,7 @@ export const PASSAGE_METADATA: PassageMetadata[] = [
     category: "Science",
     difficulty: "Easy",
     questionCount: 3,
-    imageUrl: "/resources/passages/renewable-energy.webp",
+    imageUrl: "/resources/white-abstract-fading-horse-os2b11l2drnjvlqz.jpg",
     description: "Solar, wind, and other sustainable energy technologies",
     estimatedTime: 7,
     tags: ["sustainability", "green technology", "environment"]
@@ -73,7 +73,7 @@ export const PASSAGE_METADATA: PassageMetadata[] = [
     category: "Social Science",
     difficulty: "Hard",
     questionCount: 4,
-    imageUrl: "/resources/passages/memory-psychology.webp",
+    imageUrl: "/resources/corner-building-for-4k-white-background-tsx7c82luhg36ygy.jpg",
     description: "How human memory works and why we forget",
     estimatedTime: 11,
     tags: ["cognitive science", "neuroscience", "learning"]
@@ -84,7 +84,7 @@ export const PASSAGE_METADATA: PassageMetadata[] = [
     category: "History",
     difficulty: "Medium",
     questionCount: 3,
-    imageUrl: "/resources/passages/roman-architecture.webp",
+    imageUrl: "/resources/mywall.jpg",
     description: "Engineering marvels that influenced Western architectural traditions",
     estimatedTime: 8,
     tags: ["architecture", "engineering", "ancient civilizations"]
@@ -95,7 +95,7 @@ export const PASSAGE_METADATA: PassageMetadata[] = [
     category: "Science",
     difficulty: "Hard",
     questionCount: 4,
-    imageUrl: "/resources/passages/genetic-engineering.webp",
+    imageUrl: "/resources/wallpaper.webp",
     description: "The moral and practical implications of modifying human DNA",
     estimatedTime: 12,
     tags: ["bioethics", "genetics", "medical technology"]
@@ -106,7 +106,7 @@ export const PASSAGE_METADATA: PassageMetadata[] = [
     category: "Literature",
     difficulty: "Medium",
     questionCount: 3,
-    imageUrl: "/resources/passages/shakespeare.webp",
+    imageUrl: "/resources/whiteone.jpg.jpg",
     description: "How the Bard's works continue to shape contemporary culture",
     estimatedTime: 8,
     tags: ["Shakespeare", "cultural influence", "drama"]
@@ -117,7 +117,7 @@ export const PASSAGE_METADATA: PassageMetadata[] = [
     category: "Technology",
     difficulty: "Medium",
     questionCount: 3,
-    imageUrl: "/resources/passages/digital-privacy.webp",
+    imageUrl: "/resources/sphere-3d-model-3840x2160-10993.jpg",
     description: "Balancing security needs with personal privacy in the digital age",
     estimatedTime: 9,
     tags: ["privacy", "surveillance", "digital rights"]
@@ -128,7 +128,7 @@ export const PASSAGE_METADATA: PassageMetadata[] = [
     category: "History",
     difficulty: "Easy",
     questionCount: 3,
-    imageUrl: "/resources/passages/renaissance-art.webp",
+    imageUrl: "/resources/wallpaper.webp",
     description: "Artistic innovation and cultural transformation in Renaissance Europe",
     estimatedTime: 7,
     tags: ["art history", "Renaissance", "cultural movements"]
@@ -139,7 +139,7 @@ export const PASSAGE_METADATA: PassageMetadata[] = [
     category: "Social Science",
     difficulty: "Hard",
     questionCount: 3,
-    imageUrl: "/resources/passages/behavioral-economics.webp",
+    imageUrl: "/resources/carbonwallpaper.jpg",
     description: "Why people don't always make rational economic decisions",
     estimatedTime: 10,
     tags: ["economics", "psychology", "decision making"]

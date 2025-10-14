@@ -9,9 +9,9 @@ import { saveObjective, loadObjective } from "@/services/objectivePersistence";
 import { useTheme } from "@/contexts/ThemeContext";
 
 // Import refactored components
-import PracticeHeader from "@/components/practice/PracticeHeader";
+import PracticeHeaderSimple from "@/components/practice/PracticeHeaderSimple";
 import PracticeProgress from "@/components/practice/PracticeProgress";
-import PracticeDisplay from "@/components/practice/PracticeDisplay";
+import SATMathDisplay from "@/components/practice/SATMathDisplay";
 import PracticeFooter from "@/components/practice/PracticeFooter";
 import ContentSection from "@/components/practice/ContentSection";
 import ModeDialog from "@/components/practice/ModeDialog";
@@ -577,79 +577,37 @@ export default function PracticeContent({
   return (
     <div className={`min-h-screen transition-colors duration-300 ${isDarkMode ? 'bg-gray-900' : 'bg-white'}`}>
       {/* Header */}
-      <PracticeHeader 
-        onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} 
-        onOpenObjective={() => setObjectiveDialogOpen(true)} 
+      <PracticeHeaderSimple 
         onOpenMode={() => setModeDialogOpen(true)}
-        onOpenSounds={() => setSoundsModalOpen(true)} 
-        mode={mode} 
-        sidebarOpen={sidebarOpen} 
-        setSidebarOpen={setSidebarOpen}
-        onFilterChange={handleFilterChange}
-        settings={propSettings}
-        onSettingsChange={onSettingsChange}
-        activeTab={activeTab}
-        setActiveTab={setActiveTab}
+        mode={mode}
+        onNext={propOnNext || nextQuestion}
+        onPrev={propOnPrev || prevQuestion}
+        currentQuestionIndex={currentQuestionIndex}
+        totalQuestions={filteredQuestions.length}
       />
 
 
-      {/* Sidebar - Mobile and Desktop */}
-      {sidebarOpen && <Sidebar onClose={() => setSidebarOpen(false)} />}
 
-      <div className="flex max-w-full mx-auto w-full flex-grow py-1 sm:py-2 md:py-3 px-1 sm:px-2 md:px-4 lg:px-0 pb-20 sm:pb-24 pt-24 sm:pt-26 md:pt-14">
+      <div className="pt-16">
         {currentQuestion ? (
-          <PracticeDisplay 
+          <SATMathDisplay 
             currentQuestion={currentQuestion} 
             selectedAnswer={selectedAnswer} 
             isCorrect={isCorrect} 
             checkAnswer={checkAnswer} 
             onNext={propOnNext || nextQuestion}
             onPrev={propOnPrev || prevQuestion}
-            onJumpTo={propOnJumpTo || ((index: number) => {
-              setCurrentQuestionIndex(index);
-              setSelectedAnswer(null);
-              setIsCorrect(null);
-            })}
             currentQuestionIndex={currentQuestionIndex} 
             totalQuestions={filteredQuestions.length} 
-            displaySettings={displaySettings}
-            boardColor={boardColor}
-            activeTab={activeTab}
             mode={mode}
-            timerValue={timeRemaining}
-            objective={objective}
-            progress={progress}
-            correctAnswers={correctAnswers}
-            incorrectAnswers={incorrectAnswers}
-            onInteractionsChange={setInteractions}
-            selectedAnswers={selectedAnswers}
-            onAnswerSelect={(questionIndex: number, answer: string) => {
-              setSelectedAnswers(prev => ({ ...prev, [questionIndex]: answer }));
-            }}
-            questions={filteredQuestions}
+            displaySettings={displaySettings}
+            onSettingsChange={onSettingsChange}
           />
         ) : (
           <div className={`w-full p-8 text-center ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>No question selected</div>
         )}
       </div>
 
-      <PracticeFooter 
-        onToggleCommunityStats={() => setShowCommunityStats(!showCommunityStats)} 
-        onPrevious={prevQuestion} 
-        onNext={nextQuestion} 
-        currentQuestionIndex={currentQuestionIndex} 
-        totalQuestions={filteredQuestions.length} 
-        showGoToInput={showGoToInput} 
-        setShowGoToInput={setShowGoToInput} 
-        targetQuestion={targetQuestion} 
-        setTargetQuestion={setTargetQuestion} 
-        handleGoToQuestion={handleGoToQuestion} 
-        inputError={inputError}
-        currentQuestionId={currentQuestion?.id}
-        showCommunityStats={showCommunityStats}
-        currentQuestionTopic={currentQuestion?.chapter || currentQuestion?.module || "General"}
-        userProgress={{ correctAnswers, incorrectAnswers, objective }}
-      />
 
       <ModeDialog 
         open={modeDialogOpen} 

@@ -37,6 +37,7 @@ import PremiumMathTool from "@/components/math/PremiumMathTool";
 import AdvancedAnimationDemo from "@/pages/AdvancedAnimationDemo";
 import SATMockTestPage from "@/pages/SATMockTestPage";
 import DatabasePopulator from "@/pages/DatabasePopulator";
+import SATMath from "@/pages/SATMath";
 
 function App() {
   // Prevent layout shift from modals by maintaining scrollbar space
@@ -56,6 +57,7 @@ function App() {
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/practice" element={<Practice />} />
+                <Route path="/sat-math" element={<SATMath />} />
                 <Route path="/interactive-math" element={<InteractiveMathDemo />} />
                 <Route path="/interactive-math-test" element={<InteractiveMathTest />} />
                 <Route path="/simple-test" element={<SimpleInteractiveTest />} />

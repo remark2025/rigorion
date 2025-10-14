@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { BookOpen, PenTool, Calculator, FileText, GraduationCap, Brain, Target, Globe } from 'lucide-react';
 import { FinalPaymentModal } from '@/components/payment/FinalPaymentModal';
+import { useNavigate } from 'react-router-dom';
 
 type ProductType = {
   id: number;
@@ -44,6 +45,15 @@ const PRODUCTS: ProductType[] = [{
 
 export const ProductsShowcase = () => {
   const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const navigate = useNavigate();
+
+  const handleProductClick = (productId: number) => {
+    if (productId === 1) { // SAT Math
+      navigate('/sat-math');
+    } else {
+      setShowPaymentModal(true);
+    }
+  };
   
   return <section className="bg-gradient-to-b from-gray-50 to-white py-16">
       <div className="container mx-auto px-6">
@@ -85,10 +95,10 @@ export const ProductsShowcase = () => {
               
               <div className="mt-6 pt-4 border-t border-gray-100">
                 <button 
-                  onClick={() => setShowPaymentModal(true)}
+                  onClick={() => handleProductClick(product.id)}
                   className="w-full font-medium py-2 px-4 rounded-lg transition-colors duration-300 bg-orange-500 hover:bg-orange-600 text-white shadow-lg"
                 >
-                  Get Started
+                  {product.id === 1 ? 'Start Practice' : 'Get Started'}
                 </button>
               </div>
             </div>

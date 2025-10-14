@@ -60,12 +60,6 @@ export const PracticeHeader = ({
   const { user, profile, signOut } = useAuth();
   const { isDarkMode } = useTheme();
   const [isNavDropdownOpen, setIsNavDropdownOpen] = useState(false);
-  const [isChapterDropdownOpen, setIsChapterDropdownOpen] = useState(false);
-  const [isModuleDropdownOpen, setIsModuleDropdownOpen] = useState(false);
-  const [isExamDropdownOpen, setIsExamDropdownOpen] = useState(false);
-  const [selectedChapter, setSelectedChapter] = useState<string>("All Chapters");
-  const [selectedModule, setSelectedModule] = useState<string>("All Modules");
-  const [selectedExam, setSelectedExam] = useState<number | null>(null);
 
   const pages = [
     { name: "Home", path: "/" },
@@ -75,29 +69,6 @@ export const PracticeHeader = ({
     { name: "About us", path: "/about" },
   ];
 
-  // Generate chapters from SAT skills structure
-  const chapters = [
-    "All Chapters",
-    ...Object.values(SAT_SKILLS_STRUCTURE).flatMap(section => 
-      section.domains.map(domain => domain.title)
-    )
-  ];
-
-  const exams = [
-    "All Exams",
-    "Exam 3",
-    "Exam 5",
-    "Exam 7", 
-    "Exam 8",
-    "Exam 12"
-  ];
-
-  const modules = [
-    "All Modules",
-    "math",
-    "reading", 
-    "writing"
-  ];
 
   const handleNavigation = (path: string) => {
     navigate(path);
@@ -108,90 +79,6 @@ export const PracticeHeader = ({
     navigate("/");
   };
 
-  const handleChapterFilter = (chapter: string) => {
-    console.log("PracticeHeader - Chapter filter selected:", chapter);
-    setSelectedChapter(chapter);
-    setIsChapterDropdownOpen(false);
-    
-    if (onFilterChange) {
-      let chapterNumber: string | undefined;
-      if (chapter !== "All Chapters") {
-        const match = chapter.match(/Chapter (\d+)/);
-        chapterNumber = match ? match[1] : undefined;
-      }
-      
-      onFilterChange({
-        chapter: chapterNumber,
-        module: selectedModule === "All Modules" ? undefined : selectedModule,
-        exam: selectedExam
-      });
-    }
-  };
-
-  const handleModuleFilter = (module: string) => {
-    console.log("PracticeHeader - Module filter selected:", module);
-    setSelectedModule(module);
-    setIsModuleDropdownOpen(false);
-    
-    if (onFilterChange) {
-      let chapterNumber: string | undefined;
-      if (selectedChapter !== "All Chapters") {
-        const match = selectedChapter.match(/Chapter (\d+)/);
-        chapterNumber = match ? match[1] : undefined;
-      }
-      
-      onFilterChange({
-        chapter: chapterNumber,
-        module: module === "All Modules" ? undefined : module,
-        exam: selectedExam
-      });
-    }
-  };
-
-  const handleExamFilter = (exam: string) => {
-    console.log("PracticeHeader - Exam filter selected:", exam);
-    setIsExamDropdownOpen(false);
-    
-    if (onFilterChange) {
-      let examNumber: number | null = null;
-      if (exam !== "All Exams") {
-        const match = exam.match(/Exam (\d+)/);
-        examNumber = match ? parseInt(match[1]) : null;
-      }
-
-      // Get current chapter and module values
-      let chapterNumber: string | undefined;
-      if (selectedChapter !== "All Chapters") {
-        const match = selectedChapter.match(/Chapter (\d+)/);
-        chapterNumber = match ? match[1] : undefined;
-      }
-      
-      const moduleValue = selectedModule === "All Modules" ? undefined : selectedModule;
-      
-      setSelectedExam(examNumber);
-      
-      onFilterChange({
-        chapter: chapterNumber,
-        module: moduleValue,
-        exam: examNumber
-      });
-    }
-  };
-
-  const handleClearAllFilters = () => {
-    console.log("PracticeHeader - Clearing all filters");
-    setSelectedChapter("All Chapters");
-    setSelectedModule("All Modules");
-    setSelectedExam(null);
-    
-    if (onFilterChange) {
-      onFilterChange({
-        chapter: undefined,
-        module: undefined,
-        exam: null
-      });
-    }
-  };
 
   const getUserInitials = (): string => {
     if (profile?.name) {
@@ -220,25 +107,6 @@ export const PracticeHeader = ({
     }
   };
 
-  const getActiveFilterText = () => {
-    if (selectedExam !== null) {
-      return `Exam ${selectedExam}`;
-    }
-    
-    const filters = [];
-    if (selectedChapter !== "All Chapters") {
-      filters.push(selectedChapter);
-    }
-    if (selectedModule !== "All Modules") {
-      filters.push(selectedModule);
-    }
-    
-    return filters.length > 0 ? filters.join(" • ") : "All Questions";
-  };
-
-  const hasActiveFilters = () => {
-    return selectedExam !== null || selectedChapter !== "All Chapters" || selectedModule !== "All Modules";
-  };
 
   const getModeIcon = (currentMode: string) => {
     switch (currentMode) {
@@ -258,19 +126,9 @@ export const PracticeHeader = ({
   };
 
   return (
-    <header 
-      className="fixed top-0 left-0 right-0 w-full z-50 border-b shadow-lg transition-all duration-300 animate-header-shiver"
-      style={{
-        backgroundImage: 'url(/resources/whaiteone.jpg)',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        borderBottom: '2px solid transparent',
-        borderImage: 'linear-gradient(90deg, #FB923C 0%, #000000 50%, #EA580C 100%) 1',
-        backdropFilter: 'blur(2px) saturate(120%)',
-        WebkitBackdropFilter: 'blur(2px) saturate(120%)'
-      }}
-    >
+    <div className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
+      <div className="w-full px-4 py-3">
+        <div className="flex justify-between items-center">
       {/* Main Header Content */}
       <div className="px-1 sm:px-2 md:px-4 py-1 sm:py-2 flex items-center justify-between min-h-[40px] relative z-10">
       <div className="flex items-center gap-1 sm:gap-2 min-w-0 flex-1">

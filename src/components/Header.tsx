@@ -78,6 +78,7 @@ export const Header = () => {
         <div className="flex items-center">
           <nav className="hidden md:flex space-x-6 mr-6">
             {session && <Link to="/account" className="text-gray-200 hover:text-orange-300 transition-colors">Account</Link>}
+            <Link to="/sat-math" className="text-gray-200 hover:text-orange-300 transition-colors">SAT Math</Link>
             <Link to="/practice" className="text-gray-200 hover:text-orange-300 transition-colors">Practice</Link>
             <Link to="/sat-writing-demo" className="text-gray-200 hover:text-orange-300 transition-colors">AI Writing</Link>
             <Link to="/reading-assistant" className="text-gray-200 hover:text-orange-300 transition-colors">AI Reading</Link>
@@ -101,6 +102,7 @@ export const Header = () => {
           <div className="container mx-auto px-4">
             <div className="flex flex-col space-y-2">
               {session && <Link to="/account" className="text-gray-200 hover:text-orange-400 py-2 transition-colors" onClick={() => setIsNavOpen(false)}>Account</Link>}
+              <Link to="/sat-math" className="text-gray-200 hover:text-orange-400 py-2 transition-colors" onClick={() => setIsNavOpen(false)}>SAT Math</Link>
               <Link to="/practice" className="text-gray-200 hover:text-orange-400 py-2 transition-colors" onClick={() => setIsNavOpen(false)}>Practice</Link>
               <Link to="/sat-writing-demo" className="text-gray-200 hover:text-orange-400 py-2 transition-colors" onClick={() => setIsNavOpen(false)}>AI Writing</Link>
               <Link to="/reading-assistant" className="text-gray-200 hover:text-orange-400 py-2 transition-colors" onClick={() => setIsNavOpen(false)}>AI Reading</Link>

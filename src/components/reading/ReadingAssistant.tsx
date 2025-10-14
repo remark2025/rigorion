@@ -49,9 +49,18 @@ const ReadingAssistant: React.FC = () => {
   const [isResizing, setIsResizing] = useState(false);
   const [timer, setTimer] = useState(0);
   const [isTimerRunning, setIsTimerRunning] = useState(false);
-  const [highlights, setHighlights] = useState({ evidence: true, toneShifters: true, transitions: true, difficult: true });
+  const [highlights, setHighlights] = useState({ 
+    centralIdea: true, 
+    evidence: true, 
+    toneShifters: true, 
+    transitions: true, 
+    vocabulary: true, 
+    crossText: true, 
+    quantReading: true 
+  });
   const [activeTooltip, setActiveTooltip] = useState<any>(null);
   const [tooltipPosition, setTooltipPosition] = useState({ top: 0, left: 0 });
+  const [showColorDropdown, setShowColorDropdown] = useState(false);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
 
   const fontOptions = ['Georgia', 'Times New Roman', 'Arial', 'Helvetica', 'Verdana', 'Courier New'];
@@ -67,16 +76,33 @@ const ReadingAssistant: React.FC = () => {
   ];
 
   const highlightCategories = [
-    { id: 'evidence', label: '🟡 Evidence', color: 'rgba(251, 146, 60, 0.3)' },
-    { id: 'toneShifters', label: '🩷 Tone Shifters', color: 'rgba(251, 146, 60, 0.4)' },
-    { id: 'transitions', label: '🔵 Transitions', color: 'rgba(251, 146, 60, 0.2)' },
-    { id: 'difficult', label: '🟣 Vocabulary', color: 'transparent', underline: true }
+    { id: 'centralIdea', label: '🟢 Central Idea / Purpose', color: 'rgba(34, 197, 94, 0.3)' },
+    { id: 'evidence', label: '🟡 Evidence', color: 'rgba(234, 179, 8, 0.3)' },
+    { id: 'toneShifters', label: '🩷 Tone Shifters', color: 'rgba(244, 114, 182, 0.3)' },
+    { id: 'transitions', label: '🔵 Transitions', color: 'rgba(59, 130, 246, 0.3)' },
+    { id: 'vocabulary', label: '🟣 Vocabulary', color: 'rgba(139, 92, 246, 0.3)' },
+    { id: 'crossText', label: '⚫ Cross-Text / Synthesis', color: 'rgba(31, 41, 55, 0.2)' },
+    { id: 'quantReading', label: '🟠 Quant-Reading', color: 'rgba(249, 115, 22, 0.3)' }
   ];
 
   useEffect(() => {
     const saved = localStorage.getItem('sat-reading-progress');
     if (saved) setUserProgress(JSON.parse(saved));
   }, []);
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      
+      if (showColorDropdown && !target.closest('.color-dropdown')) {
+        setShowColorDropdown(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showColorDropdown]);
 
   const saveProgress = (passageId: number, updates: any) => {
     const newProgress = {
@@ -223,8 +249,27 @@ const ReadingAssistant: React.FC = () => {
   const applyHighlights = (text: string, highlightData: any) => {
     const positions: any[] = [];
    
+    // Add central idea highlights (if available)
+    if (highlightData.centralIdea) {
+      highlightData.centralIdea.forEach((phrase: string) => {
+        let startIndex = 0;
+        while (true) {
+          const index = text.toLowerCase().indexOf(phrase.toLowerCase(), startIndex);
+          if (index === -1) break;
+          positions.push({
+            start: index,
+            end: index + phrase.length,
+            text: text.substring(index, index + phrase.length),
+            type: 'centralIdea'
+          });
+          startIndex = index + phrase.length;
+        }
+      });
+    }
+   
     // Add evidence highlights
-    highlightData.evidence.forEach((phrase: string) => {
+    if (highlightData.evidence) {
+      highlightData.evidence.forEach((phrase: string) => {
       let startIndex = 0;
       while (true) {
         const index = text.toLowerCase().indexOf(phrase.toLowerCase(), startIndex);
@@ -238,9 +283,11 @@ const ReadingAssistant: React.FC = () => {
         startIndex = index + phrase.length;
       }
     });
+    }
 
     // Add tone shifters
-    highlightData.toneShifters.forEach((phrase: string) => {
+    if (highlightData.toneShifters) {
+      highlightData.toneShifters.forEach((phrase: string) => {
       let startIndex = 0;
       while (true) {
         const index = text.toLowerCase().indexOf(phrase.toLowerCase(), startIndex);
@@ -254,9 +301,11 @@ const ReadingAssistant: React.FC = () => {
         startIndex = index + phrase.length;
       }
     });
+    }
 
     // Add transitions
-    highlightData.transitions.forEach((phrase: string) => {
+    if (highlightData.transitions) {
+      highlightData.transitions.forEach((phrase: string) => {
       let startIndex = 0;
       while (true) {
         const index = text.toLowerCase().indexOf(phrase.toLowerCase(), startIndex);
@@ -270,9 +319,47 @@ const ReadingAssistant: React.FC = () => {
         startIndex = index + phrase.length;
       }
     });
+    }
 
-    // Add difficult words
-    Object.keys(highlightData.difficult).forEach(word => {
+    // Add cross-text highlights (if available)
+    if (highlightData.crossText) {
+      highlightData.crossText.forEach((phrase: string) => {
+        let startIndex = 0;
+        while (true) {
+          const index = text.toLowerCase().indexOf(phrase.toLowerCase(), startIndex);
+          if (index === -1) break;
+          positions.push({
+            start: index,
+            end: index + phrase.length,
+            text: text.substring(index, index + phrase.length),
+            type: 'crossText'
+          });
+          startIndex = index + phrase.length;
+        }
+      });
+    }
+
+    // Add quant-reading highlights (if available)
+    if (highlightData.quantReading) {
+      highlightData.quantReading.forEach((phrase: string) => {
+        let startIndex = 0;
+        while (true) {
+          const index = text.toLowerCase().indexOf(phrase.toLowerCase(), startIndex);
+          if (index === -1) break;
+          positions.push({
+            start: index,
+            end: index + phrase.length,
+            text: text.substring(index, index + phrase.length),
+            type: 'quantReading'
+          });
+          startIndex = index + phrase.length;
+        }
+      });
+    }
+
+    // Add difficult words (vocabulary)
+    if (highlightData.difficult) {
+      Object.keys(highlightData.difficult).forEach(word => {
       let startIndex = 0;
       while (true) {
         const index = text.toLowerCase().indexOf(word.toLowerCase(), startIndex);
@@ -281,12 +368,13 @@ const ReadingAssistant: React.FC = () => {
           start: index,
           end: index + word.length,
           text: text.substring(index, index + word.length),
-          type: 'difficult',
+          type: 'vocabulary',
           explanation: highlightData.difficult[word]
         });
         startIndex = index + word.length;
       }
     });
+    }
 
     // Sort and remove overlaps
     positions.sort((a, b) => {
@@ -311,17 +399,22 @@ const ReadingAssistant: React.FC = () => {
     filtered.forEach(pos => {
       result += text.substring(lastIndex, pos.start);
      
-      const colorMap: Record<string, string> = {
-        evidence: 'rgba(251, 146, 60, 0.3)',
-        toneShifters: 'rgba(251, 146, 60, 0.4)',
-        transitions: 'rgba(251, 146, 60, 0.2)',
-        difficult: 'transparent'
+      const colorMap: Record<string, { border: string, bg: string, text: string }> = {
+        centralIdea: { border: '#22c55e', bg: 'rgba(34, 197, 94, 0.05)', text: '#16a34a' },
+        evidence: { border: '#eab308', bg: 'rgba(234, 179, 8, 0.05)', text: '#ca8a04' },
+        toneShifters: { border: '#f472b6', bg: 'rgba(244, 114, 182, 0.05)', text: '#ec4899' },
+        transitions: { border: '#3b82f6', bg: 'rgba(59, 130, 246, 0.05)', text: '#2563eb' },
+        crossText: { border: '#1f2937', bg: 'rgba(31, 41, 55, 0.05)', text: '#374151' },
+        quantReading: { border: '#f97316', bg: 'rgba(249, 115, 22, 0.05)', text: '#ea580c' },
+        vocabulary: { border: 'transparent', bg: 'transparent', text: '#7c3aed' }
       };
      
-      const color = colorMap[pos.type];
-      const style = pos.type === 'difficult'
-        ? 'text-decoration: underline; text-decoration-style: dotted; text-decoration-thickness: 2px; text-decoration-color: #ea580c; cursor: help;'
-        : `background-color: ${color}; padding: 2px 0; border-radius: 2px;`;
+      const colors = colorMap[pos.type];
+      const style = pos.type === 'vocabulary'
+        ? 'color: #7c3aed; font-weight: 600; cursor: help;'
+        : pos.type === 'transitions' 
+          ? `background-color: ${colors.bg}; padding: 2px 8px; border-radius: 12px; border-left: 3px solid ${colors.border}; color: ${colors.text}; display: inline-block; margin: 0 2px;`
+          : `background-color: ${colors.bg}; padding: 1px 4px; border-left: 3px solid ${colors.border}; color: ${colors.text}; border-radius: 2px;`;
      
       const escapedText = pos.text.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
       const dataExplanation = pos.explanation ? ` data-explanation="${pos.explanation.replace(/"/g, '&quot;')}"` : '';
@@ -339,6 +432,9 @@ const ReadingAssistant: React.FC = () => {
    
     let display = displayText;
    
+    if (!highlights.centralIdea) {
+      display = display.replace(/<mark data-type="centralIdea"[^>]*>(.*?)<\/mark>/g, '$1');
+    }
     if (!highlights.evidence) {
       display = display.replace(/<mark data-type="evidence"[^>]*>(.*?)<\/mark>/g, '$1');
     }
@@ -348,8 +444,18 @@ const ReadingAssistant: React.FC = () => {
     if (!highlights.transitions) {
       display = display.replace(/<mark data-type="transitions"[^>]*>(.*?)<\/mark>/g, '$1');
     }
-    if (!highlights.difficult) {
-      display = display.replace(/<mark data-type="difficult"[^>]*>(.*?)<\/mark>/g, '$1');
+    if (!highlights.vocabulary) {
+      display = display.replace(/<mark data-type="vocabulary"[^>]*>(.*?)<\/mark>/g, '$1');
+    }
+    if (!highlights.crossText) {
+      display = display.replace(/<mark data-type="crossText"[^>]*>(.*?)<\/mark>/g, '$1');
+    }
+    if (!highlights.quantReading) {
+      display = display.replace(/<mark data-type="quantReading"[^>]*>(.*?)<\/mark>/g, '$1');
+    }
+    // Handle vocabulary text color changes
+    if (!highlights.vocabulary) {
+      display = display.replace(/<mark data-type="vocabulary"[^>]*>(.*?)<\/mark>/g, '$1');
     }
    
     return display;
@@ -357,7 +463,7 @@ const ReadingAssistant: React.FC = () => {
 
   const handleMouseOver = (e: React.MouseEvent) => {
     const target = e.target as HTMLElement;
-    if (target.tagName === 'MARK' && target.getAttribute('data-type') === 'difficult') {
+    if (target.tagName === 'MARK' && target.getAttribute('data-type') === 'vocabulary') {
       const explanation = target.getAttribute('data-explanation');
       const text = target.getAttribute('data-text');
      
@@ -379,7 +485,7 @@ const ReadingAssistant: React.FC = () => {
 
   const handleMouseOut = (e: React.MouseEvent) => {
     const target = e.target as HTMLElement;
-    if (target.tagName === 'MARK' && target.getAttribute('data-type') === 'difficult') {
+    if (target.tagName === 'MARK' && target.getAttribute('data-type') === 'vocabulary') {
       const relatedTarget = e.relatedTarget as HTMLElement;
       if (!relatedTarget || !relatedTarget.closest('.simplifier-tooltip')) {
         setActiveTooltip(null);
@@ -438,6 +544,72 @@ const ReadingAssistant: React.FC = () => {
 
   const toggleHighlight = (category: string) => {
     setHighlights(prev => ({ ...prev, [category]: !prev[category] }));
+  };
+
+  const getIncorrectChoiceExplanation = (question: any, optionIndex: number) => {
+    // Generic explanations based on question type and common wrong answer patterns
+    const questionType = question.type;
+    const questionText = question.text.toLowerCase();
+    
+    if (questionType === 'purpose' || questionText.includes('main purpose') || questionText.includes('purpose')) {
+      const explanations = [
+        "Too narrow - focuses on one detail rather than the overall purpose",
+        "Too specific - this is a supporting detail, not the main point", 
+        "Too broad - goes beyond what the passage actually discusses",
+        "Contradicts the passage - the author doesn't take this stance"
+      ];
+      return explanations[optionIndex % explanations.length];
+    }
+    
+    if (questionType === 'tone' || questionText.includes('tone') || questionText.includes('attitude')) {
+      const explanations = [
+        "Too extreme - the author's tone is more measured than this suggests",
+        "Misses the balance - ignores the author's nuanced perspective",
+        "Too negative - doesn't reflect the author's hopeful elements",
+        "Too positive - overlooks the author's concerns and warnings"
+      ];
+      return explanations[optionIndex % explanations.length];
+    }
+    
+    if (questionType === 'evidence' || questionText.includes('evidence') || questionText.includes('support')) {
+      const explanations = [
+        "Not factual evidence - this is opinion or interpretation",
+        "Incomplete support - only provides partial evidence", 
+        "Wrong type of evidence - doesn't directly support the claim",
+        "Not mentioned as evidence - this isn't cited as proof"
+      ];
+      return explanations[optionIndex % explanations.length];
+    }
+    
+    if (questionType === 'inference' || questionText.includes('infer') || questionText.includes('suggest')) {
+      const explanations = [
+        "Goes too far - not supported by the passage details",
+        "Contradicts the passage - opposite of what's suggested",
+        "Too literal - misses the implied meaning",
+        "Not supported - no evidence points to this conclusion"
+      ];
+      return explanations[optionIndex % explanations.length];
+    }
+    
+    if (questionType === 'vocabulary' || questionText.includes('meaning') || questionText.includes('refers to')) {
+      const explanations = [
+        "Wrong context - doesn't fit how the word is used here",
+        "Too literal - misses the contextual meaning",
+        "Different definition - correct word, wrong usage",
+        "Unrelated meaning - doesn't connect to the passage context"
+      ];
+      return explanations[optionIndex % explanations.length];
+    }
+    
+    // Default explanations for other question types
+    const defaultExplanations = [
+      "Doesn't match the passage details",
+      "Too extreme or absolute",
+      "Focuses on wrong aspect",
+      "Not supported by the text"
+    ];
+    
+    return defaultExplanations[optionIndex % defaultExplanations.length];
   };
 
   const continueReading = readingService.getAllPassages()
@@ -653,6 +825,15 @@ const ReadingAssistant: React.FC = () => {
             -webkit-text-fill-color: transparent;
             animation: shimmer 2s infinite linear;
           }
+          
+          .shimmer-vocab {
+            background: linear-gradient(90deg, #8b5cf6 0%, #a855f7 50%, #8b5cf6 100%);
+            background-size: 200px 100%;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 1.5s infinite linear;
+          }
         `}} />
        
         {/* Fixed Header - Full Width */}
@@ -781,7 +962,7 @@ const ReadingAssistant: React.FC = () => {
                     setFilterDifficulty('All');
                     setFilterCompletion('All');
                   }}
-                  className="bg-red-500 hover:bg-red-600 text-white"
+                  className="bg-red-700 hover:bg-red-800 text-white"
                 >
                   Clear Filters
                 </Button>
@@ -822,89 +1003,133 @@ const ReadingAssistant: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
       {/* Fixed Header - Full Width */}
-      <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200">
+      <div className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-200 shadow-sm">
         <div className="w-full px-4 py-3">
           <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
               <Button 
                 onClick={() => setView('selection')} 
                 variant="outline"
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 text-orange-600 border-gray-300 hover:bg-orange-50"
               >
                 <ArrowLeft className="h-4 w-4" />
                 Back to Passages
               </Button>
               
               {/* Navigation within category */}
-              <div className="flex items-center gap-2 border-l pl-4 ml-4">
+              <div className="flex items-center gap-4 border-l pl-4 ml-4">
                 <Button
                   onClick={() => {
                     const prev = previousPassageInCategory();
                     if (prev) loadPassage(prev.id);
                   }}
-                  variant="outline"
                   size="sm"
+                  variant="outline"
                   disabled={!previousPassageInCategory()}
+                  className="border-gray-300 text-orange-600 hover:bg-orange-50 disabled:text-gray-400 disabled:cursor-not-allowed"
                 >
                   <ChevronLeft className="h-4 w-4" />
                   Previous
                 </Button>
-                <span className="text-sm px-2 text-gray-600">
-                  {selectedPassage && readingService.getPassageMetadata(selectedPassage.id)?.category}
-                </span>
+                
+                {/* Timer in center */}
+                <div className="flex items-center gap-2">
+                  {isTimerRunning ? (
+                    <Pause className="w-5 h-5 text-red-700 cursor-pointer" onClick={() => setIsTimerRunning(false)} />
+                  ) : (
+                    <Play className="w-5 h-5 text-green-700 cursor-pointer" onClick={() => setIsTimerRunning(true)} />
+                  )}
+                  <Clock className="w-4 h-4" />
+                  <span className="font-mono">{formatTime(timer)}</span>
+                </div>
+                
                 <Button
                   onClick={() => {
                     const next = nextPassageInCategory();
                     if (next) loadPassage(next.id);
                   }}
-                  variant="outline"
                   size="sm"
+                  variant="outline"
                   disabled={!nextPassageInCategory()}
+                  className="border-gray-300 text-orange-600 hover:bg-orange-50 disabled:text-gray-400 disabled:cursor-not-allowed"
                 >
                   Next
                   <ChevronRight className="h-4 w-4" />
                 </Button>
-              </div>
-              
-              {/* SAT Reading title with shiver effect */}
-              <div className="flex items-center gap-2">
-                <h2 className="text-xl font-light text-gray-900">
-                  <span className="shiver-text">SAT Reading</span>
-                </h2>
               </div>
             </div>
            
             <div className="flex items-center gap-4">
               {/* Highlight Toggles */}
               <div className="flex gap-2">
-                {highlightCategories.map(cat => (
+                {/* SAT Reading Colors Dropdown */}
+                <div className="relative color-dropdown">
                   <Button
-                    key={cat.id}
-                    onClick={() => toggleHighlight(cat.id)}
+                    onClick={() => setShowColorDropdown(!showColorDropdown)}
                     variant="outline"
                     size="sm"
-                    className={`text-sm font-medium transition-all ${
-                      highlights[cat.id as keyof typeof highlights]
-                        ? 'bg-orange-100 text-orange-800 border-orange-400 hover:bg-orange-200'
-                        : 'bg-gray-100 text-gray-600 border-gray-300 hover:bg-gray-200'
-                    }`}
+                    className="flex items-center gap-2 text-sm font-medium text-gray-500 border-gray-300 hover:bg-gray-50 rounded-full"
                   >
-                    {highlights[cat.id as keyof typeof highlights] ? <Eye className="w-3 h-3 mr-1" /> : <EyeOff className="w-3 h-3 mr-1" />}
-                    {cat.label}
+                    <span className="text-base text-orange-500">📊</span>
+                    SAT Simplifier
+                    <ChevronDown className={`h-3 w-3 transition-transform text-orange-500 ${showColorDropdown ? 'rotate-180' : ''}`} />
                   </Button>
-                ))}
-              </div>
-             
-              <div className="flex items-center gap-2">
-                {isTimerRunning ? (
-                  <Pause className="w-5 h-5 text-red-500 cursor-pointer" onClick={() => setIsTimerRunning(false)} />
-                ) : (
-                  <Play className="w-5 h-5 text-green-500 cursor-pointer" onClick={() => setIsTimerRunning(true)} />
-                )}
-                <Clock className="w-4 h-4" />
-                <span className="font-mono">{formatTime(timer)}</span>
+                  
+                  {showColorDropdown && (
+                    <div className="absolute top-full left-0 mt-1 w-80 bg-white border border-gray-200 rounded-lg shadow-lg z-20 p-3 max-h-96 overflow-y-auto">
+                      <div className="mb-2">
+                        <div className="space-y-1">
+                          {highlightCategories.filter(cat => cat.id !== 'vocabulary').map(color => (
+                            <button
+                              key={color.id}
+                              onClick={() => {
+                                toggleHighlight(color.id);
+                              }}
+                              className="w-full text-left px-3 py-2 hover:bg-gray-50 rounded flex items-center gap-3 transition-colors"
+                            >
+                              <div 
+                                className="w-3 h-3 rounded-full flex-shrink-0"
+                                style={{ backgroundColor: color.color.replace('rgba', 'rgb').replace(/, 0\.\d+\)/, ')') }}
+                              ></div>
+                              <div className="flex-1">
+                                <div 
+                                  className="font-medium text-sm"
+                                  style={{ color: highlights[color.id as keyof typeof highlights] ? color.color.replace('rgba', 'rgb').replace(/, 0\.\d+\)/, ')') : '#374151' }}
+                                >
+                                  {color.label.replace(/[🟢🟡🩷🔵⚫🟠] /, '')}
+                                </div>
+                                <div 
+                                  className="text-xs mt-0.5 leading-tight"
+                                  style={{ color: highlights[color.id as keyof typeof highlights] ? color.color.replace('rgba', 'rgb').replace(/, 0\.\d+\)/, ')') : '#9ca3af' }}
+                                >
+                                  {color.id === 'centralIdea' && 'Thesis statements, umbrella claims'}
+                                  {color.id === 'evidence' && 'Proof lines, data citations'}
+                                  {color.id === 'toneShifters' && 'Adjectives revealing stance'}
+                                  {color.id === 'transitions' && 'Contrast, cause, addition markers'}
+                                  {color.id === 'crossText' && 'Lines connecting passages'}
+                                  {color.id === 'quantReading' && 'Chart/table references'}
+                                </div>
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                
+                {/* Vocabulary Button - Keep separate as it's crucial */}
+                <Button
+                  onClick={() => toggleHighlight('vocabulary')}
+                  variant="outline"
+                  size="sm"
+                  className="text-sm font-medium text-gray-500 border-gray-300 hover:bg-gray-50 rounded-full transition-all"
+                >
+                  {highlights.vocabulary ? <Eye className="w-3 h-3 mr-1 text-orange-500" /> : <EyeOff className="w-3 h-3 mr-1 text-orange-500" />}
+                  Simplifier
+                </Button>
               </div>
              
               <Button 
@@ -950,14 +1175,20 @@ const ReadingAssistant: React.FC = () => {
       <div className="pt-16">
         <div className="w-full flex h-[calc(100vh-4rem)] relative">
           {/* Reading Panel */}
-          <div className="p-6 border-r border-gray-200 overflow-y-auto" style={{ width: `${passageWidth}%` }}>
+          <div className="p-6 bg-gradient-to-b from-white to-gray-50 border-r border-gray-200 overflow-y-auto" style={{ width: `${passageWidth}%` }}>
             <h3 className="text-lg font-semibold mb-4 text-gray-900">
               {selectedPassage?.title}
             </h3>
             <div className="passage-container relative">
               <div
-                className="p-4 whitespace-pre-wrap leading-relaxed text-gray-900 bg-white"
-                style={{ fontFamily, fontSize }}
+                className="p-6 leading-relaxed text-gray-900 bg-white rounded-xl shadow-lg border border-gray-100"
+                style={{ 
+                  fontFamily, 
+                  fontSize, 
+                  textAlign: 'justify',
+                  lineHeight: '1.8',
+                  wordSpacing: '0.1em'
+                }}
                 dangerouslySetInnerHTML={{ __html: getDisplayTextContent() }}
                 onMouseOver={handleMouseOver}
                 onMouseOut={handleMouseOut}
@@ -965,7 +1196,7 @@ const ReadingAssistant: React.FC = () => {
              
               {activeTooltip && (
                 <div
-                  className="simplifier-tooltip absolute z-50 rounded-lg shadow-2xl border p-4 bg-white border-gray-200"
+                  className="simplifier-tooltip absolute z-50 rounded-xl shadow-2xl border bg-gradient-to-br from-white to-purple-50 border-purple-200 backdrop-blur-sm transition-all duration-300"
                   style={{
                     top: `${tooltipPosition.top}px`,
                     left: `${tooltipPosition.left}px`,
@@ -974,14 +1205,16 @@ const ReadingAssistant: React.FC = () => {
                   }}
                   onMouseLeave={() => setActiveTooltip(null)}
                 >
-                  <div className="mb-2">
-                    <span className="font-semibold text-orange-600 text-sm">{activeTooltip.text}</span>
+                  <div className="p-4">
+                    <div className="mb-3">
+                      <span className="font-semibold text-purple-700 text-base shimmer-vocab">{activeTooltip.text}</span>
+                    </div>
+                    <p className="text-sm text-gray-700 leading-relaxed">
+                      {activeTooltip.explanation}
+                    </p>
                   </div>
-                  <p className="text-sm text-gray-700">
-                    {activeTooltip.explanation}
-                  </p>
                   <div 
-                    className="absolute w-3 h-3 border-b border-r bg-white border-gray-200" 
+                    className="absolute w-3 h-3 border-b border-r bg-gradient-to-br from-white to-purple-50 border-purple-200" 
                     style={{ bottom: '-6px', left: '50%', transform: 'translateX(-50%) rotate(45deg)' }} 
                   />
                 </div>
@@ -991,7 +1224,7 @@ const ReadingAssistant: React.FC = () => {
 
           {/* Resizer */}
           <div 
-            className="w-1 bg-gray-300 hover:bg-orange-400 cursor-col-resize transition-colors flex items-center justify-center group"
+            className="w-1 bg-gradient-to-b from-gray-200 to-gray-400 hover:from-orange-300 hover:to-orange-500 cursor-col-resize transition-all duration-300 flex items-center justify-center group shadow-sm"
             onMouseDown={(e) => {
               setIsResizing(true);
               const startX = e.clientX;
@@ -1018,7 +1251,7 @@ const ReadingAssistant: React.FC = () => {
           </div>
           
           {/* Questions Panel */}
-          <div className="flex-1 p-6 bg-white flex flex-col" style={{ width: `${100 - passageWidth}%` }}>
+          <div className="flex-1 p-6 bg-gradient-to-br from-gray-50 to-white flex flex-col border-l border-gray-100" style={{ width: `${100 - passageWidth}%` }}>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-900">Questions</h3>
               <div className="flex items-center gap-2">
@@ -1049,16 +1282,16 @@ const ReadingAssistant: React.FC = () => {
                 const hasAnswered = answers[q.id] !== undefined;
                
                 return (
-                  <div key={q.id} className="border border-gray-200 rounded-lg p-3">
+                  <div key={q.id} className="bg-white rounded-xl shadow-lg border border-gray-100 p-4 transition-all duration-300 hover:shadow-xl">
                     <div className="flex gap-2 mb-2">
                       <span className="font-bold text-orange-600">{idx + 1}.</span>
                       <div className="flex-1">
                         <span className={`inline-block px-2 py-0.5 rounded text-xs ${typeInfo?.color} mb-2`}>
                           {typeInfo?.label}
                         </span>
-                        <p className="text-sm mb-2 text-gray-800">{q.text}</p>
+                        <p className="text-base mb-4 text-gray-800 leading-relaxed">{q.text}</p>
                        
-                        <div className="space-y-1">
+                        <div className="space-y-3">
                           {q.options.map((opt: string, optIdx: number) => {
                             const isEliminated = eliminated[q.id]?.[optIdx];
                             const isSelected = answers[q.id] === optIdx;
@@ -1067,12 +1300,12 @@ const ReadingAssistant: React.FC = () => {
                             return (
                               <div
                                 key={optIdx}
-                                className={`flex items-center gap-2 p-2 rounded border transition-colors ${
+                                className={`flex items-center gap-3 p-3 rounded-full border transition-all duration-300 shadow-sm hover:shadow-md ${
                                   isEliminated ? 'opacity-50 line-through' :
-                                  isSelected && hasAnswered && isCorrect ? 'bg-green-100 border-green-400' :
-                                  isSelected && hasAnswered ? 'bg-red-100 border-red-400' :
-                                  isSelected ? 'bg-orange-100 border-orange-400' : 
-                                  'border-gray-200 hover:border-gray-300'
+                                  isSelected && hasAnswered && isCorrect ? 'bg-gradient-to-r from-green-50 to-green-100 border-green-600 shadow-green-200' :
+                                  isSelected && hasAnswered ? 'bg-gradient-to-r from-red-50 to-red-100 border-red-600 shadow-red-200' :
+                                  isSelected ? 'bg-gradient-to-r from-orange-50 to-orange-100 border-orange-400 shadow-orange-200' : 
+                                  'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                                 }`}
                               >
                                 <Button
@@ -1089,7 +1322,7 @@ const ReadingAssistant: React.FC = () => {
                                 >
                                   <span className="font-medium">{String.fromCharCode(65 + optIdx)}.</span> {opt}
                                 </button>
-                                {hasAnswered && isThisCorrect && <Check className="w-4 h-4 text-green-600" />}
+                                {hasAnswered && isThisCorrect && <Check className="w-4 h-4 text-green-700" />}
                               </div>
                             );
                           })}
@@ -1117,12 +1350,37 @@ const ReadingAssistant: React.FC = () => {
                         )}
                        
                         {hasAnswered && (
-                          <div className={`mt-2 p-2 rounded text-xs ${
-                            isCorrect 
-                              ? 'bg-green-100 text-green-800'
-                              : 'bg-red-100 text-red-800'
-                          }`}>
-                            {isCorrect ? '✓ Correct!' : `✗ Incorrect. Answer: ${String.fromCharCode(65 + q.correctAnswer)}`}
+                          <div className="mt-2 space-y-2">
+                            <div className={`p-2 rounded text-xs ${
+                              isCorrect 
+                                ? 'bg-green-50 text-green-800'
+                                : 'bg-red-50 text-red-800'
+                            }`}>
+                              {isCorrect ? '✓ Correct!' : `✗ Incorrect. Answer: ${String.fromCharCode(65 + q.correctAnswer)}`}
+                            </div>
+                            
+                            {/* Show wrong answer explanations after student answers */}
+                            <div className="p-2 rounded text-xs border-l-4 border-blue-500 bg-blue-50 text-gray-700">
+                              <p className="font-semibold text-blue-600 mb-1 flex items-center gap-1">
+                                <X className="w-3 h-3" />
+                                WHY OTHER CHOICES ARE WRONG
+                              </p>
+                              <div className="space-y-1">
+                                {q.options.map((option: string, optIdx: number) => {
+                                  if (optIdx === q.correctAnswer) return null;
+                                  return (
+                                    <div key={optIdx} className="text-xs">
+                                      <span className="font-medium text-red-700">
+                                        {String.fromCharCode(65 + optIdx)}.
+                                      </span>{' '}
+                                      <span className="text-gray-600">
+                                        {getIncorrectChoiceExplanation(q, optIdx)}
+                                      </span>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
                           </div>
                         )}
                       </div>

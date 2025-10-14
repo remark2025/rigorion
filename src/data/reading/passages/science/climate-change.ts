@@ -3,6 +3,7 @@ import { PassageContent } from '../../types';
 export const climateChangePassage: PassageContent = {
   id: 1,
   title: "Climate Change and Global Action",
+  imageUrl: "/resources/passages/climate-change.jpg",
   text: `Climate change represents one of the most pressing challenges of our time. According to NASA, global temperatures have risen by 1.1°C since the late 19th century. However, the impact varies significantly across different regions of the world.
 
 First, we must understand that greenhouse gases trap heat in the atmosphere. This phenomenon, known as the greenhouse effect, is natural and necessary for life. Nevertheless, human activities have intensified this process dramatically. For instance, carbon dioxide levels have increased by 50% since pre-industrial times.

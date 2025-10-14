@@ -796,17 +796,15 @@ const PracticeDisplay = ({
   const hasGraph = !!graphUrl;
 
   return (
-    <div className="min-h-screen w-full px-2 sm:px-8 bg-white" style={{ scrollbarGutter: 'stable' }}>
-      {/* SAT Practice Layout Container */}
-      <div className="flex flex-col">
+    <>
+      <div className="min-h-screen w-full bg-white" style={{ scrollbarGutter: 'stable' }}>
+      {/* SAT Math Practice Layout Container */}
+      <div className="flex h-[calc(100vh-80px)]">
         
-        {/* Desktop: Clean SAT Layout */}
-        <div className="hidden lg:flex gap-6">
+        {/* Question Section - Flexible Width */}
+        <div className="flex-1 border-r border-gray-200 overflow-y-auto p-8">
           
-          {/* Column 1: Question + Answer Choices */}
-          <div className={`${
-            activeTab === 'problem' && !hasPassage ? 'w-full' : 'w-2/5'
-          } bg-white p-8`}>
+          {/* Question Header */}
           
           {/* SAT Question Header with Timer and Navigation */}
           <QuestionHeader 
@@ -2323,7 +2321,6 @@ const PracticeDisplay = ({
 
       </div>
 
-
       {/* Interactions Log Display */}
       {showInteractionLog && (
         <div className={`fixed top-20 right-4 w-96 max-h-96 overflow-y-auto z-50 p-4 rounded-lg shadow-lg border ${
@@ -2450,7 +2447,7 @@ const PracticeDisplay = ({
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
 
