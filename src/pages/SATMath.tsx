@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import LearningShowcaseCard from "@/components/shared/LearningShowcaseCard";
 import {
   Calculator, ArrowLeft, ChevronLeft, ChevronRight,
   Clock, Target, Award, TrendingUp, BookOpen, Play
@@ -59,74 +60,59 @@ const SATMath: React.FC = () => {
     skill, 
     size = 'normal' 
   }) => {
-    const [isHovered, setIsHovered] = useState(false);
+    const cardHeight = size === 'large' ? 'min-h-[20.7rem]' : 'min-h-[19.4rem]';
 
     return (
-      <div
-        className={`rounded-xl overflow-hidden cursor-pointer transition-all duration-300 bg-white border border-gray-200 ${
-          size === 'large' ? 'h-[20.7rem]' : 'h-[19.4rem]'
-        } ${isHovered ? 'card-shimmer shadow-xl z-10' : 'shadow-sm hover:shadow-md'}`}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
+      <LearningShowcaseCard
+        imageSrc={skill.imageUrl}
+        imageAlt={skill.title}
         onClick={() => startPractice(skill)}
+        topRightOverlay={
+          <Badge className={getDifficultyColor(skill.difficulty)}>{skill.difficulty}</Badge>
+        }
+        className={cardHeight}
+        bodyClassName="justify-between"
       >
-        {/* Image Section */}
-        <div className="h-40 relative overflow-hidden">
-          <img
-            src={skill.imageUrl}
-            alt={skill.title}
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute top-2 right-2">
-            <Badge className={getDifficultyColor(skill.difficulty)}>
-              {skill.difficulty}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <Badge variant="secondary" className={getCategoryColor(skill.category)}>
+              {skill.category}
             </Badge>
-          </div>
-        </div>
-
-        {/* Content Section */}
-        <div className="p-4 flex flex-col justify-between h-[calc(100%-10rem)]">
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <Badge variant="secondary" className={getCategoryColor(skill.category)}>
-                {skill.category}
-              </Badge>
-              <div className="flex items-center text-xs text-gray-500">
-                <Clock className="w-3 h-3 mr-1" />
-                {skill.estimatedTime}m
-              </div>
+            <div className="flex items-center text-xs text-gray-500">
+              <Clock className="mr-1 h-3 w-3" />
+              {skill.estimatedTime}m
             </div>
-            
-            <h3 className="font-bold text-lg mb-2 text-gray-900 line-clamp-2">
-              {skill.title}
-            </h3>
-            
-            <p className="text-sm text-gray-600 mb-3 line-clamp-2">
-              {skill.description}
-            </p>
           </div>
 
-          <div className="space-y-3">
-            <div className="flex items-center justify-between text-sm">
-              <div className="flex items-center text-gray-500">
-                <Target className="w-4 h-4 mr-1" />
-                {skill.questionCount} questions
-              </div>
-            </div>
-            
-            <Button 
-              className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-medium"
-              onClick={(e) => {
-                e.stopPropagation();
-                startPractice(skill);
-              }}
-            >
-              <Play className="w-4 h-4 mr-2" />
-              Start Practice
-            </Button>
-          </div>
+          <h3 className="text-lg font-semibold text-gray-900 line-clamp-2">
+            {skill.title}
+          </h3>
+
+          <p className="text-sm text-gray-600 line-clamp-2">
+            {skill.description}
+          </p>
         </div>
-      </div>
+
+        <div className="space-y-3">
+          <div className="flex items-center justify-between text-sm">
+            <div className="flex items-center text-gray-500">
+              <Target className="mr-1 h-4 w-4" />
+              {skill.questionCount} questions
+            </div>
+          </div>
+
+          <Button
+            className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white transition hover:from-blue-600 hover:to-blue-700"
+            onClick={(e) => {
+              e.stopPropagation();
+              startPractice(skill);
+            }}
+          >
+            <Play className="mr-2 h-4 w-4" />
+            Start Practice
+          </Button>
+        </div>
+      </LearningShowcaseCard>
     );
   };
 

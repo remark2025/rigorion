@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ArrowLeft, Brain, Search, Lightbulb, Bot, FileText, Target, Zap, Eye } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { mockReadingService } from '@/services/mockReadingAnalysis';
+import { cn } from '@/lib/utils';
 
 interface ReadingAnalysis {
   patterns: Array<{
@@ -86,58 +87,85 @@ Looking ahead, the next frontier in AI development appears to be artificial gene
   const wordCount = passageText.split(' ').filter(w => w.length > 0).length;
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Fixed Header - Full Width */}
-      <div className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200">
-        <div className="w-full px-4 py-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Button 
-                variant="ghost" 
-                onClick={() => navigate('/')}
-                className="flex items-center gap-2"
-              >
-                <ArrowLeft className="h-4 w-4" />
-                Back to Home
-              </Button>
-              <div>
-                <h1 className="text-2xl font-bold">🧠 AI Reading Analyzer</h1>
-                <p className="text-sm text-gray-600">Pattern Recognition • Simplifier • Idea Tracer</p>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-4">
-              <Badge variant="outline" className="flex items-center gap-1">
-                <Bot className="h-4 w-4" />
+    <div className="relative min-h-screen overflow-x-hidden bg-slate-950">
+      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950" />
+        <div className="absolute left-[15%] top-[-25%] h-80 w-80 rounded-full bg-purple-500/30 blur-3xl" />
+        <div className="absolute bottom-[-15%] right-[-10%] h-96 w-96 rounded-full bg-blue-500/20 blur-3xl" />
+      </div>
+
+      <header className="relative border-b border-white/10 bg-gradient-to-b from-transparent via-white/5 to-transparent">
+        <div className="mx-auto w-full max-w-6xl px-6 pb-12 pt-16 text-slate-100">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <Button
+              variant="ghost"
+              onClick={() => navigate('/')}
+              className="flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur transition hover:bg-white/20"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Back to Home
+            </Button>
+            <div className="flex flex-wrap items-center gap-3 text-xs font-semibold uppercase tracking-wider text-white/70">
+              <Badge variant="secondary" className="bg-white/10 text-white">
+                <Bot className="mr-1 h-3.5 w-3.5" />
                 AI Powered
               </Badge>
               {wordCount > 0 && (
-                <Badge variant="outline" className="flex items-center gap-1">
-                  <FileText className="h-4 w-4" />
+                <Badge variant="outline" className="border-white/20 text-white/80">
+                  <FileText className="mr-1 h-3.5 w-3.5" />
                   {wordCount} words
                 </Badge>
               )}
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* Content with top padding for fixed header */}
-      <div className="pt-16 px-4 space-y-6 w-full max-w-none">
+          <div className="mt-10 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+            <div className="space-y-3">
+              <Badge variant="outline" className="w-fit border-white/20 bg-white/10 text-white/90">
+                Reading Intelligence Suite
+              </Badge>
+              <h1 className="text-3xl font-semibold leading-tight md:text-4xl">
+                SAT Reading AI Workbench
+              </h1>
+              <p className="max-w-2xl text-sm text-white/80 md:text-base">
+                Paste any SAT reading passage and let the analyzer surface patterns, simplify dense language,
+                and generate targeted practice questions. Built for elite reading strategy sessions.
+              </p>
+            </div>
+            <div className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-white/80 shadow-lg backdrop-blur">
+              <div className="flex items-center gap-2">
+                <Zap className="h-4 w-4 text-amber-300" />
+                <span>Live pattern analysis in under 10 seconds</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Lightbulb className="h-4 w-4 text-emerald-300" />
+                <span>Auto-simplified summaries with tone + purpose insights</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Target className="h-4 w-4 text-sky-300" />
+                <span>Evidence-backed question breakdowns and pacing tips</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <main className="relative mx-auto flex w-full max-w-6xl flex-col gap-8 px-6 pb-20">
         {/* Reading Input Interface */}
-        <Card className="w-full">
-          <CardHeader>
-            <CardTitle className="flex items-center justify-between">
-              <span className="flex items-center gap-2">
-                <FileText className="h-5 w-5" />
+        <Card className="border-none bg-white/95 shadow-xl backdrop-blur-sm">
+          <CardHeader className="border-b border-slate-100 pb-4">
+            <CardTitle className="flex flex-wrap items-center justify-between gap-4 text-slate-900">
+              <span className="flex items-center gap-2 text-base font-semibold">
+                <FileText className="h-5 w-5 text-purple-500" />
                 Reading Passage
               </span>
-              <div className="flex gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={handleUseSample}
                   disabled={isAnalyzing}
+                  className="border-slate-200 text-slate-700 transition hover:border-purple-200 hover:bg-purple-50"
                 >
                   Use Sample Passage
                 </Button>
@@ -146,93 +174,96 @@ Looking ahead, the next frontier in AI development appears to be artificial gene
                   size="sm"
                   onClick={handleClearPassage}
                   disabled={isAnalyzing}
+                  className="border-slate-200 text-slate-700 transition hover:border-slate-200 hover:bg-slate-50"
                 >
                   Clear
                 </Button>
               </div>
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <Textarea
-                value={passageText}
-                onChange={(e) => setPassageText(e.target.value)}
-                placeholder="Paste or type a reading passage here for AI analysis..."
-                className="min-h-[300px] text-base leading-relaxed"
-              />
-              
-              <div className="flex items-center justify-between">
-                <div className="text-sm text-gray-600">
-                  {wordCount > 0 ? `${wordCount} words` : 'Paste passage...'}
-                  {wordCount > 0 && (
-                    <span className={`ml-2 ${
-                      wordCount >= 200 && wordCount <= 800 
-                        ? 'text-green-600' 
-                        : wordCount < 200 
-                          ? 'text-yellow-600' 
-                          : 'text-red-600'
-                    }`}>
-                      {wordCount < 200 ? '(Too short)' : 
-                       wordCount > 800 ? '(Too long)' : 
-                       '(Good length)'}
-                    </span>
-                  )}
-                </div>
-                
-                <Button
-                  onClick={handleAnalyzePassage}
-                  disabled={!passageText.trim() || isAnalyzing}
-                  className="bg-purple-600 hover:bg-purple-700"
-                >
-                  {isAnalyzing ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                      Analyzing...
-                    </>
-                  ) : (
-                    <>
-                      <Brain className="h-4 w-4 mr-2" />
-                      Analyze Passage
-                    </>
-                  )}
-                </Button>
+          <CardContent className="space-y-5">
+            <Textarea
+              value={passageText}
+              onChange={(e) => setPassageText(e.target.value)}
+              placeholder="Paste or type a reading passage here for AI analysis..."
+              className="min-h-[320px] rounded-xl border border-slate-200 bg-slate-50/60 text-base leading-relaxed shadow-inner focus:border-purple-400 focus:ring-2 focus:ring-purple-200"
+            />
+
+            <div className="flex flex-wrap items-center justify-between gap-4 text-sm">
+              <div className="flex flex-wrap items-center gap-3 text-slate-500">
+                <span>{wordCount > 0 ? wordCount + " words" : "Paste a passage to begin analysis"}</span>
+                {wordCount > 0 && (
+                  <span
+                    className={cn(
+                      "rounded-full px-3 py-1 text-xs font-medium transition-colors",
+                      wordCount < 200 && "bg-amber-100 text-amber-700",
+                      wordCount > 800 && "bg-rose-100 text-rose-700",
+                      wordCount >= 200 && wordCount <= 800 && "bg-emerald-100 text-emerald-700",
+                    )}
+                  >
+                    {wordCount < 200
+                      ? "Needs more context"
+                      : wordCount > 800
+                        ? "Consider trimming"
+                        : "Ideal length"}
+                  </span>
+                )}
               </div>
+
+              <Button
+                onClick={handleAnalyzePassage}
+                disabled={!passageText.trim() || isAnalyzing}
+                className="flex items-center gap-2 rounded-full bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 px-6 py-2 text-sm font-semibold text-white shadow-lg transition hover:shadow-xl disabled:opacity-60"
+              >
+                {isAnalyzing ? (
+                  <>
+                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/60 border-b-transparent" />
+                    Analyzing...
+                  </>
+                ) : (
+                  <>
+                    <Brain className="h-4 w-4" />
+                    Analyze Passage
+                  </>
+                )}
+              </Button>
             </div>
           </CardContent>
         </Card>
 
+
         {/* Analysis Results */}
         {(isAnalyzing || analysis) && (
-          <Card className="w-full">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+          <Card className="border-none bg-white/95 shadow-xl backdrop-blur-sm">
+            <CardHeader className="border-b border-slate-100 pb-4">
+              <CardTitle className="flex items-center gap-2 text-slate-900">
                 <Brain className="h-5 w-5 text-purple-500" />
                 AI Reading Analysis
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pt-6">
               {isAnalyzing ? (
-                <div className="text-center py-8">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">Analyzing Reading Passage</h3>
-                  <p className="text-gray-600">AI is identifying patterns, simplifying concepts, and tracing key ideas...</p>
+                <div className="space-y-3 py-10 text-center">
+                  <div className="mx-auto h-12 w-12 animate-spin rounded-full border-2 border-purple-500/60 border-b-transparent" />
+                  <h3 className="text-lg font-medium text-slate-900">Analyzing Reading Passage</h3>
+                  <p className="text-sm text-slate-500">AI is identifying patterns, simplifying concepts, and tracing key ideas...</p>
                 </div>
               ) : analysis ? (
                 <Tabs value={activeTab} onValueChange={setActiveTab}>
-                  <TabsList className="grid w-full grid-cols-4">
-                    <TabsTrigger value="patterns" className="flex items-center gap-1">
+                  <TabsList className="grid w-full grid-cols-4 gap-2 rounded-xl bg-slate-100 p-1">
+                    <TabsTrigger value="patterns" className="flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-slate-600 transition data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow">
                       <Search className="h-4 w-4" />
                       Patterns
                     </TabsTrigger>
-                    <TabsTrigger value="simplifier" className="flex items-center gap-1">
+                    <TabsTrigger value="simplifier" className="flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-slate-600 transition data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow">
                       <Lightbulb className="h-4 w-4" />
                       Simplifier
                     </TabsTrigger>
-                    <TabsTrigger value="ideas" className="flex items-center gap-1">
+                    <TabsTrigger value="ideas" className="flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-slate-600 transition data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow">
                       <Target className="h-4 w-4" />
                       Idea Tracer
                     </TabsTrigger>
-                    <TabsTrigger value="questions" className="flex items-center gap-1">
+                    <TabsTrigger value="questions" className="flex items-center justify-center gap-2 rounded-lg px-3 py-2 text-slate-600 transition data-[state=active]:bg-white data-[state=active]:text-slate-900 data-[state=active]:shadow">
                       <Eye className="h-4 w-4" />
                       Questions
                     </TabsTrigger>
@@ -383,14 +414,14 @@ Looking ahead, the next frontier in AI development appears to be artificial gene
 
         {/* Usage Instructions */}
         {!passageText && !analysis && (
-          <Card className="w-full">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+          <Card className="border-none bg-white/95 shadow-lg backdrop-blur-sm">
+            <CardHeader className="border-b border-slate-100 pb-4">
+              <CardTitle className="flex items-center gap-2 text-slate-900">
                 <Brain className="h-5 w-5" />
                 AI Reading Analysis Features
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pt-6">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 text-sm">
                 <div className="flex items-start gap-3">
                   <div className="bg-blue-100 rounded-full p-2 flex-shrink-0">
@@ -435,20 +466,16 @@ Looking ahead, the next frontier in AI development appears to be artificial gene
             </CardContent>
           </Card>
         )}
-      </div>
+      </main>
 
       {/* Demo Information */}
-      <div className="mt-12 bg-gray-50 border-t border-gray-200">
-        <div className="w-full px-4 py-6">
-          <div className="text-center">
-            <h3 className="text-lg font-semibold text-purple-900 mb-2">
-              🧠 AI Reading Analyzer
-            </h3>
-            <p className="text-purple-700 text-sm">
-              Advanced AI analysis for reading comprehension - Pattern recognition, text simplification, 
-              and idea tracing to master SAT Reading passages.
-            </p>
-          </div>
+      <div className="border-t border-white/10 py-12">
+        <div className="mx-auto max-w-4xl px-6 text-center">
+          <h3 className="text-xl font-semibold text-white">🧠 AI Reading Analyzer</h3>
+          <p className="mt-3 text-sm text-slate-300">
+            Advanced AI analysis for reading comprehension - pattern recognition, text simplification,
+            and idea tracing to master SAT Reading passages.
+          </p>
         </div>
       </div>
     </div>

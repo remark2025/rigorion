@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import LearningShowcaseCard from "@/components/shared/LearningShowcaseCard";
 import {
   BookOpen, Eye, EyeOff, FileText,
   Lightbulb, X, Clock, Check, Target, 
@@ -622,74 +623,55 @@ const ReadingAssistant: React.FC = () => {
     .slice(0, 5);
 
   const PassageCard: React.FC<{ passage: any; size?: string }> = ({ passage, size = 'normal' }) => {
-    const [isHovered, setIsHovered] = useState(false);
     const progress = getPassageProgress(passage.id);
-   
+
+    const overlay = (() => {
+      if (progress.status === 'not-started') {
+        return <span className="rounded-full bg-orange-500 px-2 py-1 text-xs font-semibold text-white">NEW</span>;
+      }
+      if (progress.status === 'completed' && progress.stars === 5) {
+        return <span className="text-2xl">🏆</span>;
+      }
+      return null;
+    })();
+
     return (
-      <div
-        className={`rounded-xl overflow-hidden cursor-pointer transition-all duration-300 bg-white border border-gray-200 ${
-          size === 'large' ? 'h-[20.7rem]' : 'h-[19.4rem]'
-        } ${isHovered ? 'card-shimmer shadow-xl z-10' : 'shadow-sm hover:shadow-md'}`}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
+      <LearningShowcaseCard
+        imageSrc={passage.imageUrl}
+        imageAlt={passage.title}
         onClick={() => loadPassage(passage.id)}
+        topRightOverlay={overlay}
+        className={size === 'large' ? 'min-h-[20.7rem]' : 'min-h-[19.4rem]'}
+        bodyClassName="justify-between"
       >
-        {/* Image Section - Fills top portion */}
-        <div className="h-40 relative overflow-hidden">
-          <img
-            src={passage.imageUrl}
-            alt={passage.title}
-            className="w-full h-full object-cover"
-          />
-          {progress.status === 'not-started' && (
-            <div className="absolute top-2 right-2">
-              <span className="px-2 py-1 bg-orange-500 text-white rounded-full text-xs font-medium">NEW</span>
-            </div>
-          )}
-          {progress.status === 'completed' && progress.stars === 5 && (
-            <div className="absolute top-2 right-2">
-              <span className="text-2xl">🏆</span>
-            </div>
-          )}
+        <div>
+          <h3 className="text-lg font-medium leading-tight text-gray-900 transition-colors duration-300 line-clamp-2 group-hover:text-blue-600">
+            {passage.title}
+          </h3>
         </div>
-       
-        {/* Content Section - Below image */}
-        <div className="p-4 flex flex-col justify-between h-32">
+
+        <div className="space-y-3">
           <div>
-            {/* Title - thin and clean, positioned below image */}
-            <h3 className={`font-light text-lg mb-4 line-clamp-2 leading-tight ${
-              isHovered ? 'shimmer-title' : 'text-gray-900'
-            }`}>
-              {passage.title}
-            </h3>
-          </div>
-          
-          {/* Progress section */}
-          <div className="space-y-2">
-            {/* Progress bar */}
-            <div className="w-full">
-              <div className="flex justify-between items-center mb-1">
-                <span className="text-xs font-light text-gray-500">Progress</span>
-                <span className="text-xs font-light text-gray-700">{progress.progress}%</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-1">
-                <div
-                  className="bg-green-500 rounded-full h-1 transition-all duration-500"
-                  style={{ width: `${progress.progress}%` }}
-                />
-              </div>
+            <div className="mb-1 flex items-center justify-between text-xs font-medium text-gray-500">
+              <span>Progress</span>
+              <span>{progress.progress}%</span>
             </div>
-            
-            {/* Accuracy */}
-            {progress.accuracy > 0 && (
-              <div className="flex justify-between items-center">
-                <span className="text-xs font-light text-gray-500">Accuracy</span>
-                <span className="text-xs font-medium text-orange-600">{progress.accuracy}%</span>
-              </div>
-            )}
+            <div className="h-1 w-full rounded-full bg-gray-200">
+              <div
+                className="h-1 rounded-full bg-gradient-to-r from-emerald-400 to-emerald-600 transition-all duration-500"
+                style={{ width: progress.progress + '%' }}
+              />
+            </div>
           </div>
+
+          {progress.accuracy > 0 && (
+            <div className="flex items-center justify-between text-xs text-gray-500">
+              <span>Accuracy</span>
+              <span className="font-semibold text-orange-500">{progress.accuracy}%</span>
+            </div>
+          )}
         </div>
-      </div>
+      </LearningShowcaseCard>
     );
   };
 
