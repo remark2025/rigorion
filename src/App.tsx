@@ -36,6 +36,7 @@ import ProjectileMotion from "@/components/math/ProjectileMotion";
 import PremiumMathTool from "@/components/math/PremiumMathTool";
 import AdvancedAnimationDemo from "@/pages/AdvancedAnimationDemo";
 import SATMockTestPage from "@/pages/SATMockTestPage";
+import SATExamHub from "@/pages/SATExamHub";
 import DatabasePopulator from "@/pages/DatabasePopulator";
 import SATMath from "@/pages/SATMath";
 
@@ -148,6 +149,7 @@ function App() {
                   } 
                 />
                 <Route path="/advanced-animations" element={<AdvancedAnimationDemo />} />
+                <Route path="/sat-exams" element={<SATExamHub />} />
                 <Route path="/sat-mock-test" element={<SATMockTestPage />} />
                 <Route path="/analytics" element={<Analytics />} />
                 <Route path="/about" element={<About />} />

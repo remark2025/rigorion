@@ -82,7 +82,7 @@ export const Header = () => {
             <Link to="/practice" className="text-gray-200 hover:text-orange-300 transition-colors">Practice</Link>
             <Link to="/sat-writing-demo" className="text-gray-200 hover:text-orange-300 transition-colors">AI Writing</Link>
             <Link to="/reading-assistant" className="text-gray-200 hover:text-orange-300 transition-colors">AI Reading</Link>
-            <Link to="/sat-mock-test" className="text-gray-200 hover:text-orange-300 transition-colors">Real Test</Link>
+            <Link to="/sat-exams" className="text-gray-200 hover:text-orange-300 transition-colors">SAT Exams</Link>
             <Link to="/analytics" className="text-gray-200 hover:text-orange-300 transition-colors">Analytics</Link>
             <Link to="/contact" className="text-gray-200 hover:text-orange-300 transition-colors">Contact us</Link>
           </nav>
@@ -106,7 +106,7 @@ export const Header = () => {
               <Link to="/practice" className="text-gray-200 hover:text-orange-400 py-2 transition-colors" onClick={() => setIsNavOpen(false)}>Practice</Link>
               <Link to="/sat-writing-demo" className="text-gray-200 hover:text-orange-400 py-2 transition-colors" onClick={() => setIsNavOpen(false)}>AI Writing</Link>
               <Link to="/reading-assistant" className="text-gray-200 hover:text-orange-400 py-2 transition-colors" onClick={() => setIsNavOpen(false)}>AI Reading</Link>
-              <Link to="/sat-mock-test" className="text-gray-200 hover:text-orange-400 py-2 transition-colors" onClick={() => setIsNavOpen(false)}>Real Test</Link>
+              <Link to="/sat-exams" className="text-gray-200 hover:text-orange-400 py-2 transition-colors" onClick={() => setIsNavOpen(false)}>SAT Exams</Link>
               <Link to="/analytics" className="text-gray-200 hover:text-orange-400 py-2 transition-colors" onClick={() => setIsNavOpen(false)}>Analytics</Link>
               <Link to="/contact" className="text-gray-200 hover:text-orange-400 py-2 transition-colors" onClick={() => setIsNavOpen(false)}>Contact us</Link>
             </div>

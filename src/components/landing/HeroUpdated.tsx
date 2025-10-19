@@ -126,16 +126,16 @@ export const Hero = () => {
               </div>
             </Button>
             
-            {/* Mock Test Button */}
+            {/* SAT Exams Button */}
             <Button 
-              onClick={() => navigate('/mock-test')}
+              onClick={() => navigate('/sat-exams')}
               variant="outline"
               className="w-full sm:w-auto px-6 py-4 bg-white/95 text-gray-800 hover:bg-white border-2 border-white/20 hover:border-white transition-all duration-300 transform hover:scale-105 shadow-lg"
             >
               <Timer className="mr-2 h-5 w-5" />
               <div className="text-left">
-                <div className="font-semibold">Mock Test</div>
-                <div className="text-sm text-gray-600">Timed practice exam</div>
+                <div className="font-semibold">SAT Exams</div>
+                <div className="text-sm text-gray-600">Official practice tests</div>
               </div>
             </Button>
             

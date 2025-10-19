@@ -6,7 +6,7 @@ import CommentSection from "@/components/practice/CommentSection";
 
 const Practice = () => {
   const [settings, setSettings] = useState({
-    fontFamily: "inter",
+    fontFamily: "Inter",
     fontSize: 14,
     colorStyle: "plain" as const,
     emphasis: {

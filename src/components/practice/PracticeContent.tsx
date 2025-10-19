@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import { Question } from "@/types/QuestionInterface";
 import { useQuestions } from "@/contexts/QuestionsContext";
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
@@ -85,7 +85,9 @@ export default function PracticeContent({
   const [mode, setMode] = useState<"timer" | "level" | "manual" | "pomodoro" | "exam">("manual");
   const [selectedLevel, setSelectedLevel] = useState<"easy" | "medium" | "hard" | null>(null);
   const [timerDuration, setTimerDuration] = useState<number>(0);
-  const [isTimerActive, setIsTimerActive] = useState(false);
+  const [timeLeft, setTimeLeft] = useState<number | null>(null);
+  const [isTimerRunning, setIsTimerRunning] = useState(false);
+  const timeLeftRef = useRef<number | null>(null);
   const [objective, setObjective] = useState<{
     type: "questions" | "time";
     value: number;
@@ -97,14 +99,13 @@ export default function PracticeContent({
   const [activeTab, setActiveTab] = useState<"problem" | "solution" | "quote" | "grid">("problem");
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
-  const [timeRemaining, setTimeRemaining] = useState<string>("00:00");
   const [showGoToInput, setShowGoToInput] = useState(false);
   const [targetQuestion, setTargetQuestion] = useState('');
   const [inputError, setInputError] = useState('');
 
   const [displaySettings, setDisplaySettings] = useState<TextSettings>(
     propSettings || {
-      fontFamily: 'inter',
+      fontFamily: 'Inter',
       fontSize: 14,
       colorStyle: 'plain' as const,
       emphasis: {
@@ -122,7 +123,7 @@ export default function PracticeContent({
     }
   }, [propSettings]);
 
-  const [fontFamily, setFontFamily] = useState<string>('inter');
+  const [fontFamily, setFontFamily] = useState<string>('Inter');
   const [fontSize, setFontSize] = useState<number>(14);
   const [contentColor, setContentColor] = useState<string>('#374151');
   const [keyPhraseColor, setKeyPhraseColor] = useState<string>('#2563eb');
@@ -381,13 +382,16 @@ export default function PracticeContent({
     if (selectedMode === "timer") {
       const questionDuration = duration || 90;
       setTimerDuration(questionDuration);
-      setIsTimerActive(true);
+      setTimeLeft(questionDuration);
+      setIsTimerRunning(true);
     } else if (duration) {
       setTimerDuration(duration);
-      setIsTimerActive(true);
+      setTimeLeft(duration);
+      setIsTimerRunning(true);
     } else {
       setTimerDuration(0);
-      setIsTimerActive(false);
+      setTimeLeft(null);
+      setIsTimerRunning(false);
     }
   };
   
@@ -398,17 +402,8 @@ export default function PracticeContent({
     
     if (type === "time" && value > 0) {
       setTimerDuration(value);
-      setIsTimerActive(true);
-    }
-  };
-  
-  const handleTimerComplete = () => {
-    if (mode === "timer") {
-      console.log("Timer completed - auto-advancing to next question");
-      nextQuestion();
-    } else {
-      setIsTimerActive(false);
-      console.log("Time's up!");
+      setTimeLeft(value);
+      setIsTimerRunning(true);
     }
   };
 
@@ -418,13 +413,86 @@ export default function PracticeContent({
     }
   }, [propSettings]);
 
+  useEffect(() => {
+    timeLeftRef.current = timeLeft;
+  }, [timeLeft]);
+
+  useEffect(() => {
+    if (!isTimerRunning) {
+      return;
+    }
+
+    if (timeLeftRef.current === null || timeLeftRef.current <= 0) {
+      return;
+    }
+
+    const intervalId = window.setInterval(() => {
+      setTimeLeft(prev => {
+        if (prev === null) {
+          return prev;
+        }
+
+        if (prev <= 1) {
+          return 0;
+        }
+
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => window.clearInterval(intervalId);
+  }, [isTimerRunning]);
+
+  const getFormattedTime = (seconds: number) => {
+    const clamped = Math.max(0, seconds);
+    const hours = Math.floor(clamped / 3600);
+    const minutes = Math.floor((clamped % 3600) / 60);
+    const secs = clamped % 60;
+
+    if (hours > 0) {
+      return [hours, minutes, secs]
+        .map((value) => value.toString().padStart(2, "0"))
+        .join(":");
+    }
+
+    return `${minutes.toString().padStart(2, "0")}:${secs
+      .toString()
+      .padStart(2, "0")}`;
+  };
+
+  const handleDisplaySettingsChange = (
+    key: "fontFamily" | "fontSize",
+    value: string | number
+  ) => {
+    setDisplaySettings((prev) => ({
+      ...prev,
+      [key]: key === "fontSize" ? Number(value) : value
+    }));
+
+    onSettingsChange?.(key, value);
+  };
+
+  const handleTimerToggle = () => {
+    if (timeLeft === null || timeLeft <= 0) {
+      return;
+    }
+
+    setIsTimerRunning((prev) => !prev);
+  };
+
 
   const handlePomodoroBreak = () => {
-    setIsTimerActive(false);
+    setIsTimerRunning(false);
     setTimeout(() => {
       setTimerDuration(1500);
+      setTimeLeft(1500);
+      setIsTimerRunning(true);
     }, 5 * 60 * 1000);
   };
+
+  const timerValue = timeLeft !== null ? getFormattedTime(timeLeft) : undefined;
+
+  const filteredQuestionsCount = filteredQuestions.length;
 
   const checkAnswer = (answer: string) => {
     if (!currentQuestion) return;
@@ -447,50 +515,55 @@ export default function PracticeContent({
     }
   };
   
-  const nextQuestion = () => {
+  const nextQuestion = useCallback(() => {
     if (propOnNext) {
       propOnNext();
-    } else {
-      const maxIndex = filteredQuestions.length > 0 ? filteredQuestions.length - 1 : 0;
-      if (currentQuestionIndex < maxIndex) {
-        setCurrentQuestionIndex(prev => prev + 1);
-        setSelectedAnswer(null);
-        setIsCorrect(null);
-        
-        if (mode === "timer" && timerDuration > 0) {
-          // Force timer reset by setting a new duration value
-          const currentDuration = timerDuration;
-          setTimerDuration(0);
-          setTimeout(() => {
-            setTimerDuration(currentDuration);
-            setIsTimerActive(true);
-          }, 10);
-        }
+      return;
+    }
+
+    const maxIndex = filteredQuestionsCount > 0 ? filteredQuestionsCount - 1 : 0;
+
+    if (currentQuestionIndex < maxIndex) {
+      setCurrentQuestionIndex(prev => prev + 1);
+      setSelectedAnswer(null);
+      setIsCorrect(null);
+
+      if (mode === "timer" && timerDuration > 0) {
+        setTimeLeft(timerDuration);
+        setIsTimerRunning(true);
       }
     }
-  };
+  }, [propOnNext, filteredQuestionsCount, currentQuestionIndex, mode, timerDuration]);
   
-  const prevQuestion = () => {
+  const prevQuestion = useCallback(() => {
     if (propOnPrev) {
       propOnPrev();
-    } else {
-      if (currentQuestionIndex > 0) {
-        setCurrentQuestionIndex(prev => prev - 1);
-        setSelectedAnswer(null);
-        setIsCorrect(null);
-        
-        if (mode === "timer" && timerDuration > 0) {
-          // Force timer reset by setting a new duration value
-          const currentDuration = timerDuration;
-          setTimerDuration(0);
-          setTimeout(() => {
-            setTimerDuration(currentDuration);
-            setIsTimerActive(true);
-          }, 10);
-        }
+      return;
+    }
+
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex(prev => prev - 1);
+      setSelectedAnswer(null);
+      setIsCorrect(null);
+
+      if (mode === "timer" && timerDuration > 0) {
+        setTimeLeft(timerDuration);
+        setIsTimerRunning(true);
       }
     }
-  };
+  }, [propOnPrev, currentQuestionIndex, mode, timerDuration]);
+
+  useEffect(() => {
+    if (timeLeft === null || timeLeft > 0) {
+      return;
+    }
+
+    setIsTimerRunning(false);
+
+    if (mode === "timer") {
+      nextQuestion();
+    }
+  }, [timeLeft, mode, nextQuestion]);
 
   const handleGoToQuestion = () => {
     const questionNumber = parseInt(targetQuestion);
@@ -512,13 +585,8 @@ export default function PracticeContent({
       setIsCorrect(null);
       
       if (mode === "timer" && timerDuration > 0) {
-        // Force timer reset by setting a new duration value
-        const currentDuration = timerDuration;
-        setTimerDuration(0);
-        setTimeout(() => {
-          setTimerDuration(currentDuration);
-          setIsTimerActive(true);
-        }, 10);
+        setTimeLeft(timerDuration);
+        setIsTimerRunning(true);
       }
     }
 
@@ -584,6 +652,14 @@ export default function PracticeContent({
         onPrev={propOnPrev || prevQuestion}
         currentQuestionIndex={currentQuestionIndex}
         totalQuestions={filteredQuestions.length}
+        timerValue={timerValue}
+        isTimerRunning={isTimerRunning}
+        onToggleTimer={handleTimerToggle}
+        displaySettings={{
+          fontFamily: displaySettings.fontFamily,
+          fontSize: displaySettings.fontSize
+        }}
+        onSettingsChange={handleDisplaySettingsChange}
       />
 
 
@@ -601,7 +677,7 @@ export default function PracticeContent({
             totalQuestions={filteredQuestions.length} 
             mode={mode}
             displaySettings={displaySettings}
-            onSettingsChange={onSettingsChange}
+            onSettingsChange={handleDisplaySettingsChange}
           />
         ) : (
           <div className={`w-full p-8 text-center ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>No question selected</div>

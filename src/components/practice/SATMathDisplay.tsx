@@ -43,7 +43,7 @@ const SATMathDisplay = ({
     calculations: true
   });
 
-  const fontOptions = ['Arial', 'Georgia', 'Times New Roman', 'Verdana', 'Courier New'];
+  const fontOptions = ['Inter', 'Arial', 'Georgia', 'Times New Roman', 'Verdana', 'Courier New'];
   const fontSizeOptions = [{ label: '14px', value: 14 }, { label: '16px', value: 16 }, { label: '18px', value: 18 }, { label: '20px', value: 20 }];
 
   if (!currentQuestion) {
@@ -70,50 +70,102 @@ const SATMathDisplay = ({
     }
 
     return (
-      <div className="space-y-3 mt-6">
+      <div className="mt-6 space-y-4">
         {currentQuestion.choices.map((choice, index) => {
-          const choiceKey = String.fromCharCode(65 + index); // A, B, C, D
+          const choiceKey = String.fromCharCode(65 + index);
+          const hasAnswered = Boolean(selectedAnswer);
           const isSelected = selectedAnswer === choiceKey;
           const isCorrectChoice = currentQuestion.correctAnswer === choice;
-          
-          let buttonStyle = "border-gray-300 hover:border-orange-400 hover:bg-orange-50";
-          
-          if (selectedAnswer) {
+          const baseClasses = "answer-option group relative w-full min-h-[68px] rounded-2xl border px-5 py-4 text-left transition-all duration-300 ease-out disabled:pointer-events-none disabled:opacity-100";
+          const defaultClasses = isDarkMode
+            ? "bg-gray-900/90 border-gray-700 text-gray-100 hover:border-orange-400 hover:bg-gray-900"
+            : "bg-white border-gray-200 text-gray-800 hover:border-orange-300 hover:bg-white hover:shadow-lg";
+
+          let stateClasses = defaultClasses;
+          let letterClasses = isDarkMode
+            ? "bg-gray-800/70 text-gray-200 border border-gray-600"
+            : "bg-gray-100 text-gray-700 border border-gray-200";
+          let statusBadge: JSX.Element | null = null;
+          let statusIcon: JSX.Element | null = null;
+
+          if (hasAnswered) {
             if (isSelected && isCorrect) {
-              buttonStyle = "border-green-500 bg-green-500 text-white";
+              stateClasses = "bg-gradient-to-br from-emerald-500 via-emerald-600 to-emerald-700 text-white border-emerald-400 shadow-[0_12px_35px_rgba(16,185,129,0.35)]";
+              letterClasses = "bg-white/15 text-white border-white/30";
+              statusBadge = (
+                <span className="inline-flex items-center gap-2 rounded-full bg-white/20 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide">
+                  <Check className="h-3.5 w-3.5" /> Correct
+                </span>
+              );
+              statusIcon = null;
             } else if (isSelected && !isCorrect) {
-              buttonStyle = "border-red-500 bg-red-500 text-white";
+              stateClasses = "bg-gradient-to-br from-red-500 via-red-600 to-orange-500 text-white border-red-400 shadow-[0_16px_38px_rgba(248,113,113,0.35)] flame-active";
+              letterClasses = "bg-white/15 text-white border-white/30";
+              statusBadge = (
+                <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide">
+                  <X className="h-3.5 w-3.5" /> Try Again
+                </span>
+              );
+              statusIcon = null;
             } else if (isCorrectChoice) {
-              buttonStyle = "border-green-500 bg-green-100 text-green-800";
+              stateClasses = "bg-gradient-to-br from-emerald-50 via-white to-emerald-50 border-emerald-300 text-emerald-700 shadow-[0_10px_24px_rgba(16,185,129,0.15)]";
+              letterClasses = "bg-emerald-500/10 text-emerald-700 border border-emerald-300";
+              statusBadge = (
+                <span className="inline-flex items-center gap-2 rounded-full bg-emerald-500/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-wide text-emerald-600">
+                  Revealed Answer
+                </span>
+              );
+              statusIcon = <Check className="h-5 w-5 text-emerald-500" />;
+            } else {
+              stateClasses = `${stateClasses} opacity-80`;
+              letterClasses = isDarkMode
+                ? "bg-gray-800/40 text-gray-400 border border-gray-700"
+                : "bg-gray-50 text-gray-400 border border-gray-200";
             }
+          }
+
+          if (hasAnswered && isSelected) {
+            const statusClass = isCorrect ? 'quiz-status-button--correct' : 'quiz-status-button--wrong';
+
+            return (
+              <button
+                key={index}
+                type="button"
+                className={`quiz-status-button ${statusClass}`}
+                disabled
+              >
+                <span className="quiz-status-button__shine quiz-status-button__shine--large" aria-hidden="true"></span>
+                <span className="quiz-status-button__shine quiz-status-button__shine--small" aria-hidden="true"></span>
+                <span className="quiz-status-button__shimmer" aria-hidden="true"></span>
+                <span className="quiz-status-button__icon">
+                  {isCorrect ? <Check className="h-5 w-5" strokeWidth={3} /> : <X className="h-5 w-5" strokeWidth={3} />}
+                </span>
+                <span className="quiz-status-button__text" dangerouslySetInnerHTML={{ __html: choice }} />
+              </button>
+            );
           }
 
           return (
             <Button
               key={index}
               variant="outline"
-              className={`w-full h-auto min-h-[48px] rounded-lg p-4 text-left justify-start transition-all duration-200 ${buttonStyle}`}
+              className={`${baseClasses} ${stateClasses}`}
               onClick={() => checkAnswer && checkAnswer(choiceKey)}
-              disabled={!!selectedAnswer}
+              disabled={hasAnswered}
             >
-              <div className="flex items-start justify-between w-full">
-                <div className="flex items-start gap-3 flex-1">
-                  <span className="font-semibold text-lg">{choiceKey}.</span>
-                  <span 
-                    className="flex-1 text-left"
+              <div className="flex w-full items-start justify-between gap-4">
+                <div className="flex flex-1 items-start gap-4">
+                  <span className={`flex h-9 w-9 items-center justify-center rounded-full text-sm font-semibold transition-all duration-300 ${letterClasses}`}>
+                    {choiceKey}
+                  </span>
+                  <span
+                    className="flex-1 text-sm leading-relaxed"
                     dangerouslySetInnerHTML={{ __html: choice }}
                   />
                 </div>
-                <div className="flex items-center gap-2 ml-4">
-                  {selectedAnswer && isSelected && isCorrect && (
-                    <Check className="h-5 w-5 text-white" />
-                  )}
-                  {selectedAnswer && isSelected && !isCorrect && (
-                    <X className="h-5 w-5 text-white" />
-                  )}
-                  {selectedAnswer && !isSelected && isCorrectChoice && (
-                    <Check className="h-5 w-5 text-green-600" />
-                  )}
+                <div className="flex flex-col items-end gap-2">
+                  {statusBadge}
+                  {statusIcon}
                 </div>
               </div>
             </Button>
@@ -125,6 +177,189 @@ const SATMathDisplay = ({
 
   return (
     <div className="min-h-screen w-full bg-white">
+      <style>
+        {`
+          .answer-option {
+            position: relative;
+            overflow: hidden;
+          }
+
+          .answer-option::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            opacity: 0;
+            transition: opacity 0.25s ease;
+            z-index: 0;
+            background: radial-gradient(circle at 20% 10%, rgba(255, 255, 255, 0.35), transparent 55%),
+              radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.18), transparent 50%);
+          }
+
+          .answer-option.flame-active::before {
+            opacity: 1;
+            background: linear-gradient(135deg, rgba(249, 115, 22, 0.65), rgba(239, 68, 68, 0.85));
+            mix-blend-mode: screen;
+            animation: flame-flicker 1s infinite ease-in-out;
+            filter: blur(4px);
+          }
+
+          .answer-option > * {
+            position: relative;
+            z-index: 1;
+          }
+
+          @keyframes flame-flicker {
+            0%, 100% {
+              opacity: 0.78;
+              transform: scale(1);
+            }
+            50% {
+              opacity: 0.52;
+              transform: scale(1.03);
+            }
+          }
+
+          .quiz-status-button {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            width: min(100%, 16rem);
+            height: 4rem;
+            border-radius: 2rem;
+            padding: 0 1.75rem;
+            border: none;
+            cursor: default;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            overflow: hidden;
+            isolation: isolate;
+            text-align: left;
+          }
+
+          .quiz-status-button--correct {
+            background: linear-gradient(90deg, #22C55E 0%, #16A34A 100%);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+          }
+
+          .quiz-status-button--wrong {
+            background: linear-gradient(90deg, #EF4444 0%, #DC2626 100%);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+          }
+
+          .quiz-status-button::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.08) 45%, transparent 100%);
+            z-index: 1;
+          }
+
+          .quiz-status-button::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, transparent 55%, rgba(0,0,0,0.1) 100%);
+            z-index: 1;
+          }
+
+          .quiz-status-button__shine {
+            position: absolute;
+            border-radius: 50%;
+            z-index: 0;
+            pointer-events: none;
+          }
+
+          .quiz-status-button__shine--large {
+            top: -32px;
+            left: -32px;
+            width: 128px;
+            height: 128px;
+            background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.1) 55%, transparent 100%);
+            filter: blur(48px);
+            transform: rotate(45deg);
+          }
+
+          .quiz-status-button__shine--small {
+            top: 8px;
+            left: 16px;
+            width: 96px;
+            height: 96px;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+            filter: blur(4px);
+            transform: rotate(-12deg);
+          }
+
+          .quiz-status-button__shimmer {
+            position: absolute;
+            inset: -30%;
+            background: linear-gradient(120deg, transparent 0%, rgba(255,255,255,0.22) 45%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0.22) 55%, transparent 100%);
+            transform: rotate(12deg);
+            animation: quiz-status-shimmer 3s ease-in-out infinite;
+            z-index: 2;
+            pointer-events: none;
+          }
+
+          .quiz-status-button__icon {
+            position: relative;
+            z-index: 3;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 9999px;
+            background: rgba(255,255,255,0.3);
+            color: #ffffff;
+          }
+
+          .quiz-status-button__text {
+            position: relative;
+            z-index: 3;
+            flex: 1 1 auto;
+            font-weight: 700;
+            font-size: 1.125rem;
+            letter-spacing: 0.1em;
+            color: #ffffff;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+            line-height: 1.35;
+            white-space: normal;
+          }
+
+          .quiz-status-button__text * {
+            color: inherit;
+            font-weight: inherit;
+            letter-spacing: inherit;
+          }
+
+          .quiz-status-button__text strong,
+          .quiz-status-button__text b {
+            font-weight: 800;
+          }
+
+          @keyframes quiz-status-shimmer {
+            0% {
+              transform: translateX(-100%) rotate(12deg);
+              opacity: 0.2;
+            }
+            45% {
+              opacity: 0.6;
+            }
+            50% {
+              transform: translateX(0%) rotate(12deg);
+              opacity: 0.85;
+            }
+            55% {
+              opacity: 0.6;
+            }
+            100% {
+              transform: translateX(100%) rotate(12deg);
+              opacity: 0.2;
+            }
+          }
+        `}
+      </style>
       <div className="w-full flex h-[calc(100vh-4rem)] relative">
         
         {/* Question Panel */}

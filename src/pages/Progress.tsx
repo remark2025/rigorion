@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { LeaderboardData } from "@/components/progress/LeaderboardData";
 import { FullPageLoader } from "@/components/progress/FullPageLoader";
@@ -18,7 +18,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useTheme } from "@/contexts/ThemeContext";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart as RechartsBarChart, Bar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
+import { ResponsiveContainer, CartesianGrid, XAxis, YAxis, Tooltip, ComposedChart, Line, Bar, Cell, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
 import { Footer } from '@/components/Footer';
 import { useSimpleProgress } from "@/hooks/useSimpleProgress";
 
@@ -61,13 +61,13 @@ const DUMMY_PROGRESS = {
     const previousDay = i > 0 ? Math.floor(Math.random() * 30) + 10 : userAttempted;
     
     const skills = [
-      { name: 'Linear Equations', percentile: 85, contribution: 35 },
-      { name: 'Ratios & Proportions', percentile: 95, contribution: 42 },
-      { name: 'Vocabulary in Context', percentile: 87, contribution: 28 },
-      { name: 'Punctuation & Grammar', percentile: 91, contribution: 38 },
-      { name: 'Quadratic Functions', percentile: 58, contribution: 25 },
-      { name: 'Main Ideas & Themes', percentile: 89, contribution: 31 },
-      { name: 'Standard Conventions', percentile: 84, contribution: 33 }
+      { name: 'Linear Equations', percentile: 85, contribution: 35, section: 'Math' },
+      { name: 'Ratios & Proportions', percentile: 95, contribution: 42, section: 'Math' },
+      { name: 'Vocabulary in Context', percentile: 87, contribution: 28, section: 'Reading' },
+      { name: 'Punctuation & Grammar', percentile: 91, contribution: 38, section: 'Writing' },
+      { name: 'Quadratic Functions', percentile: 58, contribution: 25, section: 'Math' },
+      { name: 'Main Ideas & Themes', percentile: 89, contribution: 31, section: 'Reading' },
+      { name: 'Standard Conventions', percentile: 84, contribution: 33, section: 'Writing' }
     ];
     
     const mostPracticedSkill = skills[i % skills.length];
@@ -167,8 +167,8 @@ const Progress = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isNavDropdownOpen, setIsNavDropdownOpen] = useState(false);
   const [selectedView, setSelectedView] = useState<'analytics' | 'exam-results' | 'leaderboard'>('analytics');
-  const [timeAnalyticsView, setTimeAnalyticsView] = useState<'daily' | 'skills'>('daily');
-  const [selectedSkillForAnalytics, setSelectedSkillForAnalytics] = useState<string>('all');
+  const [trendCategory, setTrendCategory] = useState<'combined' | 'math' | 'reading' | 'detailed'>('combined');
+  const [selectedDetailedSkill, setSelectedDetailedSkill] = useState<string>('all');
   const [selectedSkillSection, setSelectedSkillSection] = useState<'Math' | 'Reading' | 'Writing'>('Math');
   const [currentExamReport, setCurrentExamReport] = useState<number>(0);
   const queryClient = useQueryClient();
@@ -176,6 +176,202 @@ const Progress = () => {
   const { progressData, isLoading: analyticsLoading, error: progressError } = useSimpleProgress();
   
   const currentProgressData = progressData || DUMMY_PROGRESS;
+
+  const availableDetailedSkills = useMemo(() => {
+    const skills = currentProgressData?.skillAnalytics || [];
+    const unique = new Set<string>();
+
+    skills.forEach((skill: any) => {
+      const section = skill.section?.toLowerCase?.();
+      if (section && section !== 'math' && section !== 'reading') {
+        unique.add(skill.skillName);
+      }
+    });
+
+    return Array.from(unique);
+  }, [currentProgressData?.skillAnalytics]);
+
+  const processedTrendData = useMemo(() => {
+    const base = currentProgressData?.performanceGraph || [];
+
+    return base.map((day: any, index: number) => {
+      const dateObj = new Date(day.date);
+      const previous = index > 0 ? base[index - 1] : null;
+      const computedMomentum = typeof day.momentum === 'number'
+        ? day.momentum
+        : previous
+        ? (day.attempted || 0) - (previous.attempted || 0)
+        : 0;
+
+      const rawSection = day?.mostPracticedSkill?.section?.toLowerCase?.();
+      let normalizedSection: 'math' | 'reading' | 'detailed' = 'detailed';
+
+      if (rawSection?.includes('math')) {
+        normalizedSection = 'math';
+      } else if (rawSection?.includes('read')) {
+        normalizedSection = 'reading';
+      }
+
+      return {
+        ...day,
+        momentum: computedMomentum,
+        section: normalizedSection,
+        shortDate: dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+        longDate: dateObj.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }),
+        detailedSkillName: day?.mostPracticedSkill?.name || 'Skill Focus',
+        percentile: day?.mostPracticedSkill?.percentile ?? null,
+        contribution: day?.mostPracticedSkill?.contribution ?? null,
+        globalAverage: typeof day.globalAverage === 'number' ? day.globalAverage : null,
+        attempted: typeof day.attempted === 'number' ? day.attempted : 0,
+      };
+    });
+  }, [currentProgressData?.performanceGraph]);
+
+  const filteredTrendData = useMemo(() => {
+    if (!processedTrendData.length) {
+      return [];
+    }
+
+    let data = processedTrendData;
+
+    if (trendCategory === 'math') {
+      data = processedTrendData.filter((day) => day.section === 'math');
+    } else if (trendCategory === 'reading') {
+      data = processedTrendData.filter((day) => day.section === 'reading');
+    } else if (trendCategory === 'detailed') {
+      data = processedTrendData.filter((day) => {
+        const isDetailedSection = day.section !== 'math' && day.section !== 'reading';
+        if (!isDetailedSection) {
+          return false;
+        }
+
+        if (selectedDetailedSkill !== 'all') {
+          return day.detailedSkillName === selectedDetailedSkill;
+        }
+
+        return true;
+      });
+    }
+
+    return data.length ? data : processedTrendData;
+  }, [processedTrendData, trendCategory, selectedDetailedSkill]);
+
+  useEffect(() => {
+    if (trendCategory === 'detailed' && selectedDetailedSkill !== 'all') {
+      if (!availableDetailedSkills.includes(selectedDetailedSkill)) {
+        setSelectedDetailedSkill('all');
+      }
+    }
+  }, [trendCategory, selectedDetailedSkill, availableDetailedSkills]);
+
+  const chartData = filteredTrendData;
+
+  const positiveMomentumColor = isDarkMode ? '#22c55e' : '#16a34a';
+  const negativeMomentumColor = isDarkMode ? '#f87171' : '#dc2626';
+
+  const MomentumBarShape = useCallback((props: any) => {
+    const { x, y, width, height, fill } = props;
+
+    if (height <= 0) {
+      return null;
+    }
+
+    const centerX = x + width / 2;
+    const candleWidth = Math.min(26, Math.max(8, width * 0.6));
+    const candleX = centerX - candleWidth / 2;
+
+    return (
+      <g>
+        <line
+          x1={centerX}
+          x2={centerX}
+          y1={y - 8}
+          y2={y + height + 6}
+          stroke={fill}
+          strokeWidth={2}
+          strokeLinecap="round"
+          opacity={0.7}
+        />
+        <rect
+          x={candleX}
+          y={y}
+          width={candleWidth}
+          height={height}
+          rx={4}
+          fill={fill}
+          opacity={0.85}
+        />
+      </g>
+    );
+  }, []);
+
+  const MomentumTooltip = ({ active, payload }: any) => {
+    if (!active || !payload || !payload.length) {
+      return null;
+    }
+
+    const dataPoint = payload[0].payload;
+    const diff = typeof dataPoint.globalAverage === 'number'
+      ? dataPoint.attempted - dataPoint.globalAverage
+      : null;
+    const diffColor = diff !== null && diff >= 0 ? positiveMomentumColor : negativeMomentumColor;
+    const momentumColor = dataPoint.momentum >= 0 ? positiveMomentumColor : negativeMomentumColor;
+
+    return (
+      <div
+        className={`rounded-xl border px-4 py-3 shadow-lg ${
+          isDarkMode
+            ? 'border-gray-700 bg-gray-900 text-gray-100'
+            : 'border-gray-200 bg-white text-gray-700'
+        }`}
+      >
+        <p className="text-sm font-semibold mb-2">{dataPoint.longDate}</p>
+        <div className="space-y-1 text-xs font-medium">
+          <div className="flex items-center justify-between">
+            <span>Questions</span>
+            <span>{dataPoint.attempted}</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span>Momentum</span>
+            <span style={{ color: momentumColor }}>
+              {dataPoint.momentum >= 0 ? `+${dataPoint.momentum}` : dataPoint.momentum}
+            </span>
+          </div>
+          {typeof dataPoint.globalAverage === 'number' && (
+            <div className="flex items-center justify-between">
+              <span>Global Average</span>
+              <span>{dataPoint.globalAverage}</span>
+            </div>
+          )}
+          {diff !== null && (
+            <div className="flex items-center justify-between">
+              <span>Global Comparison</span>
+              <span style={{ color: diffColor }}>
+                {diff >= 0 ? '+' : ''}{diff}
+              </span>
+            </div>
+          )}
+        </div>
+        {dataPoint.detailedSkillName && (
+          <div className="mt-3 border-t pt-2 text-xs" style={{ borderColor: isDarkMode ? '#374151' : '#e5e7eb' }}>
+            <p className="font-semibold mb-1">{dataPoint.detailedSkillName}</p>
+            {dataPoint.percentile !== null && (
+              <p className="flex items-center justify-between">
+                <span>Percentile</span>
+                <span>{dataPoint.percentile}</span>
+              </p>
+            )}
+            {dataPoint.contribution !== null && (
+              <p className="flex items-center justify-between">
+                <span>Daily Share</span>
+                <span>{dataPoint.contribution}%</span>
+              </p>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  };
 
   // Mock exam reports data
   const examReports = [
@@ -873,203 +1069,139 @@ const Progress = () => {
                     </div>
                   </div>
 
-                  {/* Time Analytics Section */}
+                  {/* Momentum & Daily Trends */}
                   <div className={`p-8 rounded-xl ${isDarkMode ? 'bg-gray-800' : 'bg-white'} shadow-sm border-0 mt-8`}>
-                    <div className="flex items-center justify-between mb-6">
-                      <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>Time Analytics</h3>
-                      <div className="flex items-center space-x-4">
-                        <div className="flex rounded-lg bg-gray-100 p-1">
-                          <button 
-                            onClick={() => setTimeAnalyticsView('skills')}
-                            className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${
-                              timeAnalyticsView === 'skills' 
-                                ? 'bg-orange-500 text-white shadow-sm' 
-                                : 'text-gray-600 hover:text-orange-500'
-                            }`}
-                          >
-                            Skill Practice
-                          </button>
-                          <button 
-                            onClick={() => setTimeAnalyticsView('daily')}
-                            className={`px-4 py-2 text-sm font-medium rounded-md transition-all ${
-                              timeAnalyticsView === 'daily' 
-                                ? 'bg-orange-500 text-white shadow-sm' 
-                                : 'text-gray-600 hover:text-orange-500'
-                            }`}
-                          >
-                            Daily Performance Trend
-                          </button>
-                        </div>
+                    <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                      <div>
+                        <h3 className={`text-xl font-semibold ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>
+                          Momentum & Daily Trends
+                        </h3>
+                        <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                          Track daily practice by SAT domain with momentum candles and global benchmarks.
+                        </p>
                       </div>
-                    </div>
-
-                    {/* Skill Practice View */}
-                    {timeAnalyticsView === 'skills' && (
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between mb-4">
-                          <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                            Questions practiced per skill over the last 15 days
-                          </p>
-                          <select 
-                            value={selectedSkillForAnalytics}
-                            onChange={(e) => setSelectedSkillForAnalytics(e.target.value)}
-                            className={`px-3 py-2 rounded-lg border text-sm ${isDarkMode ? 'bg-gray-700 border-gray-600 text-gray-200' : 'bg-white border-gray-300 text-gray-700'}`}
+                      <div className="flex flex-wrap items-center gap-2">
+                        {[
+                          { key: 'combined', label: 'Combined' },
+                          { key: 'math', label: 'SAT Math' },
+                          { key: 'reading', label: 'SAT Reading' },
+                          { key: 'detailed', label: 'Detailed Skill' }
+                        ].map(({ key, label }) => (
+                          <button
+                            key={key}
+                            onClick={() => setTrendCategory(key as any)}
+                            className={`rounded-full px-4 py-2 text-sm font-medium transition-all ${
+                              trendCategory === key
+                                ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-sm'
+                                : isDarkMode
+                                ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            }`}
                           >
-                            <option value="all">All Skills</option>
-                            {currentProgressData.skillAnalytics.slice(0, 10).map((skill) => (
-                              <option key={skill.skillId} value={skill.skillId}>
-                                {skill.skillName}
+                            {label}
+                          </button>
+                        ))}
+
+                        {trendCategory === 'detailed' && availableDetailedSkills.length > 0 && (
+                          <select
+                            value={selectedDetailedSkill}
+                            onChange={(event) => setSelectedDetailedSkill(event.target.value)}
+                            className={`rounded-full border px-3 py-2 text-sm ${
+                              isDarkMode
+                                ? 'bg-gray-700 border-gray-600 text-gray-200'
+                                : 'bg-white border-gray-300 text-gray-700'
+                            }`}
+                          >
+                            <option value="all">All detailed skills</option>
+                            {availableDetailedSkills.map((skill) => (
+                              <option key={skill} value={skill}>
+                                {skill}
                               </option>
                             ))}
                           </select>
-                        </div>
-                        {currentProgressData.performanceGraph.slice(-15).map((day, index) => {
-                          const questionsForSkill = selectedSkillForAnalytics === 'all' 
-                            ? day.attempted 
-                            : Math.floor(day.attempted * (Math.random() * 0.3 + 0.1));
-                          return (
-                            <div key={day.date} className={`flex items-center justify-between p-3 rounded-lg ${isDarkMode ? 'bg-gray-700/50' : 'bg-gray-50'}`}>
-                              <div className="flex items-center space-x-4 min-w-[120px]">
-                                <div className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
-                                  {new Date(day.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                                </div>
-                                <div className={`text-xs ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>
-                                  {day.dayName}
-                                </div>
-                              </div>
-                              <div className="flex items-center space-x-4 flex-1">
-                                <div className="flex items-center space-x-2 flex-1">
-                                  <div className="w-full max-w-[300px] bg-gray-200 rounded-full h-4 overflow-hidden">
-                                    <div 
-                                      className="bg-orange-500 h-4 rounded-full transition-all duration-700 ease-out"
-                                      style={{ width: `${Math.min(100, (questionsForSkill / 30) * 100)}%` }}
-                                    ></div>
-                                  </div>
-                                  <span className={`text-sm font-semibold ${isDarkMode ? 'text-orange-400' : 'text-orange-600'} min-w-[35px]`}>
-                                    {questionsForSkill}
-                                  </span>
-                                </div>
-                              </div>
-                            </div>
-                          );
-                        })}
+                        )}
                       </div>
-                    )}
+                    </div>
 
-                    {/* Daily Performance Trend View */}
-                    {timeAnalyticsView === 'daily' && (
-                      <div className="h-80">
+                    <div className="mt-6 h-80">
+                      {chartData.length ? (
                         <ResponsiveContainer width="100%" height="100%">
-                          <LineChart data={currentProgressData.performanceGraph}>
+                          <ComposedChart data={chartData} margin={{ top: 12, right: 24, left: 0, bottom: 8 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke={isDarkMode ? '#374151' : '#e5e7eb'} />
-                            <XAxis 
-                              dataKey="date" 
+                            <XAxis
+                              dataKey="shortDate"
                               stroke={isDarkMode ? '#9ca3af' : '#6b7280'}
                               fontSize={12}
-                              tickFormatter={(value) => {
-                                const date = new Date(value);
-                                return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                              }}
                             />
-                            <YAxis 
+                            <YAxis
                               stroke={isDarkMode ? '#9ca3af' : '#6b7280'}
                               fontSize={12}
-                              label={{ value: 'Questions Attempted', angle: -90, position: 'insideLeft', style: { textAnchor: 'middle' } }}
-                            />
-                            <Tooltip 
-                              contentStyle={{
-                                backgroundColor: isDarkMode ? '#1f2937' : '#ffffff',
-                                border: isDarkMode ? '1px solid #374151' : '1px solid #e5e7eb',
-                                borderRadius: '8px',
-                                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                              label={{
+                                value: 'Questions Attempted',
+                                angle: -90,
+                                position: 'insideLeft',
+                                style: { textAnchor: 'middle', fill: isDarkMode ? '#9ca3af' : '#6b7280' }
                               }}
-                              labelFormatter={(label) => {
-                                const date = new Date(label);
-                                return date.toLocaleDateString('en-US', { 
-                                  weekday: 'long', 
-                                  month: 'long', 
-                                  day: 'numeric' 
-                                });
-                              }}
-                              formatter={(value, name, props) => {
-                                if (name === 'attempted') {
-                                  const momentum = props.payload.momentum;
-                                  const skill = props.payload.mostPracticedSkill;
-                                  const momentumText = momentum > 0 ? `+${momentum}` : momentum.toString();
-                                  const momentumColor = momentum > 0 ? '#10b981' : momentum < 0 ? '#ef4444' : '#6b7280';
-                                  const percentileColor = skill.percentile >= 90 ? '#10b981' : skill.percentile >= 75 ? '#3b82f6' : skill.percentile >= 50 ? '#eab308' : '#ef4444';
-                                  
-                                  return [
-                                    <div style={{ color: isDarkMode ? '#e5e7eb' : '#374151' }}>
-                                      <div className="mb-2">
-                                        <strong>Your Performance: {value} questions</strong>
-                                      </div>
-                                      <div style={{ color: momentumColor, fontSize: '12px', marginBottom: '8px' }}>
-                                        Momentum: {momentumText} vs. previous day
-                                      </div>
-                                      <div className="border-t pt-2" style={{ borderColor: isDarkMode ? '#374151' : '#e5e7eb' }}>
-                                        <div style={{ fontSize: '12px', fontWeight: 'bold', marginBottom: '4px' }}>
-                                          Most Practiced Skill:
-                                        </div>
-                                        <div style={{ fontSize: '11px' }}>
-                                          <div>{skill.name}</div>
-                                          <div style={{ color: percentileColor, fontWeight: 'bold' }}>
-                                            {skill.percentile}th percentile • {skill.contribution}% of today's practice
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>,
-                                    ''
-                                  ];
-                                }
-                                if (name === 'globalAverage') {
-                                  return [
-                                    <div style={{ color: isDarkMode ? '#fb923c' : '#ea580c' }}>
-                                      Global Average: <strong>{value}</strong>
-                                    </div>,
-                                    ''
-                                  ];
-                                }
-                                return [value, name];
-                              }}
+                              allowDecimals={false}
+                              minTickGap={12}
                             />
-                            <Line 
-                              type="monotone" 
-                              dataKey="attempted" 
-                              stroke={isDarkMode ? '#10b981' : '#3b82f6'}
-                              strokeWidth={3}
-                              dot={{ fill: isDarkMode ? '#10b981' : '#3b82f6', r: 4 }}
-                              activeDot={{ r: 6, fill: isDarkMode ? '#10b981' : '#3b82f6' }}
-                              name="attempted"
-                            />
-                            <Line 
-                              type="monotone" 
-                              dataKey="globalAverage" 
+                            <Tooltip content={<MomentumTooltip />} cursor={{ opacity: 0.12 }} />
+                            <Bar
+                              dataKey="attempted"
+                              shape={MomentumBarShape}
+                              barSize={26}
+                            >
+                              {chartData.map((entry: any, index: number) => (
+                                <Cell
+                                  key={`${entry.date}-${index}`}
+                                  fill={entry.momentum >= 0 ? positiveMomentumColor : negativeMomentumColor}
+                                />
+                              ))}
+                            </Bar>
+                            <Line
+                              type="monotone"
+                              dataKey="globalAverage"
                               stroke={isDarkMode ? '#fb923c' : '#ea580c'}
+                              strokeDasharray="5 4"
                               strokeWidth={2}
-                              strokeDasharray="5 5"
-                              dot={{ fill: isDarkMode ? '#fb923c' : '#ea580c', r: 3 }}
-                              activeDot={{ r: 5, fill: isDarkMode ? '#fb923c' : '#ea580c' }}
-                              name="globalAverage"
+                              dot={false}
+                              activeDot={{ r: 4, fill: isDarkMode ? '#fb923c' : '#ea580c' }}
                             />
-                          </LineChart>
+                          </ComposedChart>
                         </ResponsiveContainer>
-                      </div>
-                    )}
+                      ) : (
+                        <div className={`flex h-full items-center justify-center text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                          Not enough data to display momentum trends yet.
+                        </div>
+                      )}
+                    </div>
 
-                    {/* Chart Legend */}
-                    {timeAnalyticsView === 'daily' && (
-                      <div className="flex items-center justify-center gap-6 mt-4">
-                        <div className="flex items-center gap-2">
-                          <div className={`w-4 h-0.5 ${isDarkMode ? 'bg-green-400' : 'bg-blue-600'} rounded`}></div>
-                          <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Your Performance</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <div className={`w-4 h-0.5 ${isDarkMode ? 'bg-orange-400' : 'bg-orange-600'} rounded`} style={{ borderStyle: 'dashed' }}></div>
-                          <span className={`text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>Global Average</span>
-                        </div>
+                    <div className="mt-4 flex flex-wrap items-center gap-6 text-xs md:text-sm">
+                      <div className="flex items-center gap-2">
+                        <span className="h-3 w-3 rounded-full" style={{ background: positiveMomentumColor }}></span>
+                        <span className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                          Positive momentum vs previous day
+                        </span>
                       </div>
-                    )}
+                      <div className="flex items-center gap-2">
+                        <span className="h-3 w-3 rounded-full" style={{ background: negativeMomentumColor }}></span>
+                        <span className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                          Momentum dip vs previous day
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span
+                          className="h-3 w-3 rounded-full"
+                          style={{
+                            border: `1px dashed ${isDarkMode ? '#fb923c' : '#ea580c'}`,
+                            background: 'transparent'
+                          }}
+                        ></span>
+                        <span className={`${isDarkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                          Global average comparison line
+                        </span>
+                      </div>
+                    </div>
                   </div>
 
                   {/* REAL TEST Analytics Table */}
