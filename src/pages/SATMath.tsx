@@ -8,12 +8,12 @@ import {
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '@/contexts/ThemeContext';
-import { SAT_MATH_SKILLS, getAllMathCategories, getMathSkillsByCategory, MathSkill } from '@/data/mathSkills';
+import { MATH_MODULE_METADATA, getAllMathCategories, getMathModulesByCategory, MathModuleMetadata } from '@/data/math/metadata';
 
 const SATMath: React.FC = () => {
   const navigate = useNavigate();
   const { isDarkMode } = useTheme();
-  const [selectedSkill, setSelectedSkill] = useState<MathSkill | null>(null);
+  const [selectedSkill, setSelectedSkill] = useState<MathModuleMetadata | null>(null);
   const [view, setView] = useState('selection');
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('All');
@@ -22,7 +22,7 @@ const SATMath: React.FC = () => {
   const categories = ['All', ...getAllMathCategories()];
   const difficulties = ['All', 'Easy', 'Medium', 'Hard'];
 
-  const filteredSkills = SAT_MATH_SKILLS.filter(skill => {
+  const filteredSkills = MATH_MODULE_METADATA.filter(skill => {
     const matchesSearch = skill.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          skill.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          skill.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
@@ -51,12 +51,12 @@ const SATMath: React.FC = () => {
     }
   };
 
-  const startPractice = (skill: MathSkill) => {
+  const startPractice = (skill: MathModuleMetadata) => {
     // Navigate to practice page with skill filter
     navigate('/practice', { state: { mathSkill: skill } });
   };
 
-  const SkillCard: React.FC<{ skill: MathSkill; size?: 'normal' | 'large' }> = ({ 
+  const SkillCard: React.FC<{ skill: MathModuleMetadata; size?: 'normal' | 'large' }> = ({ 
     skill, 
     size = 'normal' 
   }) => {
@@ -117,7 +117,7 @@ const SATMath: React.FC = () => {
   };
 
   const CategorySection: React.FC<{ category: string }> = ({ category }) => {
-    const skills = getMathSkillsByCategory(category);
+    const skills = getMathModulesByCategory(category);
     const scrollRef = React.useRef<HTMLDivElement>(null);
 
     const scroll = (direction: 'left' | 'right') => {

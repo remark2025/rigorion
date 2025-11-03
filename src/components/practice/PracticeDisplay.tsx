@@ -13,7 +13,6 @@ import QuestionHeader from "./QuestionHeader";
 import { QuestionTracking } from "./QuestionTracking";
 import { PracticeTimer } from "./PracticeTimer";
 import { useAuth } from "@/hooks/useAuth";
-import { supabase } from "@/integrations/supabase/client";
 import { useInteractionLogger } from "@/hooks/useInteractionLogger";
 import InteractiveMathSolution from "@/components/math/InteractiveMathSolution";
 import InteractiveGraph from "@/components/math/InteractiveGraph";
@@ -586,18 +585,26 @@ const PracticeDisplay = ({
       setWritingCorrections(result.corrections);
       setWritingAnalysisComplete(true);
       
-      // Log interaction with analysis results
-      logInteraction({
-        type: 'writing_submission',
-        questionId: currentQuestion?.id || 'unknown',
-        response: writingAnswer,
-        timestamp: new Date().toISOString(),
-        module: currentQuestion?.module || null,
-        chapter: currentQuestion?.chapter || null,
-        difficulty: currentQuestion?.difficulty || null,
-        corrections_count: result.corrections.length,
-        sat_score: result.satScore.total
-      });
+      // Log interaction for analytics tracking
+      if (currentQuestion) {
+        const timeSpent = Math.round((Date.now() - questionStartTime) / 1000);
+        logInteraction({
+          question: currentQuestion,
+          selectedAnswer: 'essay_submission',
+          isCorrect: true,
+          timeSpentSeconds: timeSpent,
+          practiceMode: mode === "timer" ? "timed" : mode === "exam" ? "mock_test" : "untimed",
+          practiceSessionId: sessionId,
+          questionIndexInSession: currentQuestionIndex,
+          totalQuestionsInSession: totalQuestions,
+          confidenceLevel: questionGuess,
+          hintChecked: hintsViewed.length > 0,
+          solutionChecked: solutionAccessed,
+          bookmarked: isBookmarked
+        }).catch(error => {
+          console.error('❌ Failed to log writing interaction:', error);
+        });
+      }
       
       setAiEvaluation(
         `AI Analysis Complete! Found ${result.corrections.length} areas for improvement. ` +

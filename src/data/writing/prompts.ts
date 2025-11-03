@@ -162,6 +162,77 @@ The effects of industrialization continue to influence modern society, from our 
     expectedLength: '400-550 words',
     difficulty: 'Medium',
     tags: ['community', 'service', 'education']
+  },
+
+  // New Prompts - 5 Additional Essays
+  {
+    id: 'arg-digital-privacy',
+    category: 'argumentative',
+    title: 'Digital Privacy vs. Security',
+    passage: `In the digital age, governments and technology companies collect vast amounts of personal data to provide services and ensure security. This practice has sparked intense debate about the balance between personal privacy and collective security.
+
+Proponents of data collection argue that it enables early detection of terrorism, prevents cybercrime, and allows for personalized services that improve quality of life. Law enforcement agencies contend that access to digital communications is essential for solving crimes and preventing violence.
+
+However, privacy advocates warn that extensive surveillance threatens democratic freedoms and creates opportunities for abuse of power. They argue that once privacy is surrendered, it becomes nearly impossible to reclaim, and that mass data collection may chill free expression and dissent.
+
+Recent revelations about government surveillance programs and corporate data breaches have intensified this debate, forcing society to reconsider the appropriate boundaries of digital monitoring.`,
+    question: 'Write an argumentative essay examining whether digital privacy should be sacrificed for greater security. Take a clear position and support your argument with logical reasoning and relevant examples.',
+    timeLimit: 50,
+    expectedLength: '400-600 words',
+    difficulty: 'Hard',
+    tags: ['technology', 'privacy', 'security', 'government']
+  },
+  {
+    id: 'ana-educational-technology',
+    category: 'analytical',
+    title: 'Technology in Education Analysis',
+    passage: `The integration of technology in education has accelerated dramatically, especially following the COVID-19 pandemic. Schools worldwide have adopted digital learning platforms, interactive software, and remote learning systems.
+
+This technological shift has produced mixed results. On one hand, technology has made education more accessible, allowing students in remote areas to access quality instruction and enabling personalized learning experiences. Digital tools also provide immediate feedback and can adapt to different learning styles.
+
+On the other hand, concerns have emerged about screen time, digital distractions, and the potential for technology to replace human interaction in learning. Some studies suggest that excessive use of digital devices may impair concentration and deep reading skills.
+
+Furthermore, the digital divide has become more apparent, as students without reliable internet access or devices struggle to keep pace with their peers. This technological inequality may exacerbate existing educational disparities.`,
+    question: 'Analyze the effects of increased technology use in education. In your essay, examine both the benefits and drawbacks, and evaluate the overall impact on student learning and educational equity.',
+    timeLimit: 50,
+    expectedLength: '450-650 words',
+    difficulty: 'Medium',
+    tags: ['technology', 'education', 'equality', 'learning']
+  },
+  {
+    id: 'exp-sustainable-living',
+    category: 'expository',
+    title: 'Sustainable Living Practices',
+    question: 'Explain three specific sustainable living practices that individuals can adopt to reduce their environmental impact. For each practice, describe what it involves, how it helps the environment, and any challenges people might face in implementing it. Use clear examples and logical organization.',
+    timeLimit: 45,
+    expectedLength: '400-550 words',
+    difficulty: 'Easy',
+    tags: ['environment', 'sustainability', 'lifestyle', 'individual-action']
+  },
+  {
+    id: 'nar-overcome-challenge',
+    category: 'narrative',
+    title: 'Overcoming a Personal Challenge',
+    question: 'Write a narrative essay about a time when you faced a significant challenge or obstacle. Describe the situation, explain how you approached the problem, and reflect on what you learned from the experience. Use vivid details and clear chronological organization to engage your reader.',
+    timeLimit: 45,
+    expectedLength: '400-550 words',
+    difficulty: 'Easy',
+    tags: ['personal-growth', 'challenges', 'reflection', 'experience']
+  },
+  {
+    id: 'per-gap-year',
+    category: 'persuasive',
+    title: 'The Value of Gap Years',
+    passage: `A growing number of high school graduates are choosing to take a "gap year" before entering college—spending time working, volunteering, traveling, or pursuing other experiences outside of formal education.
+
+Supporters argue that gap years provide valuable real-world experience, help students develop independence and maturity, and allow time for career exploration before committing to expensive college programs. They point to research suggesting that students who take gap years often perform better academically when they do enter college.
+
+Critics worry that gap years may lead students to lose academic momentum, fall behind their peers, or decide not to pursue higher education at all. They also note that gap year opportunities may not be equally accessible to all students due to financial constraints.`,
+    question: 'Write a persuasive essay arguing whether taking a gap year before college is beneficial or detrimental for students. Present a clear position and support your argument with compelling reasons and examples.',
+    timeLimit: 50,
+    expectedLength: '400-600 words',
+    difficulty: 'Medium',
+    tags: ['education', 'college', 'life-choices', 'personal-development']
   }
 ];
 

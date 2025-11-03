@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
+import { buildProgressSnapshotFromInteractions } from '@/services/interactionAnalytics';
 
 export function useSimpleProgress() {
   const { session } = useAuth();
@@ -8,44 +9,52 @@ export function useSimpleProgress() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchProgress = async () => {
-      if (!session?.user?.id) {
-        setIsLoading(false);
+  const fetchProgress = useCallback(async () => {
+    if (!session?.user?.id) {
+      setIsLoading(false);
+      setProgressData(buildProgressSnapshotFromInteractions('guest'));
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      const localSnapshot = buildProgressSnapshotFromInteractions(session.user.id);
+      if (localSnapshot) {
+        setProgressData(localSnapshot);
         return;
       }
 
-      try {
-        setIsLoading(true);
-        setError(null);
-        
-        console.log('🚀 Fetching progress for user:', session.user.id);
+      console.log('🚀 Fetching progress for user via edge function:', session.user.id);
+      const { data, error } = await supabase.functions.invoke(
+        `simple-progress?userId=${session.user.id}`,
+        { method: 'GET' }
+      );
 
-        // Call our simple-progress Edge Function directly
-        const { data, error } = await supabase.functions.invoke(`simple-progress?userId=${session.user.id}`, {
-          method: 'GET'
-        });
+      if (error) {
+        throw error;
+      }
 
-        if (error) {
-          console.error('❌ Progress function error:', error);
-          throw error;
-        }
+      if (!data?.success) {
+        throw new Error(data?.error || 'Failed to fetch progress');
+      }
 
-        if (!data?.success) {
-          console.error('❌ Progress function failed:', data);
-          throw new Error(data?.error || 'Failed to fetch progress');
-        }
+      setProgressData({
+        ...data.data,
+        dataSource: 'edge_function'
+      });
 
-        console.log('✅ Progress data loaded:', data.data);
-        setProgressData(data.data);
+    } catch (err: any) {
+      console.error('💥 Progress fetch error:', err);
+      setError(err.message || 'Failed to load progress');
 
-      } catch (err: any) {
-        console.error('💥 Progress fetch error:', err);
-        setError(err.message || 'Failed to load progress');
-        
-        // Set fallback data so page doesn't stay loading forever
+      const fallbackSnapshot = buildProgressSnapshotFromInteractions(session?.user?.id);
+      if (fallbackSnapshot) {
+        setProgressData(fallbackSnapshot);
+      } else {
         setProgressData({
-          userId: session.user.id,
+          userId: session?.user?.id || 'guest',
           totalProgressPercent: 0,
           correctAnswers: 0,
           incorrectAnswers: 0,
@@ -76,22 +85,31 @@ export function useSimpleProgress() {
           skillAnalytics: [],
           dataSource: 'error_fallback'
         });
-      } finally {
-        setIsLoading(false);
       }
-    };
-
-    fetchProgress();
+    } finally {
+      setIsLoading(false);
+    }
   }, [session?.user?.id]);
+
+  useEffect(() => {
+    fetchProgress();
+  }, [fetchProgress]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const listener = () => fetchProgress();
+    window.addEventListener('practice-interaction-logged', listener);
+    window.addEventListener('practice-interactions-cleared', listener);
+    return () => {
+      window.removeEventListener('practice-interaction-logged', listener);
+      window.removeEventListener('practice-interactions-cleared', listener);
+    };
+  }, [fetchProgress]);
 
   return {
     progressData,
     isLoading,
     error,
-    refetch: () => {
-      setIsLoading(true);
-      // Re-trigger useEffect
-      setProgressData(null);
-    }
+    refetch: fetchProgress
   };
 }

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
@@ -24,6 +24,9 @@ import {
 } from 'lucide-react';
 import FallbackAnalyticsService, { CourseAnalytics, DetailedSkillAnalytics } from '@/services/fallbackAnalytics';
 import { useTheme } from '@/contexts/ThemeContext';
+import { buildProgressSnapshotFromInteractions } from '@/services/interactionAnalytics';
+
+type InteractionSnapshot = ReturnType<typeof buildProgressSnapshotFromInteractions>;
 
 interface DetailedAnalyticsDashboardProps {
   userId?: string;
@@ -38,6 +41,7 @@ const DetailedAnalyticsDashboard: React.FC<DetailedAnalyticsDashboardProps> = ({
   const [realTestData, setRealTestData] = useState<any[]>([]);
   const [performanceAnalytics, setPerformanceAnalytics] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [interactionSnapshot, setInteractionSnapshot] = useState<InteractionSnapshot>(null);
 
   useEffect(() => {
     // Load comprehensive analytics data
@@ -90,6 +94,44 @@ const DetailedAnalyticsDashboard: React.FC<DetailedAnalyticsDashboardProps> = ({
     loadAnalytics();
   }, [userId]);
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const updateSnapshot = () => {
+      const snapshot = buildProgressSnapshotFromInteractions(userId || undefined);
+      setInteractionSnapshot(snapshot);
+    };
+
+    updateSnapshot();
+    window.addEventListener('practice-interaction-logged', updateSnapshot);
+    window.addEventListener('practice-interactions-cleared', updateSnapshot);
+    return () => {
+      window.removeEventListener('practice-interaction-logged', updateSnapshot);
+      window.removeEventListener('practice-interactions-cleared', updateSnapshot);
+    };
+  }, [userId]);
+
+  const progressSummary = useMemo(() => {
+    if (interactionSnapshot) {
+      const totalAttempted = interactionSnapshot.correctAnswers + interactionSnapshot.incorrectAnswers;
+      const estimatedScore = interactionSnapshot.projectedScore;
+      return {
+        totalQuestionsAttempted: totalAttempted,
+        overallAccuracy: interactionSnapshot.totalProgressPercent,
+        studyStreakDays: interactionSnapshot.streak,
+        estimatedScoreRange: `${Math.max(200, estimatedScore - 30)} - ${Math.min(800, estimatedScore + 30)}`,
+        dataSource: 'local'
+      };
+    }
+    if (overallProgress) {
+      return {
+        ...overallProgress,
+        dataSource: 'fallback'
+      };
+    }
+    return null;
+  }, [interactionSnapshot, overallProgress]);
+
   const getCurrentCourseData = (): CourseAnalytics | null => {
     return courseAnalytics.find(course => course.section === selectedCourse) || null;
   };
@@ -133,14 +175,14 @@ const DetailedAnalyticsDashboard: React.FC<DetailedAnalyticsDashboardProps> = ({
       </div>
 
       {/* Overall Progress Summary */}
-      {overallProgress && (
+      {progressSummary && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <Card className={isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white'}>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Total Questions</p>
-                  <p className="text-3xl font-bold">{overallProgress.totalQuestionsAttempted}</p>
+                  <p className="text-3xl font-bold">{progressSummary.totalQuestionsAttempted}</p>
                 </div>
                 <BookOpen className="h-8 w-8 text-blue-500" />
               </div>
@@ -152,7 +194,7 @@ const DetailedAnalyticsDashboard: React.FC<DetailedAnalyticsDashboardProps> = ({
               <div className="flex items-center justify-between">
                 <div>
                   <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Overall Accuracy</p>
-                  <p className="text-3xl font-bold">{overallProgress.overallAccuracy}%</p>
+                  <p className="text-3xl font-bold">{progressSummary.overallAccuracy}%</p>
                 </div>
                 <Target className="h-8 w-8 text-green-500" />
               </div>
@@ -164,7 +206,7 @@ const DetailedAnalyticsDashboard: React.FC<DetailedAnalyticsDashboardProps> = ({
               <div className="flex items-center justify-between">
                 <div>
                   <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Study Streak</p>
-                  <p className="text-3xl font-bold">{overallProgress.studyStreakDays} days</p>
+                  <p className="text-3xl font-bold">{progressSummary.studyStreakDays} days</p>
                 </div>
                 <Zap className="h-8 w-8 text-orange-500" />
               </div>
@@ -176,7 +218,7 @@ const DetailedAnalyticsDashboard: React.FC<DetailedAnalyticsDashboardProps> = ({
               <div className="flex items-center justify-between">
                 <div>
                   <p className={`text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-600'}`}>Estimated Score</p>
-                  <p className="text-3xl font-bold">{overallProgress.estimatedScoreRange}</p>
+                  <p className="text-3xl font-bold">{progressSummary.estimatedScoreRange}</p>
                 </div>
                 <Trophy className="h-8 w-8 text-yellow-500" />
               </div>

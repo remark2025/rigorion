@@ -1,25 +1,16 @@
 import { useState, useCallback } from 'react';
 import { logInteraction } from '@/services/edgeFunctionService';
 import { useAuth } from '@/hooks/useAuth';
-import { Question } from '@/types/QuestionInterface';
+import {
+  InteractionLogInput,
+  appendInteractionRecord,
+  createStoredInteractionRecord
+} from '@/services/interactionStorage';
 
-export interface InteractionLogData {
-  question: Question;
-  selectedAnswer: string;
-  isCorrect: boolean;
-  timeSpentSeconds: number;
-  practiceMode?: 'timed' | 'untimed' | 'mock_test' | 'chapter_review';
-  practiceSessionId?: string;
-  questionIndexInSession?: number;
-  totalQuestionsInSession?: number;
-  confidenceLevel?: number;
-  hintChecked?: boolean;
-  solutionChecked?: boolean;
-  bookmarked?: boolean;
-}
+export type { InteractionLogInput as InteractionLogData } from '@/services/interactionStorage';
 
 export interface InteractionLogger {
-  logInteraction: (data: InteractionLogData) => Promise<void>;
+  logInteraction: (data: InteractionLogInput) => Promise<void>;
   loading: boolean;
   error: string | null;
 }
@@ -29,9 +20,13 @@ export function useInteractionLogger(): InteractionLogger {
   const [error, setError] = useState<string | null>(null);
   const { session } = useAuth();
 
-  const submitInteraction = useCallback(async (data: InteractionLogData) => {
+  const submitInteraction = useCallback(async (data: InteractionLogInput) => {
+    const userId = session?.user?.id;
+    const localRecord = createStoredInteractionRecord(data, userId);
+    appendInteractionRecord(localRecord);
+
     if (!session?.user?.id) {
-      console.warn('No user session, skipping interaction log');
+      console.warn('No user session, skipping remote interaction log');
       return;
     }
 

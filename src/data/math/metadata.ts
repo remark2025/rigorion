@@ -26,6 +26,19 @@ export const MATH_MODULE_METADATA: MathModuleMetadata[] = [
     estimatedTime: 15,
     tags: ['vertex', 'factoring', 'parabolas'],
     previewEquation: 'y = 2x^2 - 8x + 6'
+  },
+  {
+    id: 'math-circle-geometry',
+    title: 'Circle Geometry & Properties',
+    skill: 'Circle Equations and Properties',
+    category: 'Geometry',
+    difficulty: 'Medium',
+    questionCount: 5,
+    imageUrl: '/resources/sphere-3d-model-3840x2160-10993.jpg',
+    description: 'Explore circle equations, area, circumference, and chord properties with interactive visualizations.',
+    estimatedTime: 15,
+    tags: ['circles', 'radius', 'circumference', 'area'],
+    previewEquation: '(x - h)² + (y - k)² = r²'
   }
 ];
 
