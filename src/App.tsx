@@ -29,6 +29,7 @@ import SATMockTestPage from "@/pages/SATMockTestPage";
 import SATExamHub from "@/pages/SATExamHub";
 import DatabasePopulator from "@/pages/DatabasePopulator";
 import SATMath from "@/pages/SATMath";
+import SATWritingDemo from "@/pages/SATWritingDemo";
 
 function App() {
   // Prevent layout shift from modals by maintaining scrollbar space
@@ -49,6 +50,7 @@ function App() {
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/practice" element={<Practice />} />
                 <Route path="/sat-math" element={<SATMath />} />
+                <Route path="/sat-writing-demo" element={<SATWritingDemo />} />
                 <Route path="/ai-writing-examiner" element={<AIWritingExaminer />} />
                 <Route path="/ai-reading-analyzer" element={<AIReadingAnalyzer />} />
                 <Route path="/reading-assistant" element={<ReadingAssistant />} />
