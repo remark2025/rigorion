@@ -26,8 +26,8 @@ const SolutionPanel: React.FC<SolutionPanelProps> = ({
   const { isDarkMode } = useTheme();
   
   return (
-    <div className={`transition-all duration-500 ease-in-out overflow-hidden ${
-      isOpen ? 'max-h-[2000px] opacity-100' : 'max-h-0 opacity-0'
+    <div className={`${
+      isOpen ? 'block' : 'hidden'
     } ${className}`}>
       <div className={`backdrop-blur-sm rounded-xl p-8 border shadow-lg mt-6 ${
         isDarkMode 

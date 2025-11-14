@@ -18,23 +18,13 @@ import ResetPassword from "@/pages/ResetPassword";
 import NotFound from "@/pages/NotFound";
 import Payment from "@/pages/Payment";
 import PaymentSuccess from "@/pages/PaymentSuccess";
-import Endpoints from "@/pages/Endpoints";
-import StripeTest from "@/pages/StripeTest";
 import Account from "@/pages/Account";
-import InteractiveMathDemo from "@/pages/InteractiveMathDemo";
-import InteractiveMathTest from "@/pages/InteractiveMathTest";
-import SimpleInteractiveTest from "@/pages/SimpleInteractiveTest";
-import ReadingSolutionDemo from "@/pages/ReadingSolutionDemo";
-import WritingSolutionDemo from "@/pages/WritingSolutionDemo";
-import WritingCorrectionDemo from "@/pages/WritingCorrectionDemo";
-import SATWritingDemo from "@/pages/SATWritingDemo";
 import AIWritingExaminer from "@/pages/AIWritingExaminer";
 import AIReadingAnalyzer from "@/pages/AIReadingAnalyzer";
 import ReadingAssistant from "@/components/reading/ReadingAssistant";
 import InteractiveMathHub from "@/pages/InteractiveMathHub";
 import ProjectileMotion from "@/components/math/ProjectileMotion";
 import PremiumMathTool from "@/components/math/PremiumMathTool";
-import AdvancedAnimationDemo from "@/pages/AdvancedAnimationDemo";
 import SATMockTestPage from "@/pages/SATMockTestPage";
 import SATExamHub from "@/pages/SATExamHub";
 import DatabasePopulator from "@/pages/DatabasePopulator";
@@ -59,13 +49,6 @@ function App() {
                 <Route path="/reset-password" element={<ResetPassword />} />
                 <Route path="/practice" element={<Practice />} />
                 <Route path="/sat-math" element={<SATMath />} />
-                <Route path="/interactive-math" element={<InteractiveMathDemo />} />
-                <Route path="/interactive-math-test" element={<InteractiveMathTest />} />
-                <Route path="/simple-test" element={<SimpleInteractiveTest />} />
-                <Route path="/reading-demo" element={<ReadingSolutionDemo />} />
-                <Route path="/writing-demo" element={<WritingSolutionDemo />} />
-                <Route path="/writing-correction-demo" element={<WritingCorrectionDemo />} />
-                <Route path="/sat-writing-demo" element={<SATWritingDemo />} />
                 <Route path="/ai-writing-examiner" element={<AIWritingExaminer />} />
                 <Route path="/ai-reading-analyzer" element={<AIReadingAnalyzer />} />
                 <Route path="/reading-assistant" element={<ReadingAssistant />} />
@@ -148,7 +131,6 @@ function App() {
                     />
                   } 
                 />
-                <Route path="/advanced-animations" element={<AdvancedAnimationDemo />} />
                 <Route path="/sat-exams" element={<SATExamHub />} />
                 <Route path="/sat-mock-test" element={<SATMockTestPage />} />
                 <Route path="/analytics" element={<Analytics />} />
@@ -163,19 +145,9 @@ function App() {
                     <PaymentSuccess />
                   </ProtectedRoute>
                 } />
-                <Route path="/endpoints" element={
-                  <ProtectedRoute>
-                    <Endpoints />
-                  </ProtectedRoute>
-                } />
                 <Route path="/database-populator" element={
                   <ProtectedRoute>
                     <DatabasePopulator />
-                  </ProtectedRoute>
-                } />
-                <Route path="/stripe-test" element={
-                  <ProtectedRoute>
-                    <StripeTest />
                   </ProtectedRoute>
                 } />
                 <Route path="/account" element={
