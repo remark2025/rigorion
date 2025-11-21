@@ -11,9 +11,24 @@ import fs from 'fs/promises';
 import path from 'path';
 import crypto from 'crypto';
 import { fileURLToPath } from 'url';
+import {
+  encodeQuestionPayload,
+  compressPayload,
+  encryptPayload,
+  getMasterContentKey,
+  derivePackKey,
+  deriveQuestionKey,
+  hashBuffer,
+  bufferToBase64,
+  makeAad,
+  getBrotliRatio,
+} from './lib/encryption.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+const ENABLE_ENCRYPTION = process.argv.includes('--encrypt');
+const KEY_VERSION = process.env.CONTENT_KEY_VERSION || 'v1';
 
 // Configuration
 const CONFIG = {
@@ -25,12 +40,15 @@ const CONFIG = {
   hashAlgorithm: 'sha256',
   cacheMaxAge: 31536000, // 1 year in seconds
 };
+CONFIG.encryptedDir = path.join(CONFIG.buildDir, 'encrypted');
+CONFIG.encryptedPackDir = path.join(CONFIG.encryptedDir, 'packs');
+CONFIG.encryptedManifestFile = path.join(CONFIG.encryptedDir, 'manifest.json');
 
 // Pack validation schema
 const PACK_SCHEMA = {
   required: ['id', 'title', 'description', 'difficulty', 'questions'],
   questionRequired: ['id', 'type', 'content', 'options', 'correct_answer', 'explanation'],
-  difficultyLevels: ['beginner', 'intermediate', 'advanced'],
+  difficultyLevels: ['beginner', 'intermediate', 'advanced', 'mixed'],
   questionTypes: ['multiple_choice', 'grid_in', 'student_response'],
 };
 
@@ -44,6 +62,16 @@ class ContentPackBuilder {
     };
     this.errors = [];
     this.warnings = [];
+    this.encryptionEnabled = ENABLE_ENCRYPTION;
+    this.masterContentKey = this.encryptionEnabled ? getMasterContentKey() : null;
+    this.encryptedManifest = this.encryptionEnabled
+      ? {
+          version: '1.0.0',
+          buildTime: new Date().toISOString(),
+          keyVersion: KEY_VERSION,
+          packs: {},
+        }
+      : null;
   }
 
   async build() {
@@ -54,6 +82,9 @@ class ContentPackBuilder {
       await this.loadSourcePacks();
       await this.generateManifest();
       await this.writeManifest();
+      if (this.encryptionEnabled) {
+        await this.writeEncryptedManifest();
+      }
       
       this.printSummary();
       
@@ -71,6 +102,9 @@ class ContentPackBuilder {
   async ensureDirectories() {
     await fs.mkdir(CONFIG.buildDir, { recursive: true });
     await fs.mkdir(path.join(CONFIG.buildDir, 'packs'), { recursive: true });
+    if (this.encryptionEnabled) {
+      await fs.mkdir(CONFIG.encryptedPackDir, { recursive: true });
+    }
   }
 
   async loadSourcePacks() {
@@ -143,6 +177,10 @@ class ContentPackBuilder {
       this.manifest.totalSize += contentSize;
       
       console.log(`    ✓ ${processedPack.questions.length} questions, ${this.formatBytes(contentSize)}, hash: ${contentHash.substring(0, 8)}...`);
+      
+      if (this.encryptionEnabled) {
+        await this.buildEncryptedPack(packId, processedPack);
+      }
       
     } catch (error) {
       this.errors.push(`Failed to process pack ${packId}: ${error.message}`);
@@ -337,6 +375,117 @@ class ContentPackBuilder {
     console.log(`📝 Created example pack: ${CONFIG.sourceDir}/sample-math.json`);
   }
 
+  async buildEncryptedPack(packId, packData) {
+    const packKey = derivePackKey(this.masterContentKey, packId);
+    const entries = [];
+    const ciphertextChunks = [];
+    let offset = 0;
+    let totalRawBytes = 0;
+    let totalCompressedBytes = 0;
+    let totalCiphertextBytes = 0;
+
+    for (const question of packData.questions) {
+      const rawBuffer = encodeQuestionPayload(question);
+      const compressed = compressPayload(rawBuffer);
+      const questionKey = deriveQuestionKey(packKey, question.id, KEY_VERSION);
+      const plaintextHash = hashBuffer(compressed);
+      const aad = makeAad(packId, question.id, plaintextHash);
+      const { ciphertext, iv, authTag } = encryptPayload({
+        key: questionKey,
+        plaintext: compressed,
+        aad,
+      });
+
+      const ciphertextHash = hashBuffer(ciphertext);
+      const entry = {
+        questionId: question.id,
+        offset,
+        length: ciphertext.length,
+        iv: bufferToBase64(iv),
+        authTag: bufferToBase64(authTag),
+        aadHash: hashBuffer(aad),
+        plaintextSha256: plaintextHash,
+        ciphertextSha256: ciphertextHash,
+        rawBytes: rawBuffer.length,
+        compressedBytes: compressed.length,
+        ciphertextBytes: ciphertext.length,
+        brotliRatio: getBrotliRatio(rawBuffer.length, compressed.length),
+      };
+
+      entries.push(entry);
+      ciphertextChunks.push(ciphertext);
+      offset += ciphertext.length;
+      totalRawBytes += rawBuffer.length;
+      totalCompressedBytes += compressed.length;
+      totalCiphertextBytes += ciphertext.length;
+    }
+
+    const packBuffer = Buffer.concat(ciphertextChunks);
+    const packFilePath = path.join(CONFIG.encryptedPackDir, `${packId}.bin`);
+    const packManifestPath = path.join(CONFIG.encryptedPackDir, `${packId}.manifest.json`);
+
+    await fs.writeFile(packFilePath, packBuffer);
+    await fs.writeFile(
+      packManifestPath,
+      JSON.stringify(
+        {
+          packId,
+          keyVersion: KEY_VERSION,
+          cipher: 'AES-256-GCM',
+          compression: 'brotli',
+          encoding: 'canonical-json',
+          questionCount: entries.length,
+          totalRawBytes,
+          totalCompressedBytes,
+          totalCiphertextBytes,
+          blobHash: hashBuffer(packBuffer),
+          entries,
+        },
+        null,
+        2
+      ),
+      'utf8'
+    );
+
+    // Add question-to-pack mapping to global manifest
+    if (!this.encryptedManifest.questionIndex) {
+      this.encryptedManifest.questionIndex = {};
+    }
+    
+    entries.forEach(entry => {
+      this.encryptedManifest.questionIndex[entry.questionId] = {
+        packId,
+        offset: entry.offset,
+        length: entry.length
+      };
+    });
+
+    this.encryptedManifest.packs[packId] = {
+      id: packId,
+      questionCount: entries.length,
+      keyVersion: KEY_VERSION,
+      packFile: path.relative(CONFIG.buildDir, packFilePath).replace(/\\/g, '/'),
+      manifestFile: path.relative(CONFIG.buildDir, packManifestPath).replace(/\\/g, '/'),
+      hash: hashBuffer(packBuffer),
+      size: packBuffer.length,
+      lastModified: new Date().toISOString(),
+    };
+
+    console.log(
+      `      🔐 Encrypted pack ready: ${this.formatBytes(packBuffer.length)} (avg ratio ${getBrotliRatio(
+        totalRawBytes,
+        totalCompressedBytes
+      )})`
+    );
+  }
+
+  async writeEncryptedManifest() {
+    if (!this.encryptionEnabled) return;
+    const manifestContent = JSON.stringify(this.encryptedManifest, null, 2);
+    await fs.writeFile(CONFIG.encryptedManifestFile, manifestContent, 'utf8');
+    console.log(`🔐 Encrypted manifest written: ${CONFIG.encryptedManifestFile}`);
+  }
+
   countWords(text) {
     if (typeof text !== 'string') return 0;
     return text.trim().split(/\s+/).filter(word => word.length > 0).length;
@@ -355,6 +504,13 @@ class ContentPackBuilder {
     console.log(`   Packs: ${this.manifest.totalPacks}`);
     console.log(`   Total size: ${this.formatBytes(this.manifest.totalSize)}`);
     console.log(`   Build time: ${this.manifest.buildTime}`);
+    if (this.encryptionEnabled) {
+      const encryptedPacks = Object.values(this.encryptedManifest.packs || {});
+      const encryptedBytes = encryptedPacks.reduce((sum, pack) => sum + (pack.size || 0), 0);
+      console.log(
+        `   Encrypted packs: ${encryptedPacks.length} (${this.formatBytes(encryptedBytes)})`
+      );
+    }
     
     if (this.warnings.length > 0) {
       console.log('\n⚠️  Warnings:');

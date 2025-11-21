@@ -1,0 +1,27 @@
+{
+  "version": "1.0.0",
+  "buildTime": "2025-11-21T23:28:34.897Z",
+  "keyVersion": "v1",
+  "packs": {
+    "core": {
+      "id": "core",
+      "questionCount": 9,
+      "keyVersion": "v1",
+      "packFile": "encrypted/packs/core.bin",
+      "manifestFile": "encrypted/packs/core.manifest.json",
+      "hash": "7a0e318afaf7bb3161019268c9b1142ad9af134e6c08045fb7a1aa794aeb319f",
+      "size": 4641,
+      "lastModified": "2025-11-21T23:28:35.059Z"
+    },
+    "premium-advanced": {
+      "id": "premium-advanced",
+      "questionCount": 2,
+      "keyVersion": "v1",
+      "packFile": "encrypted/packs/premium-advanced.bin",
+      "manifestFile": "encrypted/packs/premium-advanced.manifest.json",
+      "hash": "51aade48b2ae31d09439a91ea883a7fa13680b3a7e68ff35c0c8a37c91a93305",
+      "size": 539,
+      "lastModified": "2025-11-21T23:28:35.103Z"
+    }
+  }
+}

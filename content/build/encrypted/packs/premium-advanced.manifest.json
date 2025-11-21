@@ -1,0 +1,42 @@
+{
+  "packId": "premium-advanced",
+  "keyVersion": "v1",
+  "cipher": "AES-256-GCM",
+  "compression": "brotli",
+  "encoding": "canonical-json",
+  "questionCount": 2,
+  "totalRawBytes": 1000,
+  "totalCompressedBytes": 539,
+  "totalCiphertextBytes": 539,
+  "blobHash": "51aade48b2ae31d09439a91ea883a7fa13680b3a7e68ff35c0c8a37c91a93305",
+  "entries": [
+    {
+      "questionId": "ADV-001",
+      "offset": 0,
+      "length": 265,
+      "iv": "SQHN2kOiZBdNWLvK",
+      "authTag": "UCT3LcpexUHYFZNGakNByg==",
+      "aadHash": "81e2bfce1788b16753609ef5c7238b952905287f57076af18be8a2d7c7fb6d2e",
+      "plaintextSha256": "da2ca5b3dea4434c0d64fcc588dfd1b451909df1b54a4987fe3fe33e1e156272",
+      "ciphertextSha256": "826e694192611670253fc83e57e4f295007432c2815e85d177434d764447accb",
+      "rawBytes": 471,
+      "compressedBytes": 265,
+      "ciphertextBytes": 265,
+      "brotliRatio": 0.562633
+    },
+    {
+      "questionId": "ADV-002",
+      "offset": 265,
+      "length": 274,
+      "iv": "ORD1O62KLlYhTGne",
+      "authTag": "JS62/JdPV7gol9mRVlF+Zg==",
+      "aadHash": "2d7c38c0ec18ab173551aed7d1fa1d1f5ee0b15681d8fe4dc35faf66707f45af",
+      "plaintextSha256": "9818c55315c46b7b69d4db0b3c901bceeb5870e541eeada1e787fef884da197f",
+      "ciphertextSha256": "c3020fc21d5edd9091b8fc4731da624c26e049ac150c3559870380f2de4bb736",
+      "rawBytes": 529,
+      "compressedBytes": 274,
+      "ciphertextBytes": 274,
+      "brotliRatio": 0.517958
+    }
+  ]
+}

@@ -1,5 +1,9 @@
 {
   "permissions": {
+    "allow": [
+      "Bash(supabase functions:*)",
+      "Bash(npm install:*)"
+    ],
     "defaultMode": "acceptEdits"
   }
 }
