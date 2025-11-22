@@ -46,6 +46,22 @@
   Cache-Control: public, max-age=31536000, immutable
   Content-Type: application/json
 
+# Encrypted content - specific headers
+/content/build/encrypted/manifest.json
+  Cache-Control: public, max-age=300
+  Content-Type: application/json
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET, OPTIONS
+  Access-Control-Allow-Headers: Range
+
+/content/build/encrypted/packs/*
+  Cache-Control: public, max-age=31536000, immutable
+  Content-Type: application/octet-stream
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET, OPTIONS
+  Access-Control-Allow-Headers: Range
+  Accept-Ranges: bytes
+
 # API routes with additional security
 /functions/*
   X-Robots-Tag: noindex, nofollow
