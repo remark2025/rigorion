@@ -10,6 +10,7 @@ interface ImportMetaEnv {
   readonly VITE_ENCRYPTED_MANIFEST_URL?: string;
   readonly VITE_ENCRYPTED_CONTENT_BASE_URL?: string;
   readonly VITE_SESSION_TOKEN_URL?: string;
+  readonly VITE_SECURITY_EVENT_URL?: string;
 }
 
 interface ImportMeta {

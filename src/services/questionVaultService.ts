@@ -1,5 +1,11 @@
 import { SUPABASE_URL } from "@/integrations/supabase/client";
 import type { Question } from "@/types/QuestionInterface";
+import {
+  getCachedPackBuffer,
+  storePackBuffer,
+  isPackCacheSupported,
+} from "@/services/encryptedPackCache";
+import { recordSecurityEvent } from "@/services/securityTelemetry";
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
@@ -130,6 +136,13 @@ async function brotliDecompress(data: Uint8Array): Promise<Uint8Array> {
   return new Uint8Array(buffer);
 }
 
+async function sha256Hex(data: Uint8Array): Promise<string> {
+  const digest = await crypto.subtle.digest("SHA-256", data);
+  return Array.from(new Uint8Array(digest))
+    .map((byte) => byte.toString(16).padStart(2, "0"))
+    .join("");
+}
+
 class SessionTokenManager {
   private token: string | null = null;
   private expiresAtMs = 0;
@@ -167,22 +180,38 @@ class SessionTokenManager {
     if (!authToken) {
       throw new Error("User authentication required for secure content");
     }
-    const response = await fetch(SESSION_TOKEN_ENDPOINT, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${authToken}`,
-      },
-      body: JSON.stringify({}),
-    });
+    try {
+      const response = await fetch(SESSION_TOKEN_ENDPOINT, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authToken}`,
+        },
+        body: JSON.stringify({}),
+      });
 
-    if (!response.ok) {
-      throw new Error(`Unable to obtain session token (${response.status})`);
+      if (!response.ok) {
+        await recordSecurityEvent("session_token_error", "error", {
+          status: response.status,
+          statusText: response.statusText,
+        });
+        throw new Error(`Unable to obtain session token (${response.status})`);
+      }
+
+      const data = await response.json();
+      this.token = data.token;
+      this.expiresAtMs = (data.expiresAt || 0) * 1000;
+
+      await recordSecurityEvent("session_token_success", "info", {
+        expiresAt: data.expiresAt,
+        packs: Array.isArray(data.packs) ? data.packs.length : undefined,
+      });
+    } catch (error) {
+      await recordSecurityEvent("session_token_error", "error", {
+        message: error instanceof Error ? error.message : "token_fetch_failed",
+      });
+      throw error;
     }
-
-    const data = await response.json();
-    this.token = data.token;
-    this.expiresAtMs = (data.expiresAt || 0) * 1000;
   }
 }
 
@@ -197,6 +226,7 @@ export class QuestionVaultService {
   private packKeyCache = new Map<string, { keyBytes: Uint8Array; keyVersion: string }>();
   private tokenManager = new SessionTokenManager();
   private activeSessionToken: string | null = null;
+  private packCacheEnabled = isPackCacheSupported();
 
   isSupported(): boolean {
     const globalAny = globalThis as typeof globalThis & { crypto?: Crypto; DecompressionStream?: any };
@@ -252,7 +282,7 @@ export class QuestionVaultService {
       throw new Error(`Manifest entry ${questionRef.entryIndex} not found for pack ${packEntry.id}`);
     }
 
-    const ciphertext = await this.getCiphertextSlice(packEntry.id, packEntry.packFile, entry.offset, entry.length);
+    const ciphertext = await this.getCiphertextSlice(packEntry, entry.offset, entry.length);
     const questionKeyBytes = await hkdfSha256(
       packKeyInfo.keyBytes,
       encoder.encode(`question:${entry.questionId}`),
@@ -261,18 +291,41 @@ export class QuestionVaultService {
     );
 
     const cryptoKey = await crypto.subtle.importKey("raw", questionKeyBytes, "AES-GCM", false, ["decrypt"]);
-    const decrypted = await crypto.subtle.decrypt(
-      {
-        name: "AES-GCM",
-        iv: base64ToUint8Array(entry.iv),
-        additionalData: encoder.encode(`${packEntry.id}:${entry.questionId}:${entry.plaintextSha256}`),
-        tagLength: 128,
-      },
-      cryptoKey,
-      ciphertext,
-    );
+    let decryptedBytes: Uint8Array;
+    try {
+      const decrypted = await crypto.subtle.decrypt(
+        {
+          name: "AES-GCM",
+          iv: base64ToUint8Array(entry.iv),
+          additionalData: encoder.encode(`${packEntry.id}:${entry.questionId}:${entry.plaintextSha256}`),
+          tagLength: 128,
+        },
+        cryptoKey,
+        ciphertext,
+      );
+      decryptedBytes = new Uint8Array(decrypted);
+    } catch (error) {
+      await recordSecurityEvent("decrypt_failure", "error", {
+        packId: packEntry.id,
+        questionId: entry.questionId,
+        reason: "aes-gcm",
+        message: error instanceof Error ? error.message : "decrypt_error",
+      });
+      throw error;
+    }
 
-    const decompressed = await brotliDecompress(new Uint8Array(decrypted));
+    const computedHash = await sha256Hex(decryptedBytes);
+    if (computedHash !== entry.plaintextSha256) {
+      await recordSecurityEvent("integrity_violation", "error", {
+        packId: packEntry.id,
+        questionId: entry.questionId,
+        expected: entry.plaintextSha256,
+        actual: computedHash,
+      });
+      throw new Error("Question integrity check failed");
+    }
+
+    const decompressed = await brotliDecompress(decryptedBytes);
     const json = decoder.decode(decompressed);
     const question = JSON.parse(json) as Question;
     this.questionCache.set(questionId, question);
@@ -349,29 +402,62 @@ export class QuestionVaultService {
   }
 
   private async getCiphertextSlice(
-    packId: string,
-    relativePath: string,
+    pack: EncryptedPackEntry,
     offset: number,
     length: number,
   ): Promise<ArrayBuffer> {
-    const buffer = await this.loadPackBuffer(packId, relativePath);
-    return buffer.slice(offset, offset + length);
+    const cachedBuffer = this.packBufferCache.get(pack.id);
+    if (cachedBuffer) {
+      return cachedBuffer.slice(offset, offset + length);
+    }
+
+    if (this.packCacheEnabled) {
+      const persisted = await getCachedPackBuffer(pack.id, pack.hash);
+      if (persisted) {
+        this.packBufferCache.set(pack.id, persisted);
+        return persisted.slice(offset, offset + length);
+      }
+
+      const buffer = await this.downloadFullPack(pack);
+      return buffer.slice(offset, offset + length);
+    }
+
+    // Fallback to range request when we are not caching entire packs
+    return this.fetchCiphertextRange(pack, offset, length);
   }
 
-  private async loadPackBuffer(packId: string, relativePath: string): Promise<ArrayBuffer> {
-    if (this.packBufferCache.has(packId)) {
-      return this.packBufferCache.get(packId)!;
-    }
-    const url = this.resolveAssetUrl(relativePath);
-    const response = await fetch(url, {
-      cache: "force-cache",
-    });
+  private async downloadFullPack(pack: EncryptedPackEntry): Promise<ArrayBuffer> {
+    const url = this.resolveAssetUrl(pack.packFile);
+    const response = await fetch(url, { cache: "force-cache" });
     if (!response.ok) {
-      throw new Error(`Failed to download encrypted pack ${packId}`);
+      throw new Error(`Failed to download encrypted pack ${pack.id}`);
     }
     const buffer = await response.arrayBuffer();
-    this.packBufferCache.set(packId, buffer);
+    this.packBufferCache.set(pack.id, buffer);
+    if (this.packCacheEnabled) {
+      storePackBuffer(pack.id, pack.hash, buffer).catch((err) => {
+        console.warn("Failed to persist encrypted pack buffer", err);
+      });
+    }
     return buffer;
+  }
+
+  private async fetchCiphertextRange(
+    pack: EncryptedPackEntry,
+    offset: number,
+    length: number,
+  ): Promise<ArrayBuffer> {
+    const url = this.resolveAssetUrl(pack.packFile);
+    const end = offset + length - 1;
+    const response = await fetch(url, {
+      headers: {
+        Range: `bytes=${offset}-${end}`,
+      },
+    });
+    if (response.status !== 206 && !response.ok) {
+      throw new Error(`Failed to fetch ciphertext range for pack ${pack.id}`);
+    }
+    return response.arrayBuffer();
   }
 
   private resolveAssetUrl(relativePath: string): string {

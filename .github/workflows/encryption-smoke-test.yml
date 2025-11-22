@@ -1,0 +1,100 @@
+name: Encryption Smoke Test
+
+on:
+  push:
+    branches: [main, staging]
+    paths:
+      - 'content/build/encrypted/**'
+      - 'scripts/build-content-packs.js' 
+      - 'src/services/questionVaultService.ts'
+      - 'src/services/encryptedPackCache.ts'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'content/build/encrypted/**'
+      - 'scripts/**'
+      - 'src/services/questionVaultService.ts'
+  schedule:
+    # Run daily at 6 AM UTC to catch any CDN/infrastructure issues
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to test'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+jobs:
+  smoke-test:
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        environment: [staging, production]
+        # Skip production tests on PR, only run on main branch
+        exclude:
+          - environment: production
+        include:
+          - environment: production
+            if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Set environment variables
+        run: |
+          if [ "${{ matrix.environment }}" = "staging" ]; then
+            echo "ENCRYPTED_MANIFEST_URL=https://staging-cdn.yoursite.com/content/encrypted/manifest.json" >> $GITHUB_ENV
+            echo "ENCRYPTED_CONTENT_BASE_URL=https://staging-cdn.yoursite.com/content" >> $GITHUB_ENV
+          else
+            echo "ENCRYPTED_MANIFEST_URL=https://cdn.sat-cram.com/content/encrypted/manifest.json" >> $GITHUB_ENV  
+            echo "ENCRYPTED_CONTENT_BASE_URL=https://cdn.sat-cram.com/content" >> $GITHUB_ENV
+          fi
+
+      - name: Run encryption smoke test
+        run: node scripts/smoke-test-encryption.js
+        env:
+          # Optional: Add test session token for deeper validation
+          # CI_TEST_SESSION_TOKEN: ${{ secrets.CI_TEST_SESSION_TOKEN }}
+          NODE_TLS_REJECT_UNAUTHORIZED: 0  # Only for staging with self-signed certs
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: smoke-test-results-${{ matrix.environment }}
+          path: |
+            smoke-test-*.log
+            encryption-test-*.json
+          retention-days: 7
+
+      - name: Notify on failure
+        if: failure() && matrix.environment == 'production'
+        uses: 8398a7/action-slack@v3
+        with:
+          status: failure
+          channel: '#alerts'
+          text: |
+            🚨 Production Encryption Smoke Test Failed!
+            
+            Environment: ${{ matrix.environment }}
+            Branch: ${{ github.ref }}
+            Commit: ${{ github.sha }}
+            
+            Check the logs for details: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
