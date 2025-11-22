@@ -2,7 +2,16 @@
   "permissions": {
     "allow": [
       "Bash(supabase functions:*)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(curl:*)",
+      "Bash(if [ -f .env.local ])",
+      "Bash(then)",
+      "Bash(grep:*)",
+      "Bash(else)",
+      "Bash(fi)",
+      "Bash(npm run dev:*)",
+      "Bash(node:*)",
+      "Bash(rm:*)"
     ],
     "defaultMode": "acceptEdits"
   }

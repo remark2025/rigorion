@@ -7,6 +7,9 @@ interface ImportMetaEnv {
   readonly VITE_SUPABASE_ANON_KEY: string;
   readonly VITE_SUPABASE_STORAGE_URL: string;
   readonly VITE_DB_ENCRYPTION_KEY?: string;
+  readonly VITE_ENCRYPTED_MANIFEST_URL?: string;
+  readonly VITE_ENCRYPTED_CONTENT_BASE_URL?: string;
+  readonly VITE_SESSION_TOKEN_URL?: string;
 }
 
 interface ImportMeta {

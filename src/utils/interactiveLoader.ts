@@ -1,9 +1,9 @@
-import { secureQuestionService } from "@/services/secureQuestionService";
+import { questionVaultService } from "@/services/questionVaultService";
 import { getInteractiveSolution as getStaticSolution } from "@/data/interactiveSolutions";
 
 /**
  * Lazy loader for interactive solutions
- * Tries database first, then falls back to static solutions
+ * Tries encrypted vault first, then falls back to static solutions
  */
 class InteractiveLoader {
   private cache = new Map<string, any>();
@@ -15,13 +15,14 @@ class InteractiveLoader {
     }
 
     try {
-      // Try to get from database first
+      // Try to get from encrypted vault first
       console.log(`🎨 Loading interactive solution for ${questionId}...`);
       
-      const dbSolution = await secureQuestionService.getInteractiveSolution(questionId);
+      const vaultQuestion = await questionVaultService.getQuestion(questionId);
+      const dbSolution = vaultQuestion?.interactiveSolution;
       
       if (dbSolution) {
-        console.log(`✅ Loaded interactive solution from database for ${questionId}`);
+        console.log(`✅ Loaded interactive solution from encrypted vault for ${questionId}`);
         this.cache.set(questionId, dbSolution);
         return dbSolution;
       }

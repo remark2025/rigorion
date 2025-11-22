@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "buildTime": "2025-11-21T23:28:34.896Z",
+  "buildTime": "2025-11-21T23:46:44.425Z",
   "packs": {
     "core": {
       "id": "core",
@@ -9,11 +9,11 @@
       "difficulty": "mixed",
       "questionCount": 9,
       "size": 11908,
-      "hash": "a9d38eecee0046468bbdceea378f63438e943e84989397ce73cad166ced0387f",
+      "hash": "1bb7c0f852a5cda9885bc824c4dbbc6210411d296898b8329400fae26b423194",
       "file": "packs/core.json",
-      "lastModified": "2025-11-21T23:28:34.936Z",
+      "lastModified": "2025-11-21T23:46:44.462Z",
       "cacheControl": "public, max-age=31536000, immutable",
-      "etag": "\"a9d38eecee0046468bbdceea378f63438e943e84989397ce73cad166ced0387f\""
+      "etag": "\"1bb7c0f852a5cda9885bc824c4dbbc6210411d296898b8329400fae26b423194\""
     },
     "premium-advanced": {
       "id": "premium-advanced",
@@ -22,11 +22,11 @@
       "difficulty": "advanced",
       "questionCount": 2,
       "size": 1336,
-      "hash": "f6c8396af21aa27d94f210427eefd8e0a353c7322cabab0144339aec641a7890",
+      "hash": "2eb1210fcd46b4388e2a1b9fe79e71a32784198986d875d05a6dd71cb067afbf",
       "file": "packs/premium-advanced.json",
-      "lastModified": "2025-11-21T23:28:35.074Z",
+      "lastModified": "2025-11-21T23:46:44.544Z",
       "cacheControl": "public, max-age=31536000, immutable",
-      "etag": "\"f6c8396af21aa27d94f210427eefd8e0a353c7322cabab0144339aec641a7890\""
+      "etag": "\"2eb1210fcd46b4388e2a1b9fe79e71a32784198986d875d05a6dd71cb067afbf\""
     }
   },
   "totalSize": 13244,

@@ -5,6 +5,7 @@ import { useToast } from "@/components/ui/use-toast";
 import { sampleQuestions } from "@/components/practice/sampleQuestion";
 import { getAllMathModuleQuestions } from "@/utils/mathModuleConverter";
 import { getAllReadingPassageQuestions } from "@/utils/readingPassageConverter";
+import { questionVaultService } from "@/services/questionVaultService";
 
 interface QuestionsContextType {
   questions: Question[];
@@ -39,6 +40,31 @@ export const QuestionsProvider: React.FC<QuestionsProviderProps> = ({ children }
       
       console.log("🚀 Loading questions from website data structure...");
       
+      // Attempt to load encrypted packs first
+      if (questionVaultService.isSupported()) {
+        try {
+          console.log("🔐 Attempting to load encrypted question packs");
+          const encryptedQuestions = await questionVaultService.loadAllQuestions({
+            onProgress: (completed, total) => {
+              if (completed % 50 === 0 || completed === total) {
+                console.log(`   • Decrypted ${completed}/${total} questions`);
+              }
+            },
+          });
+
+          if (encryptedQuestions.length > 0) {
+            console.log(`✅ Loaded ${encryptedQuestions.length} encrypted questions`);
+            setQuestions(encryptedQuestions);
+            setIsLoading(false);
+            return;
+          }
+        } catch (vaultError) {
+          console.warn("⚠️ Encrypted packs unavailable, falling back to bundled data", vaultError);
+        }
+      } else {
+        console.log("ℹ️ Secure question vault not supported in this environment yet");
+      }
+
       // Load math questions from our modules
       const mathQuestions = await getAllMathModuleQuestions();
       console.log(`📊 Loaded ${mathQuestions.length} math questions from modules`);

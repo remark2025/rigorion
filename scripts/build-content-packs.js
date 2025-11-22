@@ -70,6 +70,7 @@ class ContentPackBuilder {
           buildTime: new Date().toISOString(),
           keyVersion: KEY_VERSION,
           packs: {},
+          questions: {},
         }
       : null;
   }
@@ -413,6 +414,12 @@ class ContentPackBuilder {
       };
 
       entries.push(entry);
+      if (this.encryptedManifest && this.encryptedManifest.questions) {
+        this.encryptedManifest.questions[question.id] = {
+          packId,
+          entryIndex: entries.length - 1,
+        };
+      }
       ciphertextChunks.push(ciphertext);
       offset += ciphertext.length;
       totalRawBytes += rawBuffer.length;

@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "buildTime": "2025-11-21T23:28:34.897Z",
+  "buildTime": "2025-11-21T23:46:44.425Z",
   "keyVersion": "v1",
   "packs": {
     "core": {
@@ -9,9 +9,9 @@
       "keyVersion": "v1",
       "packFile": "encrypted/packs/core.bin",
       "manifestFile": "encrypted/packs/core.manifest.json",
-      "hash": "7a0e318afaf7bb3161019268c9b1142ad9af134e6c08045fb7a1aa794aeb319f",
+      "hash": "260980c799bc9d4cb98a208525a41c4a16653b6a0499486b00ba6be2cf09c746",
       "size": 4641,
-      "lastModified": "2025-11-21T23:28:35.059Z"
+      "lastModified": "2025-11-21T23:46:44.539Z"
     },
     "premium-advanced": {
       "id": "premium-advanced",
@@ -19,9 +19,112 @@
       "keyVersion": "v1",
       "packFile": "encrypted/packs/premium-advanced.bin",
       "manifestFile": "encrypted/packs/premium-advanced.manifest.json",
-      "hash": "51aade48b2ae31d09439a91ea883a7fa13680b3a7e68ff35c0c8a37c91a93305",
+      "hash": "b669129e12fccfab3850881615e25749f0100dbc61e7979263b6add7a95b9dbb",
       "size": 539,
-      "lastModified": "2025-11-21T23:28:35.103Z"
+      "lastModified": "2025-11-21T23:46:44.559Z"
+    }
+  },
+  "questions": {
+    "CORE-001": {
+      "packId": "core",
+      "entryIndex": 0
+    },
+    "CORE-002": {
+      "packId": "core",
+      "entryIndex": 1
+    },
+    "CORE-003": {
+      "packId": "core",
+      "entryIndex": 2
+    },
+    "CORE-004": {
+      "packId": "core",
+      "entryIndex": 3
+    },
+    "CORE-005": {
+      "packId": "core",
+      "entryIndex": 4
+    },
+    "CORE-006": {
+      "packId": "core",
+      "entryIndex": 5
+    },
+    "CORE-007": {
+      "packId": "core",
+      "entryIndex": 6
+    },
+    "CORE-008": {
+      "packId": "core",
+      "entryIndex": 7
+    },
+    "CORE-009": {
+      "packId": "core",
+      "entryIndex": 8
+    },
+    "ADV-001": {
+      "packId": "premium-advanced",
+      "entryIndex": 0
+    },
+    "ADV-002": {
+      "packId": "premium-advanced",
+      "entryIndex": 1
+    }
+  },
+  "questionIndex": {
+    "CORE-001": {
+      "packId": "core",
+      "offset": 0,
+      "length": 382
+    },
+    "CORE-002": {
+      "packId": "core",
+      "offset": 382,
+      "length": 503
+    },
+    "CORE-003": {
+      "packId": "core",
+      "offset": 885,
+      "length": 427
+    },
+    "CORE-004": {
+      "packId": "core",
+      "offset": 1312,
+      "length": 649
+    },
+    "CORE-005": {
+      "packId": "core",
+      "offset": 1961,
+      "length": 657
+    },
+    "CORE-006": {
+      "packId": "core",
+      "offset": 2618,
+      "length": 519
+    },
+    "CORE-007": {
+      "packId": "core",
+      "offset": 3137,
+      "length": 525
+    },
+    "CORE-008": {
+      "packId": "core",
+      "offset": 3662,
+      "length": 536
+    },
+    "CORE-009": {
+      "packId": "core",
+      "offset": 4198,
+      "length": 443
+    },
+    "ADV-001": {
+      "packId": "premium-advanced",
+      "offset": 0,
+      "length": 265
+    },
+    "ADV-002": {
+      "packId": "premium-advanced",
+      "offset": 265,
+      "length": 274
     }
   }
 }
